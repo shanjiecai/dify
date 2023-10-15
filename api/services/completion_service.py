@@ -28,9 +28,14 @@ from services.errors.message import MessageNotExistsError
 class CompletionService:
 
     @classmethod
-    def completion(cls, app_model: App, user: Union[Account | EndUser], args: Any,
+    def completion(cls, app_model: App,
+                   user: Optional[Union[Account | EndUser]],
+                   args: Any,
                    from_source: str, streaming: bool = True,
-                   is_model_config_override: bool = False) -> Union[dict | Generator]:
+                   is_model_config_override: bool = False,
+                   outer_memory: Optional[list] = None,
+                   assistant_name: str = None,
+                   user_name: str = None) -> Union[dict | Generator]:
         # is streaming mode
         inputs = args['inputs']
         query = args['query']
@@ -49,11 +54,11 @@ class CompletionService:
                 Conversation.app_id == app_model.id,
                 Conversation.status == 'normal'
             ]
-
-            if from_source == 'console':
-                conversation_filter.append(Conversation.from_account_id == user.id)
-            else:
-                conversation_filter.append(Conversation.from_end_user_id == user.id if user else None)
+            if user:
+                if from_source == 'console':
+                    conversation_filter.append(Conversation.from_account_id == user.id)
+                else:
+                    conversation_filter.append(Conversation.from_end_user_id == user.id if user else None)
 
             conversation = db.session.query(Conversation).filter(and_(*conversation_filter)).first()
 
@@ -138,6 +143,7 @@ class CompletionService:
 
         user = cls.get_real_user_instead_of_proxy_obj(user)
 
+        logging.info(app_model_config)
         generate_worker_thread = threading.Thread(target=cls.generate_worker, kwargs={
             'flask_app': current_app._get_current_object(),
             'generate_task_id': generate_task_id,
@@ -149,7 +155,10 @@ class CompletionService:
             'detached_conversation': conversation,
             'streaming': streaming,
             'is_model_config_override': is_model_config_override,
-            'retriever_from': args['retriever_from'] if 'retriever_from' in args else 'dev'
+            'retriever_from': args['retriever_from'] if 'retriever_from' in args else 'dev',
+            'outer_memory': outer_memory,
+            'assistant_name': assistant_name,
+            'user_name': user_name
         })
 
         generate_worker_thread.start()
@@ -174,7 +183,10 @@ class CompletionService:
     def generate_worker(cls, flask_app: Flask, generate_task_id: str, detached_app_model: App, app_model_config: AppModelConfig,
                         query: str, inputs: dict, detached_user: Union[Account, EndUser],
                         detached_conversation: Optional[Conversation], streaming: bool, is_model_config_override: bool,
-                        retriever_from: str = 'dev'):
+                        retriever_from: str = 'dev',
+                        outer_memory: Optional[list] = None,
+                        assistant_name: str = None,
+                        user_name: str = None):
         with flask_app.app_context():
             # fixed the state of the model object when it detached from the original session
             user = db.session.merge(detached_user)
@@ -197,7 +209,10 @@ class CompletionService:
                     conversation=conversation,
                     streaming=streaming,
                     is_override=is_model_config_override,
-                    retriever_from=retriever_from
+                    retriever_from=retriever_from,
+                    outer_memory=outer_memory,
+                    assistant_name=assistant_name,
+                    user_name=user_name
                 )
             except ConversationTaskStoppedException:
                 pass

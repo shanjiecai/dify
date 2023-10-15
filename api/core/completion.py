@@ -20,13 +20,17 @@ from core.prompt.prompt_builder import PromptBuilder
 from core.prompt.prompts import MORE_LIKE_THIS_GENERATE_PROMPT
 from models.dataset import DocumentSegment, Dataset, Document
 from models.model import App, AppModelConfig, Account, Conversation, Message, EndUser
+logger = logging.getLogger(__name__)
 
 
 class Completion:
     @classmethod
     def generate(cls, task_id: str, app: App, app_model_config: AppModelConfig, query: str, inputs: dict,
                  user: Union[Account, EndUser], conversation: Optional[Conversation], streaming: bool,
-                 is_override: bool = False, retriever_from: str = 'dev'):
+                 is_override: bool = False, retriever_from: str = 'dev',
+                 outer_memory: Optional[list] = None,
+                 assistant_name: str = None,
+                 user_name: str = None):
         """
         errors: ProviderTokenNotInitError
         """
@@ -68,7 +72,10 @@ class Completion:
             model_instance=final_model_instance,
             app_model_config=app_model_config,
             query=query,
-            inputs=inputs
+            inputs=inputs,
+            outer_memory=outer_memory,
+            assistant_name=assistant_name,
+            user_name=user_name
         )
 
         # init orchestrator rule parser
@@ -95,7 +102,10 @@ class Completion:
                         agent_execute_result=None,
                         conversation_message_task=conversation_message_task,
                         memory=memory,
-                        fake_response=ex.message
+                        fake_response=ex.message,
+                        outer_memory=outer_memory,
+                        assistant_name=assistant_name,
+                        user_name=user_name
                     )
                     return
 
@@ -135,7 +145,8 @@ class Completion:
                 agent_execute_result=agent_execute_result,
                 conversation_message_task=conversation_message_task,
                 memory=memory,
-                fake_response=fake_response
+                fake_response=fake_response,
+                outer_memory=outer_memory
             )
         except ConversationTaskStoppedException:
             return
@@ -158,7 +169,12 @@ class Completion:
                       agent_execute_result: Optional[AgentExecuteResult],
                       conversation_message_task: ConversationMessageTask,
                       memory: Optional[ReadOnlyConversationTokenDBBufferSharedMemory],
-                      fake_response: Optional[str]):
+                      fake_response: Optional[str],
+                      outer_memory: Optional[list] = None,
+                      assistant_name: str = None,
+                      user_name: str = None):
+        logger.info(f"memory: {memory}")
+        logger.info(f"outer_memory: {outer_memory}")
         # get llm prompt
         prompt_messages, stop_words = model_instance.get_prompt(
             mode=mode,
@@ -166,8 +182,13 @@ class Completion:
             inputs=inputs,
             query=query,
             context=agent_execute_result.output if agent_execute_result else None,
-            memory=memory
+            memory=memory,
+            outer_memory=outer_memory,
+            assistant_name=assistant_name,
+            user_name=user_name
         )
+        logger.info(f"prompt_messages: {prompt_messages[0].content}")
+        logger.info(f"stop_words: {stop_words}")
 
         cls.recale_llm_max_tokens(
             model_instance=model_instance,
@@ -217,7 +238,10 @@ class Completion:
 
     @classmethod
     def get_validate_rest_tokens(cls, mode: str, model_instance: BaseLLM, app_model_config: AppModelConfig,
-                                 query: str, inputs: dict) -> int:
+                                 query: str, inputs: dict,
+                                 outer_memory: Optional[list] = None,
+                                 assistant_name: str = None,
+                                 user_name: str = None) -> int:
         model_limited_tokens = model_instance.model_rules.max_tokens.max
         max_tokens = model_instance.get_model_kwargs().max_tokens
 
@@ -234,7 +258,10 @@ class Completion:
             inputs=inputs,
             query=query,
             context=None,
-            memory=None
+            memory=None,
+            outer_memory=outer_memory,
+            assistant_name=assistant_name,
+            user_name=user_name
         )
 
         prompt_tokens = model_instance.get_num_tokens(prompt_messages)

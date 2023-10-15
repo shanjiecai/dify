@@ -148,6 +148,8 @@ class Config:
             'CONSOLE_CORS_ALLOW_ORIGINS', self.CONSOLE_WEB_URL)
         self.WEB_API_CORS_ALLOW_ORIGINS = get_cors_allow_origins(
             'WEB_API_CORS_ALLOW_ORIGINS', '*')
+        self.APP_API_CORS_ALLOW_ORIGINS = get_cors_allow_origins(
+            'APP_API_CORS_ALLOW_ORIGINS', '*')
 
         # mail settings
         self.MAIL_TYPE = get_env('MAIL_TYPE')

@@ -5,6 +5,7 @@ from flask import got_request_exception, current_app
 from flask_restful import Api, http_status_message
 from werkzeug.datastructures import Headers
 from werkzeug.exceptions import HTTPException
+import traceback
 
 
 class ExternalApi(Api):
@@ -34,6 +35,7 @@ class ExternalApi(Api):
             headers = e.get_response().headers
         elif isinstance(e, ValueError):
             status_code = 400
+            print(traceback.format_exc())
             default_data = {
                 'code': 'invalid_param',
                 'message': str(e),

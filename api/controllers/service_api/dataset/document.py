@@ -18,6 +18,7 @@ from fields.document_fields import document_fields, document_status_fields
 from models.dataset import Dataset, Document, DocumentSegment
 from services.dataset_service import DocumentService
 from services.file_service import FileService
+import logging
 
 
 class DocumentAddByTextApi(DatasetApiResource):

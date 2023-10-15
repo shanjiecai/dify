@@ -125,6 +125,7 @@ def register_blueprints(app):
     from controllers.service_api import bp as service_api_bp
     from controllers.web import bp as web_bp
     from controllers.console import bp as console_app_bp
+    from controllers.app_api import bp as app_api_bp
 
     CORS(service_api_bp,
          allow_headers=['Content-Type', 'Authorization', 'X-App-Code'],
@@ -153,6 +154,18 @@ def register_blueprints(app):
          )
 
     app.register_blueprint(console_app_bp)
+
+    CORS(app_api_bp,
+         resources={
+             r"/*": {"origins": app.config['APP_API_CORS_ALLOW_ORIGINS']}},
+         supports_credentials=True,
+         allow_headers=['Content-Type', 'Authorization'],
+         methods=['GET', 'PUT', 'POST', 'DELETE', 'OPTIONS', 'PATCH'],
+         expose_headers=['X-Version', 'X-Env']
+         )
+    app.register_blueprint(app_api_bp)
+    # 列出所有的路由
+    # print(app.url_map)
 
 
 # create app

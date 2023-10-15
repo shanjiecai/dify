@@ -35,6 +35,12 @@
             "unit": "0.001",
             "currency": "RMB"
         },
+        "characterglm": {
+            "prompt": "0.01",
+            "completion": "0.01",
+            "unit": "0.001",
+            "currency": "RMB"
+        },
         "text_embedding": {
             "completion": "0",
             "unit": "0.001",

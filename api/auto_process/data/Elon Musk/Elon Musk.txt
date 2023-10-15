@@ -1,0 +1,1815 @@
+
+The first question from the audience was simply: “Mars - how can we help?”.
+
+It’s a testament to how much effort and energy Musk has poured into this endeavour when his tight face breaks into a beautiful, grateful smile.
+
+MUSK: I think right now the biggest thing that would be helpful is just general support and encouragement.
+
+We’re making good progress on this ship and the booster BFR - which is like a Roschch acronym test - it means it’s very big.
+
+Once we’ve built it, we’ll have a point of proof. Something that other companies and countries can then go and work on. At the moment, they don’t think it’s possible, but if we show them it is, then they will up their game. Then they will build interplanetary vehicles as well.
+
+Now once that has been built, and there is a means of getting cargo and people to and from Mars, as well as to and from the moon and other places in the solar system, that's really where a tremendous amount of entrepreneurial resources are needed. Because you've got to build out the entire base of industry. Everything that allows your human civilisation to exist. And it’s going to be a lot harder on places like the moon and on Mars.
+
+NOLAN: Any colonist volunteers?
+
+MUSK: Actually not many hands went up there. Going to the moon or to Mars has often been described as an escape hatch for rich people. But I don’t think it will be that at all. For early people that go to Mars, it will be far more dangerous.
+
+I mean, really, it kind of reads like Shackleton's ad for Antarctic explorers. It's difficult, dangerous, there's a good chance you'll die. There’s excitement for those who survive. I don’t think there will be many people who would go in the beginning, because all those things are true. But there are some who will. For whom the excitement of the frontier exceeds the threat of danger.
+
+And we will need the most elementary infrastructure: just a base to create propellant; a power station, glass domes to grow crops. All the sort of fundamentals without which we cannot survive. And then there's really going to be an explosion of entrepreneur opportunity because Mars will need everything from iron foundries to pizza joints. And bars, we we should really have great bars, like The Mars Bar. Sorry.
+
+NOLAN: What’s your timeline?
+
+MUSK: I’m feeling pretty optimistic, though people have told me I’m a little optimistic about timelines so I’m trying to recalibrate to some degree here.
+
+But we are building the first interplanetary ship right now. And I think people will probably be able to do short flights, up and down flights by sometime in the first half of next year.
+
+There is a very big booster in this ship. The lift of thrust of this would be about twice that of a Saturn 5, so it's capable of doing 150 metric tons to orbit, and be fully reusable. So the expendable payload is around double that number.
+
+What's amazing about the ship, assuming we can make full, rapid, reusability work, is that we can reduce the module cost per flight dramatically, by orders of magnitude compared to where it is today.
+
+This question of reusability is so fundamental to rocketry, it is the fundamental breakthrough that's needed. If you consider aircraft, for example, you can lease a 747 and do a return flight pulling a cargo from California to Australia for half a million dollars. That's what it costs to lease 747 pullie round trip to Australia, which is far. To use a single engine turbo prop plane, would be about $US1.5 billion dollars, and that can't even reach Australia. And it's tiny compared to a 747.
+
+So it costs less to use a giant plane with huge cargo for a long trip. That costs way less than buying a small plane for a short trip, in the aircraft world. And the same actually is true of rocketry.
+
+A BFR (Big Fucking Rocket) flight will actually cost less than our Falcon 1 flight did back in the day. That was about a $5 or $6 million marginal cost per flight, and I am confident that BFR will be much less than that.
+
+That’s profound and that is what will enable the creation of a permanent base on the moon and a city on Mars.
+
+And that’s the equivalent of the Union Pacific Railroad or having ships cross oceans.
+
+Until we can get there, there’s nowhere for the entrepreneurial energy to go, there’s nowhere for the flowers to bloom. But once you get there, the opportunities are immense. We’re going to do our best to get you there and foster an entrepreneurial environment, and then I think it will be amazing.
+
+NOLAN: Carl Sagan had a beautiful thought many many years ago that if you just get enough people to look at the Earth from a distance that it would get them to focus on problems here and on the possibilities of space exploration.
+
+MUSK: Yes, the goal of this was to inspire you and make you believe that anything is possible.
+
+NOLAN: Watching those two boosters come down side by side felt like a transformative moment. It felt like a we can do anything and of a singular vision and hundreds or thousands of very talented people working together. How do you manage your time? How do you zoom in and zoom out and make sure that all those things are coming together?
+
+MUSK: At SpaceX, almost all my time is spent on engineering and design. Probably 80-90%. And then Gwynne Shotwell who is president and chief operating officer, takes care of the business operations of the company, which is what allows me to do that.
+
+In order to make the right decisions, you have to understand something. If you don't understand something at a detailed level you cannot make a decision. So I'd like to just point out what you saw there as a result of incredible team at SpaceX super talented people who we work like crazy to make that happen.
+
+NOLAN: Who are you inspired by?
+
+MUSK: Kanye West, obviously. Um, Fred Astaire. You should see my dance moves.
+
+NOLAN: SpaceX, Tesla, SilverCity, The Boring Company, it feels like you’re seeing a firmly established and mature industry that is ripe for a quantum shift. There is an opportunity there. Is that how you see the world?
+
+MUSK: No, not really. I don’t look at things in terms of a business opportunity. I just see things that aren’t working that are important for our life and for the future to be good.
+
+If you did a risk adjusted rate of return estimate on various industry opportunities, basically building rockets and cars comes pretty close of the bottom of that list. They would have to be the dumbest things to do because if you look at the auto industry, every other company apart from Tesla and Ford has gone bankrupt or was failing and got acquired.
+
+I basically gave both SpaceX and Tesla a probability of less than 10% to succeed.
+
+But in the case of Space X, I just kept wondering why we were not making progress towards sending people to Mars? Why we didn't have a base on the moon? Where the space hotels that were promised in 2001 the movie? It just wasn't happening year after year.
+
+So I came up with a little small philanthropic mission which was to send a small greenhouse to the surface of Mars, called Mars Oasis. And the seeds would be dehydrated nutrient gel hydrate, and upon landing you could have a little greenhouse. And the money shot would be a green plant against a red background.
+
+I just recently learnt that money shot has another meaning, actually.
+
+And as I got more and more into what it would take to do that I learned that the fundamental issue is actually the cost of access to space. Rockets were super expensive and the cost cost per-pound-a-kilogram to orbit had actually gone up over the years, not down. And I was like OK well, it won't matter if we are able to do this philanthropic mission and it generates a lot of will to go to Mars...that's not going to matter if there's no way.
+
+So I started reading a lot of books on rockets and a did sort of ‘first principles’ analysis of a rocket. Just broke down materials that are in a rocket. What it would cost to buy those materials versus the price of the rocket. And there's a gigantic difference between the raw material cost of the rocket and the finished cost the rocket.
+
+So there must be something wrong happening going from the constituent atoms to the final shape. And felt that certainly to be true. And then why weren't people trying to make reusability work? It turns out it’s very difficult to make rocket reusability work.
+
+Unfortunately the space shuttle ended up being a counterexample of trying to make the usability work, because space travel would end up costing more per flight than any expendable vehicle of equivalent capability.
+
+So for a long time people using the space shuttle as an example of why reusability is dumb. But I think, you can't take a single case example and make an entire theory out of it. So there's no question in my mind that if you could re-use the rocket, that would help enormously.
+
+But it has to be true re-use which means rapid and complete re-use. The problem with the space shuttle is only a portion of the system came back. The big orange tank which is also the primary airframe was discarded every time. And the parts that were used were incredibly difficult to refurbish. So the only kind of re-use that matters is if it's rapid and complete. The only thing you’re changing between flights, apart from scheduled maintenance is the propellant.
+
+So we embarked on that journey to create SpaceX in 2002, and in the beginning, I actually wouldn't even let my friends invest because I didn't want to lose their money. I thought I could lose my money. We almost did die at SpaceX actually.
+
+I mean, technically I did have a plan where I had like about $US180 million from PayPal. I thought, you know, I'll allocate half of that to Space X and Tesla and Solar City and that should be fine. I'll have $US90 million left, and that's like, lots.
+
+But what happens is things cost more, it took longer than I thought. So I had a choice of either put the rest of the money in or the company's going to die. And so I ended up putting all the money in and borrowing money for rent from friends.
+
+2008 was brutal. We had the third consecutive failure of the Falcon rocket for SpaceX. Tesla almost went bankrupt. We closed our financing around 6 p.m. Christmas Eve 2008. It was the last hour of the last day that it was possible. We would have gone bankrupt two days after Christmas.
+
+And I got divorced. That was rough. Man, there's a lot of scar tissue there.
+
+NOLAN: Maybe you just answered this, but why is nobody else doing these things?
+
+MUSK: Extremely high pain threshold, I guess. SpaceX just got by by the skin of its teeth. So did Tesla.
+
+If things just got a little bit the other way both companies would be dead. One of the most difficult choices I've ever faced in life was in 2008 and I think it had maybe $30 million or $40 million left in 2008.
+
+I had two choices, I could put it all into one company and then the other company would definitely die or split between the two companies. But if I split up between two companies then they both might die. And when you put your blood sweat and tears into creating something or building something, it's like a child. So it's like which one I'm going to let one starve to death. I couldn't bring myself to do it. So I split the money between two. Fortunately.
+
+NOLAN: How do you how do you plan a business where you know some of these things are going to blow up on the launch pad? And how does the business plan work?
+
+MUSK: I don't really have a business plan. For business, my time, almost all of it, is really dedicated to Space X and Tesla. That may sound like I’m involved in a lot of different endeavours but it's overwhelmingly SpaceX and Tesla, in terms of time allocation.
+
+The only public security that I own of any kind is Tesla. And then the next biggest is Space X and and then The Boring Company kind of started more as a joke because that would be a funny name for a company. You know, we put we put the 0 in bring? That doesn't make any sense...
+
+The biggest issue I see with so-called experts is that they they think they know more than they do and they think they're smarter than they actually are. In general we are all much smarter than we think we are much less smart and dumber than we are by a lot.
+
+So this is this tends to plague plagues more people because just can't they define themselves by their intelligence and they they don't like the idea that a machine could be way smarter than them so they discount the idea which is fundamentally flawed. That's the wishful thinking situation.
+
+I'm really very close to the cutting edge of AI and it scares the hell out of me. It's capable of vastly more than almost anyone knows. And the rate of improvement is exponential. You can see this in things like AlphaGo which went from, in the span of maybe six to nine months, it went from being unable to beat even a reasonably good Go player to then beating the European world champion who was ranked 600, then beating the Lee Sedol 4-5, who had been world champion for many years, then beating the current world champion, then beating everyone while playing simultaneously.
+
+Then there was AlphaZero which crushed AlphaGo 100 to 0 and AlphaZero just learnt by playing itself and it can play basically any game that you put the rules and for. Whatever rules you give it literally read the rules, play the game and be superhuman.
+
+I think probably by the end of next year, self driving will encompass essentially all modes of driving and be at least 100-200 percent safer than a person, by the end of next year. We're talking about 18 months from now.
+
+The rate of improvement is really dramatic and we have to figure out some way to ensure that the advent of digital superintelligence is one which is symbiotic with humanity.
+
+I think that's the single biggest existential crisis that we face and the most pressing one.
+
+I'm not normally an advocate of regulation and oversight, I’m generally on the side of minimising those things, but this is a case where you have a very serious danger to the public and therefore there needs to be a public body that has insight and oversight, to confirm that everyone is developing AI safely.
+
+This is extremely important. I think the danger of AI is much greater than the danger of nuclear warheads, by a lot. And nobody would suggest that we allow anyone to just build nuclear warheads if they want. That would be insane.
+
+Mark my words AI is far more dangerous than nukes. We don't know, but there's likely to be yet another dark ages, but my guess is that probably will be at some point. I'm not predicting that we're about to enter a Dark Ages, but that there's some probability that we will.
+
+Particularly if there is a third world war. Then we want to make sure that there's enough a seed of human civilisation somewhere else to bring civilisation back.
+
+But I think a sustainable energy source is really important. I mean, it's tautological: if it's not sustainable, it's unsustainable.
+
+How close are we to solving that problem?
+
+Well I think that the core technologies are there with the wind, solar, with batteries. The fundamental problem is that there's an unpriced externality in the cost of CO2.
+
+The market economics works very well if things are priced correctly. When there are things are not priced correctly, and there is something that has a real cost, but has zero cost, then that's where you get distortions in the market that inhibit the progress of other technologies.
+
+So essentially anything that puts carbon into the atmosphere, which includes rockets by the way, I'm not excluding rockets from this, there has to be a price. You can start off with a low price, but then depending upon whether that price has any effect on the possibility of CO2 in the atmosphere, you can adjust that price up or down.
+
+But in the absence of a price, we sort of pretend that digging trillions of tonnes of fossil fuels from deep under the earth and putting it into the atmosphere, we are sort of pretending there's no probability of a bad outcome.
+
+I don't talk that much about StarLink, but essentially it's intended to provide low latency, high bandwidth Internet connectivity throughout the world. That actually will not be enough cognitive processing power onboard the satellite system, in any way, to be a Skynet thing.
+
+Most likely the form of government on Mars would be somewhat of a direct democracy, where people vote directly on issues instead of going through representative government. When the United States was formed representative government was the only thing that was logistically feasible, because there was no way of people to communicate instantly.
+
+A lot of people don't even have access to mailboxes, the post office was very primitive and a lot of people couldn't write. So you had to have some form of representative democracy or things just wouldn't work at all.
+
+But I think on Mars it's going to be people everyone votes on every issue and that's how it goes. There are a few things I'd recommend which is keep laws short. There's something suspicious going on if there's long laws.
+
+
+
+
+Chris Anderson: Elon, hey, welcome back to TED. It's great to have you here.
+Elon Musk: Thanks for having me.
+CA: So, in the next half hour or so, we're going to spend some time exploring your vision for what an exciting future might look like, which I guess makes the first question a little ironic: Why are you boring?
+EM: Yeah. I ask myself that frequently. We're trying to dig a hole under LA, and this is to create the beginning of what will hopefully be a 3D network of tunnels to alleviate congestion. So right now, one of the most soul-destroying things is traffic. It affects people in every part of the world. It takes away so much of your life. It's horrible. It's particularly horrible in LA.
+CA: I think you've brought with you the first visualization that's been shown of this. Can I show this?
+EM: Yeah, absolutely. So this is the first time -- just to show what we're talking about. So a couple of key things that are important in having a 3D tunnel network. First of all, you have to be able to integrate the entrance and exit of the tunnel seamlessly into the fabric of the city. So by having an elevator, sort of a car skate, that's on an elevator, you can integrate the entrance and exits to the tunnel network just by using two parking spaces. And then the car gets on a skate. There's no speed limit here, so we're designing this to be able to operate at 200 kilometers an hour.
+CA: How much?
+EM: 200 kilometers an hour, or about 130 miles per hour. So you should be able to get from, say, Westwood to LAX in six minutes -- five, six minutes.
+CA: So possibly, initially done, it's like on a sort of toll road-type basis.
+EM: Yeah.
+CA: Which, I guess, alleviates some traffic from the surface streets as well.
+EM: So, I don't know if people noticed it in the video, but there's no real limit to how many levels of tunnel you can have. You can go much further deep than you can go up. The deepest mines are much deeper than the tallest buildings are tall, so you can alleviate any arbitrary level of urban congestion with a 3D tunnel network. This is a very important point. So a key rebuttal to the tunnels is that if you add one layer of tunnels, that will simply alleviate congestion, it will get used up, and then you'll be back where you started, back with congestion. But you can go to any arbitrary number of tunnels, any number of levels.
+CA: But people -- seen traditionally, it's incredibly expensive to dig, and that would block this idea.
+EM: Yeah. Well, they're right. To give you an example, the LA subway extension, which is -- I think it's a two-and-a-half mile extension that was just completed for $2 billion. So it's roughly a billion dollars a mile to do the subway extension in LA. And this is not the highest utility subway in the world. So yeah, it's quite difficult to dig tunnels normally. I think we need to have at least a tenfold improvement in the cost per mile of tunneling.
+CA: And how could you achieve that?
+EM: Actually, if you just do two things, you can get to approximately an order of magnitude improvement,and I think you can go beyond that. So the first thing to do is to cut the tunnel diameter by a factor of two or more. So a single road lane tunnel according to regulations has to be 26 feet, maybe 28 feet in diameter to allow for crashes and emergency vehicles and sufficient ventilation for combustion engine cars. But if you shrink that diameter to what we're attempting, which is 12 feet, which is plenty to get an electric skate through, you drop the diameter by a factor of two and the cross-sectional area by a factor of four, and the tunneling cost scales with the cross-sectional area. So that's roughly a half-order of magnitude improvement right there. Then tunneling machines currently tunnel for half the time, then they stop, and then the rest of the time is putting in reinforcements for the tunnel wall. 
+So if you design the machine instead to do continuous tunneling and reinforcing, that will give you a factor of two improvement. Combine that and that's a factor of eight. Also these machines are far from being at their power or thermal limits, so you can jack up the power to the machine substantially. I think you can get at least a factor of two, maybe a factor of four or five improvement on top of that. So I think there's a fairly straightforward series of steps to get somewhere in excess of an order of magnitude improvement in the cost per mile, and our target actually is -- we've got a pet snail called Gary, this is from Gary the snail from South Park, I mean, sorry, SpongeBob SquarePants. So Gary is capable of -- currently he's capable of going 14 times faster than a tunnel-boring machine.
+CA: You want to beat Gary.
+EM: We want to beat Gary. He's not a patient little fellow, and that will be victory. Victory is beating the snail.
+CA: But a lot of people imagining, dreaming about future cities, they imagine that actually the solution is flying cars, drones, etc. You go aboveground. Why isn't that a better solution? You save all that tunneling cost.
+EM: Right. I'm in favor of flying things. Obviously, I do rockets, so I like things that fly. This is not some inherent bias against flying things, but there is a challenge with flying cars in that they'll be quite noisy, the wind force generated will be very high. Let's just say that if something's flying over your head, a whole bunch of flying cars going all over the place, that is not an anxiety-reducing situation. You don't think to yourself, "Well, I feel better about today." You're thinking, "Did they service their hubcap, or is it going to come off and guillotine me?" Things like that.
+CA: So you've got this vision of future cities with these rich, 3D networks of tunnels underneath. Is there a tie-in here with Hyperloop? Could you apply these tunnels to use for this Hyperloop idea you released a few years ago.
+EM: Yeah, so we've been sort of puttering around with the Hyperloop stuff for a while. We built a Hyperloop test track adjacent to SpaceX, just for a student competition, to encourage innovative ideas in transport. And it actually ends up being the biggest vacuum chamber in the world after the Large Hadron Collider, by volume. So it was quite fun to do that, but it was kind of a hobby thing, and then we think we might -- so we've built a little pusher car to push the student pods, but we're going to try seeing how fast we can make the pusher go if it's not pushing something. So we're cautiously optimistic we'll be able to be faster than the world's fastest bullet train even in a .8-mile stretch.
+CA: Whoa. Good brakes.
+EM: Yeah, I mean, it's -- yeah. It's either going to smash into tiny pieces or go quite fast.
+CA: But you can picture, then, a Hyperloop in a tunnel running quite long distances.
+EM: Exactly. And looking at tunneling technology, it turns out that in order to make a tunnel, you have to -- in order to seal against the water table, you've got to typically design a tunnel wall to be good to about five or six atmospheres. So to go to vacuum is only one atmosphere, or near-vacuum. So actually, it sort of turns out that automatically, if you build a tunnel that is good enough to resist the water table, it is automatically capable of holding vacuum.
+CA: Huh.
+EM: So, yeah.
+CA: And so you could actually picture, what kind of length tunnel is in Elon's future to running Hyperloop?
+EM: I think there's no real length limit. You could dig as much as you want. I think if you were to do something like a D.C.-to-New York Hyperloop, I think you'd probably want to go underground the entire way because it's a high-density area. You're going under a lot of buildings and houses, and if you go deep enough, you cannot detect the tunnel. Sometimes people think, well, it's going to be pretty annoying to have a tunnel dug under my house. Like, if that tunnel is dug more than about three or four tunnel diameters beneath your house, you will not be able to detect it being dug at all. 
+In fact, if you're able to detect the tunnel being dug, whatever device you are using, you can get a lot of money for that device from the Israeli military, who is trying to detect tunnels from Hamas, and from the U.S. Customs and Border patrol that try and detect drug tunnels. So the reality is that earth is incredibly good at absorbing vibrations, and once the tunnel depth is below a certain level, it is undetectable. Maybe if you have a very sensitive seismic instrument, you might be able to detect it.
+CA: So you've started a new company to do this called The Boring Company. Very nice. Very funny.
+EM: What's funny about that?
+CA: How much of your time is this?
+EM: It's maybe ... 2 or 3 percent.
+CA: You've bought a hobby. This is what an Elon Musk hobby looks like.
+EM: I mean, it really is, like -- this is basically interns and people doing it part time. We bought some second-hand machinery. It's kind of puttering along, but it's making good progress, so --
+CA: So an even bigger part of your time is being spent on electrifying cars and transport through Tesla. Is one of the motivations for the tunneling project the realization that actually, in a world where cars are electric and where they're self-driving, there may end up being more cars on the roads on any given hour than there are now?
+EM: Yeah, exactly. A lot of people think that when you make cars autonomous, they'll be able to go faster and that will alleviate congestion. And to some degree that will be true, but once you have shared autonomy where it's much cheaper to go by car and you can go point to point, the affordability of going in a car will be better than that of a bus. Like, it will cost less than a bus ticket. So the amount of driving that will occur will be much greater with shared autonomy, and actually traffic will get far worse.
+CA: You started Tesla with the goal of persuading the world that electrification was the future of cars, and a few years ago, people were laughing at you. Now, not so much.
+EM: OK. I don't know. I don't know.
+CA: But isn't it true that pretty much every auto manufacturer has announced serious electrification plansfor the short- to medium-term future?
+EM: Yeah. Yeah. I think almost every automaker has some electric vehicle program. They vary in seriousness. Some are very serious about transitioning entirely to electric, and some are just dabbling in it. And some, amazingly, are still pursuing fuel cells, but I think that won't last much longer.
+CA: But isn't there a sense, though, Elon, where you can now just declare victory and say, you know, "We did it." Let the world electrify, and you go on and focus on other stuff?
+EM: Yeah. I intend to stay with Tesla as far into the future as I can imagine, and there are a lot of exciting things that we have coming. Obviously the Model 3 is coming soon. We'll be unveiling the Tesla Semi truck.
+CA: OK, we're going to come to this. So Model 3, it's supposed to be coming in July-ish.
+EM: Yeah, it's looking quite good for starting production in July.
+CA: Wow. One of the things that people are so excited about is the fact that it's got autopilot. And you put out this video a while back showing what that technology would look like.
+EM: Yeah. There's obviously autopilot in Model S right now. What are we seeing here? Yeah, so this is using only cameras and GPS. So there's no LIDAR or radar being used here. This is just using passive optical, which is essentially what a person uses. The whole road system is meant to be navigated with passive optical, or cameras, and so once you solve cameras or vision, then autonomy is solved. If you don't solve vision, it's not solved. So that's why our focus is so heavily on having a vision neural net that's very effective for road conditions.
+CA: Right. Many other people are going the LIDAR route. You want cameras plus radar is most of it.
+EM: You can absolutely be superhuman with just cameras. Like, you can probably do it ten times better than humans would, just cameras.
+CA: So the new cars being sold right now have eight cameras in them. They can't yet do what that showed. When will they be able to?
+EM: I think we're still on track for being able to go cross-country from LA to New York by the end of the year, fully autonomous.
+CA: OK, so by the end of the year, you're saying, someone's going to sit in a Tesla without touching the steering wheel, tap in "New York," off it goes.
+EM: Yeah.
+CA: Won't ever have to touch the wheel -- by the end of 2017.
+EM: Yeah. Essentially, November or December of this year, we should be able to go all the way from a parking lot in California to a parking lot in New York, no controls touched at any point during the entire journey.
+CA: Amazing. But part of that is possible because you've already got a fleet of Teslas driving all these roads. You're accumulating a huge amount of data of that national road system.
+EM: Yes, but the thing that will be interesting is that I'm actually fairly confident it will be able to do that route even if you change the route dynamically. So, it's fairly easy -- If you say I'm going to be really good at one specific route, that's one thing, but it should be able to go, really be very good, certainly once you enter a highway, to go anywhere on the highway system in a given country. So it's not sort of limited to LA to New York. We could change it and make it Seattle-Florida, that day, in real time. So you were going from LA to New York. Now go from LA to Toronto.
+CA: So leaving aside regulation for a second, in terms of the technology alone, the time when someone will be able to buy one of your cars and literally just take the hands off the wheel and go to sleep and wake up and find that they've arrived, how far away is that, to do that safely?
+EM: I think that's about two years. So the real trick of it is not how do you make it work say 99.9 percent of the time, because, like, if a car crashes one in a thousand times, then you're probably still not going to be comfortable falling asleep. You shouldn't be, certainly.
+It's never going to be perfect. No system is going to be perfect, but if you say it's perhaps the car is unlikely to crash in a hundred lifetimes, or a thousand lifetimes, then people are like, OK, wow, if I were to live a thousand lives, I would still most likely never experience a crash, then that's probably OK.
+CA: To sleep. I guess the big concern of yours is that people may actually get seduced too early to think that this is safe, and that you'll have some horrible incident happen that puts things back.
+EM: Well, I think that the autonomy system is likely to at least mitigate the crash, except in rare circumstances. The thing to appreciate about vehicle safety is this is probabilistic. I mean, there's some chance that any time a human driver gets in a car, that they will have an accident that is their fault. It's never zero. So really the key threshold for autonomy is how much better does autonomy need to be than a person before you can rely on it?
+CA: But once you get literally safe hands-off driving, the power to disrupt the whole industry seems massive, because at that point you've spoken of people being able to buy a car, drops you off at work and then you let it go and provide a sort of Uber-like service to other people, earn you money, maybe even cover the cost of your lease of that car, so you can kind of get a car for free. Is that really likely?
+EM: Yeah. Absolutely this is what will happen. So there will be a shared autonomy fleet where you buy your car and you can choose to use that car exclusively, you could choose to have it be used only by friends and family, only by other drivers who are rated five star, you can choose to share it sometimes but not other times. That's 100 percent what will occur. It's just a question of when.
+CA: Wow. So you mentioned the Semi and I think you're planning to announce this in September, but I'm curious whether there's anything you could show us today?
+EM: I will show you a teaser shot of the truck. It's alive.
+CA: OK.
+EM: That's definitely a case where we want to be cautious about the autonomy features. Yeah.
+CA: We can't see that much of it, but it doesn't look like just a little friendly neighborhood truck. It looks kind of badass. What sort of semi is this?
+EM: So this is a heavy duty, long-range semitruck. So it's the highest weight capability and with long range. So essentially it's meant to alleviate the heavy-duty trucking loads. And this is something which people do not today think is possible. They think the truck doesn't have enough power or it doesn't have enough range, and then with the Tesla Semi we want to show that no, an electric truck actually can out-torque any diesel semi. And if you had a tug-of-war competition, the Tesla Semi will tug the diesel semi uphill.
+CA: That's pretty cool. And short term, these aren't driverless. These are going to be trucks that truck drivers want to drive.
+EM: Yes. So what will be really fun about this is you have a flat torque RPM curve with an electric motor, whereas with a diesel motor or any kind of internal combustion engine car, you've got a torque RPM curve that looks like a hill. So this will be a very spry truck. You can drive this around like a sports car. There's no gears. It's, like, single speed.
+CA: There's a great movie to be made here somewhere. I don't know what it is and I don't know that it ends well, but it's a great movie.
+EM: It's quite bizarre test-driving. When I was driving the test prototype for the first truck. It's really weird, because you're driving around and you're just so nimble, and you're in this giant truck.
+CA: Wait, you've already driven a prototype?
+EM: Yeah, I drove it around the parking lot, and I was like, this is crazy.
+CA: Wow. This is no vaporware.
+EM: It's just like, driving this giant truck and making these mad maneuvers.
+CA: This is cool. OK, from a really badass picture to a kind of less badass picture. This is just a cute house from Desperate Housewives or something. What on earth is going on here?
+EM: Well, this illustrates the picture of the future that I think is how things will evolve. You've got an electric car in the driveway. If you look in between the electric car and the house, there are actually three Powerwalls stacked up against the side of the house, and then that house roof is a solar roof. So that's an actual solar glass roof.
+CA: OK.
+EM: That's a picture of a real -- well, admittedly, it's a real fake house. That's a real fake house.
+CA: So these roof tiles, some of them have in them basically solar power, the ability to --
+EM: Yeah. Solar glass tiles where you can adjust the texture and the color to a very fine-grained level,and then there's sort of microlouvers in the glass, such that when you're looking at the roof from street level or close to street level, all the tiles look the same whether there is a solar cell behind it or not. So you have an even color from the ground level. If you were to look at it from a helicopter, you would be actually able to look through and see that some of the glass tiles have a solar cell behind them and some do not. You can't tell from street level.
+CA: You put them in the ones that are likely to see a lot of sun, and that makes these roofs super affordable, right? They're not that much more expensive than just tiling the roof.
+EM: Yeah. We're very confident that the cost of the roof plus the cost of electricity -- a solar glass roof will be less than the cost of a normal roof plus the cost of electricity. So in other words, this will be economically a no-brainer, we think it will look great, and it will last -- we thought about having the warranty be infinity, but then people thought, well, that might sound like were just talking rubbish, but actually this is toughened glass. Well after the house has collapsed and there's nothing there, the glass tiles will still be there.
+CA: I mean, this is cool. So you're rolling this out in a couple week's time, I think, with four different roofing types.
+EM: Yeah, we're starting off with two, two initially, and the second two will be introduced early next year.
+CA: And what's the scale of ambition here? How many houses do you believe could end up having this type of roofing?
+EM: I think eventually almost all houses will have a solar roof. The thing is to consider the time scale here to be probably on the order of 40 or 50 years. So on average, a roof is replaced every 20 to 25 years. But you don't start replacing all roofs immediately. But eventually, if you say were to fast-forward to say 15 years from now, it will be unusual to have a roof that does not have solar.
+CA: Is there a mental model thing that people don't get here that because of the shift in the cost, the economics of solar power, most houses actually have enough sunlight on their roof pretty much to power all of their needs. If you could capture the power, it could pretty much power all their needs. You could go off-grid, kind of.
+EM: It depends on where you are and what the house size is relative to the roof area, but it's a fair statement to say that most houses in the U.S. have enough roof area to power all the needs of the house.
+CA: So the key to the economics of the cars, the semi, of these houses is the falling price of lithium-ion batteries, which you've made a huge bet on as Tesla. In many ways, that's almost the core competency. And you've decided that to really, like, own that competency, you just have to build the world's largest manufacturing plant to double the world's supply of lithium-ion batteries, with this guy. What is this?
+EM: Yeah, so that's the Gigafactory, progress so far on the Gigafactory. Eventually, you can sort of roughly see that there's sort of a diamond shape overall, and when it's fully done, it'll look like a giant diamond, or that's the idea behind it, and it's aligned on true north. It's a small detail.
+CA: And capable of producing, eventually, like a hundred gigawatt hours of batteries a year.
+EM: A hundred gigawatt hours. We think probably more, but yeah.
+CA: And they're actually being produced right now.
+EM: They're in production already.
+CA: You guys put out this video. I mean, is that sped up?
+EM: That's the slowed down version.
+CA: How fast does it actually go?
+EM: Well, when it's running at full speed, you can't actually see the cells without a strobe light. It's just blur.
+CA: One of your core ideas, Elon, about what makes an exciting future is a future where we no longer feel guilty about energy. Help us picture this. How many Gigafactories, if you like, does it take to get us there?
+EM: It's about a hundred, roughly. It's not 10, it's not a thousand. Most likely a hundred.
+CA: See, I find this amazing. You can picture what it would take to move the world off this vast fossil fuel thing. It's like you're building one, it costs $5 billion, or whatever, $5 to $10 billion. Like, it's kind of cool that you can picture that project. And you're planning to do, at Tesla -- announce another two this year.
+EM: I think we'll announce locations for somewhere between two and four Gigafactories later this year. Yeah, probably four.
+CA: Whoa. No more teasing from you for here? Like -- where, continent? You can say no.
+EM: We need to address a global market.
+CA: OK. This is cool. I think we should talk for -- actually, double mark it. I'm going to ask you one question about politics, only one. I'm kind of sick of politics, but I do want to ask you this. You're on a body now giving advice to a guy --
+EM: Who?
+CA: Who has said he doesn't really believe in climate change, and there's a lot of people out there who think you shouldn't be doing that. They'd like you to walk away from that. What would you say to them?
+EM: Well, I think that first of all, I'm just on two advisory councils where the format consists of going around the room and asking people's opinion on things, and so there's like a meeting every month or two. That's the sum total of my contribution. But I think to the degree that there are people in the room who are arguing in favor of doing something about climate change, or social issues, I've used the meetings I've had thus far to argue in favor of immigration and in favor of climate change. And if I hadn't done that, that wasn't on the agenda before. So maybe nothing will happen, but at least the words were said.
+CA: OK. So let's talk SpaceX and Mars. Last time you were here, you spoke about what seemed like a kind of incredibly ambitious dream to develop rockets that were actually reusable. And you've only gone and done it.
+EM: Finally. It took a long time.
+CA: Talk us through this. What are we looking at here?
+EM: So this is one of our rocket boosters coming back from very high and fast in space. So just delivered the upper stage at high velocity. I think this might have been at sort of Mach 7 or so, delivery of the upper stage.
+CA: So that was a sped-up --
+EM: That was the slowed down version.
+CA: I thought that was the sped-up version. But I mean, that's amazing, and several of these failed before you finally figured out how to do it, but now you've done this, what, five or six times?
+EM: We're at eight or nine.
+CA: And for the first time, you've actually reflown one of the rockets that landed.
+EM: Yeah, so we landed the rocket booster and then prepped it for flight again and flew it again, so it's the first reflight of an orbital booster where that reflight is relevant. So it's important to appreciate that reusability is only relevant if it is rapid and complete. So like an aircraft or a car, the reusability is rapid and complete. You do not send your aircraft to Boeing in-between flights.
+CA: Right. So this is allowing you to dream of this really ambitious idea of sending many, many, many people to Mars in, what, 10 or 20 years time, I guess.
+EM: Yeah.
+CA: And you've designed this outrageous rocket to do it. Help us understand the scale of this thing.
+EM: Well, visually you can see that's a person. Yeah, and that's the vehicle.
+CA: So if that was a skyscraper, that's like, did I read that, a 40-story skyscraper?
+EM: Probably a little more, yeah. The thrust level of this is really -- this configuration is about four times the thrust of the Saturn V moon rocket.
+CA: Four times the thrust of the biggest rocket humanity ever created before.
+EM: Yeah. Yeah.
+CA: As one does.
+EM: Yeah. In units of 747, a 747 is only about a quarter of a million pounds of thrust, so for every 10 million pounds of thrust, there's 40 747s. So this would be the thrust equivalent of 120 747s, with all engines blazing.
+CA: And so even with a machine designed to escape Earth's gravity, I think you told me last time this thing could actually take a fully loaded 747, people, cargo, everything, into orbit.
+EM: Exactly. This can take a fully loaded 747 with maximum fuel, maximum passengers, maximum cargo on the 747 -- this can take it as cargo.
+CA: So based on this, you presented recently this Interplanetary Transport System which is visualized this way. This is a scene you picture in, what, 30 years time? Twenty years time? People walking into this rocket.
+EM: I'm hopeful it's sort of an eight- to 10-year time frame. Aspirationally, that's our target. Our internal targets are more aggressive, but I think --
+CA: OK.
+EM: While vehicle seems quite large and is large by comparison with other rockets, I think the future spacecraft will make this look like a rowboat. The future spaceships will be truly enormous.
+CA: Why, Elon? Why do we need to build a city on Mars with a million people on it in your lifetime, which I think is kind of what you've said you'd love to do?
+EM: I think it's important to have a future that is inspiring and appealing. I just think there have to be reasons that you get up in the morning and you want to live. Like, why do you want to live? What's the point? What inspires you? What do you love about the future? And if we're not out there, if the future does not include being out there among the stars and being a multiplanet species, I find that it's incredibly depressing if that's not the future that we're going to have.
+CA: People want to position this as an either or, that there are so many desperate things happening on the planet now from climate to poverty to, you know, you pick your issue. And this feels like a distraction.You shouldn't be thinking about this. You should be solving what's here and now. And to be fair, you've done a fair old bit to actually do that with your work on sustainable energy. But why not just do that?
+EM: I think there's -- I look at the future from the standpoint of probabilities. It's like a branching stream of probabilities, and there are actions that we can take that affect those probabilities or that accelerate one thing or slow down another thing. I may introduce something new to the probability stream. Sustainable energy will happen no matter what. If there was no Tesla, if Tesla never existed, it would have to happen out of necessity. It's tautological. If you don't have sustainable energy, it means you have unsustainable energy. Eventually you will run out, and the laws of economics will drive civilization towards sustainable energy, inevitably. The fundamental value of a company like Tesla is the degree to which it accelerates the advent of sustainable energy, faster than it would otherwise occur.
+So when I think, like, what is the fundamental good of a company like Tesla, I would say, hopefully, if it accelerated that by a decade, potentially more than a decade, that would be quite a good thing to occur. That's what I consider to be the fundamental aspirational good of Tesla.
+Then there's becoming a multiplanet species and space-faring civilization. This is not inevitable. It's very important to appreciate this is not inevitable. The sustainable energy future I think is largely inevitable, but being a space-faring civilization is definitely not inevitable. If you look at the progress in space, in 1969 you were able to send somebody to the moon. 1969. Then we had the Space Shuttle. The Space Shuttle could only take people to low Earth orbit. Then the Space Shuttle retired, and the United States could take no one to orbit. So that's the trend. The trend is like down to nothing. People are mistaken when they think that technology just automatically improves. It does not automatically improve. It only improves if a lot of people work very hard to make it better, and actually it will, I think, by itself degrade, actually. You look at great civilizations like ancient Egypt, and they were able to make the pyramids, and they forgot how to do that. And then the Romans, they built these incredible aqueducts. They forgot how to do it.
+CA: Elon, it almost seems, listening to you and looking at the different things you've done, that you've got this unique double motivation on everything that I find so interesting. One is this desire to work for humanity's long-term good. The other is the desire to do something exciting. And often it feels like you feel like you need the one to drive the other. With Tesla, you want to have sustainable energy, so you made these super sexy, exciting cars to do it. Solar energy, we need to get there, so we need to make these beautiful roofs. We haven't even spoken about your newest thing, which we don't have time to do, but you want to save humanity from bad AI, and so you're going to create this really cool brain-machine interface to give us all infinite memory and telepathy and so forth. And on Mars, it feels like what you're saying is, yeah, we need to save humanity and have a backup plan, but also we need to inspire humanity, and this is a way to inspire.
+EM: I think the value of beauty and inspiration is very much underrated, no question. But I want to be clear. I'm not trying to be anyone's savior. That is not the -- I'm just trying to think about the future and not be sad.
+CA: Beautiful statement. I think everyone here would agree that it is not -- none of this is going to happen inevitably. The fact that in your mind, you dream this stuff, you dream stuff that no one else would dare dream, or no one else would be capable of dreaming at the level of complexity that you do. The fact that you do that, Elon Musk, is a really remarkable thing. Thank you for helping us all to dream a bit bigger.
+Zoe Thomas: Welcome to Tech News Briefing. It's Wednesday, May 24th. I'm Zoe Thomas for the Wall Street Journal. Elon Musk is juggling a lot these days. Tesla, Twitter, SpaceX.
+
+Elon Musk: Fear is not the mind-killer. Context switching is. So switching context is quite painful.
+
+Zoe Thomas: Now, he's adding interviewer of presidential candidates? He discussed all that and more at the WSJ's CEO Council Summit. We'll have highlights from his conversation in a moment. But first, the US Surgeon General has warned that social media could pose a profound risk to young people. In an advisory released yesterday, Surgeon General, Dr. Vivek Murthy, urged policymakers and technology companies to strengthen standards for teens. The advisory pointed to a growing body of research on the detrimental effects of these platforms. Though it also acknowledged the benefits social media could have as a creative outlet and for finding community. Our family and tech columnist, Julie Jargon, says this may not change much for social media companies or users in the short-term.
+
+Julie Jargon: The Surgeon General can recommend actions for public health issues, but he doesn't change laws or make new ones. What he says isn't enforceable, unless it's followed up by legislation. So this is mainly guidance for policymakers. The Surgeon General is saying social media can raise mental health risks among children. We've been reporting on this issue for a while, but this is a strong voice showing more needs to be done to address it.
+
+Zoe Thomas: Apple has extended its chip supply deal with Broadcom which will provide components made in the US. The multi-year multi-billion-dollar agreement announced Tuesday comes at a time when Apple is trying to bring more of this kind of work in-house and rely less on China. According to company disclosures, Apple was already sourcing some components from Broadcom that were made in the US. I asked our semiconductors reporter, Asa Fitch, why it mattered that the two companies extended their deal.
+
+Asa Fitch: Well, it matters in two ways. From the Apple perspective and from the Broadcom perspective, it extends the status quo where there had been an inkling that things were potentially changing where Apple wouldn't really need Broadcom as much in the future. Number two, it's significant because Apple is saying that it's going to have these chips manufactured by Broadcom on US soil. At a time of rising tensions between China and the US, that's significant for Apple. Apple wants to tell people that it's doing more in the US, that it's relocating supply chains to make a bigger investment, if you will, in the US.
+
+Zoe Thomas: Apple has wanted to make its own chips for some time. Why does it still have to rely on Broadcom for these chips?
+
+Asa Fitch: It's tough to make these kinds of chips. I don't want to get too technical about it, but they deal with real-world signals. When you're dealing with real-world signals, things get messy and complicated, and they're difficult to deal with. It's not just a matter of adding one plus one. There's a lot of art that goes into it. There's a lot of creativity that goes into it, and those things are really hard to just replicate.
+
+Zoe Thomas: Facebook parent, Meta, plans to sell Giphy to Shutterstock for $53 million in net cash. That's significantly less than the $315 million Meta paid for the GIF-maker in 2020. The sale will end a year-long legal battle with the UK's top competition authority which ordered the social media giant to undo its acquisition of Giphy saying it would significantly reduce competition in both the UK display ad market and social media generally. All right. Coming up, we're going to hear Elon Musk describe how he wants Twitter to approach free speech and how he's dealing with advertisers' concerns. That's after the break. Elon Musk often has a lot to say, and he says a lot of it on Twitter, just one of the companies he owns. At the Wall Street Journal's CEO Council Summit yesterday, he addressed some of the most pressing questions about the platform and the role he hopes it will play in the next election. Here are highlights from his conversation with Thorold Barker, the WSJ's editor for Europe, the Middle East, and Africa.
+
+Thorold Barker: I'm actually going to start somewhere a little bit differently than I expected because I just saw it on Twitter, a little announcement. I see you're interviewing Ron DeSantis, is that right, on Twitter Spaces?
+
+Elon Musk: Yes. I will be interviewing Ron DeSantis, and he has quite an announcement to make.
+
+Thorold Barker: You've been tweeting some Tim Scott stuff in the last few days.
+
+Elon Musk: Yeah.
+
+Thorold Barker: What should we be thinking about who you're backing?
+
+Elon Musk: I'm not, at this time, planning to endorse any particular candidate, but I am interested in X/Twitter being somewhat of a public town square where more and more organizations host content and make announcements on Twitter. It's the only place on the internet to really get real-time, down-to-the-minute-and-second news.
+
+Thorold Barker: I look forward to the conversation. So what I wanted to start with, you've just flown in, I think, in the last 20 minutes. You live a pretty hectic lifestyle. What is a day in the life of Elon Musk? What does that look like?
+
+Elon Musk: Well, my days are very long and complicated as you might imagine. There's a great deal of context switching. So there's me and my life called "relating to doom" where it's like fear is not the mind-killer, context switching is. So switching context is quite painful, but I do, generally, try to divide company. So it's predominantly one company on one day. So today is a Tesla Day, for example. Although I might end up at Twitter late tonight, and then tomorrow would be, probably, a Tesla Day as well. So time management is extremely difficult.
+
+Thorold Barker: You're running three very big companies. You have very big stakes and ownership control of two of those at least. What is your succession plan if you suddenly go and execute what you're doing?
+
+Elon Musk: Succession is one of the toughest age-old problems. There is no obvious solution. I mean, there are particular individuals identified as that that I've told the board, "Look, if something happens to me unexpectedly, this is my recommendation for taking over."
+
+Thorold Barker: But it sounds like it's something that you... I mean, you need to get planning of who those people are going to be because as you've said, when you look at SpaceX, you look at Tesla, you look at Twitter, these matter to society a lot, and having the right people to take those votes on the future of where they go and where money gets spent is very important.
+
+Elon Musk: Yes. Absolutely. Now, the goals of the companies... The achievement of those goals varies considerably in difficulty. The original goal of Tesla was to accelerate the advent of sustainable energy, which actually I think we've done that to a significant degree and have actually ordered industry CEOs to often acknowledge Tesla's role in accelerating electric vehicles. So that I feel has a lot of momentum. They're still solving self-driving, which we're aspirationally hoping to do this year. So Tesla got a long way to go, but the execution plan is relatively clear, and that execution plan will generate a lot of positive cash flow for the company. So it's a fairly obvious thing to do. With SpaceX, it's a harder problem because the long-term objective is to make life multi-planetary with a self-sustaining city on Mars which is likely to be very casually negative at first, and very much a long-term... Let's just say the target market on Mars is small.
+
+Thorold Barker: You just hired a new CEO, Linda Yaccarino, an ad veteran, into Twitter. Can you just quickly tell us about your courtship? How did that go down?
+
+Elon Musk: We had conversations over a number of months just relating to advertising, and then Linda felt that it would be very helpful for the advertisers to see me in person, so invited me down to the conference in Miami, which was very helpful, and met with a number of advertisers personally to show them that Twitter is a good place to advertise.
+
+Thorold Barker: Okay. So have you said to Linda that you are going to keep speaking your mind, whatever the commercial impact of that, and has she agreed to that? Is she happy with that? Are you aligned?
+
+Elon Musk: Yeah.
+
+Thorold Barker: Okay, and in her role as CEO, does she have any say over moderation, or is that under you, or you do that together?
+
+Elon Musk: Well, the general principle is that for any given country, we'll try to adhere as closely to the law as possible. There is an important thing, which is like... That obviously doesn't mean that, say, advertisers should be forced to appear next to any content. So we've also developed adjacency controls that ensure that if what you're advertising is like Disney, Disney, for example, is a big advertiser. Disney is advertising a children's movie. They want the content nearby to be family-friendly. That's totally understandable.
+
+Thorold Barker: Are you back near profitability now?
+
+Elon Musk: Twitter is not quite there, but if we get lucky, we might be casual positive next month, but it remains to be seen.
+
+Thorold Barker: You've created a new AI company. What do you want to do yourself in this space? What is that new thing?
+
+Elon Musk: Well, I think there should be a significant third horse in the race here, OpenAI and Microsoft, Google DeepMind, and probably there should be a third horse in the race. So more on that soon. Yeah, I don't want to jump the gun here on announcements, but OpenAI has a relationship with Microsoft that seems to work fairly well. So it's possible that X.AI, and Twitter, and Tesla would have something similar.
+
+Thorold Barker: You talked about the importance of regulation, and you call for this moratorium. What is the scenario that really keeps you up at night?
+
+Elon Musk: I don't think the AI is going to try to destroy all humanity, but it might put us under strict controls.
+
+Thorold Barker: Isn't the more likely nasty outcome rather than AI taking over and being the ultimate nanny that keeps us all doing stuff that is super safe, and it wants us to that actually somebody nefariously harnesses that power to achieve societal control, stroke military superiority, and that actually some country around the world decides to use it in a different way?
+
+Elon Musk: Yes. That's what I mean by AI used as a weapon.
+
+Thorold Barker: Right.
+
+Elon Musk: The pen is mightier than the sword. So one of the first places we have to be careful of AI being used is in social media to manipulate public opinion.
+
+Thorold Barker: So if we take it back to where we started, if you look at the election that's coming up, how big a role will this big shift in AI capability over the last few months... How big an impact is this going to play, do you think, in the messaging and the way that people get told the different pitches of the candidates?
+
+Elon Musk: I think that's something we need to go and look at for in a big way is to make sure that we're minimizing the impact of AI manipulation. We're certainly very much taking that seriously at X/Twitter, and I think we're putting in place all of the protections to minimize and certainly detect when we see large scale manipulation of the system.
+
+Thorold Barker: Elon Musk, thank you very much for joining us.
+
+Zoe Thomas: All right. That's it for today's Tech News Briefing. If you want more tech stories, head over to our website, wsj.com. If you like our show, please rate and review it. You can do that wherever you get your podcasts. I'm Zoe Thomas for the Wall Street Journal. Thanks for listening.
+Sam: Today we have Elon Musk. Elon, thank you for joining us.
+
+Elon: Thanks for having me.
+
+Sam: So we want to spend the time today talking about your view of the future and what people should work on. So to start off, could you tell us...you famously said when you were younger there were five problems that you thought were most important for you to work on. If you were 22 today, what would the five problems that you would think about working on?
+
+Elon: Well, first of all, I think if somebody is doing something that is useful to the rest of society, I think that's a good thing. It doesn't have to change the world. If you're doing something that has high value to people and frankly even if it's something...if it's just a little game or, you know, the system improvement in photo sharing or something, if it has a small amount of good for a large number of people, I mean I think that's fine. Stuff doesn't need to change the world just to be good.
+
+But, you know, in terms of things that I think are most likely to affect the future of humanity, I think AI is probably the single biggest item in the near term that's likely to affect humanity. So it's very important that we have the advent of AI in a good way that is something that if you could look into a crystal ball and see the future, you would like that outcome because it is something that could go wrong and as we've talked about many times. And so we really need to make sure it goes right.
+
+I think working on AI and making sure its a great future, that's the most important thing I think right now, the most pressing item. Obviously, anything to do with genetics. If you can actually solve genetic diseases if you can prevent dementia or Alzheimer's or something like that with genetic reprogramming that would be wonderful. So I think this genetics might be the sort of second most important item.
+
+I think having a high bandwidth interface to the brain. We're currently bandwidth limited. We have a digital tertiary self in the form of our e-mail capabilities, our computers, phones applications. We're effectively superhuman but we are extremely bandwidth constrained in that interface between the cortex and that tertiary digital form of yourself and helping solve that bandwidth constraint would be I think very important for the future as well. Interviewer: So one of the I think most common questions I hear young people, ambitious young people ask is I want to be the next Elon Musk, how do I do that? Obviously the next Elon Musk will work on very different things than you did but what have you done or what did you do when you were younger that you think sort of set you up to have a big impact?
+
+Elon: Well I think first of all I should say that I did not expect to be involved in all these things. So the five things that I thought about the time in college, quite long time ago 25 years ago, making life multi-planetary, accelerating the transition to sustainable energy, the Internet broadly speaking and then genetics and AI. I didn't expect to be involved in all of those things. I actually at the time in college I sort of thought helping with electrification of cars was how I would start out and that's actually what I worked on as an intern was advanced ultracapacitors to see if there would be a breakthrough relative to batteries for energy storage in cars.
+
+And then when I came out to go to Stanford that's what I was going to be doing my grad studies on was working on advanced energy storage technologies for electric cars. And then I put that on hold to start an Internet company in 95 because there does seem to be like a time for particular technologies when they're at a steep point in the inflection curve. And I didn't want to do a Ph.D. at Stanford and watch it all happen. And I wasn't entirely certain that the technology I'd been working on would actually succeed. You can get a doctorate on many things that ultimately do not have a practical bearing on the world. And I wanted to just...I really was just trying to be useful. That's the optimization. It's like what can I do that would actually be useful.
+
+Sam: Do you think people that want to be useful today should get PHDs?
+
+Elon: Mostly not.
+
+Sam: What is the best way to be useful?
+
+Elon: Some yes, but mostly not.
+
+Interviewer: How should someone figure out how they can be most useful?
+
+Elon: Whatever this thing is that you're trying to create, what would be the utility Delta compared to the current state of the art times how many people it would affect. So that's why I think having something that makes a big difference but affects a sort of small to moderate number of people is great as is something that makes even a small difference but affects a vast number of people like the area under the curve...
+
+Sam: The area under the curve.
+
+Elon: Yeah exactly. That area of the curve would actually be roughly similar for those two things. So it's actually really about just trying to be useful and matter.
+
+Sam: When you're trying to estimate probability of success, this thing will be really useful, good area under the curve. I guess to use the example of SpaceX. When you made the go decision that you were actually gonna do that this was kind of a very crazy thing at the time...
+
+Elon: Very crazy for sure. Yeah. People are not shy about saying that but I agreed with them that it was quite crazy. Crazy if the objective was to achieve the best risk-adjusted return starting our company is insane. But that was not my objective. I'd soon come to the conclusion that if something didn't happen to improve rocket technology we'd be stuck on earth forever. And the big aerospace companies had no interest in radical innovation. All they wanted to do was try to make their own technology slightly better every year and in fact, sometimes it would actually get worse.
+
+And particularly rockets is pretty bad. In '69 we were able to go to the moon with Saturn V and then the space shuttle could only take people to low Earth orbit and then the space shuttle retired. That trend basically trends to zero. If you also think technology just automatically gets better every year but it actually doesn't. It only gets better if smart people work like crazy to make it better. That's how any technology actually gets better. And by itself technology...if people don't work on it, it actually will decline.
+
+You can look at the history of civilizations, many civilizations, and look at say ancient Egypt where they were able to build these incredible pyramids, and then they basically forgot how to build pyramids. And then even hieroglyphics, they forgot how to read hieroglyphics. Or you look at Rome and how they were able to build these incredible roadways and aqueducts and indoor plumbing and they forgot how to do all of those things. And there are many such examples in history so I think you should always bear in mind that entropy is not on your side.
+
+Sam: One thing I really like about you is you are unusually fearless and willing to go in the face of other people telling you something is crazy. And I know a lot of pretty crazy people, you still stand out. Where does that come from or how do you think about making a decision when everyone tells you this is a crazy idea? Where do you get the internal strength to do that?
+
+Elon: Well first of all I actually think I feel fear quite strongly. So it's not as though I just have the absence of fear. I feel it quite strongly. But there are just times when something is important enough, you believe in it enough, that you do do it in spite of fear.
+
+Sam: So speaking of important things.
+
+Elon: People shouldn't think well, I feel fear about this and therefore I shouldn't do it. It's normal to feel fear. You'd have to definitely have something mentally wrong if you didn't feel fear.
+
+Sam: So you just feel it and let the importance of it drive you to do it anyway.
+
+Elon: Yeah. I actually something that can be helpful is fatalism to some degree. If you just accept the probabilities, then that diminishes fear. So when starting SpaceX, I thought the odds of success were less than 10% and I just accepted that actually probably I would just lose everything. But that maybe would make some progress if we could just move the ball forward even if we died maybe some other company could pick up the baton and keep moving it forward so that would still do some good. Yeah same with Tesla, I thought the odds of a car company succeeding were extremely low.
+
+Sam: What do you think the odds of the Mars colony are at this point today?
+
+Elon: Well, oddly enough I actually think they're pretty good.
+
+Sam: So like when can I go?
+
+Elon: Okay. At this point, I am certain there is a way. I am certain that success is one of the possible outcomes for establishing a self-sustaining Mars colony, a growing Mars colony. I'm certain that that is possible whereas until maybe a few years ago, I was not sure that success was even one of the possible outcomes. Some meaningful number of people going to Mars, I think this is potentially something that can be accomplished in about 10 years. Maybe sooner, maybe nine years. I need to make sure that SpaceX doesn't die between now and then and that I don't die or if I do die that someone takes over who will continue that.
+
+Sam: Shouldn't go on the first launch.
+
+Elon: Yeah, exactly. The first launch will be robotic anyway.
+
+Sam: I want to go except for the Internet latency.
+
+Elon: Yeah there aren't latency would be pretty significant. Mars is roughly 12 light minutes from the Sun and Earth is eight light minutes. So the closest approach to Mars is four light minutes away, the furthest approach is 20. A little more because you can't talk directly through the sun.
+
+Sam: Speaking of really important problems, AI. So you've been outspoken about AI. Could you talk about what you think of the positive future for AI looks like and how we get there? Elon: Okay. I mean I do want emphasize that this is not really something that I advocate or this is not prescriptive. This is simply hopefully predictive. Some say, well this is something that I want to occur instead of this I something I think that probably is the best of the available alternatives. The best of the available alternatives that I can come up with and maybe somebody else can come up with a better approach or better outcome is that we achieve democratization of AI technology, meaning that no one company or small set of individuals has control over advanced AI technology. I think that that's very dangerous.
+
+It could also get stolen by somebody bad like some evil dictator. A country could send their intelligence agency to go steal it and gain control. It just becomes a very unstable situation I think if you've got any incredibly powerful AI. You just don't know who's gonna control that. So it's not as though I think that the risk is that the AI would develop a will of its own right off the bat, I think the concern is that someone may use it in a way that is bad or even if they weren't going to use in a way that's bad but somebody could take it from them and use it in a way that's bad. That I think is quite a big danger.
+
+So I think we must have democratization of AI technology and make it widely available. And that's the reason that obviously you and me and the rest the team created open AI was to help spread out AI technology so it doesn't get concentrated in the hands of a few. But then of course that needs to be combined with solving the high bandwidth interface to the cortex.
+
+Sam: Humans are so slow.
+
+Elon: Humans are so slow. Yes, exactly but we already have a situation in our brain where we've got the cortex and the limbic system. And the limbic system is kind of...that's the primitive brain. It's kind of like your instincts and whatnot. And then the cortex is the thinking upper part of the brain. Those two seem to work together quite well. Occasionally your cortex and limbic system may disagree but they...
+
+Sam: It generally works pretty well.
+
+Elon: Generally works pretty well and it's like rare to find someone who...I've not found someone who wishes to either get rid of their cortex or get rid of their limbic system.
+
+Sam: Very true.
+
+Elon: Yeah. That's unusual. So I think if we can effectively merge with AI by improving the neural link between your cortex and the digital extension of yourself which already, lie I said, it already exists just has a bandwidth issue. And then effectively you become an AI human symbiote and if that then is widespread with anyone who wants it can have it, then we solve the control problem as well. We don't have to worry about some sort of evil dictator or AI because we are the AI collectively. That seems like the best outcome I can think of.
+
+Sam: So you've seen other companies in their early days that start small and get really successful. I hope I never get asked this on camera but how do you think OpenAI is going as a six-month-old company?
+
+Elon: I think it's going pretty well. I think we've got a really talented group at OpenAI...
+
+Sam: It seems like.
+
+Elon: Yeah really really talented team and they're working hard. OpenAI is structured as a 5 1 2 3 nonprofit but many nonprofits do not have a sense of urgency. It's fine, they don't have to have a sense of urgency but OpenAI does because I think people really believe in the mission. I think it's important and it's about minimizing the risk of existential harm in the future. And so I think it's going well. I'm pretty impressed with what people are doing and the talent level. And obviously we're always looking for great people to join who believe in the mission.
+
+Sam: You're up to...close to 40 people now. All right just a few more questions before we wrap up. How do you spend your days now? What do you allocate most of your time to?
+
+Elon: My time is mostly split between SpaceX and Tesla and of course I try to spend part of every week at OpenAI. So I spend basically half a day at OpenAI most weeks and then I have some OpenAI stuff that happens during the week. But other than that, it's really Space X and Tesla.
+
+Sam: And what do you do when you are at SpaceX or Tesla? What does your time look that there?
+
+Elon: Yeah. So that's a good question. I think a lot of people think I must spend a lot of time with media or on business things but actually almost all my time, 80% of it is spent on engineering and design. So it's developing next-generation product. That's 80% of it.
+
+Sam: You probably don't remember this, a very long time ago, many, many years you took me on a tour of SpaceX. And the most impressive thing was that you knew every detail of the rocket and every piece of engineering that went into it and I don't think many people get that about you.
+
+Elon: Yeah I think a lot of people think I'm kind of a business person or something which is fine I like business is fine but really it's... SpaceX, Gwynne Shotwell is Chief Operating Officer. She kind of manages legal finance sales and kind of general business activity and then my time is almost entirely with the engineering team working on improving the Falcon 9 and the Dragon spacecraft and developing the Mars colonial architecture. And then at Tesla, it's working on the Model 3 and some in the design studio typically half a day a week dealing with aesthetics and look and feel things. And then most of the rest of the week is just going through engineering of the car itself as well as the engineering of the factory because the biggest epiphany I've had this year is that what really matters is the machine that builds the machine the factory and that is at least towards a magnitude harder than the vehicle itself.
+
+Sam: It's amazing to watch the robots go here in these cars just happen.
+
+Elon: Yeah. Now, this actually has a relatively low level of automation compared to what the Gigafactory will have and what Model 3 will have.
+
+Sam: What's the speed on the line of these cars?
+
+Elon: Actually the average speed line is incredibly slow. It's probably about...including both X and S it's maybe 5 centimeters per second.
+
+Sam: And what can you get to?
+
+Elon: This is very slow.
+
+Sam: And what would you like to get to?
+
+Elon: I'm confident we can get to at least 1 meter per second so a 20 fold increase.
+
+Sam: That'll be very fast.
+
+Elon: Yeah, at least. I mean I think quite...1 meter per second just to put that in perspective is a slow walk or a medium speed walk. A fast walk would be one would be 1.5 meter per second and then the fastest humans can run over 10 meters per second. So if we're the only doing 0.5 meters per second that's very slow current speed and at one meter per second you can still walk faster than the production line.
+
+Interviewer:
+
+
+Thank you. Elon, welcome. So, Elon, a few hours ago you made an offer to buy Twitter. Why?
+
+Elon Musk:
+
+How'd you know?
+
+Interviewer:
+
+Little bird tweeted in my ear or something. I don't know.
+
+Elon Musk:
+
+By the way, have you seen the movie Ted about the bear?
+
+Interviewer:
+
+I have. I have.
+
+Elon Musk:
+
+It's a good movie.
+
+Interviewer:
+
+It's not here.
+
+Elon Musk:
+
+Yeah. Yeah. So is there a question?
+
+Interviewer:
+
+Why make that offer?
+
+Elon Musk:
+
+Oh, well, I think it's very important for there to be an inclusive arena for free speech where—
+
+Audience member:
+
+Whoo!
+
+Elon Musk:
+
+So, yeah. Twitter has become kind of the de facto town square. So it's just really important that people have both the reality and the perception that they are able to speak freely within the bounds of the law. So one of the things that I believe Twitter should do is open source the algorithm and make any changes to people's tweets, if they're emphasized or de-emphasized, that action should be made apparent so anyone can see that action's been taken so there's no behind the scenes manipulation, either algorithmically or manually.
+
+Interviewer:
+
+But last week when we spoke, Elon, I asked you whether you were thinking of taking up. You said, "No way." You said, "I do not want to own Twitter. It is a recipe for misery. Everyone will blame me for everything." What on Earth changed?
+
+
+Elon Musk:
+
+Yeah, I think everyone will still blame me for everything. Yeah. If I acquire Twitter and something goes wrong, it's my fault. A hundred percent. I think there will be quite a few hours, yes.
+
+Interviewer:
+
+It will be miserable, but you still want to do it. Why?
+
+Elon Musk:
+
+Well, I mean, I hope it's not too miserable, but I just think it's important to the function of democracy. It's important to the function of the United States as a free country and many other countries and to actually help freedom in the world and more importantly in the US.
+
+Elon Musk:
+
+And so I think the civilizational risk is decreased the more we can increase the trust of Twitter as a public platform. And so I do think this would be somewhat painful. I'm not sure that I will actually be able to acquire it. And I should also say the intent is to retain as many shareholders as is allowed by the law in a private company, which I think is around 2000 or so. It's definitely not from the standpoint of let me figure out how to monopolize or maximize my ownership of Twitter, but we'll try to bring along as many shareholders as we're allowed to.
+
+
+Interviewer:
+
+You don't necessarily want to pay out 40, or whatever it is, billion dollars in cash. You'd like them to come with you in the company.
+
+Elon Musk:
+
+I mean, I could technically afford it.
+
+Interviewer:
+
+I've heard that. I've heard that.
+
+Elon Musk:
+
+But what I'm saying is this is not a way to make money. It's just that my strong, intuitive sense is that having a public platform that is maximally trusted and broadly inclusive is extremely important to the future of civilization.
+
+Interviewer:
+
+But you've described yourself—
+
+Elon Musk:
+
+I don't care about the economics at all.
+
+Interviewer:
+
+Okay. That's cool to hear. This is not about the economics, it's for the moral good that you think it will achieve. You've described yourself, Elon, as a free speech absolutist, but does that mean that there's literally nothing that people can't say and it's okay?
+
+
+Elon Musk:
+
+Well, I think obviously Twitter or any forum is bound by the laws of the country that it operates in. So obviously there are some limitations on free speech in the US, and, of course, Twitter would have to abide by those rules.
+
+Interviewer:
+
+Right. So you can't incite people to violence like a direct incitement to violence. You can't do the equivalent of crying fire in a movie theater, for example.
+
+Elon Musk:
+
+No, that would be a crime.
+
+Interviewer:
+
+Yeah, right.
+
+Elon Musk:
+
+It should be a crime.
+
+Interviewer:
+
+But here's the challenge, is that it's such a nuanced difference between different things. So there's incitement to violence. That's a no, it's illegal. There's hate speech, which some forms of hate speech are fine. I hate spinach.
+
+
+Elon Musk:
+
+Even if it's sautéd in a cream sauce?
+
+Interviewer:
+
+But the problem is… So let's say someone says, okay, here's one tweet, "I hate politician X." The next tweet is, "I wish politician X wasn't alive." As some of us have said about Putin right now, for example. That's legitimate speech. Another tweet is, "I wish politician X wasn't alive," with a picture of their head with a gun site over it. Or that plus their address. I mean, at some point someone has to make a decision as to which of those is not okay. Can an algorithm do that? Or surely you need human judgment at some point.
+
+Elon Musk:
+
+No, I think, like I said, in my view Twitter should match the laws of the country and really there's [inaudible 00:06:35] to do that. But going beyond that and having it be unclear who's making what changes to where, having tweets mysteriously be promoted and demoted with no insight into what's going on, having a black box algorithm promote some things and not other things, I think this can be quite dangerous.
+
+
+Interviewer:
+
+So the idea of opening the algorithm is a huge deal. And I think many people would welcome that, of understanding exactly how it's making the decision.
+
+Elon Musk:
+
+And critique it.
+
+Interviewer:
+
+And critique it.
+
+Elon Musk:
+
+Like what I mean is I think the code should be on GitHub. So then, [inaudible 00:07:18] can look through it, and say, "I see a problem here. I don't agree with this." They can highlight issues, suggest changes, in the same way that you update Linux or Signal or something like that.
+
+Interviewer:
+
+But as I understand it, at some point right now what the algorithm would do is it would look at, for example, how many people have flagged a tweet as obnoxious and then at some point a human has to look at it and make a decision as to "Does this cross the line or not?" The algorithm itself can't, I don't think yet, tell the difference between legal and okay and definitely obnoxious. And so the question is, which humans make that call? I mean, do you have a picture of that? Right now, Twitter and Facebook and others, they've hired thousands of people to try to help make wise decisions and the trouble is that no-one can agree on what is wise. How do you solve that?
+
+
+Elon Musk:
+
+Well, I think we would want to err on the… if in doubt, let the speech, let it exist. If it's a gray area, I would say let the tweet exist. But obviously in a case where there's perhaps a lot of controversy, that you would not want to necessarily promote that tweet. I'm not saying that I have all the answers here. But I do think that we want to be just very reluctant to delete things, just be very cautious with permanent bans. Timeouts I think are better than permanent bans.
+
+Elon Musk:
+
+But just in general, like I said, it won't be perfect, but I think we want it to really have the perception and reality that speech is as free as reasonably possible. And a good sign as to whether there is free speech is is someone you don't like allowed to say something you don't like. And if that is the case, then we have free speech. And it's damn annoying when someone you don't like says something you don't like. That is a sign of a healthy, functioning free speech situation.
+
+Interviewer:
+
+So I think many people would agree with that. And looking at the reaction online, many people are excited by you coming in and the changes you're proposing. Some of us are absolutely horrified. Here's how they would see it. They would say, "Wait a sec, we agree that Twitter is an incredibly important town square. It is where the world exchanges opinion about life and death matters. How on earth could it be owned by the world's richest person? That can't be right." So what's the response there? Is there any way that you can distance yourself from the actual decision making that matters on content in some very clear way that is convincing to people?
+
+
+Elon Musk:
+
+Well, like I said, I think it's very important that the algorithm be open sourced and that any manual adjustments be identified. So if somebody did something to a tweet, there's information attached to it that that action was taken. And I wouldn't personally be in there editing tweets. But you'll know if something was done to promote, demote, or otherwise affect a tweet.
+
+Elon Musk:
+
+As for media ownership, I mean, you've got Mark Zuckerberg owning Facebook and Instagram and WhatsApp, and with a share ownership structure that will have Mark Zuckerberg the 14th still controlling those entities. Literally.
+
+Interviewer:
+
+Well, certainly—
+
+Elon Musk:
+
+We won't have that at Twitter.
+
+Interviewer:
+
+If you commit to opening up the algorithm, that definitely gives some level of confidence. Talk about some of the other changes that you've proposed. So the edit button, that's definitely coming if you have your way.
+
+
+Elon Musk:
+
+Yeah.
+
+Interviewer:
+
+And how do you—
+
+Elon Musk:
+
+I mean, frankly a top priority I would have is eliminating the spam and scam bots and the bot armies that are on Twitter. I think these influence… They make the product much worse. If I had a Dogecoin for every crypto scam I saw, I would have a hundred billion Dogecoin.
+
+Interviewer:
+
+Do you regret sparking the storm of excitement over DOGE and where it's gone, or?
+
+Elon Musk:
+
+I mean, I think DOGE is fun. And I always said don't bet the farm on Dogecoin. FYI. But I like dogs and I like memes, and it's got both of those.
+
+Interviewer:
+
+But just on the edit button, how do you get around the problem of… So someone tweets, "Elon rocks," and it's tweeted by 2 million people and then after that they edit it to, "Elon sucks." And then all those retweets, they're all embarrassed. How do you avoid that type of changing of meaning? So that retweeters are [inaudible 00:13:25]
+
+
+Elon Musk:
+
+Well, I think you'd only have the edit capability for a short period of time. And probably the thing to do upon the edit would be to zero out all retweets and favorites.
+
+Interviewer:
+
+Okay.
+
+Elon Musk:
+
+I'm open to ideas, though.
+
+Interviewer:
+
+So in one way the algorithm works kind of well for you right now. I wanted to show you this. So this is a typical tweet of mine. Kind of lame, unworthy, and whatever. And the amazing response it gets is this, Oh my God, 97 likes. And then I tried another one, and 29,000 likes. So the algorithm at least seems to be at the moment, "If Elon Musk, expand to the world immediately." Not bad, right?
+
+Elon Musk:
+
+Yeah, I guess so. I mean, it was cool.
+
+Interviewer:
+
+So help us understand how it is you've built this incredible following on Twitter yourself when some of the people who love you the most look at some of what you tweet and they think it's somewhere between embarrassing and crazy.
+
+
+Elon Musk:
+
+I mean, it is a little.
+
+Interviewer:
+
+And some of it's amazing. But is that actually why it's worked? Or what? Why has is it worked?
+
+Elon Musk:
+
+I mean, I don't know. I mean, I'm tweeting more or less stream of consciousness. It's not like, "Let me think about some grand plan about my Twitter or whatever." I'm literally on the toilet or something like, "Ha-ha, this is funny." And then tweet that out. That's like most of them. That's oversharing, but.
+
+Interviewer:
+
+But you are obsessed with getting the most out of every minute of your day. And so, wow.
+
+Elon Musk:
+
+I don't know. I try to tweet out things that are interesting or funny. And then people seem to like it.
+
+Interviewer:
+
+So if you are unsuccessful… Actually, before I ask that, let me ask this. So how can I say? Is funding secured?
+
+
+Elon Musk:
+
+I have sufficient assets to complete the… It's not a forward looking statement, blah, blah, blah. But, I mean, I can do it if possible.
+
+Interviewer:
+
+Right.
+
+Elon Musk:
+
+I should say, originally with Tesla back in the day, funding was actually secured. I want to be clear about that. In fact, this may be a good opportunity to clarify that. If funding was indeed secured and, I should say, why do I not have respect for the SEC in that situation? And I don't mean to blame everyone at the SEC, but certainly the San Francisco office. Because the SEC knew that the funding was secured, but they pursued an active public investigation nonetheless.
+
+Elon Musk:
+
+At the time, Tesla was in a precarious financial situation. And I was told by the banks that if I did not agree to settle with the SEC that they would [inaudible 00:16:54] working capital and we would go bankrupt immediately. So that's like having a gun to your child's head. So I was forced to concede to the SEC unlawfully. Those bastards. And now it makes it look like I lied when I did not in fact lie. I was forced to admit that I lied to save Tesla's life. And that's the only reason.
+
+
+Interviewer:
+
+Given what's actually happened to Tesla since then, though, aren't you glad that you didn't take it private?
+
+Elon Musk:
+
+Yeah. I mean, it's difficult to put yourself in the position at the time. Tesla was the most relentless short seller attack in the history of the stock market. There's something called "short and distort" where the barrage of negativity that Tesla was experiencing from short sellers and Wall Street was beyond all belief. Tesla was the most shorted stock in the history of stock markets. That is saying something. So this was affecting our ability to hire people. It was affecting our ability to sell cars. Yeah, it was terrible. Yeah. They wanted Tesla to die so bad, they could taste it.
+
+Interviewer:
+
+That was a really strong statement. I mean, obviously, a lot of people who [crosstalk 00:00:09] thought would say you have so much to offer the world on the upside, on the vision side. Don't waste your time getting distracted by these battles that bring out negativity and make people feel that you're being defensive. People don't like fights, especially with powerful government authorities. They'd rather buy into your dream. Aren't you encouraged by people just to edit that temptation out and go with the bigger story?
+
+
+Elon Musk:
+
+Well, I would say I'm somewhat of a mixed bag.
+
+Interviewer:
+
+You're a fighter. You don't like to lose. You are determined that you don't, basically.
+
+Elon Musk:
+
+Sure, I don't like to lose. I'm not sure many people do, but truth matters to me a lot, really. Pathologically, it matters to me.
+
+Interviewer:
+
+You don't like to lose. If in this case, you are not successful and the board does not accept your offer, you said you won't go higher. Is there a plan B?
+
+Elon Musk:
+
+There is.
+
+Interviewer:
+
+I think we would like to hear a little bit about plan B.
+
+Elon Musk:
+
+For another time, I think, another time.
+
+Interviewer:
+
+
+All right. That's a nice tease. All right. I would love to try to understand this brain of yours more, Elon. With your permission, I'd like to just play this. Or actually before we do that, here was one of the thousands of questions that people asked. I thought this was actually quite a good one. If you could go back in time and change one decision you made along the way, do your own edit button, which one would it be, and why?
+
+Elon Musk:
+
+Do you mean a career decision, [inaudible 00:02:19]?
+
+Interviewer:
+
+Any decision over the last few years, like your decision to invest in Twitter in the first place, anything?
+
+Elon Musk:
+
+The worst business decision I ever made was not starting Tesla with just JB Straubel. By far the worst decision I've ever made is not just starting Tesla with JB. That's number one by far.
+
+Interviewer:
+
+All right. JB Straubel was the visionary co-founder who was obsessed with, and knew so much about batteries. Your decision to go with Tesla, the company as it was, meant that you got locked into what you concluded. It was a weird architecture.
+
+
+Elon Musk:
+
+There's a lot of confusion. Tesla was a shelf company with no employees, no intellectual property when I invested, but a false narrative has been created by one of the other co-founders, Martin Eberhard. I don't want to get into the nastiness here, but I didn't invest in a [inaudible 00:03:27] company. We created a company. And ultimately, the [inaudible 00:03:30] company was done by JB and me. Unfortunately, there's someone else, another co-founder, who made in his life's mission to make it sound like he created the company, which is false.
+
+Interviewer:
+
+Wasn't there another issue right at the heart of the development of the Tesla Model 3, where Tesla almost went bankrupt. I think you have said that part of the reason for that was that you overestimated the extent to which it was possible at that time to automate a factory. Huge amount was spent over automating, and it didn't work and it nearly took the company down. Is that fair?
+
+Elon Musk:
+
+First of all, it's important to understand what has Tesla actually accomplished that is most noteworthy. It is not the creation of an electric vehicle or creating electric vehicle prototype or low volume production of a car. There've been hundreds of car startups over the years, hundreds. In fact, at one point, Bloomberg counted up the number of electric vehicle startups. I think they got to almost 500.
+
+
+Elon Musk:
+
+The hard part is not creating a prototype or going into limited production. The absolutely difficult thing, which has not been accomplished by an American car company in 100 years is reaching volume production without going bankrupt. That is the actual hard thing. The last company, [inaudible 00:05:08] company, to reach volume production without going bankrupt was Chrysler in the '20s.
+
+Interviewer:
+
+And it nearly happened to Tesla.
+
+Elon Musk:
+
+Yes, but a thought like, "Oh, geez, I guess if we'd just done more manual stuff, things would've been fine," of course not. [inaudible 00:05:27]. We basically messed up almost every aspect of the Model 3 production line, from sales, to packs, to driving [inaudible 00:05:41], motors, body line, the paint shop, final assembly, everything. Everything was messed up. I lived in the Fremont and Nevada factories for three years, fixing that production line, running around like a maniac through every part of that factory, living with the team. I stepped on the floor, so that the team who was going through a hard time could see me on the floor, that they knew that I was not in some ivory tower. Whatever pain they experienced, I had it more.
+
+
+Interviewer:
+
+Some people who knew you well actually thought you were making [inaudible 00:06:34] mistake, that you were driving yourself tp the edge of sanity almost.
+
+Elon Musk:
+
+Yeah, it's true.
+
+Interviewer:
+
+And that you were in danger of making bad choices. In fact, I heard you say last week, Elon, because of Tesla's huge value now and the significance of every minute that you spend, that you are in danger of obsessing over spending all this time to the edge of sanity. That doesn't sound super wise. Your completely sane and centered, rested time and decision making is more powerful and compelling than that, "I can barely hold my eyes open." So surely, it should be an absolute strategic priority to look after yourself.
+
+Elon Musk:
+
+There wasn't any other way to make it work through three years of hell. 2017, '18, and 19 were three years, was the longest period of excruciating pain in my life. There wasn't any other way, and we barely made it. We were on the ragged edge of bankruptcy the entire time. It's not like I want pain. I don't like it. Those were the so much pain, but it had to be done or Tesla would be dead.
+
+
+Interviewer:
+
+When you looked around the Gigafactories that we saw images of earlier last week, and just see where the company has come, do you feel that this challenge of figuring out the new way of manufacturing, that you actually have an edge now that it's different, that you figured out how to do this. And those three years won't be repeated. You've actually figured out a new way of manufacturing.
+
+Elon Musk:
+
+At this point, I think I know more about manufacturing than anyone currently alive on earth.
+
+Interviewer:
+
+[inaudible 00:08:49].
+
+Elon Musk:
+
+I can tell you how every damn part in that car is made, which basically, if you just live in the factory for three years. That was nice. That was poignant note or something.
+
+Interviewer:
+
+Someone wants to compose a symphony to that expression of confidence, something like that. I have no idea what that is.
+
+
+Elon Musk:
+
+Anyway. Every of a car [inaudible 00:09:14] I know.
+
+Interviewer:
+
+Talk about scale right now. You're in the middle of writing your new master plan. You've said that scale is at the heart of it. Why does scale matter? Why you're obsessed with it? What are you thinking?
+
+Elon Musk:
+
+Well, see, in order to accelerate the events of sustainable energy, there must be scale, because we've got to transition a vast economy that is currently overly dependent on fossil fuels to sustainable energy economy, one where the energy is... We got to do it. The energy has got to be sustainably generated with wind, solar, hydro, geothermal. I'm a believer in nuclear as well, I think, to would talk about.
+
+Elon Musk:
+
+Since solar and wind is intermittent, you have to have stationary storage batteries, and then good transition or transport to electric. If we do those things, we have a sustainable energy future. The faster we do those things, the less risk we put to the environment. Sooner is better. Scale is very important. It's not about fresh releases. It's about tonnage. What was the tonnage of batteries produced, and obviously done in a sustainable way. Our estimate is that approximately 300 terawatt hours of battery storage is needed to transition, transport electricity and heating and cooling, from an electric situation.
+
+
+Speaker 3:
+
+Can you wait for me to do it? Okay. Thank you, sweetie.
+
+Elon Musk:
+
+There may be some different estimates out there, but our estimate is 300 terawatt hours?
+
+Interviewer:
+
+We dug into this a lot in the interview that we recorded last week. People can go in and hear that more. The context is that is I think about 1,000 times the current install battery capacity. The scale up needed is breathtaking, basically.
+
+Elon Musk:
+
+Yeah.
+
+Interviewer:
+
+Your vision is to commit Tesla to try to deliver on a meaningful percentage of what is needed, and call on others to do the rest.
+
+Elon Musk:
+
+Yes.
+
+Interviewer:
+
+This is a task for humanity, to massively scale up our response, change the energy grid.
+
+
+Elon Musk:
+
+Yes. It's like basically, how fast can we scale and encourage others to scale to get to that 300 terawatt hour in installed base of batteries. And then of course, there'll be tremendous need to recycle those batteries, and it makes sense to recycle them because the raw materials are high grade ore. People shouldn't think, "There'll be this big pile of batteries." No, they get recycled because even a dead battery pack is worth about $1,000. This is what's needed for a sustainable energy future. We're going to try to take a set of actions that accelerate the day of, and bring the day of a sustainable energy future sooner.
+
+Interviewer:
+
+There's going to be a huge interest in your master plan when you publish that. Meanwhile, I would love to understand more what goes on in this brain of yours, because it is a pretty unique one. I want to play with your permission this very funny opening from SNL, Saturday Night Live. Can we have the volume [inaudible 00:12:50].
+
+Recording:
+
+To be hosting Saturday Night Live. I mean that. Sometimes after I say something, I have to say [inaudible 00:13:00], so people really know that I mean it. That's because I don't always have a lot of intonation or variation in how I speak, which I'm told makes for great comedy. I'm actually making history tonight as the first person with Asperger's to host SNL."
+
+
+Interviewer:
+
+I think you followed that up with-
+
+Elon Musk:
+
+At least the first person to admit it.
+
+Interviewer:
+
+The first person to admit it. This was brave thing to say. I would love to understand how you think of Asperger's, whether you can give us any sense of even you as a boy, what the experience was, or as you now understand with the benefit of hindsight. Can you talk about that a bit?
+
+Elon Musk:
+
+Well, I think everyone's experience is going to be somewhat different, but I guess for me, the social cues were not intuitive. I was just very bookish and I didn't understand these. I guess others could intuitively understand what is meant by something. I would just tend to take things very literally, just the words as spoken were exactly what they meant. But then, that turned out to be wrong, because they're not simply saying exactly what they mean. There's all sorts of other things that are meant. It took me a while to figure that out. [inaudible 00:14:43] quite a lot.
+
+
+Elon Musk:
+
+I did not have a happy childhood to be frank. It was quite rough. But I read a lot of books. I read lots and lots of books. Gradually I understood more from the books that I was reading and watched a lot of movies. It took me a while to understand things that most people intuitively understand.
+
+Interviewer:
+
+I've wondered whether it's possible that that was in a strange way, an incredible gift to you and indirectly to many other people, in as much as brings [inaudible 00:15:36] and they go where the action is. If for some reason, the external world and social cues, which so many people spend so much time and energy and mental energy obsessing over, if that is partly cut off, isn't it possible that that is partly what gave you the ability to understand inwardly the world at a much deeper level than most people do?
+
+Elon Musk:
+
+I suppose that's certainly possible. I think there's maybe some value also from a technology standpoint, because I found it rewarding to spend all night programming computers, just by myself. I think most people don't enjoy typing strange symbols into a computer by themselves all night. They think that's not fun, but I thought it was. I really liked it. I would just program all night by myself and I found that be quite enjoyable. But I think that is not normal.
+
+
+Interviewer:
+
+I've thought a lot about, it's a riddle to a lot of people of how you've done this, how you've repeatedly innovated in these different industries. Every entrepreneur sees possibility in the future and then acts to make that real. It feels to me like you see possibility just more broadly than almost anyone and can connect with a lot. You see scientific possibility based on a deep understanding of physics and knowing what the fundamental equations are, what the technologies are that are based on that science, and where they could go. You see technological possibility.
+
+Interviewer:
+
+And then really unusually, you combine that with economic possibility of what it actually would cost. Is there a system you can imagine where you could affordably make that thing? Sometimes you then get conviction that there is an opportunity here, put those pieces together and you could do something amazing.
+
+Elon Musk:
+
+Yeah. I think one aspect of whatever condition I had was, I was just absolutely obsessed with truth, just obsessed with truth. The obsession with truth is why I studied physics, because physics attempts to understand the truth of the universe. Physics, it's just what are the provable truths of the universe and truths that have predictive power.
+
+Elon Musk:
+
+For me, physics was a very natural thing to study, [inaudible 00:18:23] study it. It was intrinsically interesting to understand the nature of the universe, and then computer science or information theory also to just understand logic. There's an argument that information theory is actually operating at a more fundamental level than even physics. Physics and information, really interesting to me.
+
+Speaker 3:
+
+What are we doing here too?
+
+Interviewer:
+
+When you say truth, what you're talking about is the truth of the universe, the fundamental truth that drives the universe. It's a deep curiosity about what this universe is, why we're here, simulation. We don't have time to go into that. You are just deeply curious about what this is for, what this is, this whole thing.
+
+Elon Musk:
+
+Yes. I think the why of things is very important. Actually, when I was young teens, I got quite depressed about the meaning of life. I was trying to understand the meaning of life, reading religious texts and reading books on philosophy. I got into the German philosophers, which is definitely not wise if you're a young teenager, I have to say, a bit dark, much better read as an adult.
+
+Elon Musk:
+
+Actually, I ended up reading The Hitchhiker's Guide to the Galaxy, which is actually a book on philosophy, just disguised as a silly humor book. It's actually a philosophy book. Adams makes the point that [inaudible 00:20:30]. The answer is 42. That number does pop up a lot. [inaudible 00:20:33].
+
+Interviewer:
+
+10 times more significant than 42.
+
+Elon Musk:
+
+You make a triangle with 42 degrees and two 69s. There's no such thing as a perfect triangle. Or is there?
+
+Interviewer:
+
+But, even more important than the answer is the question. That was the whole theme of that book.
+
+Elon Musk:
+
+Yes.
+
+Interviewer:
+
+Is that basically how you see meaning then, it's the pursuit of questions?
+
+Elon Musk:
+
+Yeah. I have a proposal for a worldview or a motivating philosophy, which is to understand what questions to ask about the answer that is the universe and to agree that we expand the scope and scale of consciousness, biological and digital, we will be better able to ask these questions, to frame these questions and to understand why we're here, how we got here, what the heck is going on. That is my driving philosophy, is to expand the scope and scale of consciousness, that we may better understand the nature of the universe.
+
+Interviewer:
+
+One of the things that was most touching last week was seeing you hang out with your kids. Here's, if I may.
+
+Elon Musk:
+
+It looks fake, like a ventriloquist dummy there. How do you know that's real?
+
+Interviewer:
+
+That's X. It was just a delight seeing you hang out with him.
+
+Elon Musk:
+
+Sure.
+
+Interviewer:
+
+What's his future going to be? I don't mean him personally, but the world he's going to grow up in. What future do you believe he will grow up in?
+
+Elon Musk:
+
+Well, a very digital future, a different world than I grew up in, that's for sure. I think we want to obviously do our absolute best to ensure that the future is good for everyone's children, and that the future is something that you can look forward to and not feel sad about. You want to get up in the morning and be excited about the future, and we should fight for the things that make us excited about the future.
+
+Elon Musk:
+
+The future cannot just be about one miserable thing after another, solving one sad problem after another. There's got to be things that get you excited like you want to live. These things are very important and you should have more of it.
+
+Interviewer:
+
+It's not as if it's a done deal. It's all to play for. The future may be horrible. Still, there are scenarios where it is horrible, but you see a pathway to an exciting future, both on Earth and on Mars, and in our minds, through artificial intelligence, and so forth. In your heart of hearts, do you really believe that you are helping deliver that exciting future, for X and for others?
+
+Elon Musk:
+
+I'm trying my hardest to do so. I love humanity and I think that we should fight for a good future for humanity. I think we should be optimistic about the future and fight to make that optimistic future happen.
+
+Interviewer:
+
+I think that's a perfect place to close this. Thank you so much for spending time, coming here and for the work that you're doing. Good luck with finding a wise course through, on Twitter and everything else.
+
+Elon Musk:
+
+All right.
+
+Interviewer:
+
+[inaudible 00:24:27].
+
+Elon Musk:
+
+Thank you.
+
+Mike Parsons: Hello and welcome to the moonshots podcast. It's episode 177 and a mighty special one. At that I know co-host mate Parsons. As always I'm joined by the man from the future himself. Mr. Mark Pearson freely. Good morning. Good morning, 
+
+ Mark Pearson Freeland: Mike. Or maybe it's good afternoon or good evening. I'm not sure. Cause I'm coming in from the future.
+
+And that future is full of products made by and incorporated by the man of our focus today. Isn't it? It 
+
+ Mike Parsons: is the superstar, the superhero, the unstoppable man himself. Who are we studying to? 
+
+Mark Pearson Freeland: Today Mike, and today listeners, we are digging into Elan Musk and essentially Mike, what you and I are really going to be digging into today because it's been a couple of years since we last covered Ilan on the show, it's been a busy couple of years to say the least, particularly, even though you and I might say, yeah, we've had a tough couple of years.
+
+It's been [00:01:00] busy for us for Elon Musk. However, it's been equal. Busy and today, Mike, I think we're just going to ask ourselves what habits does he have? When it comes to being success, how does he get things done? 
+
+Mike Parsons: I think this is indeed their question. And I think one thing that you and I have to do for all of our listeners who are thinking, hang on a second, where did this Ilan show come from?
+
+Because we're in the midst of a creativity series and you, you might be able to hire you that Ilan is creative, but it wasn't part of the plan. Apart from running space, X, Tesla, boring company, your link open AI Elan decided to add another company into the mix. Like those five companies that I just mentioned were not enough.
+
+He's you know what? I get myself some tool wetter, didn't he? 
+
+Mark Pearson Freeland: And now his boss says, can you believe 
+
+Mike Parsons: it? And so we are interrupting normal [00:02:00] programming everywhere. So as you pick yourselves up from your chairs and, think to yourself, hang on, what is going on, Mike and mark departed from the game plan we did.
+
+So for good reason, we felt that what Ilan did this week deserves not just an Ilan episode. We are going to throw out two episodes this week because it is just so breathtaking the capacity of one human to do so much. And that's why we want to talk about Ilan. So ahead for us in this show today, we're all going to dig in to this question that you asked mark, how does Elan do it?
+
+How does he spend so. Many companies and, mark, just to build the tension here, these are not companies where they're like, they're just doing a thing and they're selling a widget. Building rocket ships and sending them out into space and building electronic vehicles and doing AI and doing all sorts of [00:03:00] neuroscience.
+
+These are all ambitious, bold, breathtaking efforts, and he's working across all of them. And so for us, we want to decrease. How does he do it? What are the practices? What are the habits of success of Ilan Musk? This is the ultimate study of shooting for the moon in multiple concurrent smack. And what do you think?
+
+Mark Pearson Freeland: Yeah, I, Elan has been a character and a moonshot for us for a long time. In fact, Mike, when I was digging through the show archives, we haven't done one. Not two shows, not even three shows on Nina Musk. This is technically the fourth show on Elan Musk over the last three years. And I genuinely believe that's because he is a man who just gets stuff done.
+
+Yes, listeners, if you're thinking right, I want to dig into mark and Mike and Chad shows on the inner Musk, [00:04:00] please pop along to moonshots.io. What I think you and I and the moonshots family also recommend Mike is a great book by Ashley Vaughn. Which is titled Elon Musk, how the billionaire CEO of space X and Tesla is shaping our future.
+
+A great read for anybody who wants to dig into a bit of biography around the around the world, or the universe, 
+
+ Mike Parsons: all Elon Musk reframe. So we really 
+
+Mark Pearson Freeland: recommend going to check. 
+
+Mike Parsons: Yeah. So I think this is the perfect moment for us to start this adventure. So get ready, strap in. We are going to decode.
+
+How does Eland must do it and importantly how we can too, but let's start by setting the scene and let's actually turn to one of our other favorites, Joe Rogan, and let's get his reaction. To Ilan buying Twitter. And this is where we find ourselves with Elon Musk about to buy Twitter. I saw that apparently today.
+
+ Mark Pearson Freeland: Oh shit. 
+
+Mike Parsons: Oh shit. The press release [00:05:00] has been announced. Elan Musk just bought Twitter. We got a movie star cut type of a superhero. It was like a movie, like if you had a movie and there was a guy who was like a hero in the movie who happened to be a billionaire, does wild. Makes his own rockets and drills under the city and lecture cars.
+
+Elon Musk agrees to buy Twitter a $44 billion. Agreement to take social media network, private marks, the close of dramatic courtship. Here's why that's going to be interesting. First of all, he believes that free speech is important and not just important vital for a democracy for a functioning. And I agree with that.
+
+And what's interesting about this is we're going to look, we've found out some things about Twitter and one of the things they do is shadow banned people. So they make it so that your content, whatever you put out has less impact it has less engagement. They [00:06:00] limit your ability to express yourself.
+
+They've they ban accounts and they ban accounts. If that account says something that they don't agree with. If the account says something that violates what they believe, also, this ability to shadow banned people has to be exposed, right? That happens on Tik TOK. I was juice member. That clip, you just saw where I call.
+
+I said, I should be sure it was about me and my body and how I felt it was taken down. And I was put on probation. 
+
+Mark Pearson Freeland: I think Mike, what really speaks to me in that gray clip from another classic moonshot of Mr. Joe Rogan, is this reference to him being a real life movie star hero. I think that's an appropriate title, to be honest, because he's doing just these unbelievable things that not only benefit him, I'm not saying he's doing it necessarily, not for the bottom line, but he's really doing it for the world.
+
+He's focusing these things on [00:07:00] benefiting humanity for for a very colloquial title there. 
+
+Mike Parsons: Yeah. You can certainly see there's a lot of mission-driven thinking that's why he pulls off these kinds of things. But if you look at each and every one of his endeavors, They're all pretty ambitious.
+
+Like he's decided to go 10 X rather than just 10% better. The interesting reflection here is what he's planning to do was an option available to Twitter for the last 15 years. They just decided not to do it. Maybe mark. They didn't even think to do it, but Ian thinks differently. He works differently to all of us and that's why we're studying him.
+
+ And what I want to do is I want to. I put a second clip right up against that, that sets the context. And transitioners as from wow, what, like how many plates can Ilan spin right now? Let's have a look at the thinking that he's brought to Twitter [00:08:00] and then we can decode that. So let's have a listen to Ilan talking to Chris Anderson at a very recent.
+
+I think it's very important for 
+
+Elon Musk: that'd be an inclusive arena for free speech where yeah. Twitter has become the de facto town square. It's just really important that people have the, both the reality and the perception that they're able to speak freely within the bounds of the low and.
+
+ So one of the things that I believe Twitter should do is open-source the algorithm and make any changes to people's tweets, or if they're emphasized or deemphasized, that action should be made of parents that anyone can see that action has been taken. So there's no sort of behind the scenes manipulation, either algorithmically or manually.
+
+Mark Pearson Freeland: No [00:09:00] behind the scenes manipulation for me, Mike, again, this is talking to this idea of Elan creating products or releasing products or updating products in this case that are of interest and value intrinsic. To people around the world. Some of us might look at Twitter as just another social media platform, but like Elan Musk has said there it is a virtual town square where everybody has a voice and that is something to protect.
+
+ And when you have, behind the scenes algorithms or manipulations going on, then you can see why people get so frustrated. 
+
+Mike Parsons: Yeah. And for sure it has a very polarizing effect because who the hell are Twitter to decide what can be banned and what can't. And I think this is the huge mistake that all of those social networks make is that they failed to realize that there's no such thing is [00:10:00] remaining and not getting drawn in to Opinion making Facebook has massive data centers, full of people, reviewing suspect material.
+
+ Like it is so hard when you try and draw the wine and on free speech what's appropriate. What's not. And what you can see here is ill and saying open it up when we are manipulating, at least make it open when we have an algorithm show, how it works. And what's fascinating is this is opposite of how mark Zuckerberg things.
+
+ So it's really fascinating to see how will Facebook respond? Because I see this as a very exciting challenge and a very exciting time where, I'm not a huge fan of. I've never really worked it out for myself. So I'm really excited to see what he does, but what's crazy is this option to do what he is going to do with Twitter [00:11:00] has existed for the life of Twitter and they haven't done it.
+
+ So Ilan comes to Twitter with this disruptive, critical thinking to address its biggest single problem. But my point here is mark, and he's doing the same sort of audacious thing. First basics for Tesla boring. Neurolink open AI. That is the Marvel and that is where we can become students and learn out loud together.
+
+Don't you think? 
+
+ Mark Pearson Freeland: Yeah, I totally agree. You could say that this show would be all about Twitter, the takeover, the value that he's going to bring, but I think you're right, Mike, there's a bigger question here, which is all around the habits that Elon Musk intrinsically puts into. All of the work that he does, like you said earlier, he doesn't just create a product and then it disappears.
+
+All of them are successful on the 
+
+ Mike Parsons: not only are they successful, at least in the. Audaciousness that they reset the [00:12:00] status quo they disrupt. But I just think he's shooting for the moon in every single step. And mark, I know there's a bunch of people who want to learn how to shoot for the moon, don't you?
+
+Yeah. 
+
+Mark Pearson Freeland: Yeah. And I must admit Mike, our list of patrons is gradually getting longer than the list of companies that Elon Musk 
+
+ Mike Parsons: we're in a competition 
+
+Mark Pearson Freeland: as tradition dictates. Patrion members subscribers. Roekel time. please welcome Bob and Niles. John Terry Nial marshaling. Ken Detmar. Tom mark. Marjon Connor, Rodrigo Yasmeen, Daniela Liza said Mr.
+
+Bonn juror Maria Paul at Berg Kalman and Nat David, Joe, crystal Ivo, Christian, hurricane Bri. And some of welcome Patrion members. 
+
+ Mike Parsons: Yeah. Thank you so much for your contribution. We are very grateful because that gives us the means to pay [00:13:00] all the bills that we get in our letterbox to pay for this production.
+
+ And it is. And there's all sorts of software and subscriptions and hosting costs. And because we have so many members, so many listeners now the bills get bigger. Don't they mark? 
+
+ Mark Pearson Freeland: They do. Look, we're not quite at the extent of 44 billion to buy Twitter, but I recognize, I reckon all is getting up there and it's great.
+
+It's a great problem to have. More listeners and subscribers is great because it's getting the moonshots message out around the world, but you're right with growth comes additional costs. So every. Counts for us. 
+
+Mike Parsons: Yeah. And listen, we've priced it. So to be a member, it's the cost of a coffee, one cup of coffee per month.
+
+And we really encourage you to get in there. To be very honest, we have over 50,000 listeners a month and we have 30 members. 
+
+Mark Pearson Freeland: That's right, Mike. Now we've heard about Elon Musk. [00:14:00] We've heard from Joe Rogan all about Twitter and the recent acquisitions and purchases of that product. Let's now really get into the meat of today's episode.
+
+And that's all about that. Of Elon Musk's success. And for us, what is a real standout in his behavior, as well as his attitudes is his ability to just make things happen. So this first clip that we're going to listen to from Elon Musk took place at south by Southwest a couple of years ago. And it's talking about his inverted commas, boring approach.
+
+Although I don't think there's anything boring about Elon Musk, but his boring approach to creating tunnels and really the fundamental lesson here that we're going to hear from animals. All about being a doer. I remember 
+
+Mike Parsons: when you first told 
+
+ Elon Musk: me that you were thinking about tunnels and the knife was telling you about that years ago, 
+
+Mike Parsons: like a long time 
+
+ Elon Musk: ago, like I thought you were joking.
+
+ It was, I was joking, but
+
+ it's not because of some epiphany that I had one day [00:15:00] driving down the 4 0 5. That's how it gets translated. Somehow I was talking about tunnels for years. For probably five years or four years, at least. Whenever I'd give a talk and people would ask me about what opportunities you do see in the world.
+
+I'd say tunnels, can someone please build tunnels after four or five years of begging people to build tunnels and still no tunnels. I was like, okay, I want to build a tunnel.
+
+ Maybe you haven't seen some a year. Yeah, so I was like, basically talking feels Arizona tunnels for several years and then said let's find out what it takes to build a tunnel. And So I started digging a tunnel. I wanted to start a tunnel from where I could see it from my office at space X.
+
+So I said let's just carve off a part of the parking lot across the road so I can see if it's, if anything's happening or not. And the renamed office, boring machine Godot usually kept waiting for it and it never came.
+
+ finally did. And we're going to go. And now we're making 
+
+Mike Parsons: good progress. Mike, for me, this is the foundational clip for this show to understand where Elan comes from. Yes, he has this amazing capacity to, have big visions to do critical thinking. Where he roots he's practicing. The foundational thing that he does is a bias towards action.
+
+He never falls victim to wish for thinking he is never falling victim to all. We've got a nice PowerPoint deck. He is Let's do a prototype let's test. What would it take? Let's just do a small one and see if we can do it. What can we learn? And more importantly, he shares this thing with a syringe Richard Branson, which is when he sees.
+
+The world he sees problems that might be worth solving. And what I loved about that clip is he's [00:17:00] literally saying know, I w you know, I was stuck in bad LA traffic for so long, and nobody else picked it. So I did, this is Ilan. He saw a problem 
+
+Mark Pearson Freeland: questioned the status quo. Yeah. Do we all put up with this level of traffic and therefore, why hasn't anybody else figured this out?
+
+Or why has nobody tried to challenge the status quo and come up with a solution for this problem and this bias towards action, like you say, and as Elon Musk said, I'm going to find out what it takes, such a lesson in proactivity and productivity that I'm going to write it down as one of my mantras, find out what it takes.
+
+ Cause it's, yeah, it's applicable for Elon Musk when he wants to dig beneath LA it's also applicable for. Us when we're considering a new show on the moonshot podcast for when we're at work, [00:18:00] when we're figuring out something physically like a run or a swim, if something feels difficult instead of turning away or instead of saying, oh no, it's going to be impossible to dig these times.
+
+ Let's just find 
+
+Mike Parsons: out what it takes. Totally agree. And I think if we break down this habit of a bias towards action, he doesn't pontificate for too long. He gets down and let's test something, let's build something. I think if we break this down a bit more, the reason why this is such an important habit to outline is that let's look at the inverse of this is that so many times.
+
+I you, we fall victim to thinking about something, but never actually doing it. 
+
+Mark Pearson Freeland: It must be. In fact, when we did our show on Daniel pink and the power of regret, one of the key takeaways that he did, this enormous [00:19:00] survey and study and the majority of people when they get a little bit older, That they think back and they don't regret the stuff that they did do.
+
+ It's the stuff that they didn't do. And I think that Elon Musk is a wonderful example of. Never stepping back from a problem and thinking, yeah, it's not for me. I'm not coming, not going to give it a go. And let's fast forward 10 years into the future. He might then look back if he hadn't have done anything.
+
+Oh, I really I'm now stuck back in LA traffic again. I wish I actually started thinking about how to dig these tunnels and create these boring products because fundamentally, even though he might not get their result within a day, For a week or maybe even one year, but the compound interest of let's say 10 years.
+
+ Yeah. It has that huge impact. 
+
+ Mike Parsons: It does. And I think that one of the themes that we're fighting against as human beings is self doubt. And I [00:20:00] would propose to you mark that our self-doubt prevents us from being a doer and self doubt might be like I'm not sure. So therefore I won't do it. The outcome is uncertain, so I allow too much fear to kick in, but what's really fascinating is he.
+
+He demonstrates this behavior of don't allow self-doubt to prevent you from getting stuck into things. Cause it like how many times have you harbored a desire or a dream mark and thought about it for weeks and months? Maybe years. Absolutely. No. About it done nothing I've done that have you. Of 
+
+ Mark Pearson Freeland: course, I've done that with regards to, items, if physically in the house, let's say emotionally with regards to learning.[00:21:00] 
+
+Or managerial skills, leadership skills. I've done it with reading books or not reading books physical exercise, running marathons and so on as well as challenging yourself at work. It's very easy to take that simple path. Isn't it, the path of least resistance, we're all geared towards finding out the thing that's easiest and therefore avoid those difficulties.
+
+And. Yeah, I think it's ingrained into us. Isn't it? So we're programmed to find that path and avoid the difficulties. The truth is when you take those difficulties and you give it a go, you're going to get maybe a better return. So to speak on that investor. Because you're learning and you're trying something 
+
+ Mike Parsons: new.
+
+Yeah. And what you hear is that successful people often break down big dreams into small steps so that the actual. Scientific risk they're taking, is it, is this very small? Oh, I'm just [00:22:00] going to build a tunnel. That's 500 meters long, that's it? Yeah. Just be, right next to the office. Like it's nothing major.
+
+We're just going to see if we can do it. Like the what's at risk there. Not very much. It's not like he's building a massive tunnel under the entirety of LA that comes like stage 3, 4, 5 or six. I think there's being a doer is really interesting because he compliments that with this great vision.
+
+Very powerful, critical thinking to break down problems, but what could we all do right now? I believe the anchor of it is. All the dreaming and vision that he has. He's a doer he wants to get in and have a go and focus on. Okay what's the problem with the fueling system on the rocket? Let's get into it.
+
+ He's a doer. He doesn't believe in abstractness of PowerPoint. He may think wildly different to a lot of us, but equally. He does it, and he doesn't let self doubt, who [00:23:00] said, where what's his qualifications for building tunnels under LA. Yeah. But he did it. Yeah. And that's, I think what we can take from him.
+
+And I think it's like super powerful as a practice. 
+
+ Mark Pearson Freeland: Yeah. And I want to build on that because I really like where you're going with this mic. There was another clip that we had previously in one of our shows on Elon Musk. And it was about when he founded and was trying to figure out the challenges with space X.
+
+And again, he said a similar thing. I'm not a rocket scientist, I'm not an astronaut. I don't have a degree in emission in missiles. So what did I do? I picked up. I just started reading and slowly over time, he started to understand it more. And I think the build for us here is whether you want to create rockets, whether you want to tunnel under LA, when you want.
+
+ Just read more or maybe learn a language going back to your point. [00:24:00] It just takes little steps. Yes. Start by five minutes a day or start by reading one page. It's the same with journaling. Start by one word. Yes. Yeah. And slowly build out from there. And I think Elon Musk is a great example of. 
+
+ Mike Parsons: Said, mark, start small, start daily and build habits for success.
+
+I'll tell you another small habit that you can do math for success. And that is as you're listening to the moonshots podcast, you open up your podcast app, Spotify, apple podcasts, whatever it is. And you give us a rating or review. Is that not being a doer or what? 
+
+Mark Pearson Freeland: Look I'm learning up my Spotify.
+
+Profile right now, Mike, and if I hadn't already rated us, I would do it right now. It's that simple to go. It's really easy. And the truth is listeners. It makes such a wild difference not to us, but for getting the message out around the world into other listeners is, [00:25:00] and we've seen. Lessons and individuals get in touch with us from all over the globe.
+
+Haven't we, Mike. And it really matters when people do leave us. Our current listeners leave us ratings and reviews. We really appreciate them. And even if you think it's just one little thing, it will take me two seconds of my day. It does make a huge impact. It much, like we were saying about Elon Musk with being a doer, if you're a doer and you can give us that rating review, it just means that all of us benefit in the long run.
+
+Mike Parsons: Totally like just to help us get the word out. That's what a rating of a review does and that we've had so many of them. So it's a big thing to Maria. Rob knew in 87 pod, man, Dustin, Jody, I have beef bull. Y'all remember Mergen Jason and there's so many more we really appreciate your reviews, your ratings.
+
+ That's how new listeners can discover us. That's how we can all learn out of. To gather, and we're doing a lot of learning now and Ilan we've talked about this mark Yhonnie. He approaches problems in this really unique way and he loves to really get into it. And this next clip is another take on Ilan sort of problem solving and how we get to solutions.
+
+And one of the things he does is he uses. By writing actual total 
+
+Elon Musk: mass of a steel reasonable steals. A spacecraft is less than that. Over the most advanced carbon fiber vehicle you could possibly imagine is having by accident. By the way, it may sound like some great insight, but it actually happened because we were moving too slowly on composite.
+
+ And I was like, we cannot move this slowly or we'll go bankrupt. So it was just getting through this with steel. So you have. 
+
+ Mike Parsons: Has to be focused on problem solving. Otherwise you're going to 
+
+ Elon Musk: spend too much time trying to figure out why 
+
+ Mark Pearson Freeland: you don't start with a 
+
+ Elon Musk: yeah. Yeah. I'm like[00:27:00] taken to management by rhyming.
+
+If the schedule is schedule as long, your design is wrong. This is very true. 
+
+ Mike Parsons: It 
+
+ Mark Pearson Freeland: is so true, isn't it? And it's funny. It is relevant across all of the different. Industries as well. If you are repeating the same conversations again and again on zoom, if you are not making any progress with a marketing or product release or product testing, then you have to almost have a pause and think, okay how else could we do this?
+
+ Let's rethink how we're doing things again. It's speaking to that status quo. Disrupt. Rather than allowing the process of a business to just keep on existing as it always has. Let's shake it up and again, he just seems to have this bias towards action. Think. Okay. If that metal is incorrect, let's try another one.
+
+ Let's just give [00:28:00] it another 
+
+ Mike Parsons: go. Yeah. And what I took from that is he's just literally, got this thing it's taking too long. This is a bad signal. And he has the capacity to. Distanced himself and say, okay, this isn't on track. And you know how sometimes we get so stuck in the weeds. Like we just keep grinding away and repeating behaviors and expecting a different, exact, expecting a different outcome.
+
+So I love the fact that he has the capacity to call time out. Say, guys, take it to. Yeah that it doesn't feel right. There's gotta be something going on here. And through that, they actually made quite a breakthrough and to actually solve the problem. And this really gives me this thought that he thrives to get into the product, into the problems and the solutions.
+
+ And, you see so many. Classic CEOs who [00:29:00] don't go deep enough in the business, whenever there's a controversy in the U S the CEO's go, oh, I didn't know what my subordinates were doing. When like they're called in front of Congress. And they're like, I wasn't aware that they were doing that.
+
+ And you're like, I'm not sure about that, but yeah. Like, how can they not be aware of these things? Because the interesting thing is you look at Elan he really gets into the product and the problems that the business faces in order to move forward. And I think this is what distinguishes him again.
+
+ Is, he loves to get into stuff, roll up the sleeves. And I find that a very strong characteristic that we're learning 
+
+about 
+
+Mark Pearson Freeland: Ilan don't you? Yeah. And I want to build on that insight, which you just shared Mike with a great clip. Sorry. A great comment from Walter Isaacson. He did this can include that in our show notes on this.com.
+
+And [00:30:00] I'll just read a couple of sentences. If you don't mind. Mike, the context is all of us around the world. We woke up and we realized that the deal between Elon Musk and Twitter for $44 billion was going through. But later that evening, what we didn't know was that mosque at 10:00 PM in the evening, he went, met with his engineers and he spent more than an hour.
+
+ Working on it. Rocket engine valve leak solutions at the space X star base in Boca, Chica, and Texas. And we'll try and extend for a bit of context. My keys working on Musk's new blur biography and the quote from Isaacson is no one mentioned Twitter. He can multitask. And I think that's fantastic. Little again, less than here, isn't it.
+
+He's using this management approach where he's getting into the the weeds of issues, trying to figure out problem solving. He doesn't let the headlines. Like Twitter, even though he's the [00:31:00] one creating those headlines. Yeah. Get in the way of him just making 
+
+ Mike Parsons: progress. You know what Isaacson goes on to study.
+
+[00:31:07] There is the complete focus that airline has his capacity. Like when he's in the room with the engineers working on Tesla, he's there. Holy they're 100% there and he's nowhere else. And what he really points out is Elan's capacity to be single-minded and focused in the moment. And I think. This is the huge clue.
+
+Cause there's no possible way you could bounce around all of these different companies. If you're doing five minutes there and then you'd check an email from the other one, and then you five minutes over there that would just drive you nuts. What he does is he's famous for time blocking. So he spends certain days at certain [00:32:00] offices, but when he's in those offices, when he's in those meetings, He is nowhere else.
+
+ And I think this is like an extremist situation, which reveals how important hitting the do not disturb button really is in the, in this age. If you are not blocking out all distraction to bring your mind, your presence fully to bear on the problem at hand. Then the next notification is going to take you out of the moment.
+
+You're going to lose your momentum, Marquis and a half, those switching costs. So you spend five minutes answering the email and then come back to something totally different. And then you're like, you can almost feel your brain going, crunch, crunch bang. Your brain is ah, I just got to close one door and go into a new door.
+
+And then that's what we call switching costs. So he tries to minimize that by being. Fully present. He'd just bought Twitter. But then at 10:00 PM is in a [00:33:00] meeting with the Tesla engineers. And he's not thinking about Twitter. That's the key, isn't it? Yeah. 
+
+ Mark Pearson Freeland: That's the key for a man who is in charge of what he spends his time on.
+
+ I think we're all guilty and myself included. Make of being. Allowing our diaries or our to-do lists and our emails, I E other people to dictate what we spend our time on. And I think you've hit the nail on the head there. Elon Musk is a man who's really determined and figured out the best way for himself to be.
+
+For himself to be productive. He knows that he needs to give it all of his attention. So therefore he creates environments where he can do that. And I think it's it's a. Disillusion for me to claim that I am my best working version of myself when I'm sitting in a meeting virtual or real life.
+
+ And I'm thinking about something else, I'm [00:34:00] doing a disservice to the colleagues that I'm in the room with. 
+
+ Mike Parsons: So sure. 
+
+Mark Pearson Freeland: So Elon Musk, yes. He knows in the back of his mind that he's just bought Twitter, everybody else in the room or the space X engineers, they know it as well, but. Mean, he can't give full attention to 
+
+ Mike Parsons: that marked I didn't even talk about it.
+
+It's not going to, it's not even mentioned. He just bought a F was it 40 plus billion dollar company with his own money? And no one mentioned it at all. Imagine if you'd just gone for a good run, you would have been talking about that for a minute. 
+
+Mark Pearson Freeland: We talk about journaling and running all the time as the listeners know.
+
+ But you're right. He just is able to close that door. The gears don't grind against one another. Shifts into that space because he has protected it. He's done a bit of a detox of other work and allows Cal Newport would say Mike he's, that's the best version of doing deep work. Isn't 
+
+Mike Parsons: it? [00:35:00] It certainly is.
+
+And when you create the time and space, you can attack. The problem. And this theme of going after the problem, working on the product is exactly how he thinks about the people he wants to work with and how he builds. A great team. You need 
+
+ Mark Pearson Freeland: a team around you to deliver a lot of 
+
+ Mike Parsons: idea. 
+
+ Mark Pearson Freeland: How do you choose 
+
+ Mike Parsons: your team based on what?
+
+ I suppose honestly, the, 
+
+Elon Musk: it tends to be gut feel more than anything else. So when I interview somebody, my interview questions always the same, it's just. I said, tell me the story of your life and the decisions that you made along the way and why you made them. And then if and also tell me about some of the most difficult problems you worked on and how you solved them.
+
+ And that, that question I think is very important to you because the [00:36:00] people that really solve the problem, they know exactly how they solved it. They know the little details and the people that pretended to solve the problem, they can maybe go one level and then they get stuck. 
+
+Mark Pearson Freeland: I love that honesty that, yeah, because there's been again probably times for me, where I've blocked.
+
+The way I've flagged, maybe it's a conversation with a partner. I like a business partner or a colleague or a client or an interview, whatever it might be. And he has his calling out there. And again, this is a great lesson in honesty and authenticity, as well as it is for productivity and collaboration.
+
+If you really know the details, you can go that level deeper than anyone else. If you've been on that problem solving team like Elon Musk does with space X and all of his other companies, if he's there solving the problem, he can therefore go a bit deeper because he knows the [00:37:00] details. He knows what works and what doesn't work.
+
+ And I think more often than not, perhaps there's a lot of us where we. Here the problem. We might provide a solution and then we'll let somebody else do it. 
+
+Mike Parsons: You know what? I'm going to jump in here and say attacking the problem. This is a huge theme in the moonshot model. We see this everywhere, like Jaco Willink is yes, problem.
+
+ Good. Let's get into it. This is where real men are made. This is where great progress is made on a product. And I think that we can fall victim to the risk of trying to solve the problem, or I didn't create it. So why should I fix it? Or I could really embarrass myself if I try and fix it, I could be in a really vulnerable spot here.
+
+What Elan is saying that he's true measure of people is, what did you contribute to solving the. And that's the test and [00:38:00] don't give me like first level, blah, blah, blah. Let's go deep. Tell me about it. And what's good. You can use that with others, but you can use it with yourself. So if you face a challenge, Ask yourself, have you attacked the problem?
+
+[00:38:15] Have you really forensically gone into it? And what the real kicker here is, Matt? What we've also learned doing the show is when you attack the problem, so much of the stress, the anxiety, and the worry goes away because you've broken it down. And then you're starting to make some simple steps to get yourself out of the.
+
+[00:38:32] Mark Pearson Freeland: There's been so many times for me where if I avoid the issue and I don't want to think about it, it stagnates, or maybe it always comes back. It 
+
+Mike Parsons: always does. And it comes back with. 
+
+ Mark Pearson Freeland: It comes back worse because by then it's had time to percolate 
+
+ Mike Parsons: and grows horns. Doesn't exactly. 
+
+ Mark Pearson Freeland: Yeah, you're right.
+
+ There's this big insight that we're finding from people like Yaka willing [00:39:00] even Joe Rogan as well. Unless you go out and address those potential challenges, problems arise. You go out, you really understand the, maybe even Mike, you go and listen to the moonshots master series, episode nine on second order thinking.
+
+Oh yeah. And you use some frameworks to really dig into the problem, as well as the impact of your decisions, the solutions. Then you're always going to be a little bit, let's say half. Yeah, you're not going to know those details. 
+
+ Mike Parsons: I'll tell you another one you can go to is Eric Reese go to our show on Erik race, author of lean startup is all about framing, a hypothesis for solving a problem.
+
+And so if you're really keen to build a product or company and you want to have a really strategic. Practice a habit that you can build, go and check out lean startup by Eric grease. We've got a great episode studying that. That is the best practice where you're always framing problems, solution.
+
+ It's a sort of a scientific a [00:40:00] yes, no way to move forward in your business. It's fantastic. That's lean startup by Eric Reese, but it wouldn't be moonshots mark. It would not be moonshots if one of the biggest. Themes. Like I think growth mindset is a big theme equally big in our 177 shows is resilient.
+
+ I can't tell you mark, how much I've benefited from seeing 177 times. Invariably someone's success has come down to embracing the discomfort. Willing to burn the bridges to pull it all in, to get the job done. And I don't think Ilan is any 
+
+Mark Pearson Freeland: different. No, I think you're right. All the way from William H McRaven with make your bed with Ron holiday and our series on stoicism, [00:41:00] Angela Duckworth with grit.
+
+And as you say, Carol Dweck on mindset and growth mindset. I think this idea of resilience. Exists throughout a lot of these and who better to close out our show. With a great outro is Elon Musk himself. Again, speaking about Tesla and how close it was to death and how he had to be willing to make sacrifices.
+
+ Elon Musk: Tesla really faces sphere of threat of death due to the model three production around. Essentially the company was bleeding money, like crazy. And just if we didn't solve these problems in a very short period of time we were dying and it was extremely difficult to solve them. How close to death did you come?
+
+ Were you there within single digit weeks? 22 hours a day, seven days a week, sleeping in the back drain. Worked already from the, I worked in the. General assembly the body shop. If you're worried about yourself, 
+
+ Mike Parsons: [00:42:00] imploding, 
+
+ Elon Musk: like it's just too much. Absolutely. No one should put this many hours into work.
+
+This is not good. Should not work this hard. I have not, they should not do this as a sort of very painful on one sense. It's my brain and my heart. So it's. This is not recommended for anyone. I just thought, because if I didn't do it, then Tesla, good chance it would 
+
+ die. 
+
+ Mike Parsons: Not good, hard suffering.
+
+I think mark, it is so important to talk about Ilan success in light of the costs. That he has paid for this massive success is a massive investment, risk, hard work. I think he's like he's had, he's got a bunch of kids too. Like he's had a number of [00:43:00] different wives, like trying to keep up his personal must be just like extremely challenging, but you hear it in his voice there, ma he's not saying, oh yeah, that was pretty.
+
+Mark he's saying it was so hard. I was on the edge. Like he had put himself in mind, embody in spirit. He was spent, he was done. And we've talked about this famous story of him writing. I check where he cleared his entire personal wealth to back Tesla for the model three, when everything looked to die.
+
+He doubled down and he stuck to his guns. He was Goggins ask. 
+
+Mark Pearson Freeland: He did go all in and as you can hear in that clip where he's saying it hurt 
+
+Mike Parsons: my brain and his [00:44:00] voice. Like he's so fragile. Like he was that close to us to like falling apart. He 
+
+Mark Pearson Freeland: was probably that close to just saying, you know what, it's not worth it.
+
+But I think the big lesson that we can take from that clip is behind the success. Like you say, Mike is this unbelievable amount of hard work and resilience. He is a, an entrepreneur who goes all in. He'll be on, as he says in the. On the assembly line he'll be doing and getting involved with the team and the angles of work that are not necessarily the things that he's either a trained in or be paid for.
+
+ He's going out to try and figure out as part of a team, what the best solution is. He's willing to put that shoulder to the grindstone and get it going. And I think you can hear that passion as well as. Fatigue coming out of him in that clip. And it just goes to show how much blood, sweat, and [00:45:00] literal tears can go into a success.
+
+ There's no overnight success. He didn't wake up, create Tesla. And now we can see one driving on most streets where we are instead. It's the product of so much hard work. Obviously from other people as well. They won't just be a B mask, but Musk is the man who's the face and the figurehead. And you can hear from him, he's not standing back on in the sidelines.
+
+ He's in the arena. 
+
+Mike Parsons: Yeah. And the stories of him sleeping in the office and stuff like that. Or if you go back into the early days, he's first company. I only had one computer. So during the day it with the computer would host the website, but then they would pull their website down so that he could write code in the evening.
+
+ Mark Pearson Freeland: Yeah, that's right. Yeah. Yeah. 
+
+ Mike Parsons: The thing here is for all of his success, we have absolutely no rights. To be jealous. We have no [00:46:00] right to say he doesn't deserve it because when you hear that clip or when you listen to the stories of what he's put on the line, the investment and the hard work has been massive.
+
+So he deserves every single cent of his personal wealth, because if you're a vet, any doubt, you just only need to hear him. In his thriving success and abundance. Talk back to the time. When he was risking everything. And if you've got any emotional intelligence, you can listen to that clip and hear how much he suffered to achieve what he has achieved.
+
+ Like I am of no doubt. He was on the verge. He was like looking over the edge. He was looking down. I truly believe he was there. You can [00:47:00] hear it. And how he taught it, heard his head, it heard his heart and the way he says it, my. He was right on the edge of the precipice. Wasn't he? And it 
+
+Mark Pearson Freeland: reminds me of how he's had to deal with critics for space X as well.
+、
+ So obviously this challenge that he's discussing is the model three ramp for Tesla, but he similarly had challenges with converting critics. Past astronauts into the space X way of thinking as well, Mike. So he, again is not a man who's resting on his laurels. He's struggled. He's sorry, not struggling necessarily, but he's coming into challenges with all of these different businesses, but they keep.
+
+ Important habit that we can take away from his, he doesn't shy away. Exactly. He will go out and he'll go and talk to the critics. He'll try and make his case. He just keeps 
+
+ Mike Parsons: going even going. So I think like the question becomes like, how do we [00:48:00] use that? And I think we can talk about. And be willing to make sacrifice.
+
+No, it's going to be hard, but what I would build on that with is to prime yourself, like Jaco willing problems. Good. Not bad, not terrible, not why. But good. Jeff Bezos says, if you're not upsetting people, then you're not working on something that's bold and ambitious. If you're prepared to be comfortable with things being uncomfortable that was what Joe Rogan said.
+
+ And if you listen to what David Goggins says, you can't hurt. I will soldier through the only human who's ever qualified for the three special forces in the U S did. So for one of them, with fractures in both legs, that's right. He was prepared to be [00:49:00] comfortable being uncomfortable. And I think so many of us abandoned our dreams when the going gets rough.
+
+ And what we learned from Ilan today, don't give up it. Won't. Kill you keep on going and be ready to say, Ooh, it's getting really tough right now. That's good. I must be doing the right thing. I'm growing, I'm learning. I'm stretching myself, yeah. Isn't it interesting 
+
+ Mark Pearson Freeland: how somebody like an Elon Musk with.
+
+ Demonstrate those behaviors and those habits and those ways of thinking through the way that he handles himself. He's not somebody who's on these TEDx talks talking necessarily about resilience or he's not necessarily talking about. Resolve, but it's certainly demonstrated through his behavior.
+
+ It's the behavior. And it's clear that he respects and understands and appreciates the idea of [00:50:00] resolve the idea of resilience, the idea of hard work. And in fact, in that last clip near death, I know. And he's still able to behave in a way where you and I, Mike and the moonshots family can learn these lessons from when you just take a moment to really dig into how he does it.
+
+ Mike Parsons: You're absolutely right. And I'm going to take a bold guess. And say that your favorite clip from this show is be a doer. 
+
+ Mark Pearson Freeland: Oh, you've already done too many shows with me. Like I just, I find a little bit of a shoe horn here to try and get our Elon Musk. One-off special into the creativity series, but I believe.
+
+Aspect for me is so true when it comes to being creative as well. Like we're hearing from 
+
+ Mike Parsons: Elizabeth Gilbert with big magic. 
+
+ Mark Pearson Freeland: Yeah, totally. Even Walt Disney. Just again, go out and get it done. Just give it a go ignore the critics and the haters. Just give it a go. So I [00:51:00] love that tunnel story. That's going to be my favorite clip, so to speak.
+
+ What about you, Mike? Which one spoke to you the most during this special show on Elon Musk and habits of success? 
+
+Mike Parsons: I think where we ended up just getting comfortable, being uncomfortable make the sacrifice, being resilient. What's so cool is, yeah, we talked about his amazing focus thinking differently, disrupting Twitter, this guy, he is a rock and he deserves all the respect in the world.
+
+I couldn't agree more. Mike, thank you so much for joining me on this show and thank you to you. Our listeners and our members show 177 was all about the habits of success asking ourselves, how can we do it? Just like Elan. And Joe Rogan said, he's simply. Working across so many different companies and yet he adds another one.
+
+ As he shared with Chris [00:52:00] Anderson, he's going to open up that little baby called Twitter. It is going to be an open algorithm. It's going to be far. Open in the town square. So how does he do these amazing things? How does he keep disrupting and how is he so prolific? We had four routes, be a doer break down those problems, have a great team who, by the way, love solving problems and more than anything, this is so moonshots be willing to make sacrifices, be resilient.
+
+[00:52:33] That's it. If we do those things, we can learn out loud together. We can create. We can help each other to become the best version of ourselves. And that is what we are 101% all about here on the moonshots podcast. That's a wrap. 
+
+Parag Agrawal
+
+So you’re going to hear from you live and direct. And we all appreciate you joining us today.
+
+Elon Musk
+
+Absolutely, Parag. Thanks for having me. Glad to be able to speak to everyone. And since we started late, I’m going to go right ahead, hand it over to Leslie so that she can moderate this Q&A session for us.
+
+Do you work at Twitter and have thoughts about what’s going on at the company? Get in touch with Shirin Ghaffary confidentially at shirin.ghaffary@protonmail.com; Signal number available upon request.
+
+Leslie Berland
+
+Amazing. Thanks, Parag. Hi, Elon. We have a lot to cover — a ton to cover. So I am going to ask you a question that usually gets asked at the end, which is: Will you come back for a part two at some point if there are things that we don’t cover?
+
+FEATURED VIDEOS FROM VOX
+
+
+
+
+Elon Musk
+
+Oh, yeah, absolutely. I’m happy to do that.
+
+Leslie Berland
+
+Okay, great. ... So I really do see this as the beginning of a conversation, obviously, with the company at large, and then also with teams and leaders over the next coming weeks and months and beyond. So we’re just getting started. Okay, so I’m going to zoom all the way out to the reason that we’re actually here together today. And that is because you love Twitter.
+
+Elon Musk
+
+I do love Twitter, yeah. So I want to be clear about that. I love Twitter. In fact, I literally have tweeted “I love Twitter,”
+
+Leslie Berland
+
+You have. So tell us, say more. Why do you love Twitter? And also, why did you and do you want to buy Twitter?
+
+Elon Musk
+
+Well, let’s see. I find, like, I learn a lot from what I read on Twitter, and what I see in the pictures, videos, text, and memes that people create. I also find it’s a great way to get a message out over the phone, when I want to say something and make an announcement, I think Twitter’s the best way to do that. It just goes out immediately to everyone. And you know, I sort of made this joke already, but you know, some people use their hair to express themselves, I use Twitter. So you know, I find it’s the best forum for communicating with a lot of people simultaneously.
+
+And getting that message directly to people in the past, you’d have to ... in order for somebody to read about something, you have to issue a press release, and then you’d hope that the regular media would write about the press release. And then they wouldn’t write about it in quite the way you’d like to write about it. I always find those like, the old-style press releases kind of, really quite strange because you’re writing a press release about yourself, which is sort of something that the media — it’s like, it’s overly flattering, it’s like vaguely sort of, you know, propagandist — effectively — quite propagandist, and then hope that the media writes something favorable, which they usually do not.
+
+And, you know, I think that that actually is maybe one of the biggest reasons for using Twitter is so I communicate directly to people and not through the lens of the media. And, you know, I think there’s obviously an important role for the media to play. But as anyone knows who reads the newspaper, it’s coming through quite a negative lens. So you have to say, how many newspaper articles do you read that are positive? And how many news articles do you read that are negative? What percentage are positive, what percentage are negative? And then when you read about — it’s obviously overwhelmingly negative. And then when you read about something — newspaper is a dated term, in the news — where you actually personally understand the situation, how many times has the media gotten it right? I would say almost never. Not never, but almost never.
+
+So this is a way for people to communicate directly with each other and not through a negative lens. And I think that’s extremely important for the world. So I’m sort of going waxing on about this, but I think it’s pretty important.
+
+And you know, some of my comments about Twitter being sort of like a digital town square — but really much more than that, because you can’t put that many people in a town square, but you have the ability to communicate with millions of people on Twitter. That’s just an incredibly important thing. And I think it’s essential for a functioning democracy to function well.
+
+I think it’s essential to have free speech and to be able to communicate freely. Now you know, the free speech stuff: It’s free speech within the context of the law. So I’m not talking about suggesting that we just flout the law, because we’ll just get shut down in that case.
+
+And I think also, there’s freedom of speech or freedom of reach. And freedom of speech is one thing, because, like, anyone could just go into the middle of Times Square right now and say anything they want, they could just walk into the middle of Times Square and deny the Holocaust, okay? You can’t stop them, they will just do that. But that doesn’t mean that needs to be promoted to millions of people.
+
+So I think people should be allowed to say pretty outrageous things that are within the bounds of the law, but then that doesn’t get amplified, it doesn’t get, you know, a ton of reach.
+
+And I think an important goal for Twitter, really, is to try to include as much of the country, as much of the world, as possible. So currently, you know, it’s a relatively small percentage of the world that is — it is a small percentage of the world that is on Twitter — say, like daily active users, if you presume that that’s, say, 200 million, you’ve got 8 billion people on Earth, that 7.8 billion who are not on Twitter. So that’s a pretty big number.
+
+And really, I think you want as much of the world as possible on Twitter, you want to be as inclusive as possible, the broadest demographic, and for that to happen, people must like being on Twitter.
+
+So if they’re being harassed or if they’re uncomfortable, they’re just not gonna use Twitter. We have to strike this balance of allowing people to say what they want to say but also make people comfortable on Twitter, or they simply won’t use it. It will be sort of quite niche.
+
+
+But I think there’s also a lot that should be done in terms of enhancing the core technology and operating of Twitter. Like right now, if somebody does, say, a video, like a content creator does a video, then they can put that video on YouTube and just put a link to it from Twitter because they’re able to monetize their content on YouTube, but not on Twitter. And I think it’s gonna be really important for you to want to put the content on Twitter, which we do, then there has to be a mechanism for content creators to monetize that content.
+
+And so they could dual post and they can post it to YouTube and to Twitter. But it’s, I think it’s crazy right now that content creators will use Twitter to drive traffic to their YouTube video because that’s how they make a living. And that really should be on Twitter.
+
+We want to basically address the reasons that people like — why aren’t more people using Twitter? And why do people click away from Twitter? And if we can address those reasons, then then they will use Twitter more, and they’ll get greater value from the service. And, you know, if I think of, like, WeChat in China, which is actually a great, great app, but there’s no WeChat movement outside of China. And I think that there’s a real opportunity to create that. You basically live on WeChat in China because it’s so useful and so helpful to your daily life. And I think if we could achieve that, or even close to that with Twitter, it would be an immense success. Hopefully, that is — I really went on there. And I’m happy to elaborate on any of those points.
+
+Leslie Berland：
+
+Yeah, no, it’s great. And we’re gonna get a little bit deeper on free speech and policy a little bit later. So I do want to come back to this actually. But in terms of you, you clearly have a lot of thoughts around sort of the problems with Twitter, the things that aren’t working well, and the barriers to what’s possible. How do you see your buying the company? Did that sort of feed your desire to buy the company or how do you see these things come together? And what’s your thought process around that?
+
+Elon Musk：
+
+Well, there’s definitely an ongoing challenge with Twitter with bot accounts and spam accounts. There’s quite a lot of crypto scams on Twitter. It’s gotten better, but there’s still a fair bit of that. There are also people where they’re not necessarily bots, but they might be operating. You know, one person’s operating hundreds of accounts and trying to make them look like individuals, but they’re not.
+
+So you know, I think a lot of stuff is kind of reiterating stuff that I said publicly —in fact, on Twitter — but in order for people to have trust in Twitter, I think it’s extremely important that there be transparency. So that’s why I’m an advocate of having the algorithm be open source so that people can critique it, improve it, identify bugs, potentially, or bias. But when it’s transparent, transparency obviously increases trust. So I think it’s just very important, like, anything that’s happening on an automated basis be open source and be clear, and that if there is any action taken by someone within Twitter to boost, or de-boost, or something with a tweet that it’s just very clearly identified on the tweet, so people aren’t ascribing malice where there’s no malice.
+
+But when it’s inscrutable, then people don’t know what to think. And they will sometimes think the worst when that’s actually not true. So I think that trust is extremely important. And then just the usefulness of the system, getting rid of sort of troll farms and bots and spam is incredibly important.
+
+I have a thought in this regard, which I think might work, which is to — because this kind of leads us to Twitter Blue — but if you have Twitter Blue, your identification in the system doesn’t change at all, you still have a normal user ID. But I think if there was like a little Twitter Blue authenticated, not like authenticated like a celebrity, but authenticated at least by Twitter Blue payments, piggybacking on the payment system due to authentication, that I think a lot of people would be like, “Okay, that’s pretty helpful to have some designation that reflects my name, that indicates I’m probably not a bot, or spam, or one person who’s operating 100 accounts.” And that’s like three bucks a month, I believe, I think that would be pretty helpful.
+
+And then, also prioritizing comments and mentions and whatnot, by who is verified in this broader sense of the word of “verification.” In the sense of you’re Twitter Blue verified, and just prioritize that above someone who’s not not verified. There will still be full read access to the system, still be full write access to the system. But essentially any tweets or our actions will be prioritized according to who’s verified. And then a very large number of people can be verified.
+
+Leslie Berland：
+
+I’m gonna have a couple of follow-up questions on this, specifically, but given [that] you mentioned trust, I wanted to ask one of the employee questions around trust. They said, “Twitter has a lot of incredible, smart, talented people. What can we do to earn your trust? And what are you going to do to earn ours?”
+
+Elon Musk：
+
+I think trust is as trust does. So, I tend to be extremely literal in what I say. So, aspirationally, one does not need to read between the lines, one can simply read the lines. So the things that I’ve said about Twitter, I think, need to happen in order for it … to really go to the next level. I think the potential is there for Twitter to be accessible to an order of magnitude more people, and for a lot more people to find it useful.
+
+Currently, I guess it would be a cutback, for 4 percent of the world or something like that. Four or 5 percent of the world, optimistically, is finding Twitter useful, and maybe 50 percent of the world could find Twitter useful. So I want to take whatever actions would lead to that. I’m very much like [...] I wouldn’t say it’s necessarily a trust thing. It’s like, if somebody is getting useful things done, then that’s great. But if they’re not getting useful things done, then I’m like, okay, why are they at the company? So it’s really just, we need to improve the core technology, improve the design.
+
+Leslie Berland：
+
+Trust emerges from that.
+
+Elon Musk：
+
+Yeah. ... If somebody’s getting stuff done, great, I love them. And if they’re not, I don’t like that and I do not love them. It’s pretty straightforward.
+
+Leslie Berland：
+
+I would love to stay on this topic of employees and how we work. So distributed work is something that has been core to our strategy. Most of our people work in a hybrid model. About 1,500 people work remote full time. We know that you’ve recently sent a communication to Tesla executives about remote work. Can you share what your point of view is on remote work, and specifically for Twitter?
+
+
+Elon Musk：
+
+Now Tesla makes cars and you cannot make cars remotely, obviously. You have to make cars in a big factory, and the supply chain, and you have to bring in the parts, and assemble them, and then transport the car to the owner. All of these things must be done in person because it’s physically impossible to do them remotely. There are some roles at Tesla where the work can be done remotely, like, say, software or design. … I think that’s still a case where you want to aspire to do things in person, but if somebody is exceptional at their job, then it’s possible for them to be effective, even working remotely.
+
+So with Tesla, I have simply asked for a list — that the manager has to confirm — that they’re an excellent contributor, and if they do, they’re allowed to work remotely. So it’s pretty basic, I think. There is a hit one takes, remotely, because it does reduce esprit de corps and ... it kind of matters to be in person, at least some of the time. So one of the things I’ve said, even if somebody’s working remotely, they gotta show up at the office occasionally so that they recognize their colleagues and don’t walk down the street and pass your colleagues and you don’t recognize them. That would not be good.
+
+Leslie Berland：
+
+Well I think this is super clarifying, and resonates with us entirely in terms of how we work, so thank you for clarifying that topic. It’s really important to us. I would like to keep on the topic of employees and some of the questions that have come through. This one’s on compensation and benefits. Most people — especially, obviously, here — are used to working for a public company. Can you talk a little bit about how you compensate folks at SpaceX as a private company, how does it work, and what approach you plan to take at Twitter as a private company?
+
+Elon Musk：
+
+Yeah. So SpaceX, I think, operates in the best of both worlds, where stock and options are issued to everyone. But we don’t have all the challenges of being a publicly traded company with a stock that can be up and down from one day to the next — it can be quite a distraction — and where one is at the mercy of short sellers and class action lawsuits. ... It’s like being in the public stockade in which they just throw tomatoes at you all day. SpaceX still allows liquidity, so every six months, there’s a liquidity event at SpaceX, and people have the opportunity to sell their shares. And that’s worked very well for the whole lot of the company. So I think something like that would make sense at Twitter. So it would still be stock and options and every day, and it would just be liquidity events twice a year.
+
+Leslie Berland：
+
+Thanks. We are getting some real-time feedback on the remote work questions, so I just want to make sure I follow up.
+
+Elon Musk：
+
+Sure.
+
+Leslie Berland：
+
+Your approach to remote work and distributed work. ... What I’m hearing from you is that you are supportive of remote and distributed work as it is productive and meaningful. People show up when it’s important, and depending on their jobs. Is that an accurate reflection?
+
+Elon Musk：
+
+The bias there definitely needs to be strongly toward working in person. But if somebody is exceptional, then remote work can be okay. But basically, if their work output is exceptional, then remote work is fine. There is some communication impact that one takes when working remotely because if you’re with people, and they’re just a few desks away, it’s very easy to communicate in real time, but it’s much harder to do that if you’re in different physical locations. So I do want to emphasize that the bias is very much toward in-person work. It’s just that it would obviously be insane if someone is excellent at what they do but can only work remotely, to then fire them even though they’re doing excellent work. ... So I’m definitely not in favor of things that are mad. I’m in favor of things that build the business and make it better.
+
+Leslie Berland：
+
+Thank you. Question about layoffs. We received several questions from employees on this point. Obviously, they’ve read about the recent layoffs at Tesla. Can you speak to how you’re thinking about layoffs at Twitter?
+
+Elon Musk：
+
+Well, I think it depends on, you know, the company does need to be — to get — healthy. So I mean, right now, the costs exceed the revenue. So that’s not a great situation to be in. And so there would have to be some rationalization of headcount and expenses to have revenue be greater than cost. Otherwise, Twitter is simply not viable or can’t grow. So, yeah, I think it would just be dependent on you know, like I said, anyone who’s obviously a significant contributor should have nothing to worry about. I do not take actions which are disruptive to the health of the company. So, you know, yeah.
+
+Leslie Berland：
+
+One question connected to that, as you’re obviously learning and gaining information as we get closer to this deal being closed. What do you feel that you have deep understanding and grasp of? And what are the areas that you feel like you want to dive much more deeper on to understand and learn?
+
+Elon Musk：
+
+Well, I certainly, I mean, I have a strong, a great understanding of the product because I use Twitter every day, practically. And, you know, I think I’ve got a really good understanding of how Twitter works from a product standpoint. What I have less understanding of is, you know, like, this sort of bot spam or multi-user account — basically, anything that affects the monetizable daily user number, that’s probably my biggest concern. Because that’s really what drives advertising revenue, as well as subscription revenue. And really, Twitter’s revenue is going to be subscription, advertising — I think payments would be an interesting thing to do, as well. But all of those things are only relevant as a function of how many unique humans are on the system. So that’s my biggest concern. And that’s what I’ve said publicly as well, like I said, I try to be as literal as possible, yeah.
+
+Leslie Berland：
+
+And as we think about, obviously, the product and the service and serving customers all around the world, clearly, it’s critical and existential for us to serve diverse communities. And all people, as you said earlier. So inclusion, diversity is obviously core and central to our work at Twitter, both our employees and the customers that we serve. You have been vocal on a variety of different topics and issues that relate to inclusion and diversity. Can you talk about both your views and also your commitment to creating a diverse and inclusive workplace and also a service where everyone can feel included and safe?
+
+Elon Musk：
+
+Yeah, I mean, well, it’s, to be clear, when talking about Twitter as a whole, there’s 8 billion people in the world; I’m told there’s 200 million daily users of Twitter. That’s a 7.8 billion-person gap. So I think we really want to have, I don’t know, at least a billion people on Twitter, maybe more, as many people as we can possibly get on Twitter. So that, I think, is the most inclusive definition of inclusiveness, just like, all humans. So that’s important. You know, from a company standpoint, I believe in a sort of strict meritocracy, so whatever, you know, whoever’s doing great work, great, they get more responsibility and authority. And that’s that.
+
+Leslie Berland：
+
+And I know you mentioned in some of our conversations about your I&D team at Tesla; we have an amazing I&D team here at Twitter as well. So continue on the journey together.
+
+I want to talk about content moderation, go back to a number of the things that you said earlier. So this is one I’ll take, I’ll take verbatim. So you’ve spoken a lot about the importance of free speech. Let’s start with the US, where we have a strong tradition around this. And you touched on this earlier, a lot of what’s called lawful but awful speech is allowed here in the United States, right? Animal abuse footage, doxxing, videos of sexual violence, etc. So allowing this type of content, obviously, could cause harm, and make Twitter unusable for the broad audience that you’re trying to reach. What is your approach to this type of content that’s legal but problematic as it relates to people actually using the service? How do you think about this tension?
+
+Elon Musk：
+
+As I said earlier, really, I think people, we should allow people to say what they want, post what they want, within the bounds of the law. But that’s different from them being able to reach people who don’t want to be reached with that content. So if that content is offensive to people, they will, those people will simply stop using Twitter. So it’s important to make Twitter as attractive as possible. And really, that means not showing people content that they would find hateful or offensive, or even frankly content they would find boring is not good. We don’t even want them to see boring content.
+
+We were talking about TikTok last night. And TikTok obviously does a great job of making sure you’re not bored. I mean, it’s just like ADD, but like next level — but TikTok does a great job of making you not bored. I mean, I do find some of the videos offensive, I think, but they’re not boring. So the folks — how do we ensure people have content that they find entertaining and engaging and interesting, such that they want to keep using Twitter and use it more. So that’s, yeah, that’s what’s essential to the growth of the service.
+
+Leslie Berland：
+
+One of our employees asked about people who use Twitter having the right and the ability to filter out content that they don’t want to see — I think this gets to exactly what you’re pointing to.
+
+Elon Musk：
+
+I mean, to be clear, the standard is much more than not offending people. The standard is, should be, that they’re very entertained and informed. Like, you could not offend someone, but you could also bore them and show a bunch of content that they don’t find interesting, and then they will not use the service or they will use it less. So that’s why I used the example of TikTok, where they just honed the algorithm to be as engaging as possible. And I think we want to also hone it to be as engaging as possible, in a different way, I think.
+
+You know, TikTok is interesting, but, like, you want to be informed about serious issues as well. And I think Twitter, in terms of serious issues, can be a lot better for informing people about serious issues. I do you think it’s important that there be, you know, if there are two sides to an issue, it’s important to represent multiple opinions. But you know, and just make sure that we’re not sort of driving narrative. Give people an opportunity to understand the various sides of issues. Most issues in the world are complex. They don’t boil down to a simple, “this is 100 percent good; this is 100 percent bad.” So I think it would be — we’d have a more informed public — if people were presented with multiple sides to an issue.
+
+Leslie Berland：
+
+One point I just want to go back to, on the law and how that impacts content and moderation: As we think globally around the world, there are some countries that have laws that limit speech, and sometimes actually use these laws to silence disagreement with the government, etc. You were talking about different points of view. So Twitter is historically focused on doing what we can do to enable people everywhere to have their voices. How do you think about that as it relates to, again, like the local laws and what that means?
+
+Elon Musk：
+
+Well, I’m in favor of doing, of going, as far as the law will allow us. If the law will — if, say, Twitter employees would get arrested in the country if we didn’t adhere to the law, then we obviously must adhere to the law or exit the country or something. So I mean, as much as we can enable people to have a voice and to speak their mind, I think we want to do that.
+
+Leslie Berland：
+
+And I know we talked about this as well, last night — about the teams doing this work and sort of your desire to connect with those teams and understand where we’ve been, where we are, where we’re going. And I think that would be usually productive across the board, both ways. Can we talk briefly about your political views? How if at all do your political views play into the leadership of the companies that you currently run? How would it affect Twitter, if at all?
+
+Elon Musk：
+
+Well, my political views, I think, are moderate, at least as would be, you know, as if you said, like, what is the center of the normal distribution of political views in the country, I think that’d be pretty close to the center. You know, I’ve voted Democrat, every election until this recent one this week. And then I voted for Mayra Flores, who is Republican. She’s Mexican American, and I thought a good candidate and worth voting for. But I, you know, I’m in favor of moderate politics. But I’m allowing people who have relatively extreme views to express those views within the bounds of the law. So that’s, you know, as I said publicly, I think if, let’s say, the far left 10 percent and far right 10 percent were equally upset on Twitter, then that would probably be a good outcome.
+
+Leslie Berland：
+
+I want to just talk about our business for a minute. You’ve spoken about incentives that the business creates for services like Twitter. What role does advertising play in the future of your business plan for the company?
+
+Elon Musk：
+
+I think advertising is very important for Twitter. So in the case of, say, Tesla or SpaceX, there’s no need for advertising because the demand exceeds our production. So I mean, advertising is fundamentally a demand generator, and you occasionally want to get some other message out there. But it’s fundamentally a demand generator.
+
+So given that, at Tesla, demand is far in excess of production, there’s no need for Tesla to advertise. But, you know, I’m not against advertising. I would probably, I don’t know, want to talk to the advertisers and say, like, “hey, let’s just make sure the ads are as entertaining as possible.” I think they’re more effective if they’re entertaining. Like, you want to not be strident or spammy in an ad. And then, of course, I don’t think it’s good to allow advertising of any products which are, you know, bad products.
+
+I was literally scammed. I bought this thing off of a YouTube ad, and it doesn’t work. And then I Googled it and it’s like, oh, yeah, once you click on the second page of Google search results, it’s like, yeah, this product totally doesn’t work. It’s trash. And I’m like, well, why the hell is YouTube allowing advertising of scammy products? That’s totally not cool. So I think if your advertising is entertaining, interesting, it’s something you might actually want, and the product would be, you know, fulfilling to the Twitter user, then I think that’s great advertising. So, yeah.
+
+Leslie Berland：
+
+So we’re gonna go over. Is that okay? Awesome. Thank you. Can you talk a little bit about Twitter and payments? You mentioned this a few times in different settings. I would love to understand your thinking there.
+
+Elon Musk：
+
+Yeah. Your money is essentially a form of information. It’s information that allows us to exchange products and services without having to barter and allows people to shift obligations in time. But money is fundamentally digital at this point, and has been for a while. And PayPal, you know, I think it’s done a great job on the payments front. I think it would make sense to integrate payments into Twitter so that it’s easy to send money back and forth. And if you have currency as well as crypto. Essentially, whenever somebody would find it useful.
+
+So my goal would be to maximize the usefulness of the service — the more useful it is, the better. And if one can use it to make convenient payments, that’s an increase in usefulness. News, entertainment, and payments, I think, are like three critical areas. But really, it’s just about thinking about how to make this, how to make using Twitter so compelling that you can’t live without it and that everyone wants to use it.
+
+Leslie Berland：
+
+I want it to say on the product. Again, you did touch upon this earlier, but it’s a recurring question around the authentication piece, you know, in terms of you’re saying you want to authenticate all humans, so just to sort of double click into that, you know, balancing this with those who benefit from anonymity, right, from a safety perspective, especially, for example, human rights activists and marginalized communities. Can you just clarify, again, speak to that tension? And how you think about those words, specifically? Anonymity is sort of core to how people use the service.
+
+Elon Musk：
+
+
+Yeah, I don’t think it’s necessary for someone to use their real name. So if one, say, does a payments-based authentication, I think it should be okay to not use your real name on Twitter. So Twitter would know who you are, at least from a payment standpoint, but you would not have to state your real name or anything. That’s obviously important, where if someone has different political views from their manager, let’s say, then they don’t really want to, you know, get crosswise there. And so it would be better for them to have a pseudonym on Twitter, but it would still be backend authenticated.
+
+And like, at no point would I suggest that you have to be authenticated in order to use Twitter, it’s just that it would be prioritizing authenticated comments and actions on Twitter over unauthenticated in order to combat the bots and trolls. And essentially, it needs to be much more expensive to have a troll army. Whereas right now, it’s basically very inexpensive to have 100,000 fake Twitter accounts.
+
+Leslie Berland：
+
+You have certainly been very vocal on Twitter. You are very vocal on Twitter. And often your tweets and even emojis create news cycles. You have been also critical of the company on Twitter, which obviously impacts lots of discussions, conversations, and perceptions from whether it be partners or even now employees. How do you think about these tweets? Do you look at the reaction and think about the reaction of these tweets? I’m just curious about the thinking behind the tweet, if you will.
+
+Elon Musk：
+
+Well, I think that it would be helpful, you know — one thing about words is that it’s hard to convey tone. And so it’s possible for … Essentially, people will sometimes take the words and then assume they were said in maybe an angry way or a vindictive way or something like that. But, I mean, hopefully you can tell my normal tone is not ... I’m not an angry person. I almost never raise my voice. So like, in a year, I might not have raised my voice. So this is not a, you know ... Sometimes people may think, “oh, wow, he’s sort of yelling and screaming” or something, but I’m really not. So maybe there’s some way to indicate tone? I mean, emoji sorta do that. But I don’t know, maybe they could have like, I don’t know, an irony flag or something: This is an ironic tweet. Something like that.
+
+Leslie Berland：
+
+Listen, I think Spaces is a great product for you as well. We also have voice tweets, which I don’t think I’ve seen you use before, but I think that would add sort of your literal voiceover and color some of the things that you tweet ...
+
+Elon Musk：
+
+Oh sure. Yeah maybe I could just say it. Or you could read it, but then you can also see how I would have said it. Like, I wonder if you said that in an angry way. And then you can see how I actually said it.
+
+Leslie Berland：
+
+Yes, absolutely, that’d be amazing. I know, we have 10 more minutes, up at the hour, so I’m holding you until then. Your role at the company — there’s been some discussion about will you be CEO, will you not be CEO? How can you speak to this? And how do you anticipate your role influencing strategy, day-to-day division?
+
+Elon Musk
+
+Well, I guess I’m not hung up on titles, but I do want to drive the product in a particular direction. So, you know, it could be like ... I don’t really care about being CEO. In fact, I renamed myself “Techno King” at Tesla in an official SEC filing. So ...
+
+Leslie Berland：
+
+Yes, we saw.
+
+Elon Musk：
+
+And then our CFO was renamed “Master of coin,” which I think is a cooler thing than CFO. So, I mean, what I really just want do is, like, drive the product and improve the product, and then it’s like, basically, software and product design. So you know, I don’t mind doing other things, you know, related to operating the company, but there are chores. There’s a lot of chores to do as CEO. And all I really want is to make sure that the product evolves rapidly and in a good way.
+
+And I don’t really care what the title is, but I do ... Obviously, people do need to listen to me. If I say, like, “Hey, we need to improve the product and find ways and make the following changes, add these features.” Then, you know, I do expect that people listen to me, in this regard. I mean, that’s how I do it at SpaceX and Tesla. So you know, I’m really just working with engineering and production. And, like, it sometimes may seem that, wow, he’s really out there a lot. But actually, I’m not. If you see how many actual interviews I do, it’s quite a small number. But whenever I do a tweet, they’ll make an entire, like, two-page article about it, you know. So, I’m like, like, basically get far fewer.
+
+I’m actually quite internally focused at SpaceX and Tesla, even though it may not seem that way. And it’s really just, you know, evolving the rocket technology at SpaceX and providing global internet with Starlink. And then at Tesla, it’s about accelerating sustainable energy, you know, electric cars and stationary battery packs and solar power. And the fundamental good of Tesla, I would say, is measured by how many years accelerate the advent of sustainable energy.
+
+And then the final goal of SpaceX is, you know, are we able to make life multiplanetary and thus improve the probable lifespan of consciousness? Like you’ve already said, what is the unifying philosophy for me? It is, we should take the set of actions most likely to extend the scope, scale, and lifespan of consciousness as we know it. What sort of actions improve things at a civilizational level and improve the probable lifespan of civilization? Civilization will come to an end at some point, but let’s try to make it last as long as possible.
+
+And it would be great to understand more about the nature of the universe. Why we’re here, meaning of life, where are things going, where we come from? Can we travel to other star systems and see if there are alien civilizations? There might be a whole bunch of long-dead, one-planet civilizations out there that existed 500 million years ago. Think about the span of human civilization from the advent of the first writing, it’s only about 5,000 years.

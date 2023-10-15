@@ -9,6 +9,7 @@ from core.model_providers.models.entity.model_params import ModelType
 from fields.dataset_fields import dataset_detail_fields
 from services.dataset_service import DatasetService
 from services.provider_service import ProviderService
+from werkzeug.exceptions import NotFound, Forbidden
 
 
 def _validate_name(name):
@@ -75,6 +76,14 @@ class DatasetApi(DatasetApiResource):
             raise DatasetNameDuplicateError()
 
         return marshal(dataset, dataset_detail_fields), 200
+
+    def delete(self, tenant_id):
+        # 获取参数dataset_id
+        dataset_id_str = request.args.get('dataset_id', default=None, type=str)
+        if DatasetService.delete_dataset(dataset_id_str, current_user):
+            return {'result': 'success'}, 204
+        else:
+            raise NotFound("Dataset not found.")
 
 
 api.add_resource(DatasetApi, '/datasets')
