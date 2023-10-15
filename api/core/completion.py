@@ -146,7 +146,9 @@ class Completion:
                 conversation_message_task=conversation_message_task,
                 memory=memory,
                 fake_response=fake_response,
-                outer_memory=outer_memory
+                outer_memory=outer_memory,
+                user_name=user_name,
+                assistant_name=assistant_name
             )
         except ConversationTaskStoppedException:
             return

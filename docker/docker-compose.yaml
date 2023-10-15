@@ -3,7 +3,7 @@ services:
   # API service
   api:
 #    image: langgenius/dify-api:0.3.26
-    build: ../api/
+    image: dify-api:dev
     restart: always
     environment:
       # Startup mode, 'api' starts the API server.
@@ -126,7 +126,7 @@ services:
   # The Celery worker for processing the queue.
   worker:
 #    image: langgenius/dify-api:0.3.26
-    build: ./api/
+    image: dify-api:dev
     restart: always
     environment:
       # Startup mode, 'worker' starts the Celery worker for processing the queue.
