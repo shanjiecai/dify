@@ -1,11 +1,11 @@
 {
   "name": "dify-web",
-  "version": "0.3.26",
+  "version": "0.3.28",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next dev",
+    "start": "cp -r .next/static .next/standalone/.next/static && cp -r public .next/standalone/public && cross-env PORT=$npm_config_port HOSTNAME=$npm_config_host node .next/standalone/server.js",
     "lint": "next lint",
     "fix": "next lint --fix",
     "eslint-fix": "eslint --fix",
@@ -20,6 +20,7 @@
     "@formatjs/intl-localematcher": "^0.2.32",
     "@headlessui/react": "^1.7.13",
     "@heroicons/react": "^2.0.16",
+    "@lexical/react": "^0.12.2",
     "@mdx-js/loader": "^2.3.0",
     "@mdx-js/react": "^2.3.0",
     "@next/mdx": "^13.2.4",
@@ -42,6 +43,7 @@
     "js-cookie": "^3.0.1",
     "katex": "^0.16.7",
     "lamejs": "1.2.0",
+    "lexical": "^0.12.2",
     "lodash-es": "^4.17.21",
     "mermaid": "10.4.0",
     "negotiator": "^0.6.3",
@@ -93,6 +95,8 @@
     "@types/react-window-infinite-loader": "^1.0.6",
     "@types/recordrtc": "^5.6.11",
     "@types/sortablejs": "^1.15.1",
+    "autoprefixer": "^10.4.14",
+    "cross-env": "^7.0.3",
     "eslint": "8.36.0",
     "eslint-config-next": "^13.4.7",
     "husky": "^8.0.3",
@@ -100,10 +104,9 @@
     "miragejs": "^0.1.47",
     "postcss": "^8.4.21",
     "sass": "^1.61.0",
-    "uglify-js": "^3.17.4",
     "tailwindcss": "^3.3.3",
     "typescript": "4.9.5",
-    "autoprefixer": "^10.4.14"
+    "uglify-js": "^3.17.4"
   },
   "lint-staged": {
     "**/*.js?(x)": [

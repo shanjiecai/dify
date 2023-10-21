@@ -232,7 +232,7 @@ class BaseLLM(BaseProviderModel):
         :param message_type:
         :return:
         """
-        if message_type == MessageType.HUMAN or message_type == MessageType.SYSTEM:
+        if message_type == MessageType.USER or message_type == MessageType.SYSTEM:
             unit_price = self.price_config['prompt']
         else:
             unit_price = self.price_config['completion']
@@ -250,7 +250,7 @@ class BaseLLM(BaseProviderModel):
         :param message_type:
         :return: decimal.Decimal('0.0001')
         """
-        if message_type == MessageType.HUMAN or message_type == MessageType.SYSTEM:
+        if message_type == MessageType.USER or message_type == MessageType.SYSTEM:
             unit_price = self.price_config['prompt']
         else:
             unit_price = self.price_config['completion']
@@ -265,7 +265,7 @@ class BaseLLM(BaseProviderModel):
         :param message_type:
         :return: decimal.Decimal('0.000001')
         """
-        if message_type == MessageType.HUMAN or message_type == MessageType.SYSTEM:
+        if message_type == MessageType.USER or message_type == MessageType.SYSTEM:
             price_unit = self.price_config['unit']
         else:
             price_unit = self.price_config['unit']
@@ -324,13 +324,10 @@ class BaseLLM(BaseProviderModel):
                    pre_prompt: str, inputs: dict,
                    query: str,
                    context: Optional[str],
-                   memory: Optional[BaseChatMemory],
-                   outer_memory: Optional[list] = None,
-                   assistant_name: str = None,
-                   user_name: str = None) -> \
+                   memory: Optional[BaseChatMemory]) -> \
             Tuple[List[PromptMessage], Optional[List[str]]]:
         prompt_rules = self._read_prompt_rules_from_file(self.prompt_file_name(mode))
-        prompt, stops = self._get_prompt_and_stop(prompt_rules, pre_prompt, inputs, query, context, memory, outer_memory,assistant_name, user_name)
+        prompt, stops = self._get_prompt_and_stop(prompt_rules, pre_prompt, inputs, query, context, memory)
         return [PromptMessage(content=prompt)], stops
 
     def prompt_file_name(self, mode: str) -> str:
@@ -342,10 +339,7 @@ class BaseLLM(BaseProviderModel):
     def _get_prompt_and_stop(self, prompt_rules: dict, pre_prompt: str, inputs: dict,
                              query: str,
                              context: Optional[str],
-                             memory: Optional[BaseChatMemory],
-                             outer_memory: Optional[list],
-                             assistant_name: str = None,
-                             user_name: str = None) -> Tuple[str, Optional[list]]:
+                             memory: Optional[BaseChatMemory]) -> Tuple[str, Optional[list]]:
         context_prompt_content = ''
         if context and 'context_prompt' in prompt_rules:
             prompt_template = JinjaPromptTemplate.from_template(template=prompt_rules['context_prompt'])
@@ -375,9 +369,7 @@ class BaseLLM(BaseProviderModel):
             tmp_human_message = PromptBuilder.to_human_message(
                 prompt_content=prompt + query_prompt,
                 inputs={
-                    'user_name': user_name if user_name else 'Human',
-                    'query': query,
-                    'assistant_name': assistant_name if assistant_name else 'Assistant'
+                    'query': query
                 }
             )
 
@@ -395,52 +387,7 @@ class BaseLLM(BaseProviderModel):
             histories = self._get_history_messages_from_memory(memory, rest_tokens)
             prompt_template = JinjaPromptTemplate.from_template(template=prompt_rules['histories_prompt'])
             histories_prompt_content = prompt_template.format(
-                user_name=user_name,
-                histories=histories,
-                assistant_name=assistant_name
-            )
-
-            prompt = ''
-            for order in prompt_rules['system_prompt_orders']:
-                if order == 'context_prompt':
-                    prompt += context_prompt_content
-                elif order == 'pre_prompt':
-                    prompt += (pre_prompt_content + '\n') if pre_prompt_content else ''
-                elif order == 'histories_prompt':
-                    prompt += histories_prompt_content
-        elif outer_memory and 'group_histories_prompt' in prompt_rules:
-            # append group chat histories
-            tmp_human_message = PromptBuilder.to_human_message(
-                prompt_content=prompt + query_prompt,
-                inputs={
-                    'user_name': user_name if user_name else 'Human',
-                    'query': query,
-                    'assistant_name': assistant_name if assistant_name else 'Assistant'
-                }
-            )
-
-            if self.model_rules.max_tokens.max:
-                curr_message_tokens = self.get_num_tokens(to_prompt_messages([tmp_human_message]))
-                max_tokens = self.model_kwargs.max_tokens
-                rest_tokens = self.model_rules.max_tokens.max - max_tokens - curr_message_tokens
-                rest_tokens = min(max(rest_tokens, 0), 2000)
-            else:
-                rest_tokens = 2500
-
-            # memory.human_prefix = prompt_rules['human_prefix'] if 'human_prefix' in prompt_rules else 'Human'
-            # memory.ai_prefix = prompt_rules['assistant_prefix'] if 'assistant_prefix' in prompt_rules else 'Assistant'
-            #
-            # histories = self._get_history_messages_from_memory(memory, rest_tokens)
-            histories = ""
-            for item in outer_memory:
-                histories += item["role"] + ": " + item["message"] + "\n"
-            if len(histories) > rest_tokens:
-                histories = histories[-rest_tokens:]
-            prompt_template = JinjaPromptTemplate.from_template(template=prompt_rules['histories_prompt'])
-            histories_prompt_content = prompt_template.format(
-                user_name=user_name,
-                histories=histories,
-                assistant_name=assistant_name
+                histories=histories
             )
 
             prompt = ''
@@ -454,8 +401,6 @@ class BaseLLM(BaseProviderModel):
 
         prompt_template = JinjaPromptTemplate.from_template(template=query_prompt)
         query_prompt_content = prompt_template.format(
-            user_name=user_name,
-            assistant_name=assistant_name,
             query=query
         )
 
@@ -483,7 +428,6 @@ class BaseLLM(BaseProviderModel):
     def _get_history_messages_from_memory(self, memory: BaseChatMemory,
                                           max_token_limit: int) -> str:
         """Get memory messages."""
-        # max_token_limit=2048 message_limit=10
         memory.max_token_limit = max_token_limit
         memory_key = memory.memory_variables[0]
         external_context = memory.load_memory_variables({})

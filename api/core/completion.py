@@ -16,6 +16,9 @@ from core.model_providers.model_factory import ModelFactory
 from core.model_providers.models.entity.message import PromptMessage
 from core.model_providers.models.llm.base import BaseLLM
 from core.orchestrator_rule_parser import OrchestratorRuleParser
+from core.prompt.prompt_template import PromptTemplateParser
+from core.prompt.prompt_transform import PromptTransform
+from models.model import App, AppModelConfig, Account, Conversation, EndUser
 from core.prompt.prompt_builder import PromptBuilder
 from core.prompt.prompts import MORE_LIKE_THIS_GENERATE_PROMPT
 from models.dataset import DocumentSegment, Dataset, Document
@@ -34,7 +37,7 @@ class Completion:
         """
         errors: ProviderTokenNotInitError
         """
-        query = PromptBuilder.process_template(query)
+        query = PromptTemplateParser.remove_template_variables(query)
 
         memory = None
         if conversation:
@@ -177,18 +180,40 @@ class Completion:
                       user_name: str = None):
         logger.info(f"memory: {memory}")
         logger.info(f"outer_memory: {outer_memory}")
+        prompt_transform = PromptTransform()
+
         # get llm prompt
-        prompt_messages, stop_words = model_instance.get_prompt(
-            mode=mode,
-            pre_prompt=app_model_config.pre_prompt,
-            inputs=inputs,
-            query=query,
-            context=agent_execute_result.output if agent_execute_result else None,
-            memory=memory,
-            outer_memory=outer_memory,
-            assistant_name=assistant_name,
-            user_name=user_name
-        )
+        if app_model_config.prompt_type == 'simple':
+            prompt_messages, stop_words = prompt_transform.get_prompt(
+                mode=mode,
+                pre_prompt=app_model_config.pre_prompt,
+                inputs=inputs,
+                query=query,
+                context=agent_execute_result.output if agent_execute_result else None,
+                memory=memory,
+                model_instance=model_instance,
+                outer_memory=outer_memory,
+                assistant_name=assistant_name,
+                user_name=user_name
+            )
+        else:
+            prompt_messages = prompt_transform.get_advanced_prompt(
+                app_mode=mode,
+                app_model_config=app_model_config,
+                inputs=inputs,
+                query=query,
+                context=agent_execute_result.output if agent_execute_result else None,
+                memory=memory,
+                model_instance=model_instance,
+                outer_memory=outer_memory,
+                assistant_name=assistant_name,
+                user_name=user_name
+            )
+
+            model_config = app_model_config.model_dict
+            completion_params = model_config.get("completion_params", {})
+            stop_words = completion_params.get("stop", [])
+
         logger.info(f"prompt_messages: {prompt_messages[0].content}")
         logger.info(f"stop_words: {stop_words}")
 
@@ -199,7 +224,7 @@ class Completion:
 
         response = model_instance.run(
             messages=prompt_messages,
-            stop=stop_words,
+            stop=stop_words if stop_words else None,
             callbacks=[LLMCallbackHandler(model_instance, conversation_message_task)],
             fake_response=fake_response
         )
@@ -253,18 +278,36 @@ class Completion:
         if max_tokens is None:
             max_tokens = 0
 
+        prompt_transform = PromptTransform()
+        prompt_messages = []
+
         # get prompt without memory and context
-        prompt_messages, _ = model_instance.get_prompt(
-            mode=mode,
-            pre_prompt=app_model_config.pre_prompt,
-            inputs=inputs,
-            query=query,
-            context=None,
-            memory=None,
-            outer_memory=outer_memory,
-            assistant_name=assistant_name,
-            user_name=user_name
-        )
+        if app_model_config.prompt_type == 'simple':
+            prompt_messages, _ = prompt_transform.get_prompt(
+                mode=mode,
+                pre_prompt=app_model_config.pre_prompt,
+                inputs=inputs,
+                query=query,
+                context=None,
+                memory=None,
+                model_instance=model_instance,
+                outer_memory=outer_memory,
+                assistant_name=assistant_name,
+                user_name=user_name
+            )
+        else:
+            prompt_messages = prompt_transform.get_advanced_prompt(
+                app_mode=mode,
+                app_model_config=app_model_config,
+                inputs=inputs,
+                query=query,
+                context=None,
+                memory=None,
+                model_instance=model_instance,
+                outer_memory=outer_memory,
+                assistant_name=assistant_name,
+                user_name=user_name
+            )
 
         prompt_tokens = model_instance.get_num_tokens(prompt_messages)
         rest_tokens = model_limited_tokens - max_tokens - prompt_tokens
