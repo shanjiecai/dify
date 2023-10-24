@@ -8,12 +8,13 @@ def judge_llm_active(api_key: str, histories: str, assistant_name: str):
         return False
     openai.api_key = api_key
     prompt = f'''You are {assistant_name} in a group chat.
-    Here is the group chat histories, inside <histories></histories> XML tags.
-    <histories>
-    {histories}
-    </histories>
-    You should determine whether to answer as {assistant_name}, just answer yes or no
-    '''
+Here is the group chat histories, inside <histories></histories> XML tags.
+<histories>
+{histories}
+</histories>
+You should determine whether to answer as {assistant_name}, just answer yes or no
+'''
+    print(prompt)
     messages = [
         {
             "role": "user",
