@@ -16,7 +16,7 @@ class ReadOnlyConversationTokenDBBufferSharedMemory(BaseChatMemory):
     model_instance: BaseLLM
     memory_key: str = "chat_history"
     max_token_limit: int = 2000
-    message_limit: int = 10
+    message_limit: int = 15
 
     @property
     def buffer(self) -> List[BaseMessage]:
@@ -24,15 +24,19 @@ class ReadOnlyConversationTokenDBBufferSharedMemory(BaseChatMemory):
         # fetch limited messages desc, and return reversed
         messages = db.session.query(Message).filter(
             Message.conversation_id == self.conversation.id,
-            Message.answer_tokens > 0
+            # Message.answer_tokens > 0
         ).order_by(Message.created_at.desc()).limit(self.message_limit).all()
 
         messages = list(reversed(messages))
 
         chat_messages: List[PromptMessage] = []
+        # 去掉最后一个
+        if messages[-1].answer == None:
+            messages = messages[:-1]
         for message in messages:
-            chat_messages.append(PromptMessage(content=message.query, type=MessageType.USER))
-            chat_messages.append(PromptMessage(content=message.answer, type=MessageType.ASSISTANT))
+            chat_messages.append(PromptMessage(content=message.query, type=MessageType.USER if message.role == "Human" else message.role))
+            if message.answer:
+                chat_messages.append(PromptMessage(content=message.answer, type=MessageType.ASSISTANT if self.ai_prefix == "Assistant" else self.ai_prefix))
 
         if not chat_messages:
             return []

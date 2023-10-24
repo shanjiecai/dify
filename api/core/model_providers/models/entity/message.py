@@ -1,6 +1,8 @@
+from __future__ import annotations
+
 import enum
 
-from langchain.schema import HumanMessage, AIMessage, SystemMessage, BaseMessage, FunctionMessage
+from langchain.schema import HumanMessage, AIMessage, SystemMessage, BaseMessage, FunctionMessage, ChatMessage
 from pydantic import BaseModel
 
 
@@ -19,12 +21,12 @@ class MessageType(enum.Enum):
 
 
 class PromptMessage(BaseModel):
-    type: MessageType = MessageType.USER
+    type: MessageType | str = MessageType.USER
     content: str = ''
     function_call: dict = None
 
 
-def to_lc_messages(messages: list[PromptMessage]):
+def to_lc_messages(messages: list[PromptMessage|ChatMessage]):
     lc_messages = []
     for message in messages:
         if message.type == MessageType.USER:
@@ -36,6 +38,8 @@ def to_lc_messages(messages: list[PromptMessage]):
             lc_messages.append(AIMessage(content=message.content, additional_kwargs=additional_kwargs))
         elif message.type == MessageType.SYSTEM:
             lc_messages.append(SystemMessage(content=message.content))
+        else:
+            lc_messages.append(ChatMessage(content=message.content, role=message.type, type=message.type))
 
     return lc_messages
 

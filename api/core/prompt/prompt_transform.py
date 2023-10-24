@@ -5,6 +5,7 @@ import enum
 from typing import List, Optional, Tuple
 
 from langchain.memory.chat_memory import BaseChatMemory
+from langchain.memory import ConversationSummaryBufferMemory
 from langchain.schema import BaseMessage
 
 from core.model_providers.models.entity.model_params import ModelMode
@@ -27,10 +28,13 @@ class PromptTransform:
                    query: str,
                    context: Optional[str],
                    memory: Optional[BaseChatMemory],
-                   model_instance: BaseLLM) -> \
+                   model_instance: BaseLLM,
+                   outer_memory: Optional[list] = None,
+                   assistant_name: str = None,
+                   user_name: str = None) -> \
             Tuple[List[PromptMessage], Optional[List[str]]]:
         prompt_rules = self._read_prompt_rules_from_file(self._prompt_file_name(mode, model_instance))
-        prompt, stops = self._get_prompt_and_stop(prompt_rules, pre_prompt, inputs, query, context, memory, model_instance)
+        prompt, stops = self._get_prompt_and_stop(prompt_rules, pre_prompt, inputs, query, context, memory, model_instance, outer_memory, assistant_name, user_name)
         return [PromptMessage(content=prompt)], stops
 
     def get_advanced_prompt(self, 
@@ -40,7 +44,10 @@ class PromptTransform:
             query: str,
             context: Optional[str],
             memory: Optional[BaseChatMemory],
-            model_instance: BaseLLM) -> List[PromptMessage]:
+            model_instance: BaseLLM,
+            outer_memory: Optional[list] = None,
+            assistant_name: str = None,
+            user_name: str = None) -> List[PromptMessage]:
         
         model_mode = app_model_config.model_dict['mode']
 
@@ -116,7 +123,10 @@ class PromptTransform:
                              query: str,
                              context: Optional[str],
                              memory: Optional[BaseChatMemory],
-                             model_instance: BaseLLM) -> Tuple[str, Optional[list]]:
+                             model_instance: BaseLLM,
+                             outer_memory: Optional[list],
+                             assistant_name: str = None,
+                             user_name: str = None) -> Tuple[str, Optional[list]]:
         context_prompt_content = ''
         if context and 'context_prompt' in prompt_rules:
             prompt_template = PromptTemplateParser(template=prompt_rules['context_prompt'])
@@ -151,25 +161,53 @@ class PromptTransform:
             )
 
             rest_tokens = self._calculate_rest_token(tmp_human_message, model_instance)
-
-            memory.human_prefix = prompt_rules['human_prefix'] if 'human_prefix' in prompt_rules else 'Human'
-            memory.ai_prefix = prompt_rules['assistant_prefix'] if 'assistant_prefix' in prompt_rules else 'Assistant'
+            if not user_name:
+                memory.human_prefix = prompt_rules['human_prefix'] if 'human_prefix' in prompt_rules else 'Human'
+            else:
+                memory.human_prefix = user_name
+            if not assistant_name:
+                memory.ai_prefix = prompt_rules['assistant_prefix'] if 'assistant_prefix' in prompt_rules else 'Assistant'
+            else:
+                memory.ai_prefix = assistant_name
+            # # 测试用
+            # rest_tokens = 100
 
             histories = self._get_history_messages_from_memory(memory, rest_tokens)
-            prompt_template = PromptTemplateParser(template=prompt_rules['histories_prompt'])
-            histories_prompt_content = prompt_template.format({'histories': histories})
 
-            prompt = ''
-            for order in prompt_rules['system_prompt_orders']:
-                if order == 'context_prompt':
-                    prompt += context_prompt_content
-                elif order == 'pre_prompt':
-                    prompt += (pre_prompt_content + '\n') if pre_prompt_content else ''
-                elif order == 'histories_prompt':
-                    prompt += histories_prompt_content
+        elif outer_memory and 'group_histories_prompt' in prompt_rules:
+            # append group chat histories
+            tmp_human_message = PromptBuilder.to_human_message(
+                prompt_content=prompt + query_prompt,
+                inputs={
+                    'user_name': user_name if user_name else 'Human',
+                    'query': query,
+                    'assistant_name': assistant_name if assistant_name else 'Assistant'
+                }
+            )
+            rest_tokens = self._calculate_rest_token(tmp_human_message, model_instance)
+            histories = ""
+            for item in outer_memory:
+                histories += item["role"] + ": " + item["message"] + "\n"
+            if len(histories) > rest_tokens:
+                histories = histories[-rest_tokens:]
+        else:
+            histories = ''
+        prompt_template = PromptTemplateParser(template=prompt_rules['histories_prompt'])
+        histories_prompt_content = prompt_template.format(
+            {'histories': histories}
+        )
+        prompt = ''
+        for order in prompt_rules['system_prompt_orders']:
+            if order == 'context_prompt':
+                prompt += context_prompt_content
+            elif order == 'pre_prompt':
+                prompt += (pre_prompt_content + '\n') if pre_prompt_content else ''
+            elif order == 'histories_prompt':
+                prompt += histories_prompt_content
 
         prompt_template = PromptTemplateParser(template=query_prompt)
-        query_prompt_content = prompt_template.format({'query': query})
+        query_prompt_content = prompt_template.format({'query': query, 'assistant_name': assistant_name if assistant_name else 'Assistant',
+                                                       'user_name': user_name if user_name else 'Human'})
 
         prompt += query_prompt_content
 

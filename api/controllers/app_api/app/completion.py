@@ -1,9 +1,11 @@
 import json
 import logging
+import time
 from typing import Union, Generator
 
 from flask import stream_with_context, Response
 from flask_restful import reqparse
+from sqlalchemy import and_
 from werkzeug.exceptions import NotFound, InternalServerError
 
 import services
@@ -14,11 +16,14 @@ from controllers.service_api.app.error import AppUnavailableError, ProviderNotIn
     ProviderModelCurrentlyNotSupportError
 from controllers.app_api.wraps import AppApiResource
 from core.conversation_message_task import PubHandler
+from core.completion import Completion
+from core.judge_llm_active import judge_llm_active
 from core.model_providers.error import LLMBadRequestError, LLMAuthorizationError, LLMAPIUnavailableError, LLMAPIConnectionError, \
     LLMRateLimitError, ProviderTokenNotInitError, QuotaExceededError, ModelCurrentlyNotSupportError
+from extensions.ext_database import db
 from libs.helper import uuid_value
 from services.completion_service import CompletionService
-from models.model import ApiToken, App
+from models.model import ApiToken, App, Conversation, AppModelConfig
 
 
 class CompletionApi(AppApiResource):
@@ -89,16 +94,17 @@ class ChatApi(AppApiResource):
         #     raise NotChatAppError()
 
         parser = reqparse.RequestParser()
-        parser.add_argument('inputs', type=dict, required=True, location='json')
-        parser.add_argument('query', type=str, required=True, location='json')
+        parser.add_argument('inputs', type=dict, required=False, location='json', default={})
+        parser.add_argument('query', type=str, required=False, location='json', default='')
         parser.add_argument('response_mode', type=str, choices=['blocking', 'streaming'], location='json')
-        # parser.add_argument('conversation_id', type=uuid_value, location='json')
-        parser.add_argument('user', type=str, location='json', required=True)
+        parser.add_argument('conversation_id', type=uuid_value, location='json', required=False)
+        parser.add_argument('user', type=str, location='json', required=False, default="")
         parser.add_argument('retriever_from', type=str, required=False, default='dev', location='json')
         # outer_memory = [
         #     {"role": "A", "message": "hello"},
         #     {"role": "B", "message": "hi"}
         # ]
+
         parser.add_argument('outer_memory', type=list, required=False, default=None, location='json')
         # validate
         outer_memory = parser.parse_args()['outer_memory']
@@ -109,6 +115,9 @@ class ChatApi(AppApiResource):
         args = parser.parse_args()
         # if args["user"] == "default" and outer_memory:
         #     args["user"] = outer_memory[-1]["role"]
+        # conversation_id和query不可以同时没有
+        if args['conversation_id'] is None and args['query'] == '' and outer_memory is None:
+            raise ValueError("conversation_id , query and outer_memory cannot be None all")
 
         streaming = args['response_mode'] == 'streaming'
 
@@ -151,14 +160,53 @@ class ChatApi(AppApiResource):
             raise InternalServerError()
 
 
-class ChatStopApi(AppApiResource):
-    def post(self, app_model, end_user, task_id):
-        if app_model.mode != 'chat':
-            raise NotChatAppError()
+class ChatActiveApi(AppApiResource):
+    # 主动询问机器人根据当前群聊历史是否应该回话
+    def post(self, app_model):
+        b = time.time()
+        parser = reqparse.RequestParser()
+        parser.add_argument('conversation_id', type=uuid_value, location='json')
+        args = parser.parse_args()
 
-        PubHandler.stop(end_user, task_id)
+        conversation_filter = [
+            Conversation.id == args['conversation_id'],
+            Conversation.app_id == app_model.id,
+            Conversation.status == 'normal'
+        ]
+        conversation = db.session.query(Conversation).filter(and_(*conversation_filter)).first()
+        app_model_config = db.session.query(AppModelConfig).filter(AppModelConfig.id==conversation.app_model_config_id).first()
+        print(app_model_config.copy().__dict__)
+        print(time.time() - b)
 
-        return {'result': 'success'}, 200
+        memory = Completion.get_memory_from_conversation(
+            tenant_id=app_model.tenant_id,
+            app_model_config=app_model_config.copy(),
+            conversation=conversation,
+            return_messages=False,
+            human_prefic="Human",
+            assistant_name=app_model.name
+        )
+
+        memory.ai_prefix = app_model.name
+        memory_key = memory.memory_variables[0]
+        external_context = memory.load_memory_variables({})
+        histories = external_context[memory_key]
+        print(f"histories: {histories}")
+        print(time.time() - b)
+        judge_result = judge_llm_active(memory.model_instance.credentials["openai_api_key"], histories,
+                                        app_model.name)
+        print(time.time() - b)
+        return {"result": judge_result}
+
+
+# class ChatStopApi(AppApiResource):
+#     def post(self, app_model, end_user, task_id):
+#         if app_model.mode != 'chat':
+#             raise NotChatAppError()
+#
+#         PubHandler.stop(end_user, task_id)
+#
+#         return {'result': 'success'}, 200
 
 
 def compact_response(response: Union[dict | Generator]) -> Response:
@@ -198,5 +246,6 @@ def compact_response(response: Union[dict | Generator]) -> Response:
 # api.add_resource(CompletionApi, '/completion-messages')
 # api.add_resource(CompletionStopApi, '/completion-messages/<string:task_id>/stop')
 api.add_resource(ChatApi, '/chat-messages')
-api.add_resource(ChatStopApi, '/chat-messages/<string:task_id>/stop')
+api.add_resource(ChatActiveApi, '/chat-messages-active')
+# api.add_resource(ChatStopApi, '/chat-messages/<string:task_id>/stop')
 

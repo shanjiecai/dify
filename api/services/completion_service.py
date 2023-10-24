@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import json
 import logging
 import threading
@@ -40,8 +42,8 @@ class CompletionService:
         inputs = args['inputs']
         query = args['query']
 
-        if app_model.mode != 'completion' and not query:
-            raise ValueError('query is required')
+        # if app_model.mode != 'completion' and not query:
+        #     raise ValueError('query is required')
 
         query = query.replace('\x00', '')
 
@@ -54,16 +56,25 @@ class CompletionService:
                 Conversation.app_id == app_model.id,
                 Conversation.status == 'normal'
             ]
-            if user:
-                if from_source == 'console':
-                    conversation_filter.append(Conversation.from_account_id == user.id)
-                else:
-                    conversation_filter.append(Conversation.from_end_user_id == user.id if user else None)
+            # if user:
+            #     if from_source == 'console':
+            #         conversation_filter.append(Conversation.from_account_id == user.id)
+            #     else:
+            #         conversation_filter.append(Conversation.from_end_user_id == user.id if user else None)
 
             conversation = db.session.query(Conversation).filter(and_(*conversation_filter)).first()
 
             if not conversation:
                 raise ConversationNotExistsError()
+
+            if not query:
+                # 选取最后一条message的query作为query
+                message = db.session.query(Message).filter(
+                    Message.conversation_id == conversation.id,
+                    # Message.status == 'normal'
+                ).order_by(Message.created_at.desc()).first()
+                query = message.query if message else ''
+                user_name = message.role if message else ''
 
             if conversation.status != 'normal':
                 raise ConversationCompletedError()
@@ -362,6 +373,7 @@ class CompletionService:
             try:
                 message_result = {}
                 for message in pubsub.listen():
+                    print(message)
                     if message["type"] == "message":
                         result = message["data"].decode('utf-8')
                         result = json.loads(result)

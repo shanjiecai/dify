@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import json
 import logging
 from typing import Optional, List, Union
@@ -12,6 +14,8 @@ from core.conversation_message_task import ConversationMessageTask, Conversation
 from core.model_providers.error import LLMBadRequestError
 from core.memory.read_only_conversation_token_db_buffer_shared_memory import \
     ReadOnlyConversationTokenDBBufferSharedMemory
+from core.memory.read_only_conversation_summary_buffer_shared_memory import ReadOnlyConversationSummaryBufferSharedMemory
+from core.helper import encrypter
 from core.model_providers.model_factory import ModelFactory
 from core.model_providers.models.entity.message import PromptMessage
 from core.model_providers.models.llm.base import BaseLLM
@@ -20,7 +24,7 @@ from core.prompt.prompt_template import PromptTemplateParser
 from core.prompt.prompt_transform import PromptTransform
 from models.model import App, AppModelConfig, Account, Conversation, EndUser
 from core.prompt.prompt_builder import PromptBuilder
-from core.prompt.prompts import MORE_LIKE_THIS_GENERATE_PROMPT
+# from core.prompt.prompts import MORE_LIKE_THIS_GENERATE_PROMPT
 from models.dataset import DocumentSegment, Dataset, Document
 from models.model import App, AppModelConfig, Account, Conversation, Message, EndUser
 logger = logging.getLogger(__name__)
@@ -40,13 +44,16 @@ class Completion:
         query = PromptTemplateParser.remove_template_variables(query)
 
         memory = None
+        early_stop = None
         if conversation:
             # get memory of conversation (read-only)
             memory = cls.get_memory_from_conversation(
                 tenant_id=app.tenant_id,
                 app_model_config=app_model_config,
                 conversation=conversation,
-                return_messages=False
+                return_messages=False,
+                human_prefic=user_name,
+                assistant_name=assistant_name if assistant_name else "Assistant"
             )
 
             inputs = conversation.inputs
@@ -67,7 +74,8 @@ class Completion:
             inputs=inputs,
             query=query,
             streaming=streaming,
-            model_instance=final_model_instance
+            model_instance=final_model_instance,
+            user_name=user_name if user_name else "Human"
         )
 
         rest_tokens_for_context_and_memory = cls.get_validate_rest_tokens(
@@ -248,8 +256,28 @@ class Completion:
             tenant_id=tenant_id,
             model_config=app_model_config.model_dict
         )
-
-        # use llm config from conversation
+        # try:
+        #     from langchain.llms import OpenAI
+        #     llm = OpenAI(openai_api_key=memory_model_instance.credentials["openai_api_key"])
+        # except:
+        #     llm = None
+        # if llm:
+        #     memory = ReadOnlyConversationSummaryBufferSharedMemory(
+        #         llm=llm,
+        #         conversation=conversation,
+        #         model_instance=memory_model_instance,
+        #         max_token_limit=kwargs.get("max_token_limit", 20),
+        #         memory_key=kwargs.get("memory_key", "chat_history"),
+        #         return_messages=kwargs.get("return_messages", True),
+        #         input_key=kwargs.get("input_key", "input"),
+        #         output_key=kwargs.get("output_key", "output"),
+        #         message_limit=kwargs.get("message_limit", 100),
+        #         human_prefix=kwargs.get("human_prefix", "Human"),
+        #         ai_prefix=kwargs.get("assistant_name", None),
+        #         moving_summary_buffer="",
+        #         vebrose=True
+        #     )
+        # else:
         memory = ReadOnlyConversationTokenDBBufferSharedMemory(
             conversation=conversation,
             model_instance=memory_model_instance,
@@ -258,7 +286,11 @@ class Completion:
             return_messages=kwargs.get("return_messages", True),
             input_key=kwargs.get("input_key", "input"),
             output_key=kwargs.get("output_key", "output"),
-            message_limit=kwargs.get("message_limit", 10),
+            message_limit=kwargs.get("message_limit", 50),
+            human_prefix=kwargs.get("human_prefix", "Human"),
+            ai_prefix=kwargs.get("assistant_name", None),
+            moving_summary_buffer="",
+            # vebrose=True
         )
 
         return memory
@@ -339,51 +371,51 @@ class Completion:
             model_kwargs.max_tokens = max_tokens
             model_instance.set_model_kwargs(model_kwargs)
 
-    @classmethod
-    def generate_more_like_this(cls, task_id: str, app: App, message: Message, pre_prompt: str,
-                                app_model_config: AppModelConfig, user: Account, streaming: bool):
-
-        final_model_instance = ModelFactory.get_text_generation_model_from_model_config(
-            tenant_id=app.tenant_id,
-            model_config=app_model_config.model_dict,
-            streaming=streaming
-        )
-
-        # get llm prompt
-        old_prompt_messages, _ = final_model_instance.get_prompt(
-            mode='completion',
-            pre_prompt=pre_prompt,
-            inputs=message.inputs,
-            query=message.query,
-            context=None,
-            memory=None
-        )
-
-        original_completion = message.answer.strip()
-
-        prompt = MORE_LIKE_THIS_GENERATE_PROMPT
-        prompt = prompt.format(prompt=old_prompt_messages[0].content, original_completion=original_completion)
-
-        prompt_messages = [PromptMessage(content=prompt)]
-
-        conversation_message_task = ConversationMessageTask(
-            task_id=task_id,
-            app=app,
-            app_model_config=app_model_config,
-            user=user,
-            inputs=message.inputs,
-            query=message.query,
-            is_override=True if message.override_model_configs else False,
-            streaming=streaming,
-            model_instance=final_model_instance
-        )
-
-        cls.recale_llm_max_tokens(
-            model_instance=final_model_instance,
-            prompt_messages=prompt_messages
-        )
-
-        final_model_instance.run(
-            messages=prompt_messages,
-            callbacks=[LLMCallbackHandler(final_model_instance, conversation_message_task)]
-        )
+    # @classmethod
+    # def generate_more_like_this(cls, task_id: str, app: App, message: Message, pre_prompt: str,
+    #                             app_model_config: AppModelConfig, user: Account, streaming: bool):
+    #
+    #     final_model_instance = ModelFactory.get_text_generation_model_from_model_config(
+    #         tenant_id=app.tenant_id,
+    #         model_config=app_model_config.model_dict,
+    #         streaming=streaming
+    #     )
+    #
+    #     # get llm prompt
+    #     old_prompt_messages, _ = final_model_instance.get_prompt(
+    #         mode='completion',
+    #         pre_prompt=pre_prompt,
+    #         inputs=message.inputs,
+    #         query=message.query,
+    #         context=None,
+    #         memory=None
+    #     )
+    #
+    #     original_completion = message.answer.strip()
+    #
+    #     prompt = MORE_LIKE_THIS_GENERATE_PROMPT
+    #     prompt = prompt.format(prompt=old_prompt_messages[0].content, original_completion=original_completion)
+    #
+    #     prompt_messages = [PromptMessage(content=prompt)]
+    #
+    #     conversation_message_task = ConversationMessageTask(
+    #         task_id=task_id,
+    #         app=app,
+    #         app_model_config=app_model_config,
+    #         user=user,
+    #         inputs=message.inputs,
+    #         query=message.query,
+    #         is_override=True if message.override_model_configs else False,
+    #         streaming=streaming,
+    #         model_instance=final_model_instance
+    #     )
+    #
+    #     cls.recale_llm_max_tokens(
+    #         model_instance=final_model_instance,
+    #         prompt_messages=prompt_messages
+    #     )
+    #
+    #     final_model_instance.run(
+    #         messages=prompt_messages,
+    #         callbacks=[LLMCallbackHandler(final_model_instance, conversation_message_task)]
+    #     )

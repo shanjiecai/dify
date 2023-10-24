@@ -6,7 +6,7 @@ import secrets
 import uuid
 from datetime import datetime, timedelta
 from hashlib import sha256
-from typing import Optional
+from typing import Optional, Dict, Any
 
 from werkzeug.exceptions import Forbidden, Unauthorized
 from flask import session, current_app
@@ -505,7 +505,7 @@ class RegisterService:
             redis_client.delete(cls._get_invitation_token_key(token))
 
     @classmethod
-    def get_invitation_if_token_valid(cls, workspace_id: str, email: str, token: str) -> Optional[Account]:
+    def get_invitation_if_token_valid(cls, workspace_id: str, email: str, token: str) -> dict[str, str | Any] | None:
         invitation_data = cls._get_invitation_by_token(token, workspace_id, email)
         if not invitation_data:
             return None
@@ -539,7 +539,7 @@ class RegisterService:
                 }
 
     @classmethod
-    def _get_invitation_by_token(cls, token: str, workspace_id: str, email: str) -> Optional[str]:
+    def _get_invitation_by_token(cls, token: str, workspace_id: str, email: str) -> dict[str, str | Any] | None | Any:
         if workspace_id is not None and email is not None:
             email_hash = sha256(email.encode()).hexdigest()
             cache_key = f'member_invite_token:{workspace_id}, {email_hash}:{token}'

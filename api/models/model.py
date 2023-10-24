@@ -325,6 +325,9 @@ class Conversation(db.Model):
 
     is_deleted = db.Column(db.Boolean, nullable=False, server_default=db.text('false'))
 
+    previous_summary = db.Column(db.Text, nullable=True)
+    previous_summary_updated_at = db.Column(db.DateTime, nullable=True)
+
     @property
     def model_config(self):
         model_config = {}
@@ -465,6 +468,7 @@ class Message(db.Model):
     inputs = db.Column(db.JSON)
     query = db.Column(db.Text, nullable=False)
     message = db.Column(db.JSON, nullable=False)
+    role = db.Column(db.String(255), nullable=True)
     message_tokens = db.Column(db.Integer, nullable=False, server_default=db.text('0'))
     message_unit_price = db.Column(db.Numeric(10, 4), nullable=False)
     message_price_unit = db.Column(db.Numeric(10, 7), nullable=False, server_default=db.text('0.001'))

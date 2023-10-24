@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import json
 import time
 from typing import Optional, Union, List
@@ -22,7 +24,7 @@ from models.model import AppModelConfig, Conversation, Account, Message, EndUser
 class ConversationMessageTask:
     def __init__(self, task_id: str, app: App, app_model_config: AppModelConfig, user: Account,
                  inputs: dict, query: str, streaming: bool, model_instance: BaseLLM,
-                 conversation: Optional[Conversation] = None, is_override: bool = False):
+                 conversation: Optional[Conversation] = None, is_override: bool = False, user_name: str = "Human"):
         self.start_at = time.perf_counter()
 
         self.task_id = task_id
@@ -33,6 +35,7 @@ class ConversationMessageTask:
         self.is_override = is_override
 
         self.user = user
+        self.user_name = user_name
         self.inputs = inputs
         self.query = query
         self.streaming = streaming
@@ -137,6 +140,7 @@ class ConversationMessageTask:
             from_end_user_id=(self.user.id if isinstance(self.user, EndUser) else None),
             from_account_id=(self.user.id if isinstance(self.user, Account) else None),
             agent_based=self.app_model_config.agent_mode_dict.get('enabled'),
+            role=self.user_name
         )
 
         db.session.add(self.message)
