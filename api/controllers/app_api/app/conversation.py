@@ -61,7 +61,8 @@ class ConversationApi(AppApiResource):
             system_message = ""
             system_instruction = ""
             system_instruction_tokens = 0
-        print(system_instruction)
+        # print(system_instruction)
+        end_user = create_or_update_end_user_for_user_id(app_model, "")
 
         conversation = Conversation(
             app_id=app_model.id,
@@ -77,7 +78,7 @@ class ConversationApi(AppApiResource):
             system_instruction_tokens=system_instruction_tokens,
             status='normal',
             from_source='api',
-            from_end_user_id=None,
+            from_end_user_id=end_user.id,
             from_account_id=None,
         )
 
