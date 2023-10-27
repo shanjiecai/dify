@@ -20,6 +20,7 @@ import services
 from services.conversation_service import ConversationService
 from extensions.ext_database import db
 from models.model import AppModelConfig, Conversation, App, Message
+from logger import logger
 
 
 class ConversationApi(AppApiResource):
@@ -114,7 +115,7 @@ class ConversationAddMessage(AppApiResource):
         conversation = Conversation.query.filter_by(id=conversation_id).first()
         if conversation is None:
             raise ConversationNotFoundError()
-
+        logger.info(f"add {user}:{message} to conversation {conversation_id} ")
         # message_id = str(uuid.uuid4())
         message_class = Message(
             app_id=app_model.id,

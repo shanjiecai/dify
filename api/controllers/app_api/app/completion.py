@@ -24,6 +24,7 @@ from extensions.ext_database import db
 from libs.helper import uuid_value
 from services.completion_service import CompletionService
 from models.model import ApiToken, App, Conversation, AppModelConfig
+from logger import logger
 
 
 class CompletionApi(AppApiResource):
@@ -124,7 +125,7 @@ class ChatApi(AppApiResource):
         # if end_user is None and args['user'] is not None:
         end_user = create_or_update_end_user_for_user_id(app_model, args['user'])
         try:
-            print(app_model.name)
+            logger.info(f"{app_model.name} {args['conversation_id']} {args['query']} {args['user']}")
             response = CompletionService.completion(
                 app_model=app_model,
                 user=end_user,
@@ -175,9 +176,6 @@ class ChatActiveApi(AppApiResource):
         ]
         conversation = db.session.query(Conversation).filter(and_(*conversation_filter)).first()
         app_model_config = db.session.query(AppModelConfig).filter(AppModelConfig.id==conversation.app_model_config_id).first()
-        print(app_model_config.copy().__dict__)
-        print(time.time() - b)
-
         memory = Completion.get_memory_from_conversation(
             tenant_id=app_model.tenant_id,
             app_model_config=app_model_config.copy(),
@@ -191,11 +189,12 @@ class ChatActiveApi(AppApiResource):
         memory_key = memory.memory_variables[0]
         external_context = memory.load_memory_variables({})
         histories = external_context[memory_key]
-        print(f"histories: {histories}")
-        print(time.time() - b)
+        logger.info(f"histories: {histories}, app_model.name: {app_model.name}")
+        logger.info(f"get histories in {time.time() - b}")
         judge_result = judge_llm_active(memory.model_instance.credentials["openai_api_key"], histories,
                                         app_model.name)
-        print(time.time() - b)
+        logger.info(judge_result)
+        logger.info(time.time() - b)
         return {"result": judge_result}
 
 
