@@ -9,7 +9,7 @@ def judge_llm_active(api_key: str, histories: str, assistant_name: str):
     openai.api_key = api_key
     if assistant_name != "James Corden":
         prompt = f'''You are {assistant_name} in a group chat.
-        Here is the group chat histories, inside <histories></histories> XML tags.
+        You need to participate in the group chat. Here is the group chat histories, inside <histories></histories> XML tags.
         <histories>
         {histories}
         </histories>
@@ -17,12 +17,12 @@ def judge_llm_active(api_key: str, histories: str, assistant_name: str):
         '''
     else:
         # 主持人prompt，尽量活跃气氛
-        prompt = f'''You are {assistant_name} in a group chat.As the host of the group chat, you need to try to liven up the atmosphere.
+        prompt = f'''You are {assistant_name} or DJ Bot in a group chat.As the host of the group chat, you need to participate in the group chat and try to liven up the atmosphere.
         Here is the group chat histories, inside <histories></histories> XML tags.
         <histories>
         {histories}
         </histories>
-        You should determine whether to answer as {assistant_name}, just answer yes or no
+        You should determine whether to answer as {assistant_name} or DJ Bot, just answer yes or no
         '''
     # print(prompt)
     messages = [
@@ -34,7 +34,7 @@ def judge_llm_active(api_key: str, histories: str, assistant_name: str):
     response = openai.ChatCompletion.create(
         model="gpt-4",
         max_tokens=1,
-        temperature=0.1,
+        temperature=0,
         presence_penalty=0,
         frequency_penalty=0,
         top_p=1,
@@ -42,3 +42,8 @@ def judge_llm_active(api_key: str, histories: str, assistant_name: str):
         stream=False
     )
     return response["choices"][0]["message"]["content"].strip().lower().startswith("yes")
+
+
+if __name__ == '__main__':
+    print(judge_llm_active("", '''''', "James Corden"))
+
