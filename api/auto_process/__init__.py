@@ -37,7 +37,7 @@ def summarize_text(name, text, max_length=80):
 
 
 if __name__ == '__main__':
-    path = "/Users/jiecai/PycharmProjects/dify/api/auto_process/2"
+    path = "/Users/jiecai/PycharmProjects/dify/api/auto_process/3"
     file_list = os.listdir(path)
     for file in file_list:
         file_path = os.path.join(path, file)
