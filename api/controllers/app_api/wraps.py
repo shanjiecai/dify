@@ -20,7 +20,10 @@ def validate_app_token(func):
             raise Unauthorized('Invalid Authorization header')
         if request.path == "/backend-api/v1/app/list":
             return func(*args, **kwargs)
-        app_id = request.json.get('app_id')
+        if request.method == "GET":
+            app_id = request.args.get('app_id')
+        else:
+            app_id = request.json.get('app_id')
         app_model = db.session.query(App).filter(App.id == app_id).first()
         return func(app_model, *args, **kwargs)
     return decorated_view

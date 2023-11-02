@@ -1,4 +1,7 @@
+import random
+
 import openai
+from mylogger import logger
 
 from core.model_providers.models.llm.base import BaseLLM
 
@@ -41,9 +44,13 @@ def judge_llm_active(api_key: str, histories: str, assistant_name: str):
         messages=messages,
         stream=False
     )
+    # 加入一定概率让能返回True
+    if random.random() < 0.3:
+        return True
     return response["choices"][0]["message"]["content"].strip().lower().startswith("yes")
 
 
 if __name__ == '__main__':
-    print(judge_llm_active("", '''''', "James Corden"))
+    # print(judge_llm_active("", '''''', "James Corden"))
+    print(random.random())
 
