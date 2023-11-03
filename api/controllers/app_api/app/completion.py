@@ -24,7 +24,7 @@ from extensions.ext_database import db
 from libs.helper import uuid_value
 from services.completion_service import CompletionService
 from models.model import ApiToken, App, Conversation, AppModelConfig
-from logger import logger
+from mylogger import logger
 
 
 class CompletionApi(AppApiResource):

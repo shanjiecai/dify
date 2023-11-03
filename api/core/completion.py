@@ -27,7 +27,7 @@ from core.prompt.prompt_builder import PromptBuilder
 # from core.prompt.prompts import MORE_LIKE_THIS_GENERATE_PROMPT
 from models.dataset import DocumentSegment, Dataset, Document
 from models.model import App, AppModelConfig, Account, Conversation, Message, EndUser
-logger = logging.getLogger(__name__)
+from mylogger import logger
 
 
 class Completion:
@@ -98,27 +98,28 @@ class Completion:
         try:
             # parse sensitive_word_avoidance_chain
             chain_callback = MainChainGatherCallbackHandler(conversation_message_task)
-            sensitive_word_avoidance_chain = orchestrator_rule_parser.to_sensitive_word_avoidance_chain(
-                final_model_instance, [chain_callback])
-            if sensitive_word_avoidance_chain:
-                try:
-                    query = sensitive_word_avoidance_chain.run(query)
-                except SensitiveWordAvoidanceError as ex:
-                    cls.run_final_llm(
-                        model_instance=final_model_instance,
-                        mode=app.mode,
-                        app_model_config=app_model_config,
-                        query=query,
-                        inputs=inputs,
-                        agent_execute_result=None,
-                        conversation_message_task=conversation_message_task,
-                        memory=memory,
-                        fake_response=ex.message,
-                        outer_memory=outer_memory,
-                        assistant_name=assistant_name,
-                        user_name=user_name
-                    )
-                    return
+            # sensitive_word_avoidance_chain = orchestrator_rule_parser.to_sensitive_word_avoidance_chain(
+            #     final_model_instance, [chain_callback])
+
+            # if sensitive_word_avoidance_chain:
+            #     try:
+            #         query = sensitive_word_avoidance_chain.run(query)
+            #     except SensitiveWordAvoidanceError as ex:
+            #         cls.run_final_llm(
+            #             model_instance=final_model_instance,
+            #             mode=app.mode,
+            #             app_model_config=app_model_config,
+            #             query=query,
+            #             inputs=inputs,
+            #             agent_execute_result=None,
+            #             conversation_message_task=conversation_message_task,
+            #             memory=memory,
+            #             fake_response=ex.message,
+            #             outer_memory=outer_memory,
+            #             assistant_name=assistant_name,
+            #             user_name=user_name
+            #         )
+            #         return
 
             # get agent executor
             agent_executor = orchestrator_rule_parser.to_agent_executor(
@@ -236,6 +237,7 @@ class Completion:
             callbacks=[LLMCallbackHandler(model_instance, conversation_message_task)],
             fake_response=fake_response
         )
+        logger.info(f"model_instance:{model_instance.name} prompt_tokens: {response.prompt_tokens} completion_tokens: {response.completion_tokens} content: {response.content}")
         return response
 
     @classmethod
@@ -281,7 +283,7 @@ class Completion:
         memory = ReadOnlyConversationTokenDBBufferSharedMemory(
             conversation=conversation,
             model_instance=memory_model_instance,
-            max_token_limit=kwargs.get("max_token_limit", 2048),
+            max_token_limit=kwargs.get("max_token_limit", 1500),
             memory_key=kwargs.get("memory_key", "chat_history"),
             return_messages=kwargs.get("return_messages", True),
             input_key=kwargs.get("input_key", "input"),

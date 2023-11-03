@@ -20,7 +20,7 @@ import services
 from services.conversation_service import ConversationService
 from extensions.ext_database import db
 from models.model import AppModelConfig, Conversation, App, Message
-from logger import logger
+from mylogger import logger
 
 
 class ConversationApi(AppApiResource):
