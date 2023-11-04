@@ -37,7 +37,8 @@ class Completion:
                  is_override: bool = False, retriever_from: str = 'dev',
                  outer_memory: Optional[list] = None,
                  assistant_name: str = None,
-                 user_name: str = None):
+                 user_name: str = None,
+                 is_new_message=True):
         """
         errors: ProviderTokenNotInitError
         """
@@ -75,7 +76,8 @@ class Completion:
             query=query,
             streaming=streaming,
             model_instance=final_model_instance,
-            user_name=user_name if user_name else "Human"
+            user_name=user_name if user_name else "Human",
+            is_new_message=is_new_message
         )
 
         rest_tokens_for_context_and_memory = cls.get_validate_rest_tokens(

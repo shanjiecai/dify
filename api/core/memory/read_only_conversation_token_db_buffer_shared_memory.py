@@ -31,7 +31,7 @@ class ReadOnlyConversationTokenDBBufferSharedMemory(BaseChatMemory):
 
         chat_messages: List[PromptMessage] = []
         # 去掉最后一个
-        if messages[-1].answer == None:
+        if messages[-1].answer == None or messages[-1].answer == "":
             messages = messages[:-1]
         for message in messages:
             chat_messages.append(PromptMessage(content=message.query, type=MessageType.USER if message.role == "Human" else message.role))

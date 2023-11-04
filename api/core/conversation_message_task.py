@@ -24,7 +24,8 @@ from models.model import AppModelConfig, Conversation, Account, Message, EndUser
 class ConversationMessageTask:
     def __init__(self, task_id: str, app: App, app_model_config: AppModelConfig, user: Account,
                  inputs: dict, query: str, streaming: bool, model_instance: BaseLLM,
-                 conversation: Optional[Conversation] = None, is_override: bool = False, user_name: str = "Human"):
+                 conversation: Optional[Conversation] = None, is_override: bool = False, user_name: str = "Human",
+                 is_new_message: bool = True):
         self.start_at = time.perf_counter()
 
         self.task_id = task_id
@@ -53,6 +54,7 @@ class ConversationMessageTask:
         self.provider_name = self.model_dict.get('provider')
         self.model_name = self.model_dict.get('name')
         self.mode = app.mode
+        self.is_new_message = is_new_message
 
         self.init()
 
@@ -116,35 +118,37 @@ class ConversationMessageTask:
 
             db.session.add(self.conversation)
             db.session.commit()
+        if self.is_new_message:
+            self.message = Message(
+                app_id=self.app.id,
+                model_provider=self.provider_name,
+                model_id=self.model_name,
+                override_model_configs=json.dumps(override_model_configs) if override_model_configs else None,
+                conversation_id=self.conversation.id,
+                inputs=self.inputs,
+                query=self.query,
+                message="",
+                message_tokens=0,
+                message_unit_price=0,
+                message_price_unit=0,
+                answer="",
+                answer_tokens=0,
+                answer_unit_price=0,
+                answer_price_unit=0,
+                provider_response_latency=0,
+                total_price=0,
+                currency=self.model_instance.get_currency(),
+                from_source=('console' if isinstance(self.user, Account) else 'api'),
+                from_end_user_id=(self.user.id if isinstance(self.user, EndUser) else None),
+                from_account_id=(self.user.id if isinstance(self.user, Account) else None),
+                agent_based=self.app_model_config.agent_mode_dict.get('enabled'),
+                role=self.user_name
+            )
 
-        self.message = Message(
-            app_id=self.app.id,
-            model_provider=self.provider_name,
-            model_id=self.model_name,
-            override_model_configs=json.dumps(override_model_configs) if override_model_configs else None,
-            conversation_id=self.conversation.id,
-            inputs=self.inputs,
-            query=self.query,
-            message="",
-            message_tokens=0,
-            message_unit_price=0,
-            message_price_unit=0,
-            answer="",
-            answer_tokens=0,
-            answer_unit_price=0,
-            answer_price_unit=0,
-            provider_response_latency=0,
-            total_price=0,
-            currency=self.model_instance.get_currency(),
-            from_source=('console' if isinstance(self.user, Account) else 'api'),
-            from_end_user_id=(self.user.id if isinstance(self.user, EndUser) else None),
-            from_account_id=(self.user.id if isinstance(self.user, Account) else None),
-            agent_based=self.app_model_config.agent_mode_dict.get('enabled'),
-            role=self.user_name
-        )
-
-        db.session.add(self.message)
-        db.session.commit()
+            db.session.add(self.message)
+            db.session.commit()
+        else:
+            self.message = self.conversation.messages[-1]
 
     def append_message_text(self, text: str):
         if text is not None:

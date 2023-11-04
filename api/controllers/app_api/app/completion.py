@@ -167,6 +167,8 @@ class ChatActiveApi(AppApiResource):
         b = time.time()
         parser = reqparse.RequestParser()
         parser.add_argument('conversation_id', type=uuid_value, location='json')
+        parser.add_argument('inputs', type=dict, required=False, location='json', default={})
+        parser.add_argument('query', type=str, required=False, location='json', default='')
         args = parser.parse_args()
 
         conversation_filter = [
@@ -175,6 +177,8 @@ class ChatActiveApi(AppApiResource):
             Conversation.status == 'normal'
         ]
         conversation = db.session.query(Conversation).filter(and_(*conversation_filter)).first()
+        if not conversation:
+            raise NotFound("Conversation Not Exists.")
         app_model_config = db.session.query(AppModelConfig).filter(AppModelConfig.id==conversation.app_model_config_id).first()
         memory = Completion.get_memory_from_conversation(
             tenant_id=app_model.tenant_id,
@@ -193,9 +197,28 @@ class ChatActiveApi(AppApiResource):
         logger.info(f"get histories in {time.time() - b}")
         judge_result = judge_llm_active(memory.model_instance.credentials["openai_api_key"], histories,
                                         app_model.name)
+        end_user = create_or_update_end_user_for_user_id(app_model, "")
+        if judge_result:
+
+            response = CompletionService.completion(
+                app_model=app_model,
+                user=end_user,
+                args=args,
+                from_source='api',
+                streaming=False,
+                outer_memory=None,
+                assistant_name=app_model.name,
+                user_name=""
+            )
+            logger.info(f"get response in {time.time() - b}")
+            response["result"] = True
+            logger.info(f"response: {response}")
+            return Response(response=json.dumps(response), status=200, mimetype='application/json')
+
         logger.info(judge_result)
         logger.info(time.time() - b)
-        return {"result": judge_result}
+        # return {"result": judge_result}
+        return Response(response=json.dumps({"result": judge_result}), status=200, mimetype='application/json')
 
 
 # class ChatStopApi(AppApiResource):

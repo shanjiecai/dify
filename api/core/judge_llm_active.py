@@ -35,7 +35,7 @@ def judge_llm_active(api_key: str, histories: str, assistant_name: str):
         }
     ]
     response = openai.ChatCompletion.create(
-        model="gpt-4",
+        model="gpt-3.5-turbo",
         max_tokens=1,
         temperature=0,
         presence_penalty=0,
@@ -45,7 +45,7 @@ def judge_llm_active(api_key: str, histories: str, assistant_name: str):
         stream=False
     )
     # 加入一定概率让能返回True
-    if random.random() < 0.3:
+    if random.random() < 0.2:
         return True
     return response["choices"][0]["message"]["content"].strip().lower().startswith("yes")
 

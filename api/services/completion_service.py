@@ -48,7 +48,7 @@ class CompletionService:
         query = query.replace('\x00', '')
 
         conversation_id = args['conversation_id'] if 'conversation_id' in args else None
-
+        is_new_message = True
         conversation = None
         if conversation_id:
             conversation_filter = [
@@ -68,6 +68,7 @@ class CompletionService:
                 raise ConversationNotExistsError()
 
             if not query:
+                is_new_message = False
                 # 选取最后一条message的query作为query
                 message = db.session.query(Message).filter(
                     Message.conversation_id == conversation.id,
@@ -169,7 +170,8 @@ class CompletionService:
             'retriever_from': args['retriever_from'] if 'retriever_from' in args else 'dev',
             'outer_memory': outer_memory,
             'assistant_name': assistant_name,
-            'user_name': user_name
+            'user_name': user_name,
+            'is_new_message': is_new_message
         })
 
         generate_worker_thread.start()
@@ -197,7 +199,8 @@ class CompletionService:
                         retriever_from: str = 'dev',
                         outer_memory: Optional[list] = None,
                         assistant_name: str = None,
-                        user_name: str = None):
+                        user_name: str = None,
+                        is_new_message: bool = True):
         with flask_app.app_context():
             # fixed the state of the model object when it detached from the original session
             user = db.session.merge(detached_user)
@@ -223,7 +226,8 @@ class CompletionService:
                     retriever_from=retriever_from,
                     outer_memory=outer_memory,
                     assistant_name=assistant_name,
-                    user_name=user_name
+                    user_name=user_name,
+                    is_new_message=is_new_message
                 )
             except ConversationTaskStoppedException:
                 pass
