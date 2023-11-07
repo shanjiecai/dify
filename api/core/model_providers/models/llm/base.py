@@ -5,6 +5,7 @@ import time
 from abc import abstractmethod
 from typing import List, Optional, Any, Union, Tuple
 import decimal
+import logging
 
 from langchain.callbacks.manager import Callbacks
 from langchain.memory.chat_memory import BaseChatMemory
@@ -431,6 +432,10 @@ class BaseLLM(BaseProviderModel):
     #     memory_key = memory.memory_variables[0]
     #     external_context = memory.load_memory_variables({})
     #     return external_context[memory_key]
+
+    @property
+    def support_function_call(self):
+        return False
 
     def _get_prompt_from_messages(self, messages: List[PromptMessage],
                                   model_mode: Optional[ModelMode] = None) -> Union[str | List[BaseMessage]]:

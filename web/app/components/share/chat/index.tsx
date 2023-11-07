@@ -341,6 +341,8 @@ const Main: FC<IMainProps> = ({
         app_id: installedAppInfo?.id,
         site: {
           title: installedAppInfo?.app.name,
+          icon: installedAppInfo?.app.icon,
+          icon_background: installedAppInfo?.app.icon_background,
           prompt_public: false,
           copyright: '',
         },
@@ -366,7 +368,7 @@ const Main: FC<IMainProps> = ({
         const isNotNewConversation = allConversations.some(item => item.id === _conversationId)
         setAllConversationList(allConversations)
         // fetch new conversation info
-        const { user_input_form, opening_statement: introduction, suggested_questions_after_answer, speech_to_text, retriever_resource }: any = appParams
+        const { user_input_form, opening_statement: introduction, suggested_questions_after_answer, speech_to_text, retriever_resource, sensitive_word_avoidance }: any = appParams
         const prompt_variables = userInputsFormToPromptVariables(user_input_form)
         if (siteInfo.default_language)
           changeLanguage(siteInfo.default_language)
@@ -553,6 +555,22 @@ const Main: FC<IMainProps> = ({
           setChatList(newListWithAnswer)
         }
         : undefined,
+      onMessageReplace: (messageReplace) => {
+        if (isInstalledApp) {
+          responseItem.content = messageReplace.answer
+        }
+        else {
+          setChatList(produce(
+            getChatList(),
+            (draft) => {
+              const current = draft.find(item => item.id === messageReplace.id)
+
+              if (current)
+                current.content = messageReplace.answer
+            },
+          ))
+        }
+      },
       onError() {
         setResponsingFalse()
         // role back placeholder answer
