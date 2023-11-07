@@ -4,9 +4,11 @@ import openai
 from mylogger import logger
 
 from core.model_providers.models.llm.base import BaseLLM
+import tiktoken
 
+encoding = tiktoken.encoding_for_model('gpt-3.5-turbo')
 
-def judge_llm_active(api_key: str, histories: str, assistant_name: str):
+def judge_llm_active(api_key: str, histories: str, assistant_name: str, is_random_true: bool = True):
     if not api_key:
         return False
     openai.api_key = api_key
@@ -27,7 +29,10 @@ def judge_llm_active(api_key: str, histories: str, assistant_name: str):
         </histories>
         You should determine whether to answer as {assistant_name} or DJ Bot, just answer yes or no
         '''
-    # print(prompt)
+    logger.info(len(prompt))
+    if len(prompt) > 10000:
+        prompt = prompt[:10000]
+
     messages = [
         {
             "role": "user",
@@ -45,7 +50,7 @@ def judge_llm_active(api_key: str, histories: str, assistant_name: str):
         stream=False
     )
     # 加入一定概率让能返回True
-    if random.random() < 0.2:
+    if is_random_true and random.random() < 0.2:
         return True
     return response["choices"][0]["message"]["content"].strip().lower().startswith("yes")
 

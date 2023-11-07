@@ -151,7 +151,24 @@ class PromptTransform:
 
         query_prompt = prompt_rules['query_prompt'] if 'query_prompt' in prompt_rules else '{{query}}'
 
-        if memory and 'histories_prompt' in prompt_rules:
+        # outer memory优先级高于memory
+        if outer_memory and 'group_histories_prompt' in prompt_rules:
+            # append group chat histories
+            tmp_human_message = PromptBuilder.to_human_message(
+                prompt_content=prompt + query_prompt,
+                inputs={
+                    'user_name': user_name if user_name else 'Human',
+                    'query': query,
+                    'assistant_name': assistant_name if assistant_name else 'Assistant'
+                }
+            )
+            rest_tokens = self._calculate_rest_token(tmp_human_message, model_instance)
+            histories = ""
+            for item in outer_memory:
+                histories += item["role"] + ": " + item["message"] + "\n"
+            if len(histories) > rest_tokens:
+                histories = histories[-rest_tokens:]
+        elif memory and 'histories_prompt' in prompt_rules:
             # append chat histories
             tmp_human_message = PromptBuilder.to_human_message(
                 prompt_content=prompt + query_prompt,
@@ -173,23 +190,6 @@ class PromptTransform:
             # rest_tokens = 100
 
             histories = self._get_history_messages_from_memory(memory, rest_tokens)
-
-        elif outer_memory and 'group_histories_prompt' in prompt_rules:
-            # append group chat histories
-            tmp_human_message = PromptBuilder.to_human_message(
-                prompt_content=prompt + query_prompt,
-                inputs={
-                    'user_name': user_name if user_name else 'Human',
-                    'query': query,
-                    'assistant_name': assistant_name if assistant_name else 'Assistant'
-                }
-            )
-            rest_tokens = self._calculate_rest_token(tmp_human_message, model_instance)
-            histories = ""
-            for item in outer_memory:
-                histories += item["role"] + ": " + item["message"] + "\n"
-            if len(histories) > rest_tokens:
-                histories = histories[-rest_tokens:]
         else:
             histories = ''
         prompt_template = PromptTemplateParser(template=prompt_rules['histories_prompt'])

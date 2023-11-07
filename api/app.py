@@ -73,6 +73,8 @@ def create_app(test_config=None) -> Flask:
 
     hosted.init_app(app)
 
+    from controllers.app_api.app.active_module import init_active_chat
+    init_active_chat(app)
     return app
 
 
