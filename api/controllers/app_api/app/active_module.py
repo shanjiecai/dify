@@ -148,6 +148,8 @@ def chat_thread(group_id: int, main_context: AppContext):
                 for message in recent_history['data'][:min(50, len(recent_history['data']))]:
                     outer_memory.append(
                         {"role": model_name_transform(message["from_user"]["name"]), "message": message['chat_text']})
+                # 倒序outer_memory
+                outer_memory.reverse()
                 if (datetime.datetime.now() - datetime.datetime.strptime(last_message['created_at'], "%Y-%m-%d %H:%M:%S")).seconds > 7200:
                     logger.info(f"超过2小时，强制回复：{group_id}")
                     res = model_chat(conversation_id, outer_memory=outer_memory, is_force=True)
@@ -157,7 +159,7 @@ def chat_thread(group_id: int, main_context: AppContext):
                     # logger.info(f"model_chat: {res}")
                     # 发送消息
                     logger.info(f"send_message to: {group_id}, {res}")
-                    send_chat_message(group_id, res["anwser"])
+                    send_chat_message(group_id, res["answer"])
                 else:
                     logger.info(f"{group_id}判断不回复:{datetime.datetime.now()}")
             time.sleep(300)
