@@ -18,7 +18,7 @@ def judge_llm_active(api_key: str, histories: str, assistant_name: str, is_rando
         <histories>
         {histories}
         </histories>
-        You should determine whether to answer as {assistant_name}, just answer yes or no
+        You should determine whether to answer as {assistant_name}, just return yes or no
         '''
     else:
         # 主持人prompt，尽量活跃气氛
@@ -27,7 +27,7 @@ def judge_llm_active(api_key: str, histories: str, assistant_name: str, is_rando
         <histories>
         {histories}
         </histories>
-        You should determine whether to answer as {assistant_name} or DJ Bot, just answer yes or no
+        You should determine whether to answer as {assistant_name} or DJ Bot, just return yes or no
         '''
     logger.info(len(prompt))
     if len(prompt) > 10000:
