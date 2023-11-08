@@ -54,7 +54,7 @@ def model_chat(conversation_id: str, outer_memory: List, is_force=False):
     if judge_result:
         end_user = create_or_update_end_user_for_user_id(app_model, '')
         logger.info(f"主动发起聊天：{app_model.name} {conversation_id}")
-        logger.info(f"{outer_memory[:min(2, len(outer_memory))]}")
+        # logger.info(f"{outer_memory[:-min(2, len(outer_memory))]}")
         response = CompletionService.completion(
             app_model=app_model,
             user=end_user,
@@ -138,7 +138,7 @@ def chat_thread(group_id: int, main_context: AppContext):
         while True:
             # 获取最近聊天记录
             recent_history = get_recent_history(group_id)
-            logger.info(f"获取最近聊天记录：{group_id} {recent_history['data'][0]['chat_text']}")
+            logger.info(f"获取最近聊天记录：{group_id} {recent_history['data'][-1]['chat_text']}")
             last_message = recent_history['data'][0]
             ai_api_info = last_message['ai_api_info']
             conversation_id = ai_api_info['openai']['conversation_id']
@@ -150,11 +150,14 @@ def chat_thread(group_id: int, main_context: AppContext):
                         {"role": model_name_transform(message["from_user"]["name"]), "message": message['chat_text']})
                 # 倒序outer_memory
                 outer_memory.reverse()
-                if (datetime.datetime.now() - datetime.datetime.strptime(last_message['created_at'], "%Y-%m-%d %H:%M:%S")).seconds > 7200:
-                    logger.info(f"超过2小时，强制回复：{group_id}")
+                if (datetime.datetime.now() - datetime.datetime.strptime(last_message['created_at'], "%Y-%m-%d %H:%M:%S")).seconds > 14400:
+                    logger.info(f"超过4小时，强制回复：{group_id}")
                     res = model_chat(conversation_id, outer_memory=outer_memory, is_force=True)
-                else:
+                elif outer_memory[-1]["role"] != "James Corden":
                     res = model_chat(conversation_id, outer_memory=outer_memory)
+                else:
+                    logger.info("上一条消息是机器人，不回复")
+                    res = None
                 if res and isinstance(res, dict):
                     # logger.info(f"model_chat: {res}")
                     # 发送消息
@@ -162,7 +165,7 @@ def chat_thread(group_id: int, main_context: AppContext):
                     send_chat_message(group_id, res["answer"])
                 else:
                     logger.info(f"{group_id}判断不回复:{datetime.datetime.now()}")
-            time.sleep(300)
+            time.sleep(1800)
 
 
 def init_active_chat(main_app: Flask):
