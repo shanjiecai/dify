@@ -3,6 +3,8 @@
 # 2、如果长时间没有聊天，主动发起聊天
 # 3、根据时事热点，主动发起聊天
 import datetime
+import uuid
+
 from sqlalchemy import and_
 from typing import List
 import json
@@ -29,6 +31,7 @@ from controllers.app_api.app.utils import *
 
 
 def model_chat(conversation_id: str, outer_memory: List, is_force=False):
+    # time.sleep(10000)
     conversation_filter = [
         Conversation.id == conversation_id
     ]
@@ -133,7 +136,7 @@ message:
 # 主动询问是否回话，每五分钟一次
 # 同时检测历史如果最近一条消息超过两小时，主动发起对话
 def chat_thread(group_id: int, main_context: AppContext):
-    logger.info(f"开始监控：{group_id}")
+    logger.info(f"开始监控：{group_id} {uuid.uuid4()}")
     with main_context:
         while True:
             # 获取最近聊天记录
@@ -151,7 +154,7 @@ def chat_thread(group_id: int, main_context: AppContext):
                 # 倒序outer_memory
                 outer_memory.reverse()
                 if (datetime.datetime.now() - datetime.datetime.strptime(last_message['created_at'], "%Y-%m-%d %H:%M:%S")).seconds > 14400:
-                    logger.info(f"超过4小时，强制回复：{group_id}")
+                    logger.info(f"超过4小时，强制回复：{group_id} {uuid.uuid4()}")
                     res = model_chat(conversation_id, outer_memory=outer_memory, is_force=True)
                 elif outer_memory[-1]["role"] != "James Corden":
                     res = model_chat(conversation_id, outer_memory=outer_memory)
@@ -175,7 +178,7 @@ def init_active_chat(main_app: Flask):
     #     group_id_list = get_all_groups()
     # else:
     #     group_id_list = [33]
-    group_id_list = []
+    group_id_list = [33]
     logger.info(f"初始化监控群组：{group_id_list}")
     for group_id in group_id_list:
         # 新开线程监控group

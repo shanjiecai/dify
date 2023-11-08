@@ -40,7 +40,7 @@ def judge_llm_active(api_key: str, histories: str, assistant_name: str, is_rando
         }
     ]
     response = openai.ChatCompletion.create(
-        model="gpt-3.5-turbo",
+        model="gpt-3.5-turbo-1106",
         max_tokens=1,
         temperature=0,
         presence_penalty=0,
