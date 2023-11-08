@@ -144,13 +144,14 @@ def chat_thread(group_id: int, main_context: AppContext):
             conversation_id = ai_api_info['openai']['conversation_id']
             if conversation_id:
                 # 如果历史的最后一条消息超过2小时，强制回复
+                outer_memory = []
+                for message in recent_history['data'][:min(50, len(recent_history['data']))]:
+                    outer_memory.append(
+                        {"role": model_name_transform(message["from_user"]["name"]), "message": message['chat_text']})
                 if (datetime.datetime.now() - datetime.datetime.strptime(last_message['created_at'], "%Y-%m-%d %H:%M:%S")).seconds > 7200:
                     logger.info(f"超过2小时，强制回复：{group_id}")
                     res = model_chat(conversation_id, outer_memory=outer_memory, is_force=True)
                 else:
-                    outer_memory = []
-                    for message in recent_history['data'][:min(50, len(recent_history['data']))]:
-                        outer_memory.append({"role": model_name_transform(message["from_user"]["name"]), "message": message['chat_text']})
                     res = model_chat(conversation_id, outer_memory=outer_memory)
                 if res and isinstance(res, dict):
                     # logger.info(f"model_chat: {res}")
