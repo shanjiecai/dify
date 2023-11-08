@@ -2,7 +2,7 @@ version: '3.1'
 services:
   # API service
   api:
-    image: langgenius/dify-api:0.3.29
+    image: dify-api:dev
     restart: always
     environment:
       # The environment of the application, supported values are `development`, `testing`, `staging`, `production`.
@@ -127,7 +127,7 @@ services:
   # worker service
   # The Celery worker for processing the queue.
   worker:
-    image: langgenius/dify-api:0.3.29
+    image: dify-api:dev
     restart: always
     environment:
       # Startup mode, 'worker' starts the Celery worker for processing the queue.
