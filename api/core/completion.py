@@ -312,7 +312,8 @@ class Completion:
                       assistant_name: str = None,
                       user_name: str = None):
         logger.info(f"memory: {memory}")
-        logger.info(f"outer_memory: {outer_memory[:min(len(outer_memory), 2)]}")
+        if outer_memory is not None:
+            logger.info(f"outer_memory: {outer_memory[:min(len(outer_memory), 2)]}")
         prompt_transform = PromptTransform()
 
         # get llm prompt

@@ -25,7 +25,7 @@ import requests
 
 from core.judge_llm_active import judge_llm_active
 from services.completion_service import CompletionService
-from utils import *
+from controllers.app_api.app.utils import *
 
 
 def model_chat(conversation_id: str, outer_memory: List, is_force=False):
@@ -169,7 +169,7 @@ def init_active_chat(main_app: Flask):
     #     group_id_list = get_all_groups()
     # else:
     #     group_id_list = [33]
-    group_id_list = [33]
+    group_id_list = []
     logger.info(f"初始化监控群组：{group_id_list}")
     for group_id in group_id_list:
         # 新开线程监控group
