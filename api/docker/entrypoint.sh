@@ -12,8 +12,10 @@ if [[ "${MODE}" == "worker" ]]; then
     -Q ${CELERY_QUEUES:-dataset,generation,mail}
 else
   if [[ "${DEBUG}" == "true" ]]; then
+    echo "Running in debug mode"
     flask run --host=${DIFY_BIND_ADDRESS:-0.0.0.0} --port=${DIFY_PORT:-5001} --debug
   else
+    echo "Running in production mode"
     gunicorn \
       --bind "${DIFY_BIND_ADDRESS:-0.0.0.0}:${DIFY_PORT:-5001}" \
       --workers ${SERVER_WORKER_AMOUNT:-1} \

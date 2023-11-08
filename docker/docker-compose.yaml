@@ -34,7 +34,7 @@ services:
       # example: http://udify.app
       APP_WEB_URL: ''
       # When enabled, migrations will be executed prior to application startup and the application will start after the migrations have completed.
-      MIGRATION_ENABLED: 'true'
+      MIGRATION_ENABLED: 'false'
       # The configurations of postgres database connection.
       # It is consistent with the configuration in the 'db' service below.
       DB_USERNAME: postgres

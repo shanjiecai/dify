@@ -45,7 +45,8 @@ class MessageListApi(AppApiResource):
         'answer': fields.String,
         'feedback': fields.Nested(feedback_fields, attribute='user_feedback', allow_null=True),
         'retriever_resources': fields.List(fields.Nested(retriever_resource_fields)),
-        'created_at': TimestampField
+        'created_at': TimestampField,
+        'role': fields.String,
     }
 
     message_infinite_scroll_pagination_fields = {

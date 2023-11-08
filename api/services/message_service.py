@@ -12,6 +12,7 @@ from services.errors.app_model_config import AppModelConfigBrokenError
 from services.errors.conversation import ConversationNotExistsError, ConversationCompletedError
 from services.errors.message import FirstMessageNotExistsError, MessageNotExistsError, LastMessageNotExistsError, \
     SuggestedQuestionsAfterAnswerDisabledError
+from mylogger import logger
 
 
 class MessageService:
@@ -46,7 +47,7 @@ class MessageService:
         else:
             history_messages = db.session.query(Message).filter(Message.conversation_id == conversation.id) \
                 .order_by(Message.created_at.desc()).limit(limit).all()
-
+        # logger.info(f"history_messages: {history_messages}")
         has_more = False
         if len(history_messages) == limit:
             current_page_first_message = history_messages[-1]
