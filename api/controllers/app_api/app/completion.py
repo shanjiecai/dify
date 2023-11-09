@@ -26,6 +26,8 @@ from services.completion_service import CompletionService
 from models.model import ApiToken, App, Conversation, AppModelConfig
 from mylogger import logger
 
+from extensions.ext_redis import redis_client
+
 
 class CompletionApi(AppApiResource):
     def post(self, app_model:App, end_user):
@@ -199,7 +201,12 @@ class ChatActiveApi(AppApiResource):
                                         app_model.name)
         end_user = create_or_update_end_user_for_user_id(app_model, "")
         if judge_result:
-
+            # 对当前conversation上锁
+            if redis_client.get(conversation.id) is None:
+                redis_client.setex(conversation.id, 60, 1)
+            else:
+                logger.info(f"conversation {conversation.id} is locked")
+                return Response(response=json.dumps({"result": False}), status=200, mimetype='application/json')
             response = CompletionService.completion(
                 app_model=app_model,
                 user=end_user,

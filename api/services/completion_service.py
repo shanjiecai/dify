@@ -27,6 +27,8 @@ from services.errors.completion import CompletionStoppedError
 from services.errors.conversation import ConversationNotExistsError, ConversationCompletedError
 from services.errors.message import MessageNotExistsError
 
+from extensions.ext_redis import redis_client
+
 
 class CompletionService:
 
@@ -179,7 +181,9 @@ class CompletionService:
 
         # wait for 10 minutes to close the thread
         cls.countdown_and_close(current_app._get_current_object(), generate_worker_thread, pubsub, user, generate_task_id)
-
+        if conversation_id:
+            # 删除上的锁 redis_client.setex(conversation.id, 60, 1)
+            redis_client.delete(conversation_id)
         return cls.compact_response(pubsub, streaming)
 
     @classmethod
