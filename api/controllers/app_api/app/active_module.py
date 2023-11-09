@@ -36,7 +36,7 @@ def model_chat(conversation_id: str, outer_memory: List, is_force=False, query="
     # time.sleep(10000)
     # 对当前conversation上锁
     if redis_client.get(conversation_id) is None:
-        redis_client.setex(conversation_id, 60, 1)
+        redis_client.setex(conversation_id, 10, 1)
     else:
         logger.info(f"conversation {conversation_id} is locked")
         return None

@@ -470,6 +470,7 @@ class Message(db.Model):
     created_at = db.Column(db.DateTime, nullable=False, server_default=db.text('CURRENT_TIMESTAMP(0)'))
     updated_at = db.Column(db.DateTime, nullable=False, server_default=db.text('CURRENT_TIMESTAMP(0)'))
     agent_based = db.Column(db.Boolean, nullable=False, server_default=db.text('false'))
+    mood = db.Column(db.String(255), nullable=True)
 
     @property
     def user_feedback(self):

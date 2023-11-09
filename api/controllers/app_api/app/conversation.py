@@ -103,6 +103,7 @@ class ConversationAddMessage(AppApiResource):
         parser.add_argument('conversation_id', type=str, required=True, location='json')
         parser.add_argument('message', type=str, required=True, location='json')
         parser.add_argument('user', type=str, location='json')
+        parser.add_argument('mood', type=str, required=False, location='json')
         args = parser.parse_args()
 
         if app_model.mode != 'chat':
@@ -111,6 +112,7 @@ class ConversationAddMessage(AppApiResource):
         conversation_id = args.get('conversation_id')
         message = args.get('message')
         user = args.get('user')
+        mood = args.get('mood')
 
         conversation = Conversation.query.filter_by(id=conversation_id).first()
         if conversation is None:
@@ -140,7 +142,8 @@ class ConversationAddMessage(AppApiResource):
             from_end_user_id=None,
             from_account_id=None,
             agent_based=True,
-            role=user
+            role=user,
+            mood=mood,
         )
 
         db.session.add(message_class)

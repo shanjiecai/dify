@@ -203,7 +203,7 @@ class ChatActiveApi(AppApiResource):
         if judge_result:
             # 对当前conversation上锁
             if redis_client.get(conversation.id) is None:
-                redis_client.setex(conversation.id, 60, 1)
+                redis_client.setex(conversation.id, 10, 1)
             else:
                 logger.info(f"conversation {conversation.id} is locked")
                 return Response(response=json.dumps({"result": False}), status=200, mimetype='application/json')
