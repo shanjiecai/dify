@@ -3,6 +3,7 @@
 # 2、如果长时间没有聊天，主动发起聊天
 # 3、根据时事热点，主动发起聊天
 import datetime
+import traceback
 import uuid
 
 from sqlalchemy import and_
@@ -146,60 +147,66 @@ message:
 def chat_thread(group_id: int, main_context: AppContext):
     logger.info(f"开始监控：{group_id} {uuid.uuid4()}")
     with main_context:
-        sleep_num = 0
         while True:
-            # 获取最近聊天记录
-            recent_history = get_recent_history(group_id)
-            logger.info(f"获取最近聊天记录：{group_id} {recent_history['data'][0]['chat_text']}")
-            last_message = recent_history['data'][0]
-            ai_api_info = last_message['ai_api_info']
-            conversation_id = ai_api_info['openai']['conversation_id']
-            if conversation_id:
-                outer_memory = []
-                for message in recent_history['data'][:min(50, len(recent_history['data']))]:
-                    outer_memory.append(
-                        {"role": model_name_transform(message["from_user"]["name"]), "message": message['chat_text']})
-                # 倒序outer_memory
-                outer_memory.reverse()
-                if not outer_memory:
-                    continue
-                elif (datetime.datetime.now() - datetime.datetime.strptime(last_message['created_at'], "%Y-%m-%d %H:%M:%S")).seconds > 3600*4 and outer_memory[-1]["role"] != "James Corden":
-                    logger.info(f"超过4小时，强制回复：{group_id} {uuid.uuid4()}")
-                    res = model_chat(conversation_id, outer_memory=outer_memory, is_force=True)
-                # elif (datetime.datetime.now() - datetime.datetime.strptime(last_message['created_at'], "%Y-%m-%d %H:%M:%S")).seconds > 3600*24:
-                # 如果最后5条都是机器人消息，换个话题
-                elif len(recent_history['data']) >= 5 and \
-                    all([message['from_user']['name'] == "James Corden" for message in recent_history['data'][-5:]]):
-                    topic = get_topic()
-                    query = topic + "Is there anything you'd like to discuss about this news?"
-                    logger.info(f"超过24小时，换个话题强制回复：{group_id} {uuid.uuid4()}")
-                    res = model_chat(conversation_id, outer_memory=outer_memory, is_force=True, query=query, user_name="observer")
-                # 如果倒数第二条消息是机器人且最后一条消息不是机器人且与倒数第二条间隔不超过30s,回复
-                elif len(recent_history['data']) > 1 and \
-                    recent_history['data'][-2]['from_user']['name'] == "James Corden" and \
-                    last_message['from_user']['name'] != "James Corden" and \
-                        (datetime.datetime.strptime(last_message['created_at'], "%Y-%m-%d %H:%M:%S") - datetime.datetime.strptime(recent_history['data'][-2]['created_at'], "%Y-%m-%d %H:%M:%S")).seconds < 30:
-                    logger.info(f"倒数第二条消息是机器人，且与最后一条消息间隔不超过30s，强制回复：{group_id} {uuid.uuid4()}")
-                    res = model_chat(conversation_id, outer_memory=outer_memory, is_force=True)
-                elif outer_memory[-1]["role"] != "James Corden" and sleep_num > 20:
-                    logger.info(f"上一条消息不是机器人，判断回复：{group_id} {uuid.uuid4()}")
-                    res = model_chat(conversation_id, outer_memory=outer_memory)
-                    sleep_num = 0
-                elif len(recent_history['data']) > 1 and outer_memory[-1]["role"] == "James Corden" and outer_memory[-2]["role"] == "James Corden":
-                    logger.info("上两条消息是机器人，不回复")
-                    res = None
-                else:
-                    logger.info("未知情况，不回复")
-                    res = None
-                if res and isinstance(res, dict):
-                    # logger.info(f"model_chat: {res}")
-                    # 发送消息
-                    logger.info(f"send_message to: {group_id}, {res}")
-                    send_chat_message(group_id, res["answer"])
-                else:
-                    logger.info(f"{group_id}判断不回复:{datetime.datetime.now()}")
-                    sleep_num += 1
-            time.sleep(30)
+            try:
+                sleep_num = 0
+                while True:
+                    # 获取最近聊天记录
+                    recent_history = get_recent_history(group_id)
+                    logger.info(f"获取最近聊天记录：{group_id} {recent_history['data'][0]['chat_text']}")
+                    last_message = recent_history['data'][0]
+                    ai_api_info = last_message['ai_api_info']
+                    conversation_id = ai_api_info['openai']['conversation_id']
+                    if conversation_id:
+                        outer_memory = []
+                        for message in recent_history['data'][:min(50, len(recent_history['data']))]:
+                            outer_memory.append(
+                                {"role": model_name_transform(message["from_user"]["name"]), "message": message['chat_text']})
+                        # 倒序outer_memory
+                        outer_memory.reverse()
+                        if not outer_memory:
+                            continue
+                        elif (datetime.datetime.now() - datetime.datetime.strptime(last_message['created_at'], "%Y-%m-%d %H:%M:%S")).seconds > 3600*4 and outer_memory[-1]["role"] != "James Corden":
+                            logger.info(f"超过4小时，强制回复：{group_id} {uuid.uuid4()}")
+                            res = model_chat(conversation_id, outer_memory=outer_memory, is_force=True)
+                        # elif (datetime.datetime.now() - datetime.datetime.strptime(last_message['created_at'], "%Y-%m-%d %H:%M:%S")).seconds > 3600*24:
+                        # 如果最后5条都是机器人消息，换个话题
+                        elif len(recent_history['data']) >= 5 and \
+                            all([message['from_user']['name'] == "James Corden" for message in recent_history['data'][-5:]]):
+                            topic = get_topic()
+                            query = topic + "Is there anything you'd like to discuss about this news?"
+                            logger.info(f"超过24小时，换个话题强制回复：{group_id} {uuid.uuid4()}")
+                            res = model_chat(conversation_id, outer_memory=outer_memory, is_force=True, query=query, user_name="observer")
+                        # 如果倒数第二条消息是机器人且最后一条消息不是机器人且与倒数第二条间隔不超过30s,回复
+                        elif len(recent_history['data']) > 1 and \
+                            recent_history['data'][-2]['from_user']['name'] == "James Corden" and \
+                            last_message['from_user']['name'] != "James Corden" and \
+                                (datetime.datetime.strptime(last_message['created_at'], "%Y-%m-%d %H:%M:%S") - datetime.datetime.strptime(recent_history['data'][-2]['created_at'], "%Y-%m-%d %H:%M:%S")).seconds < 30:
+                            logger.info(f"倒数第二条消息是机器人，且与最后一条消息间隔不超过30s，强制回复：{group_id} {uuid.uuid4()}")
+                            res = model_chat(conversation_id, outer_memory=outer_memory, is_force=True)
+                        elif outer_memory[-1]["role"] != "James Corden" and sleep_num > 20:
+                            logger.info(f"上一条消息不是机器人，判断回复：{group_id} {uuid.uuid4()}")
+                            res = model_chat(conversation_id, outer_memory=outer_memory)
+                            sleep_num = 0
+                        elif len(recent_history['data']) > 1 and outer_memory[-1]["role"] == "James Corden" and outer_memory[-2]["role"] == "James Corden":
+                            logger.info("上两条消息是机器人，不回复")
+                            res = None
+                        else:
+                            logger.info("未知情况，不回复")
+                            res = None
+                        if res and isinstance(res, dict):
+                            # logger.info(f"model_chat: {res}")
+                            # 发送消息
+                            logger.info(f"send_message to: {group_id}, {res}")
+                            send_chat_message(group_id, res["answer"])
+                        else:
+                            logger.info(f"{group_id}判断不回复:{datetime.datetime.now()}")
+                            sleep_num += 1
+                    time.sleep(30)
+            except Exception as e:
+                logger.error(f"chat_thread error: {traceback.format_exc()}")
+                time.sleep(300)
+                continue
 
 
 def init_active_chat(main_app: Flask):
