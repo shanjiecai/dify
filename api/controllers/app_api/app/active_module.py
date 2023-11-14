@@ -205,6 +205,7 @@ def chat_thread(group_id: int, main_context: AppContext):
 def init_active_chat(main_app: Flask):
     # group_id_list = get_group_id_list()
     env = main_app.config.get('ENV')
+    logger.info(f"当前环境：{env}")
     if env == 'production':
         group_id_list = get_all_groups()
     else:
