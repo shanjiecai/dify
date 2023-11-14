@@ -17,6 +17,8 @@ class ReadOnlyConversationTokenDBBufferSharedMemory(BaseChatMemory):
     memory_key: str = "chat_history"
     max_token_limit: int = 2000
     message_limit: int = 15
+    last_query: str = ""
+    last_role: str = ""
 
     @property
     def buffer(self) -> List[BaseMessage]:
@@ -32,6 +34,8 @@ class ReadOnlyConversationTokenDBBufferSharedMemory(BaseChatMemory):
         chat_messages: List[PromptMessage] = []
         # 去掉最后一个
         if messages[-1].answer == None or messages[-1].answer == "":
+            self.last_query = messages[-1].query
+            self.last_role = messages[-1].role
             messages = messages[:-1]
         for message in messages:
             chat_messages.append(PromptMessage(content=message.query, type=MessageType.USER if message.role == "Human" else message.role))

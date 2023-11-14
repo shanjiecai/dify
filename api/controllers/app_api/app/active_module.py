@@ -36,7 +36,7 @@ def model_chat(conversation_id: str, outer_memory: List, is_force=False, query="
     # time.sleep(10000)
     # 对当前conversation上锁
     if redis_client.get(conversation_id) is None:
-        redis_client.setex(conversation_id, 10, 1)
+        redis_client.setex(conversation_id, 40, 1)
     else:
         logger.info(f"conversation {conversation_id} is locked")
         return None
@@ -166,7 +166,10 @@ def chat_thread(group_id: int, main_context: AppContext):
                 elif (datetime.datetime.now() - datetime.datetime.strptime(last_message['created_at'], "%Y-%m-%d %H:%M:%S")).seconds > 3600*4 and outer_memory[-1]["role"] != "James Corden":
                     logger.info(f"超过4小时，强制回复：{group_id} {uuid.uuid4()}")
                     res = model_chat(conversation_id, outer_memory=outer_memory, is_force=True)
-                elif (datetime.datetime.now() - datetime.datetime.strptime(last_message['created_at'], "%Y-%m-%d %H:%M:%S")).seconds > 3600*24:
+                # elif (datetime.datetime.now() - datetime.datetime.strptime(last_message['created_at'], "%Y-%m-%d %H:%M:%S")).seconds > 3600*24:
+                # 如果最后5条都是机器人消息，换个话题
+                elif len(recent_history['data']) >= 5 and \
+                    all([message['from_user']['name'] == "James Corden" for message in recent_history['data'][-5:]]):
                     topic = get_topic()
                     query = topic + "Is there anything you'd like to discuss about this news?"
                     logger.info(f"超过24小时，换个话题强制回复：{group_id} {uuid.uuid4()}")
@@ -202,11 +205,11 @@ def chat_thread(group_id: int, main_context: AppContext):
 def init_active_chat(main_app: Flask):
     # group_id_list = get_group_id_list()
     env = main_app.config.get('ENV')
-    # if env == 'production':
-    #     group_id_list = get_all_groups()
-    # else:
-    #     group_id_list = [33]
-    group_id_list = [33]
+    if env == 'production':
+        group_id_list = get_all_groups()
+    else:
+        group_id_list = []
+    # group_id_list = []
     logger.info(f"初始化监控群组：{group_id_list}")
     for group_id in group_id_list:
         # 新开线程监控group

@@ -195,6 +195,8 @@ class ChatActiveApi(AppApiResource):
         memory_key = memory.memory_variables[0]
         external_context = memory.load_memory_variables({})
         histories = external_context[memory_key]
+        if memory.last_query:
+            histories += "\n" + memory.last_role + ": " + memory.last_query
         logger.info(f"histories: {histories}, app_model.name: {app_model.name}")
         logger.info(f"get histories in {time.time() - b}")
         judge_result = judge_llm_active(memory.model_instance.credentials["openai_api_key"], histories,
@@ -203,7 +205,7 @@ class ChatActiveApi(AppApiResource):
         if judge_result:
             # 对当前conversation上锁
             if redis_client.get(conversation.id) is None:
-                redis_client.setex(conversation.id, 10, 1)
+                redis_client.setex(conversation.id, 40, 1)
             else:
                 logger.info(f"conversation {conversation.id} is locked")
                 return Response(response=json.dumps({"result": False}), status=200, mimetype='application/json')
