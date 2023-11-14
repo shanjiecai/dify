@@ -57,7 +57,8 @@ DEFAULTS = {
     'CLEAN_DAY_SETTING': 30,
     'UPLOAD_FILE_SIZE_LIMIT': 15,
     'UPLOAD_FILE_BATCH_LIMIT': 5,
-    'OUTPUT_MODERATION_BUFFER_SIZE': 300
+    'OUTPUT_MODERATION_BUFFER_SIZE': 300,
+    "MODE": "api"
 }
 
 
@@ -86,6 +87,7 @@ class Config:
     def __init__(self):
         # app settings
         self.ENV = 'production' if get_env('ENV') == 'production' else 'development'
+        self.MODE = get_env('MODE')
         self.CONSOLE_API_URL = get_env('CONSOLE_URL') if get_env('CONSOLE_URL') else get_env('CONSOLE_API_URL')
         self.CONSOLE_WEB_URL = get_env('CONSOLE_URL') if get_env('CONSOLE_URL') else get_env('CONSOLE_WEB_URL')
         self.SERVICE_API_URL = get_env('API_URL') if get_env('API_URL') else get_env('SERVICE_API_URL')
