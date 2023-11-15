@@ -181,8 +181,10 @@ def chat_thread(group_id: int, main_context: AppContext):
                         # 如果倒数第二条消息是机器人且最后一条消息不是机器人且与倒数第二条间隔不超过30s,回复
                         elif len(outer_memory) > 1 and \
                             outer_memory[-2]["role"] == "James Corden" and \
-                            recent_history['data'][0]['from_user']['name'] != "James Corden" and \
+                            outer_memory[-1]["role"] != "James Corden" and \
                                 (datetime.datetime.strptime(recent_history['data'][0]['created_at'], "%Y-%m-%d %H:%M:%S") - datetime.datetime.strptime(recent_history['data'][1]['created_at'], "%Y-%m-%d %H:%M:%S")).seconds < 30:
+                            # print(outer_memory[-1])
+                            # print(outer_memory[-2])
                             logger.info(f"倒数第二条消息是机器人，且与最后一条消息间隔不超过30s，强制回复：{group_id} {uuid.uuid4()}")
                             res = model_chat(conversation_id, outer_memory=outer_memory, is_force=True)
                         elif outer_memory[-1]["role"] != "James Corden" and sleep_num > 20:
