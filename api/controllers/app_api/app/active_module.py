@@ -172,7 +172,8 @@ def chat_thread(group_id: int, main_context: AppContext):
                         # elif (datetime.datetime.now() - datetime.datetime.strptime(last_message['created_at'], "%Y-%m-%d %H:%M:%S")).seconds > 3600*24:
                         # 如果最后5条都是机器人消息，换个话题
                         elif len(outer_memory) >= 5 and \
-                            all([message["role"] == "James Corden" for message in outer_memory[-5:]]):
+                            all([message["role"] == "James Corden" for message in outer_memory[-5:]]) and\
+                            (datetime.datetime.now() - datetime.datetime.strptime(recent_history['data'][0]['created_at'], "%Y-%m-%d %H:%M:%S")).seconds > 3600*24:
                             topic = get_topic()
                             query = topic + "Is there anything you'd like to discuss about this news?"
                             logger.info(f"超过24小时，换个话题强制回复：{group_id} {topic} {uuid.uuid4()}")
@@ -202,7 +203,7 @@ def chat_thread(group_id: int, main_context: AppContext):
                         else:
                             logger.info(f"{group_id}判断不回复:{datetime.datetime.now()}")
                             sleep_num += 1
-                    time.sleep(30)
+                    time.sleep(60)
             except Exception as e:
                 logger.error(f"chat_thread error: {traceback.format_exc()}")
                 time.sleep(300)
@@ -217,7 +218,7 @@ def init_active_chat(main_app: Flask):
     if env == 'production' and mode == 'api':
         group_id_list = get_all_groups()
     else:
-        group_id_list = []
+        group_id_list = [33]
     # group_id_list = []
     logger.info(f"初始化监控群组：{group_id_list}")
     for group_id in group_id_list:
