@@ -56,3 +56,6 @@ werkzeug==2.3.7
 pymilvus==2.3.0
 loguru
 newsapi-python
+opencv-python
+camelot-py==0.11.0
+ghostscript

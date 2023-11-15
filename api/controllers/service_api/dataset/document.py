@@ -146,12 +146,14 @@ class DocumentAddByFileApi(DatasetApiResource):
     def post(self, tenant_id, dataset_id):
         """Create document by upload file."""
         args = {}
+        # print(request.form)
         if 'data' in request.form:
             args = json.loads(request.form['data'])
         if 'doc_form' not in args:
             args['doc_form'] = 'text_model'
         if 'doc_language' not in args:
             args['doc_language'] = 'English'
+        print(args)
         # get dataset info
         dataset_id = str(dataset_id)
         tenant_id = str(tenant_id)

@@ -1,7 +1,8 @@
 import logging
 from typing import List, Optional
 
-from langchain.document_loaders import PyPDFium2Loader
+from langchain.document_loaders import PyPDFium2Loader, PDFPlumberLoader
+import camelot
 from langchain.document_loaders.base import BaseLoader
 from langchain.schema import Document
 
@@ -43,6 +44,30 @@ class PdfLoader(BaseLoader):
                     pass
         documents = PyPDFium2Loader(file_path=self._file_path).load()
         text_list = []
+
+
+        tables = camelot.read_pdf(self._file_path,
+                                  # strip_text='\n',
+                                  # line_tol=6,
+                                  # line_scale=60)
+                                  pages='1-end',
+                                  compress=True)
+        # print(f"tables: {tables}")
+        old_document_length = len(documents)
+        if tables:
+            from pandas import DataFrame
+            print(len(tables))
+            for index, t in enumerate(tables):
+                # print(t.df)
+                # 转化为文本，表格内\n替换
+                # print(t.df.to_string(index=False))
+                print(DataFrame(t.df).shape)
+                _str = ""
+                for _, row in t.df.iterrows():
+                    _str += "\t".join(row.values) + "\n\n"
+                _str = _str.rstrip("\n\n")
+                print(len(_str.split("\n\n")))
+                documents.append(Document(page_content=_str, metadata={"source": self._file_path, "page": index + old_document_length}))
         for document in documents:
             text_list.append(document.page_content)
         text = "\n\n".join(text_list)
@@ -50,6 +75,38 @@ class PdfLoader(BaseLoader):
         # save plaintext file for caching
         if not plaintext_file_exists and plaintext_file_key:
             storage.save(plaintext_file_key, text.encode('utf-8'))
-
         return documents
+
+
+if __name__ == '__main__':
+    # loader = PdfLoader(file_path='./Student Personal Info Form - Alexa Caramazza.pdf')
+    # loader = PyPDFLoader(file_path='./Student Personal Info Form - Alexa Caramazza.pdf')
+    # loader = PDFMinerLoader(file_path='./Student Personal Info Form - Alexa Caramazza.pdf')
+    # loader = PDFMinerPDFasHTMLLoader(file_path='./Student Personal Info Form - Alexa Caramazza.pdf')
+    # loader = PyMuPDFLoader(file_path='./Student Personal Info Form - Alexa Caramazza.pdf')
+    loader = PDFPlumberLoader(file_path='./Student Personal Info Form - Alexa Caramazza.pdf')
+    print(loader.load())
+    # import camelot
+
+    tables = camelot.read_pdf('./Student Personal Info Form - Alexa Caramazza.pdf',
+                              # strip_text='\n',
+                              # line_tol=6,
+                              # line_scale=60)
+                              pages='1-end',
+                              compress=True)
+    from pandas import DataFrame
+
+    print(len(tables))
+    for t in tables:
+        # print(t.df)
+        # 转化为文本，表格内\n替换
+        # print(t.df.to_string(index=False))
+        print(DataFrame(t.df).shape)
+        _str = ""
+        for _, row in t.df.iterrows():
+            _str += " ".join(row.values) + "\n\n"
+        # 去掉最后的\n\n
+        _str = _str.rstrip("\n\n")
+        print(len(_str.split("\n\n")))
+    pass
 
