@@ -15,7 +15,7 @@ def get_topic():
     #     print(i["urlToImage"])
     #     print(i["description"])
     # 抽取一条
-    sample_news = random.sample(res["articles"])
+    sample_news = random.sample(res["articles"], 1)[0]
     return "title: "+sample_news["title"]+"\n"+"description: "+sample_news["description"]+"\n"+"content: "+sample_news["content"]+"\n"
 
 
