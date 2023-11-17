@@ -222,7 +222,7 @@ def init_active_chat(main_app: Flask):
     if env == 'production' and mode == 'api':
         group_id_list = get_all_groups()
     else:
-        group_id_list = [33]
+        group_id_list = []
     # group_id_list = []
     logger.info(f"初始化监控群组：{group_id_list}")
     for group_id in group_id_list:
