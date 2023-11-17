@@ -177,7 +177,7 @@ def chat_thread(group_id: int, main_context: AppContext):
                             all([message["role"] == "James Corden" for message in outer_memory[-5:]]) and\
                             (datetime.datetime.now() - datetime.datetime.strptime(recent_history['data'][0]['created_at'], "%Y-%m-%d %H:%M:%S")).total_seconds() > 3600*24:
                             topic = get_topic()
-                            query = topic + "Is there anything you'd like to discuss about this news?"
+                            query = topic + "Please introduce the story and raise any points you would like to discuss?"
                             logger.info(f"超过24小时，换个话题强制回复：{group_id} {topic} {uuid.uuid4()}")
                             res = model_chat(conversation_id, outer_memory=outer_memory, is_force=True, query=query, user_name="observer")
                         # 如果倒数第二条消息是机器人且最后一条消息不是机器人且与倒数第二条间隔不超过30s,回复
