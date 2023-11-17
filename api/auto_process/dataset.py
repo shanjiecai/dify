@@ -8,7 +8,7 @@ import openai
 import tiktoken
 from auto_process.config import base_url, dataset_api_key as api_key
 
-encode_model = tiktoken.get_encoding("gpt2")
+encode_model = tiktoken.get_encoding("cl100k_base")
 
 
 # 读取当前目录下的文件夹，文件夹名为数据集名，并获取所有子文件路径列表
@@ -131,4 +131,4 @@ def create_dataset_from_dir(path):
 
 
 if __name__ == '__main__':
-    create_dataset_from_dir("./data/Elon Musk")
+    create_dataset_from_dir("./data/Maria Arabo")

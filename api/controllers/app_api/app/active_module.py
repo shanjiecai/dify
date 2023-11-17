@@ -164,16 +164,18 @@ def chat_thread(group_id: int, main_context: AppContext):
                                 {"role": model_name_transform(message["from_user"]["name"]), "message": message['chat_text']})
                         # 倒序outer_memory
                         outer_memory.reverse()
+
+
                         if not outer_memory:
                             continue
-                        elif (datetime.datetime.now() - datetime.datetime.strptime(recent_history['data'][0]['created_at'], "%Y-%m-%d %H:%M:%S")).seconds > 3600*4 and outer_memory[-1]["role"] != "James Corden":
+                        elif (datetime.datetime.now() - datetime.datetime.strptime(recent_history['data'][0]['created_at'], "%Y-%m-%d %H:%M:%S")).total_seconds() > 3600*4 and outer_memory[-1]["role"] != "James Corden":
                             logger.info(f"超过4小时，强制回复：{group_id} {uuid.uuid4()}")
                             res = model_chat(conversation_id, outer_memory=outer_memory, is_force=True)
-                        # elif (datetime.datetime.now() - datetime.datetime.strptime(last_message['created_at'], "%Y-%m-%d %H:%M:%S")).seconds > 3600*24:
+                        # elif (datetime.datetime.now() - datetime.datetime.strptime(last_message['created_at'], "%Y-%m-%d %H:%M:%S")).total_seconds() > 3600*24:
                         # 如果最后5条都是机器人消息，换个话题
                         elif len(outer_memory) >= 5 and \
                             all([message["role"] == "James Corden" for message in outer_memory[-5:]]) and\
-                            (datetime.datetime.now() - datetime.datetime.strptime(recent_history['data'][0]['created_at'], "%Y-%m-%d %H:%M:%S")).seconds > 3600*24:
+                            (datetime.datetime.now() - datetime.datetime.strptime(recent_history['data'][0]['created_at'], "%Y-%m-%d %H:%M:%S")).total_seconds() > 3600*24:
                             topic = get_topic()
                             query = topic + "Is there anything you'd like to discuss about this news?"
                             logger.info(f"超过24小时，换个话题强制回复：{group_id} {topic} {uuid.uuid4()}")
@@ -182,7 +184,7 @@ def chat_thread(group_id: int, main_context: AppContext):
                         elif len(outer_memory) > 1 and \
                             outer_memory[-2]["role"] == "James Corden" and \
                             outer_memory[-1]["role"] != "James Corden" and \
-                                (datetime.datetime.strptime(recent_history['data'][0]['created_at'], "%Y-%m-%d %H:%M:%S") - datetime.datetime.strptime(recent_history['data'][1]['created_at'], "%Y-%m-%d %H:%M:%S")).seconds < 30:
+                                (datetime.datetime.strptime(recent_history['data'][0]['created_at'], "%Y-%m-%d %H:%M:%S") - datetime.datetime.strptime(recent_history['data'][1]['created_at'], "%Y-%m-%d %H:%M:%S")).total_seconds() < 30:
                             # print(outer_memory[-1])
                             # print(outer_memory[-2])
                             logger.info(f"倒数第二条消息是机器人，且与最后一条消息间隔不超过30s，强制回复：{group_id} {uuid.uuid4()}")

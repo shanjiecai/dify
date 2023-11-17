@@ -4,7 +4,7 @@ import os
 import openai
 import tiktoken
 from auto_process.dataset import get_file_list, create_dataset, upload_file
-encode_model = tiktoken.get_encoding("gpt2")
+encode_model = tiktoken.get_encoding("cl100k_base")
 
 
 # 调用openai总结上传文本
