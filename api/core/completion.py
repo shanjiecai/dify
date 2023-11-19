@@ -362,6 +362,7 @@ class Completion:
             callbacks=[LLMCallbackHandler(model_instance, conversation_message_task)],
             fake_response=fake_response
         )
+        logger.info(f"prompt_messages: {prompt_messages}")
         logger.info(f"model_instance:{model_instance.name} prompt_tokens: {response.prompt_tokens} completion_tokens: {response.completion_tokens} content: {response.content}")
         return response
 
