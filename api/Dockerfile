@@ -4,7 +4,7 @@ FROM python:3.10-slim AS base
 LABEL maintainer="takatost@gmail.com"
 
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends gcc g++ python3-dev libc-dev libffi-dev ffmpeg libsm6 libxext6 ghostscript python3-tk
+    && apt-get install -y --no-install-recommends gcc g++ python3-dev libc-dev libffi-dev ffmpeg libsm6 libxext6
 
 COPY requirements.txt /requirements.txt
 
@@ -27,7 +27,7 @@ EXPOSE 5001
 WORKDIR /app/api
 
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends bash curl wget vim nodejs \
+    && apt-get install -y --no-install-recommends bash curl wget vim nodejs ghostscript python3-tk\
     && apt-get autoremove \
     && rm -rf /var/lib/apt/lists/*
 
