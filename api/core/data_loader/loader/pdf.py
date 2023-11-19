@@ -117,5 +117,6 @@ if __name__ == '__main__':
     # pass
     # documents = PdfLoader(file_path='./Alexa Caramazza _ All Data (meetings) .pdf').load()
     documents = PdfLoader(file_path='./Student Personal Info Form - Alexa Caramazza.pdf').load()
+    # documents = PdfLoader(file_path='./Maria Arabo - Sheet 1.pdf').load()
     pprint(documents)
 

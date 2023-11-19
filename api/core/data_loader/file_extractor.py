@@ -23,6 +23,10 @@ class FileExtractor:
     def load(cls, upload_file: UploadFile, return_text: bool = False) -> Union[List[Document] | str]:
         with tempfile.TemporaryDirectory() as temp_dir:
             suffix = Path(upload_file.key).suffix
+            if suffix == '.pdf':
+                if "table" in upload_file.name.lower() or "form" in upload_file.name.lower() or "chart" in upload_file.name.lower() \
+                        or "sheet" in upload_file.name.lower():
+                    suffix = "_table" + suffix
             file_path = f"{temp_dir}/{next(tempfile._get_candidate_names())}{suffix}"
             storage.download(upload_file.key, file_path)
 
