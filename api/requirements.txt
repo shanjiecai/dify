@@ -57,5 +57,5 @@ pymilvus==2.3.0
 loguru
 newsapi-python
 opencv-python-headless
-camelot-py==0.11.0
 ghostscript
+camelot-py==0.11.0

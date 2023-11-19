@@ -10,7 +10,9 @@ from langchain.schema import Document
 from extensions.ext_storage import storage
 from models.model import UploadFile
 
-logger = logging.getLogger(__name__)
+# logger = logging.getLogger(__name__)
+
+from mylogger import logger
 
 
 class PdfLoader(BaseLoader):
@@ -54,17 +56,17 @@ class PdfLoader(BaseLoader):
                                       compress=True)
             if tables:
                 from pandas import DataFrame
-                print(len(tables))
+                logger.info(len(tables))
                 for index, t in enumerate(tables):
                     # print(t.df)
                     # 转化为文本，表格内\n替换
                     # print(t.df.to_string(index=False))
-                    print(DataFrame(t.df).shape)
+                    logger.info(DataFrame(t.df).shape)
                     _str = ""
                     for _, row in t.df.iterrows():
                         _str += "\t".join(row.values) + "\n\n"
                     _str = _str.rstrip("\n\n")
-                    print(len(_str.split("\n\n")))
+                    logger.info(len(_str.split("\n\n")))
                     documents.append(Document(page_content=_str, metadata={"source": self._file_path,
                                                                            "page": index}))
         else:
