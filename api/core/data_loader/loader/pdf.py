@@ -1,4 +1,5 @@
 import logging
+from pprint import pprint
 from typing import List, Optional
 
 from langchain.document_loaders import PyPDFium2Loader, PDFPlumberLoader
@@ -42,32 +43,36 @@ class PdfLoader(BaseLoader):
                     return [Document(page_content=text)]
                 except FileNotFoundError:
                     pass
-        documents = PyPDFium2Loader(file_path=self._file_path).load()
+        if "table" in self._file_path.lower() or "form" in self._file_path.lower():
+            documents = []
+            tables = camelot.read_pdf(self._file_path,
+                                      # strip_text='\n',
+                                      # line_tol=6,
+                                      # line_scale=60)
+                                      pages='1-end',
+                                      compress=True)
+            if tables:
+                from pandas import DataFrame
+                print(len(tables))
+                for index, t in enumerate(tables):
+                    # print(t.df)
+                    # 转化为文本，表格内\n替换
+                    # print(t.df.to_string(index=False))
+                    print(DataFrame(t.df).shape)
+                    _str = ""
+                    for _, row in t.df.iterrows():
+                        _str += "\t".join(row.values) + "\n\n"
+                    _str = _str.rstrip("\n\n")
+                    print(len(_str.split("\n\n")))
+                    documents.append(Document(page_content=_str, metadata={"source": self._file_path,
+                                                                           "page": index}))
+        else:
+            documents = PyPDFium2Loader(file_path=self._file_path).load()
         text_list = []
 
-
-        tables = camelot.read_pdf(self._file_path,
-                                  # strip_text='\n',
-                                  # line_tol=6,
-                                  # line_scale=60)
-                                  pages='1-end',
-                                  compress=True)
         # print(f"tables: {tables}")
-        old_document_length = len(documents)
-        if tables:
-            from pandas import DataFrame
-            print(len(tables))
-            for index, t in enumerate(tables):
-                # print(t.df)
-                # 转化为文本，表格内\n替换
-                # print(t.df.to_string(index=False))
-                print(DataFrame(t.df).shape)
-                _str = ""
-                for _, row in t.df.iterrows():
-                    _str += "\t".join(row.values) + "\n\n"
-                _str = _str.rstrip("\n\n")
-                print(len(_str.split("\n\n")))
-                documents.append(Document(page_content=_str, metadata={"source": self._file_path, "page": index + old_document_length}))
+        # old_document_length = len(documents)
+
         for document in documents:
             text_list.append(document.page_content)
         text = "\n\n".join(text_list)
@@ -84,29 +89,32 @@ if __name__ == '__main__':
     # loader = PDFMinerLoader(file_path='./Student Personal Info Form - Alexa Caramazza.pdf')
     # loader = PDFMinerPDFasHTMLLoader(file_path='./Student Personal Info Form - Alexa Caramazza.pdf')
     # loader = PyMuPDFLoader(file_path='./Student Personal Info Form - Alexa Caramazza.pdf')
-    loader = PDFPlumberLoader(file_path='./Student Personal Info Form - Alexa Caramazza.pdf')
-    print(loader.load())
+    # loader = PDFPlumberLoader(file_path='./Alexa Caramazza _ All Data (meetings) .pdf')
+    # print(loader.load())
     # import camelot
 
-    tables = camelot.read_pdf('./Student Personal Info Form - Alexa Caramazza.pdf',
-                              # strip_text='\n',
-                              # line_tol=6,
-                              # line_scale=60)
-                              pages='1-end',
-                              compress=True)
-    from pandas import DataFrame
-
-    print(len(tables))
-    for t in tables:
-        # print(t.df)
-        # 转化为文本，表格内\n替换
-        # print(t.df.to_string(index=False))
-        print(DataFrame(t.df).shape)
-        _str = ""
-        for _, row in t.df.iterrows():
-            _str += " ".join(row.values) + "\n\n"
-        # 去掉最后的\n\n
-        _str = _str.rstrip("\n\n")
-        print(len(_str.split("\n\n")))
-    pass
+    # tables = camelot.read_pdf('./Alexa Caramazza _ All Data (meetings) .pdf',
+    #                           # strip_text='\n',
+    #                           # line_tol=6,
+    #                           # line_scale=60)
+    #                           pages='1-end',
+    #                           compress=True)
+    # from pandas import DataFrame
+    #
+    # print(len(tables))
+    # for t in tables:
+    #     # print(t.df)
+    #     # 转化为文本，表格内\n替换
+    #     # print(t.df.to_string(index=False))
+    #     print(DataFrame(t.df).shape)
+    #     _str = ""
+    #     for _, row in t.df.iterrows():
+    #         _str += " ".join(row.values) + "\n\n"
+    #     # 去掉最后的\n\n
+    #     _str = _str.rstrip("\n\n")
+    #     print(len(_str.split("\n\n")))
+    # pass
+    # documents = PdfLoader(file_path='./Alexa Caramazza _ All Data (meetings) .pdf').load()
+    documents = PdfLoader(file_path='./Student Personal Info Form - Alexa Caramazza.pdf').load()
+    pprint(documents)
 
