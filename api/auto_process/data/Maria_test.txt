@@ -1,0 +1,50 @@
+1.What country were you born in?
+2.What is your favorite childhood memory?
+3.Who are the most important people in your life?
+4.What is the first book that got you into reading?
+5.How old are you, and when is your birthday?
+6.Do you have a favorite childhood memory?
+7.Who is your best friend?
+8.What was the hardest time in your life?
+9.Do you believe in soulmates or fate?
+10.What is your favorite color?
+11.Where is your favorite restaurant in the area that you live?
+12.What type of music do you listen to?
+13.Do you have a dream career?
+14.What is your biggest goal in life?
+15.Do you have a favorite city that you have visited?
+16.What is the best place you have traveled to and why is it your favorite?
+17.What is your favorite book genre?
+18.What is your favorite movie genre?
+19.If you could redo a time in your life, what would it be?
+20.What do you look for in a relationship?
+21.Do you want children, and if so, how many?
+22.Is there a place you go to in the city you live that makes you feel peaceful?
+23.What is your biggest fear?
+24.Do you believe in a higher power?
+25.What or who do you fall back on when you are going through a difficult time in your life?
+26.Is there a piece of advice that has altered your life?
+27.Have you ever had a dream that didn't feel like a dream?
+28.What is your favorite hobby?
+29.Do you enjoy the outdoors or would you rather stay inside?
+30.Do you have any weekly rituals that you stick to?
+31.What is something that makes you wake up in the morning?
+32.How do you handle a stressful situation?
+33.What was your first car?
+34.What is a trait that makes someone stand out to you?
+35.What is your favorite holiday and why?
+36.What was the happiest moment in your life?
+37.Have you ever played a sport?
+38.What legacy do you want to leave on the world?
+39.What is your gender?
+40.What is your age?
+41.What do you currently do for a living?
+42.Do you enjoy cold or hot weather?
+43.What is something you do that others might not know about?
+44.How was your college experience?
+45.What is your favorite type of food and why?
+46.What is your favorite movie?
+47.Do you have any pets?
+48.What was the first piece of technology you ever owned?
+49.Do you think people are born good or evil?
+50.What is something that you have always wanted to do?

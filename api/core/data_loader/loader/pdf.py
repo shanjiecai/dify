@@ -43,7 +43,8 @@ class PdfLoader(BaseLoader):
                     return [Document(page_content=text)]
                 except FileNotFoundError:
                     pass
-        if "table" in self._file_path.lower() or "form" in self._file_path.lower():
+        if "table" in self._file_path.lower() or "form" in self._file_path.lower() or "chart" in self._file_path.lower() \
+                or "sheet" in self._file_path.lower():
             documents = []
             tables = camelot.read_pdf(self._file_path,
                                       # strip_text='\n',
