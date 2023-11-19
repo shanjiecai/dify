@@ -40,12 +40,12 @@ class BaseVectorIndex(BaseIndex):
     def _get_vector_store_class(self) -> type:
         raise NotImplementedError
 
-    @abstractmethod
-    def search_by_full_text_index(
-            self, query: str,
-            **kwargs: Any
-    ) -> List[Document]:
-        raise NotImplementedError
+    # @abstractmethod
+    # def search_by_full_text_index(
+    #         self, query: str,
+    #         **kwargs: Any
+    # ) -> List[Document]:
+    #     raise NotImplementedError
 
     def search(
             self, query: str,
