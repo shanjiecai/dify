@@ -21,18 +21,22 @@ services:
       # different from api or web app domain.
       # example: http://cloud.dify.ai
       CONSOLE_API_URL: ''
-      # The URL for Service API endpoints, refers to the base URL of the current API service if api domain is
+      # The URL prefix for Service API endpoints, refers to the base URL of the current API service if api domain is
       # different from console domain.
       # example: http://api.dify.ai
       SERVICE_API_URL: ''
-      # The URL for Web APP api server, refers to the Web App base URL of WEB service if web app domain is different from
+      # The URL prefix for Web APP api server, refers to the Web App base URL of WEB service if web app domain is different from
       # console or api domain.
       # example: http://udify.app
       APP_API_URL: ''
-      # The URL for Web APP frontend, refers to the Web App base URL of WEB service if web app domain is different from
+      # The URL prefix for Web APP frontend, refers to the Web App base URL of WEB service if web app domain is different from
       # console or api domain.
       # example: http://udify.app
       APP_WEB_URL: ''
+      # File preview or download Url prefix.
+      # used to display File preview or download Url to the front-end or as Multi-model inputs;
+      # Url is signed and has expiration time.
+      FILES_URL: ''
       # When enabled, migrations will be executed prior to application startup and the application will start after the migrations have completed.
       MIGRATION_ENABLED: 'false'
       # The configurations of postgres database connection.
@@ -195,7 +199,7 @@ services:
 
   # Frontend web application.
   web:
-    image: langgenius/dify-web:0.3.29
+    image: langgenius/dify-web:0.3.31-fix3
     restart: always
     environment:
       EDITION: SELF_HOSTED
@@ -252,7 +256,7 @@ services:
 
   # The Weaviate vector store.
   weaviate:
-    image: semitechnologies/weaviate:1.18.4
+    image: semitechnologies/weaviate:1.19.0
     restart: always
     volumes:
       # Mount the Weaviate data directory to the container.
@@ -279,7 +283,7 @@ services:
 #  (if uncommented, you need to comment out the weaviate service above,
 #  and set VECTOR_STORE to qdrant in the api & worker service.)
 #  qdrant:
-#    image: qdrant/qdrant:latest
+#    image: langgenius/qdrant:latest
 #    restart: always
 #    volumes:
 #      - ./volumes/qdrant:/qdrant/storage

@@ -1,11 +1,9 @@
-from __future__ import annotations
-
 import json
 import logging
 import threading
 import time
 import uuid
-from typing import Generator, Union, Any, Optional
+from typing import Generator, Union, Any, Optional, List
 
 from flask import current_app, Flask
 from redis.client import PubSub
@@ -14,9 +12,11 @@ from sqlalchemy import and_
 from core.completion import Completion
 from core.conversation_message_task import PubHandler, ConversationTaskStoppedException, \
     ConversationTaskInterruptException
+from core.file.message_file_parser import MessageFileParser
 from core.model_providers.error import LLMBadRequestError, LLMAPIConnectionError, LLMAPIUnavailableError, \
     LLMRateLimitError, \
     LLMAuthorizationError, ProviderTokenNotInitError, QuotaExceededError, ModelCurrentlyNotSupportError
+from core.model_providers.models.entity.message import PromptMessageFile
 from extensions.ext_database import db
 from extensions.ext_redis import redis_client
 from models.model import Conversation, AppModelConfig, App, Account, EndUser, Message
@@ -44,6 +44,9 @@ class CompletionService:
         # is streaming mode
         inputs = args['inputs']
         query = args['query']
+        files = args['files'] if 'files' in args and args['files'] else []
+        auto_generate_name = args['auto_generate_name'] \
+            if 'auto_generate_name' in args else True
 
         # if app_model.mode != 'completion' and not query:
         #     raise ValueError('query is required')
@@ -151,6 +154,14 @@ class CompletionService:
         # clean input by app_model_config form rules
         inputs = cls.get_cleaned_inputs(inputs, app_model_config)
 
+        # parse files
+        message_file_parser = MessageFileParser(tenant_id=app_model.tenant_id, app_id=app_model.id)
+        file_objs = message_file_parser.validate_and_transform_files_arg(
+            files,
+            app_model_config,
+            user
+        )
+
         generate_task_id = str(uuid.uuid4())
 
         pubsub = redis_client.pubsub()
@@ -166,6 +177,7 @@ class CompletionService:
             'app_model_config': app_model_config.copy(),
             'query': query,
             'inputs': inputs,
+            'files': file_objs,
             'detached_user': user,
             'detached_conversation': conversation,
             'streaming': streaming,
@@ -174,12 +186,14 @@ class CompletionService:
             'outer_memory': outer_memory,
             'assistant_name': assistant_name,
             'user_name': user_name,
-            'is_new_message': is_new_message
+            'is_new_message': is_new_message,
+            'auto_generate_name': auto_generate_name
         })
 
         generate_worker_thread.start()
 
         # wait for 10 minutes to close the thread
+
         cls.countdown_and_close(current_app._get_current_object(), generate_worker_thread, pubsub, user, generate_task_id)
         if conversation_id:
             # 删除上的锁 redis_client.setex(conversation.id, 60, 1)
@@ -198,14 +212,17 @@ class CompletionService:
         return user
 
     @classmethod
-    def generate_worker(cls, flask_app: Flask, generate_task_id: str, detached_app_model: App, app_model_config: AppModelConfig,
-                        query: str, inputs: dict, detached_user: Union[Account, EndUser],
+    def generate_worker(cls, flask_app: Flask, generate_task_id: str, detached_app_model: App,
+                        app_model_config: AppModelConfig,
+                        query: str, inputs: dict, files: List[PromptMessageFile],
+                        detached_user: Union[Account, EndUser],
                         detached_conversation: Optional[Conversation], streaming: bool, is_model_config_override: bool,
                         retriever_from: str = 'dev',
                         outer_memory: Optional[list] = None,
                         assistant_name: str = None,
                         user_name: str = None,
-                        is_new_message: bool = True):
+                        is_new_message: bool = True,
+                        auto_generate_name: bool = True):
         with flask_app.app_context():
             # fixed the state of the model object when it detached from the original session
             user = db.session.merge(detached_user)
@@ -225,6 +242,7 @@ class CompletionService:
                     query=query,
                     inputs=inputs,
                     user=user,
+                    files=files,
                     conversation=conversation,
                     streaming=streaming,
                     is_override=is_model_config_override,
@@ -232,7 +250,8 @@ class CompletionService:
                     outer_memory=outer_memory,
                     assistant_name=assistant_name,
                     user_name=user_name,
-                    is_new_message=is_new_message
+                    is_new_message=is_new_message,
+                    auto_generate_name=auto_generate_name,
                 )
             except (ConversationTaskInterruptException, ConversationTaskStoppedException):
                 pass
@@ -246,31 +265,35 @@ class CompletionService:
                 logging.exception("Unknown Error in completion")
                 PubHandler.pub_error(user, generate_task_id, e)
             finally:
-                db.session.commit()
+                db.session.remove()
 
     @classmethod
-    def countdown_and_close(cls, flask_app: Flask, worker_thread, pubsub, detached_user, generate_task_id) -> threading.Thread:
+    def countdown_and_close(cls, flask_app: Flask, worker_thread, pubsub, detached_user,
+                            generate_task_id) -> threading.Thread:
         # wait for 10 minutes to close the thread
         timeout = 600
 
         def close_pubsub():
             with flask_app.app_context():
-                user = db.session.merge(detached_user)
+                try:
+                    user = db.session.merge(detached_user)
 
-                sleep_iterations = 0
-                while sleep_iterations < timeout and worker_thread.is_alive():
-                    if sleep_iterations > 0 and sleep_iterations % 10 == 0:
-                        PubHandler.ping(user, generate_task_id)
+                    sleep_iterations = 0
+                    while sleep_iterations < timeout and worker_thread.is_alive():
+                        if sleep_iterations > 0 and sleep_iterations % 10 == 0:
+                            PubHandler.ping(user, generate_task_id)
 
-                    time.sleep(1)
-                    sleep_iterations += 1
+                        time.sleep(1)
+                        sleep_iterations += 1
 
-                if worker_thread.is_alive():
-                    PubHandler.stop(user, generate_task_id)
-                    try:
-                        pubsub.close()
-                    except Exception:
-                        pass
+                    if worker_thread.is_alive():
+                        PubHandler.stop(user, generate_task_id)
+                        try:
+                            pubsub.close()
+                        except Exception:
+                            pass
+                finally:
+                    db.session.remove()
 
         countdown_thread = threading.Thread(target=close_pubsub)
         countdown_thread.start()
@@ -308,6 +331,12 @@ class CompletionService:
         model_dict['completion_params'] = completion_params
         app_model_config.model = json.dumps(model_dict)
 
+        # parse files
+        message_file_parser = MessageFileParser(tenant_id=app_model.tenant_id, app_id=app_model.id)
+        file_objs = message_file_parser.transform_message_files(
+            message.files, app_model_config
+        )
+
         generate_task_id = str(uuid.uuid4())
 
         pubsub = redis_client.pubsub()
@@ -322,11 +351,13 @@ class CompletionService:
             'app_model_config': app_model_config.copy(),
             'query': message.query,
             'inputs': message.inputs,
+            'files': file_objs,
             'detached_user': user,
             'detached_conversation': None,
             'streaming': streaming,
             'is_model_config_override': True,
-            'retriever_from': retriever_from
+            'retriever_from': retriever_from,
+            'auto_generate_name': False
         })
 
         generate_worker_thread.start()
@@ -400,7 +431,7 @@ class CompletionService:
                     logging.exception(e)
                     raise
             finally:
-                db.session.commit()
+                db.session.remove()
 
                 try:
                     pubsub.unsubscribe(generate_channel)
@@ -423,7 +454,8 @@ class CompletionService:
                             if event == 'message':
                                 yield "data: " + json.dumps(cls.get_message_response_data(result.get('data'))) + "\n\n"
                             elif event == 'message_replace':
-                                yield "data: " + json.dumps(cls.get_message_replace_response_data(result.get('data'))) + "\n\n"
+                                yield "data: " + json.dumps(
+                                    cls.get_message_replace_response_data(result.get('data'))) + "\n\n"
                             elif event == 'chain':
                                 yield "data: " + json.dumps(cls.get_chain_response_data(result.get('data'))) + "\n\n"
                             elif event == 'agent_thought':
@@ -441,7 +473,7 @@ class CompletionService:
                         logging.exception(e)
                         raise
                 finally:
-                    db.session.commit()
+                    db.session.remove()
 
                     try:
                         pubsub.unsubscribe(generate_channel)

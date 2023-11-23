@@ -95,7 +95,7 @@ const translation = {
     settings: 'Settings',
     workspace: 'Workspace',
     createWorkspace: 'Create Workspace',
-    helpCenter: 'Help Document',
+    helpCenter: 'Help',
     about: 'About',
     logout: 'Log out',
   },
@@ -109,7 +109,7 @@ const translation = {
     provider: 'Model Provider',
     dataSource: 'Data Source',
     plugin: 'Plugins',
-    apiBasedExtension: 'API-based Extension',
+    apiBasedExtension: 'API Extension',
   },
   account: {
     avatar: 'Avatar',
@@ -223,6 +223,9 @@ const translation = {
     },
   },
   modelProvider: {
+    notConfigured: 'The system model has not yet been fully configured, and some functions may be unavailable.',
+    systemModelSettings: 'System Model Settings',
+    systemModelSettingsLink: 'Why is it necessary to set up a system model?',
     selectModel: 'Select your model',
     setupModelFirst: 'Please set up your model first',
     systemReasoningModel: {
@@ -237,6 +240,10 @@ const translation = {
       key: 'Speech-to-Text Model',
       tip: 'Set the default model for speech-to-text input in conversation.',
     },
+    rerankModel: {
+      key: 'Rerank Model',
+      tip: 'Rerank model will reorder the candidate document list based on the semantic match with  user query, improving the results of semantic ranking',
+    },
     quota: 'Quota',
     searchModel: 'Search model',
     noModelFound: 'No model found for {{model}}',
@@ -244,6 +251,9 @@ const translation = {
     showMoreModelProvider: 'Show more model provider',
     selector: {
       tip: 'This model has been removed. Please add a model or select another model.',
+      emptyTip: 'No available models',
+      emptySetting: 'Please go to settings to configure',
+      rerankTip: 'Please set up the Rerank model',
     },
     card: {
       quota: 'QUOTA',
@@ -303,17 +313,17 @@ const translation = {
   },
   apiBasedExtension: {
     title: 'API-based extensions provide centralized API management, simplifying configuration for easy use across Dify\'s applications.',
-    link: 'Learn how to develop your own API-based Extension.',
+    link: 'Learn how to develop your own API Extension.',
     linkUrl: 'https://docs.dify.ai/advanced/api_based_extension',
-    add: 'Add API-based Extension',
+    add: 'Add API Extension',
     selector: {
-      title: 'API-based Extension',
+      title: 'API Extension',
       placeholder: 'Please select API-based extension',
-      manage: 'Manage API-based Extension',
+      manage: 'Manage API Extension',
     },
     modal: {
-      title: 'Add API-based Extension',
-      editTitle: 'Edit API-based Extension',
+      title: 'Add API Extension',
+      editTitle: 'Edit API Extension',
       name: {
         title: 'Name',
         placeholder: 'Please enter the name',
@@ -327,9 +337,6 @@ const translation = {
         placeholder: 'Please enter the API-key',
         lengthError: 'API-key length cannot be less than 5 characters',
       },
-    },
-    confirm: {
-      desc: 'Deleting the WebHook might cause the extension points configured for this API-based Extension to fail and produce errors. Please proceed with caution.',
     },
   },
   about: {
@@ -354,7 +361,7 @@ const translation = {
   },
   datasetMenus: {
     documents: 'Documents',
-    hitTesting: 'Hit Testing',
+    hitTesting: 'Retrieval Testing',
     settings: 'Settings',
     emptyTip: 'The data set has not been associated, please go to the application or plug-in to complete the association.',
     viewDoc: 'View documentation',
@@ -385,9 +392,9 @@ const translation = {
       title: 'CITATIONS',
       linkToDataset: 'Link to dataset',
       characters: 'Characters:',
-      hitCount: 'Hit count:',
+      hitCount: 'Retrieval count:',
       vectorHash: 'Vector hash:',
-      hitScore: 'Hit Score:',
+      hitScore: 'Retrieval Score:',
     },
   },
   promptEditor: {
@@ -432,6 +439,16 @@ const translation = {
       },
     },
     existed: 'Already exists in the prompt',
+  },
+  imageUploader: {
+    uploadFromComputer: 'Upload from Computer',
+    uploadFromComputerReadError: 'Image reading failed, please try again.',
+    uploadFromComputerUploadError: 'Image upload failed, please upload again.',
+    uploadFromComputerLimit: 'Upload images cannot exceed {{size}} MB',
+    pasteImageLink: 'Paste image link',
+    pasteImageLinkInputPlaceholder: 'Paste image link here',
+    pasteImageLinkInvalid: 'Invalid image link',
+    imageUpload: 'Image Upload',
   },
 }
 

@@ -202,6 +202,7 @@ const translation = {
     waitForBatchResponse:
       'Please wait for the response to the batch task to complete.',
     notSelectModel: 'Please choose a model',
+    waitForImgUpload: 'Please wait for the image to upload',
   },
   chatSubTitle: 'Pre Prompt',
   completionSubTitle: 'Prefix Prompt',
@@ -249,6 +250,25 @@ const translation = {
     options: 'Options',
     addOption: 'Add option',
   },
+  vision: {
+    name: 'Vision',
+    description: 'Enable Vision will allows the model to take in images and answer questions about them. ',
+    settings: 'Settings',
+    visionSettings: {
+      title: 'Vision Settings',
+      resolution: 'Resolution',
+      resolutionTooltip: `low res will allow model receive a low-res 512 x 512 version of the image, and represent the image with a budget of 65 tokens. This allows the API to return faster responses and consume fewer input tokens for use cases that do not require high detail.
+      \n
+      high res will first allows the model to see the low res image and then creates detailed crops of input images as 512px squares based on the input image size. Each of the detailed crops uses twice the token budget for a total of 129 tokens.`,
+      high: 'High',
+      low: 'Low',
+      uploadMethod: 'Upload Method',
+      both: 'Both',
+      localUpload: 'Local Upload',
+      url: 'URL',
+      uploadLimit: 'Upload Limit',
+    },
+  },
   openingStatement: {
     title: 'Opening remarks',
     add: 'Add',
@@ -285,11 +305,22 @@ const translation = {
   },
   result: 'Output Text',
   datasetConfig: {
+    settingTitle: 'Retrieval settings',
+    retrieveOneWay: {
+      title: 'N-to-1 retrieval',
+      description: 'Based on user intent and dataset descriptions, the Agent autonomously selects the best dataset for querying. Best for applications with distinct, limited datasets.',
+    },
+    retrieveMultiWay: {
+      title: 'Multi-path retrieval',
+      description: 'Based on user intent, queries across all datasets, retrieves relevant text from multi-sources, and selects the best results matching the user query after reranking. Configuration of the Rerank model API is required.',
+    },
+    rerankModelRequired: 'Rerank model is required',
     params: 'Params',
     top_k: 'Top K',
     top_kTip: 'Used to filter segments that are most similar to user questions. The system will also dynamically adjust the value of Top K, according to max_tokens of the selected model.',
     score_threshold: 'Score Threshold',
     score_thresholdTip: 'Used to set the similarity threshold for segment filtering.',
+    retrieveChangeTip: 'Modifying the index mode and retrieval mode may affect applications associated with this dataset.',
   },
 }
 

@@ -1,6 +1,3 @@
-from __future__ import annotations
-
-import json
 import concurrent
 import json
 import logging
@@ -16,13 +13,14 @@ from core.callback_handler.llm_callback_handler import LLMCallbackHandler
 from core.conversation_message_task import ConversationMessageTask, ConversationTaskStoppedException, \
     ConversationTaskInterruptException
 from core.external_data_tool.factory import ExternalDataToolFactory
+from core.file.file_obj import FileObj
 from core.model_providers.error import LLMBadRequestError
 from core.memory.read_only_conversation_token_db_buffer_shared_memory import \
     ReadOnlyConversationTokenDBBufferSharedMemory
 from core.memory.read_only_conversation_summary_buffer_shared_memory import ReadOnlyConversationSummaryBufferSharedMemory
 from core.helper import encrypter
 from core.model_providers.model_factory import ModelFactory
-from core.model_providers.models.entity.message import PromptMessage
+from core.model_providers.models.entity.message import PromptMessage, PromptMessageFile
 from core.model_providers.models.llm.base import BaseLLM
 from core.orchestrator_rule_parser import OrchestratorRuleParser
 from core.prompt.prompt_template import PromptTemplateParser
@@ -40,12 +38,13 @@ from core.moderation.factory import ModerationFactory
 class Completion:
     @classmethod
     def generate(cls, task_id: str, app: App, app_model_config: AppModelConfig, query: str, inputs: dict,
-                 user: Union[Account, EndUser], conversation: Optional[Conversation], streaming: bool,
-                 is_override: bool = False, retriever_from: str = 'dev',
+                 files: List[FileObj], user: Union[Account, EndUser], conversation: Optional[Conversation],
+                 streaming: bool, is_override: bool = False, retriever_from: str = 'dev',
+                 auto_generate_name: bool = True,
                  outer_memory: Optional[list] = None,
                  assistant_name: str = None,
                  user_name: str = None,
-                 is_new_message=True):
+                 is_new_message = True):
         """
         errors: ProviderTokenNotInitError
         """
@@ -81,11 +80,16 @@ class Completion:
             is_override=is_override,
             inputs=inputs,
             query=query,
+            files=files,
             streaming=streaming,
             model_instance=final_model_instance,
             user_name=user_name if user_name else "Human",
-            is_new_message=is_new_message
+            is_new_message=is_new_message,
+            model_instance=final_model_instance,
+            auto_generate_name=auto_generate_name
         )
+
+        prompt_message_files = [file.prompt_message_file for file in files]
 
         rest_tokens_for_context_and_memory = cls.get_validate_rest_tokens(
             mode=app.mode,
@@ -95,7 +99,9 @@ class Completion:
             inputs=inputs,
             outer_memory=outer_memory,
             assistant_name=assistant_name,
-            user_name=user_name
+            user_name=user_name,
+            inputs=inputs,
+            files=prompt_message_files
         )
 
         # init orchestrator rule parser
@@ -129,22 +135,23 @@ class Completion:
             #         )
             #         return
 
-            # try:
-            #     # process sensitive_word_avoidance
-            #     inputs, query = cls.moderation_for_inputs(app.id, app.tenant_id, app_model_config, inputs, query)
-            # except ModerationException as e:
-            #     cls.run_final_llm(
-            #         model_instance=final_model_instance,
-            #         mode=app.mode,
-            #         app_model_config=app_model_config,
-            #         query=query,
-            #         inputs=inputs,
-            #         agent_execute_result=None,
-            #         conversation_message_task=conversation_message_task,
-            #         memory=memory,
-            #         fake_response=str(e)
-            #     )
-            #     return
+            try:
+                # process sensitive_word_avoidance
+                inputs, query = cls.moderation_for_inputs(app.id, app.tenant_id, app_model_config, inputs, query)
+            except ModerationException as e:
+                cls.run_final_llm(
+                    model_instance=final_model_instance,
+                    mode=app.mode,
+                    app_model_config=app_model_config,
+                    query=query,
+                    inputs=inputs,
+                    files=prompt_message_files,
+                    agent_execute_result=None,
+                    conversation_message_task=conversation_message_task,
+                    memory=memory,
+                    fake_response=str(e)
+                )
+                return
 
             # fill in variable inputs from external data tools if exists
             # external_data_tools = app_model_config.external_data_tools_list
@@ -163,6 +170,7 @@ class Completion:
                 memory=memory,
                 rest_tokens=rest_tokens_for_context_and_memory,
                 chain_callback=chain_callback,
+                tenant_id=app.tenant_id,
                 retriever_from=retriever_from
             )
 
@@ -190,6 +198,7 @@ class Completion:
                 app_model_config=app_model_config,
                 query=query,
                 inputs=inputs,
+                files=prompt_message_files,
                 agent_execute_result=agent_execute_result,
                 conversation_message_task=conversation_message_task,
                 memory=memory,
@@ -304,6 +313,7 @@ class Completion:
     @classmethod
     def run_final_llm(cls, model_instance: BaseLLM, mode: str, app_model_config: AppModelConfig, query: str,
                       inputs: dict,
+                      files: List[PromptMessageFile],
                       agent_execute_result: Optional[AgentExecuteResult],
                       conversation_message_task: ConversationMessageTask,
                       memory: Optional[ReadOnlyConversationTokenDBBufferSharedMemory],
@@ -319,10 +329,11 @@ class Completion:
         # get llm prompt
         if app_model_config.prompt_type == 'simple':
             prompt_messages, stop_words = prompt_transform.get_prompt(
-                mode=mode,
+                app_mode=mode,
                 pre_prompt=app_model_config.pre_prompt,
                 inputs=inputs,
                 query=query,
+                files=files,
                 context=agent_execute_result.output if agent_execute_result else None,
                 memory=memory,
                 model_instance=model_instance,
@@ -336,6 +347,7 @@ class Completion:
                 app_model_config=app_model_config,
                 inputs=inputs,
                 query=query,
+                files=files,
                 context=agent_execute_result.output if agent_execute_result else None,
                 memory=memory,
                 model_instance=model_instance,
@@ -425,7 +437,7 @@ class Completion:
 
     @classmethod
     def get_validate_rest_tokens(cls, mode: str, model_instance: BaseLLM, app_model_config: AppModelConfig,
-                                 query: str, inputs: dict,
+                                 query: str, inputs: dict, files: List[PromptMessageFile],
                                  outer_memory: Optional[list] = None,
                                  assistant_name: str = None,
                                  user_name: str = None) -> int:
@@ -439,15 +451,15 @@ class Completion:
             max_tokens = 0
 
         prompt_transform = PromptTransform()
-        prompt_messages = []
 
         # get prompt without memory and context
         if app_model_config.prompt_type == 'simple':
             prompt_messages, _ = prompt_transform.get_prompt(
-                mode=mode,
+                app_mode=mode,
                 pre_prompt=app_model_config.pre_prompt,
                 inputs=inputs,
                 query=query,
+                files=files,
                 context=None,
                 memory=None,
                 model_instance=model_instance,
@@ -461,6 +473,7 @@ class Completion:
                 app_model_config=app_model_config,
                 inputs=inputs,
                 query=query,
+                files=files,
                 context=None,
                 memory=None,
                 model_instance=model_instance,
