@@ -48,12 +48,13 @@ class PromptTransform:
 
         prompt_rules = self._read_prompt_rules_from_file(self._prompt_file_name(app_mode, model_instance))
 
-        if app_mode_enum == AppMode.CHAT and model_mode_enum == ModelMode.CHAT:
+        if app_mode_enum == AppMode.CHAT and model_mode_enum == ModelMode.CHAT and outer_memory is None:
             stops = None
 
             prompt_messages = self._get_simple_chat_app_chat_model_prompt_messages(prompt_rules, pre_prompt, inputs,
                                                                                    query, context, memory,
-                                                                                   model_instance, files)
+                                                                                   model_instance, files,
+                                                                                   outer_memory, assistant_name, user_name)
         else:
             stops = prompt_rules.get('stops')
             if stops is not None and len(stops) == 0:
@@ -61,7 +62,7 @@ class PromptTransform:
 
             prompt_messages = self._get_simple_others_prompt_messages(prompt_rules, pre_prompt, inputs, query, context,
                                                                       memory,
-                                                                      model_instance, files)
+                                                                      model_instance, files, outer_memory, assistant_name, user_name)
         return prompt_messages, stops
 
     def get_advanced_prompt(self, 
@@ -157,7 +158,10 @@ class PromptTransform:
                                                         context: Optional[str],
                                                         memory: Optional[BaseChatMemory],
                                                         model_instance: BaseLLM,
-                                                        files: List[PromptMessageFile]) -> List[PromptMessage]:
+                                                        files: List[PromptMessageFile],
+                                                        outer_memory: Optional[list],
+                                                        assistant_name: str = None,
+                                                        user_name: str = None) -> List[PromptMessage]:
         prompt_messages = []
 
         context_prompt_content = ''

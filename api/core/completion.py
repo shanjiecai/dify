@@ -17,7 +17,8 @@ from core.file.file_obj import FileObj
 from core.model_providers.error import LLMBadRequestError
 from core.memory.read_only_conversation_token_db_buffer_shared_memory import \
     ReadOnlyConversationTokenDBBufferSharedMemory
-from core.memory.read_only_conversation_summary_buffer_shared_memory import ReadOnlyConversationSummaryBufferSharedMemory
+from core.memory.read_only_conversation_summary_buffer_shared_memory import \
+    ReadOnlyConversationSummaryBufferSharedMemory
 from core.helper import encrypter
 from core.model_providers.model_factory import ModelFactory
 from core.model_providers.models.entity.message import PromptMessage, PromptMessageFile
@@ -44,7 +45,7 @@ class Completion:
                  outer_memory: Optional[list] = None,
                  assistant_name: str = None,
                  user_name: str = None,
-                 is_new_message = True):
+                 is_new_message=True):
         """
         errors: ProviderTokenNotInitError
         """
@@ -85,7 +86,6 @@ class Completion:
             model_instance=final_model_instance,
             user_name=user_name if user_name else "Human",
             is_new_message=is_new_message,
-            model_instance=final_model_instance,
             auto_generate_name=auto_generate_name
         )
 
@@ -100,7 +100,6 @@ class Completion:
             outer_memory=outer_memory,
             assistant_name=assistant_name,
             user_name=user_name,
-            inputs=inputs,
             files=prompt_message_files
         )
 
@@ -216,13 +215,15 @@ class Completion:
             return
 
     @classmethod
-    def moderation_for_inputs(cls, app_id: str, tenant_id: str, app_model_config: AppModelConfig, inputs: dict, query: str):
+    def moderation_for_inputs(cls, app_id: str, tenant_id: str, app_model_config: AppModelConfig, inputs: dict,
+                              query: str):
         if not app_model_config.sensitive_word_avoidance_dict['enabled']:
             return inputs, query
 
         type = app_model_config.sensitive_word_avoidance_dict['type']
 
-        moderation = ModerationFactory(type, app_id, tenant_id, app_model_config.sensitive_word_avoidance_dict['config'])
+        moderation = ModerationFactory(type, app_id, tenant_id,
+                                       app_model_config.sensitive_word_avoidance_dict['config'])
         moderation_result = moderation.moderation_for_inputs(inputs, query)
 
         if not moderation_result.flagged:
@@ -375,7 +376,8 @@ class Completion:
             fake_response=fake_response
         )
         logger.info(f"prompt_messages: {prompt_messages}")
-        logger.info(f"model_instance:{model_instance.name} prompt_tokens: {response.prompt_tokens} completion_tokens: {response.completion_tokens} content: {response.content}")
+        logger.info(
+            f"model_instance:{model_instance.name} prompt_tokens: {response.prompt_tokens} completion_tokens: {response.completion_tokens} content: {response.content}")
         return response
 
     @classmethod

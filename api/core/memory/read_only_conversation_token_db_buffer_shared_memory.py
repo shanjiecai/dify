@@ -60,8 +60,8 @@ class ReadOnlyConversationTokenDBBufferSharedMemory(BaseChatMemory):
             else:
                 # chat_messages.append(PromptMessage(content=message.query, type=MessageType.USER))
                 chat_messages.append(PromptMessage(content=message.query, type=MessageType.USER if message.role == "Human" else message.role))
-                if message.answer:
-                    chat_messages.append(PromptMessage(content=message.answer, type=MessageType.ASSISTANT if self.ai_prefix == "Assistant" else self.ai_prefix))
+                # if message.answer:
+                #     chat_messages.append(PromptMessage(content=message.answer, type=MessageType.ASSISTANT if self.ai_prefix == "Assistant" else self.ai_prefix))
 
             chat_messages.append(PromptMessage(content=message.answer, type=MessageType.ASSISTANT))
 
