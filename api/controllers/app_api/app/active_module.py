@@ -153,6 +153,9 @@ def chat_thread(group_id: int, main_context: AppContext):
                 while True:
                     # 获取最近聊天记录
                     recent_history = get_recent_history(group_id)
+                    if not recent_history["data"]:
+                        time.sleep(60)
+                        continue
                     logger.info(f"获取最近聊天记录：{group_id} {recent_history['data'][0]['chat_text']}")
                     last_message = recent_history['data'][0]
                     ai_api_info = last_message['ai_api_info']
@@ -173,9 +176,9 @@ def chat_thread(group_id: int, main_context: AppContext):
                             res = model_chat(conversation_id, outer_memory=outer_memory, is_force=True)
                         # elif (datetime.datetime.now() - datetime.datetime.strptime(last_message['created_at'], "%Y-%m-%d %H:%M:%S")).total_seconds() > 3600*24:
                         # 如果最后5条都是机器人消息，换个话题
-                        elif len(outer_memory) >= 5 and \
-                            all([message["role"] == "James Corden" for message in outer_memory[-5:]]) and\
-                            (datetime.datetime.now() - datetime.datetime.strptime(recent_history['data'][0]['created_at'], "%Y-%m-%d %H:%M:%S")).total_seconds() > 3600*24:
+                        elif len(outer_memory) >= 5 and (datetime.datetime.now() - datetime.datetime.strptime(recent_history['data'][0]['created_at'], "%Y-%m-%d %H:%M:%S")).total_seconds() > 3600*24:
+                            # all([message["role"] == "James Corden" for message in outer_memory[-5:]]) \
+
                             topic = get_topic()
                             query = topic + "Please introduce the story and raise any points you would like to discuss?"
                             logger.info(f"超过24小时，换个话题强制回复：{group_id} {topic} {uuid.uuid4()}")

@@ -48,21 +48,21 @@ class PromptTransform:
 
         prompt_rules = self._read_prompt_rules_from_file(self._prompt_file_name(app_mode, model_instance))
 
-        if app_mode_enum == AppMode.CHAT and model_mode_enum == ModelMode.CHAT and outer_memory is None:
+        # if app_mode_enum == AppMode.CHAT and model_mode_enum == ModelMode.CHAT and outer_memory is None:
+        #     stops = None
+        #
+        #     prompt_messages = self._get_simple_chat_app_chat_model_prompt_messages(prompt_rules, pre_prompt, inputs,
+        #                                                                            query, context, memory,
+        #                                                                            model_instance, files,
+        #                                                                            outer_memory, assistant_name, user_name)
+        # else:
+        stops = prompt_rules.get('stops')
+        if stops is not None and len(stops) == 0:
             stops = None
 
-            prompt_messages = self._get_simple_chat_app_chat_model_prompt_messages(prompt_rules, pre_prompt, inputs,
-                                                                                   query, context, memory,
-                                                                                   model_instance, files,
-                                                                                   outer_memory, assistant_name, user_name)
-        else:
-            stops = prompt_rules.get('stops')
-            if stops is not None and len(stops) == 0:
-                stops = None
-
-            prompt_messages = self._get_simple_others_prompt_messages(prompt_rules, pre_prompt, inputs, query, context,
-                                                                      memory,
-                                                                      model_instance, files, outer_memory, assistant_name, user_name)
+        prompt_messages = self._get_simple_others_prompt_messages(prompt_rules, pre_prompt, inputs, query, context,
+                                                                  memory,
+                                                                  model_instance, files, outer_memory, assistant_name, user_name)
         return prompt_messages, stops
 
     def get_advanced_prompt(self, 
