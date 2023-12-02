@@ -66,7 +66,7 @@ def summarize_style(name, text, max_length=8):
 
 
 if __name__ == '__main__':
-    path = "/Users/jiecai/PycharmProjects/dify/api/auto_process/3"
+    path = "/Users/jiecai/PycharmProjects/dify/api/auto_process/4"
     file_list = os.listdir(path)
     for file in file_list:
         file_path = os.path.join(path, file)
@@ -74,7 +74,7 @@ if __name__ == '__main__':
         name = file_path.split('/')[-1].split('.')[0]
         # print("*************")
         print(name)
-        # print(summarize_text(name, text) + f"Now I want you to act as {name} and try to play as {name} in a group chat to answer other's questions")
+        print(summarize_text(name, text))
         # print("*************")
 
         print(summarize_style(name, text))

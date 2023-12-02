@@ -57,7 +57,7 @@ if __name__ == '__main__':
         ws.append([q, res])
         # writer.writerow([q, res, res1, res2, res3])
             # f.write(q + "\t" + res1 + "\t" + res2 + "\t" + res3 + "\n")
-    wb.save("./data/test_Adarina_Daniels.xlsx")
+    wb.save("./data/test_Adarina_Daniels_1201.xlsx")
 
 
     with open("./data/Maria_test.txt", "r") as f:
@@ -70,15 +70,15 @@ if __name__ == '__main__':
     wb = openpyxl.Workbook()
     ws = wb.active
     # ws.append(["query", "Adarina_Daniels", "Adrianna_Corona", "Anthony_Moore", "Mallory_Asis"])
-    ws.append(["query", "Maria_Paula_Noriega"])
+    ws.append(["query", "Maria_Arabo"])
     for q in query:
         q = ".".join(q.split(".")[1:]).strip()
         print(q)
-        res = get_result(q, "f1fcf015-8ac2-4634-937f-544211b16c4d")
+        res = get_result(q, "71c76639-6f80-4472-af5d-37cf87cdd794")
         Maria_Paula_Noriega_res_list.append(res)
         query_list.append(q)
         ws.append([q, res])
-    wb.save("./data/test_Maria_Paula_Noriega.xlsx")
+    wb.save("./data/test_Maria_Arabo_1201.xlsx")
 
 
     # 整理成csv
