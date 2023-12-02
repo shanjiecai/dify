@@ -63,6 +63,7 @@ DEFAULTS = {
     'MULTIMODAL_SEND_IMAGE_FORMAT': 'base64',
     'INVITE_EXPIRY_HOURS': 72,
     "MODE": "api",
+    "NEWS_API_KEY": ""
 }
 
 
@@ -298,8 +299,10 @@ class Config:
         self.HOSTED_ANTHROPIC_PAID_MIN_QUANTITY = int(get_env('HOSTED_ANTHROPIC_PAID_MIN_QUANTITY'))
         self.HOSTED_ANTHROPIC_PAID_MAX_QUANTITY = int(get_env('HOSTED_ANTHROPIC_PAID_MAX_QUANTITY'))
 
+        self.OPENAI_API_KEY = get_env('OPENAI_API_KEY')
         self.HOSTED_MODERATION_ENABLED = get_bool_env('HOSTED_MODERATION_ENABLED')
         self.HOSTED_MODERATION_PROVIDERS = get_env('HOSTED_MODERATION_PROVIDERS')
+        self.NEWS_API_KEY = get_env('NEWS_API_KEY')
 
 
 class CloudEditionConfig(Config):

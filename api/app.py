@@ -189,6 +189,7 @@ def register_blueprints(app):
 # create app
 app = create_app()
 celery = app.extensions["celery"]
+config = app.config
 
 
 if app.config['TESTING']:

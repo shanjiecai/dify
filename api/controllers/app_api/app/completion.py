@@ -203,7 +203,7 @@ class ChatActiveApi(AppApiResource):
                                         app_model.name)
         end_user = create_or_update_end_user_for_user_id(app_model, "")
         if judge_result:
-            # 对当前conversation上锁
+            # 对当前conversation上锁，有一个机器人认为应该回话就锁住，避免多个机器人同时回话
             if redis_client.get(conversation.id) is None:
                 redis_client.setex(conversation.id, 40, 1)
             else:
@@ -276,7 +276,7 @@ def compact_response(response: Union[dict | Generator]) -> Response:
 
 # api.add_resource(CompletionApi, '/completion-messages')
 # api.add_resource(CompletionStopApi, '/completion-messages/<string:task_id>/stop')
-api.add_resource(ChatApi, '/chat-messages')
+api.add_resource(ChatApi, '/chat-messages')  # 只有被@才会调用，后续合并到chat-messages-active
 api.add_resource(ChatActiveApi, '/chat-messages-active')
 # api.add_resource(ChatStopApi, '/chat-messages/<string:task_id>/stop')
 

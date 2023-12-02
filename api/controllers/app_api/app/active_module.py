@@ -5,6 +5,7 @@
 import datetime
 import traceback
 import uuid
+import os
 
 from sqlalchemy import and_
 from typing import List
@@ -31,6 +32,8 @@ from services.completion_service import CompletionService
 from controllers.app_api.app.utils import *
 from controllers.app_api.app.search_event import get_topic
 from extensions.ext_redis import redis_client
+api_key = os.environ.get('OPENAI_API_KEY')
+print(api_key)
 
 
 def model_chat(conversation_id: str, outer_memory: List, is_force=False, query="", user_name=''):
@@ -61,7 +64,7 @@ def model_chat(conversation_id: str, outer_memory: List, is_force=False, query="
     if is_force:
         judge_result = True
     else:
-        judge_result = judge_llm_active("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", histories,
+        judge_result = judge_llm_active(api_key, histories,
                                         app_model.name, is_random_true=False)
     if judge_result:
         end_user = create_or_update_end_user_for_user_id(app_model, '')

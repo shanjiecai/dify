@@ -6,7 +6,8 @@ from mylogger import logger
 from core.model_providers.models.llm.base import BaseLLM
 import tiktoken
 
-encoding = tiktoken.encoding_for_model('gpt-3.5-turbo')
+encoding = tiktoken.encoding_for_model('gpt-3.5-turbo')  # 暂时没用到
+
 
 def judge_llm_active(api_key: str, histories: str, assistant_name: str, is_random_true: bool = True):
     if not api_key:
@@ -58,4 +59,3 @@ def judge_llm_active(api_key: str, histories: str, assistant_name: str, is_rando
 if __name__ == '__main__':
     # print(judge_llm_active("", '''''', "James Corden"))
     print(random.random())
-
