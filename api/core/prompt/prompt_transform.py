@@ -253,7 +253,7 @@ class PromptTransform:
             rest_tokens = self._calculate_rest_token(tmp_human_message, model_instance)
             histories = ""
             for item in outer_memory:
-                histories += item["role"] + ": " + item["message"] + "\n"
+                histories += item["role"] if item["role"] else "Human" + ": " + item["message"] if item["message"] else "" + "\n"
             if len(histories) > rest_tokens:
                 histories = histories[-rest_tokens:]
         elif memory and 'histories_prompt' in prompt_rules:

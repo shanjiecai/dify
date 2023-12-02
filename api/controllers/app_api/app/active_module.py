@@ -67,6 +67,7 @@ def model_chat(conversation_id: str, outer_memory: List, is_force=False, query="
         end_user = create_or_update_end_user_for_user_id(app_model, '')
         logger.info(f"主动发起聊天：{app_model.name} {conversation_id}")
         # logger.info(f"{outer_memory[:-min(2, len(outer_memory))]}")
+        logger.info(f"主动发起聊天历史：{outer_memory}")
         response = CompletionService.completion(
             app_model=app_model,
             user=end_user,
@@ -182,7 +183,7 @@ def chat_thread(group_id: int, main_context: AppContext):
                             topic = get_topic()
                             query = topic + "Please introduce the story and raise any points you would like to discuss?"
                             logger.info(f"超过24小时，换个话题强制回复：{group_id} {topic} {uuid.uuid4()}")
-                            res = model_chat(conversation_id, outer_memory=outer_memory, is_force=True, query=query, user_name="observer")
+                            res = model_chat(conversation_id, outer_memory=outer_memory, is_force=True, query=query, user_name="Human")
                         # 如果倒数第二条消息是机器人且最后一条消息不是机器人且与倒数第二条间隔不超过30s,回复
                         elif len(outer_memory) > 1 and \
                             outer_memory[-2]["role"] == "James Corden" and \
