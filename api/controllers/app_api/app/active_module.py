@@ -214,7 +214,7 @@ def chat_thread(group_id: int, main_context: AppContext):
                         else:
                             logger.info(f"{group_id}判断不回复:{datetime.datetime.now()}")
                             sleep_num += 1
-                    time.sleep(60)
+                    time.sleep(300)
             except Exception as e:
                 logger.error(f"chat_thread error: {traceback.format_exc()}")
                 time.sleep(300)
