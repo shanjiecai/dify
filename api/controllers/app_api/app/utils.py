@@ -17,6 +17,20 @@ def get_all_groups():
     return group_id_list
 
 
+def get_triple3v_users_from_ids(ids):
+    url = "https://rm.triple3v.org/api/sys/users?ids="+ids
+
+    payload = {}
+    headers = {
+        'Authorization': 'Bearer 6520|LyHTtFbuGPxYPNllyTQ5DRu0jIInQt8ZqDeyBG425c19f8cf'
+    }
+
+    response = requests.request("GET", url, headers=headers, data=payload)
+
+    print(response.text)
+    return response.json()
+
+
 def get_recent_history(group_id: int=None, last_id: int=None):
     url = "https://rm.triple3v.org/api/sys/chat_messages"
 

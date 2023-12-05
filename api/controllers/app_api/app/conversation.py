@@ -103,6 +103,7 @@ class ConversationAddMessage(AppApiResource):
         parser.add_argument('conversation_id', type=str, required=True, location='json')
         parser.add_argument('message', type=str, required=True, location='json')
         parser.add_argument('user', type=str, location='json')
+        parser.add_argument('user_id', type=str, location='json')
         parser.add_argument('mood', type=str, required=False, location='json')
         args = parser.parse_args()
 
@@ -112,6 +113,7 @@ class ConversationAddMessage(AppApiResource):
         conversation_id = args.get('conversation_id')
         message = args.get('message')
         user = args.get('user')
+        user_id = args.get('user_id', None)
         mood = args.get('mood')
 
         conversation = Conversation.query.filter_by(id=conversation_id).first()
@@ -143,6 +145,7 @@ class ConversationAddMessage(AppApiResource):
             from_account_id=None,
             agent_based=True,
             role=user,
+            role_id=user_id,
             mood=mood,
         )
 

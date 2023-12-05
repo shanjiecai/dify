@@ -469,6 +469,7 @@ class Message(db.Model):
     query = db.Column(db.Text, nullable=False)
     message = db.Column(db.JSON, nullable=False)
     role = db.Column(db.String(255), nullable=True)
+    role_id = db.Column(db.String(255), nullable=True)
     message_tokens = db.Column(db.Integer, nullable=False, server_default=db.text('0'))
     message_unit_price = db.Column(db.Numeric(10, 4), nullable=False)
     message_price_unit = db.Column(db.Numeric(10, 7), nullable=False, server_default=db.text('0.001'))
