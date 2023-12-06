@@ -182,8 +182,10 @@ def chat_thread(group_id: int, main_context: AppContext):
                         # 如果最后5条都是机器人消息，换个话题
                         elif len(outer_memory) >= 5 and (datetime.datetime.now() - datetime.datetime.strptime(recent_history['data'][0]['created_at'], "%Y-%m-%d %H:%M:%S")).total_seconds() > 3600*24:
                             # all([message["role"] == "James Corden" for message in outer_memory[-5:]]) \
-
-                            topic = get_topic()
+                            try:
+                                topic = get_topic()
+                            except:
+                                topic = "What do you think about AI?"
                             query = topic + "Please introduce the story and raise any points you would like to discuss?"
                             logger.info(f"超过24小时，换个话题强制回复：{group_id} {topic} {uuid.uuid4()}")
                             res = model_chat(conversation_id, outer_memory=outer_memory, is_force=True, query=query, user_name="Human")
