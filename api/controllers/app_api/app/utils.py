@@ -1,5 +1,7 @@
 import requests
 import json
+import os
+from mylogger import logger
 
 
 def get_all_groups():
@@ -18,7 +20,7 @@ def get_all_groups():
 
 
 def get_triple3v_users_from_ids(ids):
-    url = "https://rm.triple3v.org/api/sys/users?ids="+ids
+    url = "https://rm.triple3v.org/api/sys/users?ids=" + ids
 
     payload = {}
     headers = {
@@ -31,19 +33,19 @@ def get_triple3v_users_from_ids(ids):
     return response.json()
 
 
-def get_recent_history(group_id: int=None, last_id: int=None):
+def get_recent_history(group_id: int = None, last_id: int = None):
     url = "https://rm.triple3v.org/api/sys/chat_messages"
 
     payload = {}
     headers = {
-      'Authorization': 'Bearer 6520|LyHTtFbuGPxYPNllyTQ5DRu0jIInQt8ZqDeyBG425c19f8cf'
+        'Authorization': 'Bearer 6520|LyHTtFbuGPxYPNllyTQ5DRu0jIInQt8ZqDeyBG425c19f8cf'
     }
     if group_id or last_id:
         url += "?"
     if group_id:
-        url += "group_id="+str(group_id)+"&"
+        url += "group_id=" + str(group_id) + "&"
     if last_id:
-        url += "last_id="+str(last_id)+"&"
+        url += "last_id=" + str(last_id) + "&"
 
     response = requests.request("GET", url, headers=headers, data=payload)
 
@@ -65,4 +67,18 @@ def send_chat_message(group_id: int, message: str):
 
     response = requests.request("POST", url, headers=headers, data=payload)
     # print(response.text)
+    return response.json()
+
+
+feishu_alert_url = os.environ.get("FEISHU_ALERT_URL")
+print(feishu_alert_url)
+
+
+def send_feishu_bot(message):
+    data = {"msg_type": "text", "content": {"text": message}}
+    headers = {
+        'Content-Type': 'application/json'
+    }
+    response = requests.post(feishu_alert_url, headers=headers, json=data)
+    logger.info(response.text)
     return response.json()

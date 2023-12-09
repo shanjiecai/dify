@@ -33,10 +33,10 @@ from controllers.app_api.app.utils import *
 from controllers.app_api.app.search_event import get_topic
 from extensions.ext_redis import redis_client
 api_key = os.environ.get('OPENAI_API_KEY')
-print(api_key)
+# print(api_key)
 
 
-def model_chat(conversation_id: str, outer_memory: List, is_force=False, query="", user_name=''):
+def model_chat(conversation_id: str, outer_memory: List=None, is_force=False, query="", user_name=''):
     # time.sleep(10000)
     # 对当前conversation上锁
     if redis_client.get(conversation_id) is None:
@@ -177,7 +177,8 @@ def chat_thread(group_id: int, main_context: AppContext):
                             continue
                         elif (datetime.datetime.now() - datetime.datetime.strptime(recent_history['data'][0]['created_at'], "%Y-%m-%d %H:%M:%S")).total_seconds() > 3600*4 and outer_memory[-1]["role"] != "James Corden":
                             logger.info(f"超过4小时，强制回复：{group_id} {uuid.uuid4()}")
-                            res = model_chat(conversation_id, outer_memory=outer_memory, is_force=True)
+                            # res = model_chat(conversation_id, outer_memory=outer_memory, is_force=True)
+                            res = model_chat(conversation_id, is_force=True)
                         # elif (datetime.datetime.now() - datetime.datetime.strptime(last_message['created_at'], "%Y-%m-%d %H:%M:%S")).total_seconds() > 3600*24:
                         # 如果最后5条都是机器人消息，换个话题
                         elif len(outer_memory) >= 5 and (datetime.datetime.now() - datetime.datetime.strptime(recent_history['data'][0]['created_at'], "%Y-%m-%d %H:%M:%S")).total_seconds() > 3600*24:
@@ -188,7 +189,8 @@ def chat_thread(group_id: int, main_context: AppContext):
                                 topic = "What do you think about AI?"
                             query = topic + "Please introduce the story and raise any points you would like to discuss?"
                             logger.info(f"超过24小时，换个话题强制回复：{group_id} {topic} {uuid.uuid4()}")
-                            res = model_chat(conversation_id, outer_memory=outer_memory, is_force=True, query=query, user_name="Human")
+                            # res = model_chat(conversation_id, outer_memory=outer_memory, is_force=True, query=query, user_name="Human")
+                            res = model_chat(conversation_id, is_force=True, query=query, user_name="Human")
                         # 如果倒数第二条消息是机器人且最后一条消息不是机器人且与倒数第二条间隔不超过30s,回复
                         elif len(outer_memory) > 1 and \
                             outer_memory[-2]["role"] == "James Corden" and \
@@ -197,10 +199,10 @@ def chat_thread(group_id: int, main_context: AppContext):
                             # print(outer_memory[-1])
                             # print(outer_memory[-2])
                             logger.info(f"倒数第二条消息是机器人，且与最后一条消息间隔不超过30s，强制回复：{group_id} {uuid.uuid4()}")
-                            res = model_chat(conversation_id, outer_memory=outer_memory, is_force=True)
+                            res = model_chat(conversation_id, is_force=True)
                         elif outer_memory[-1]["role"] != "James Corden" and sleep_num > 20:
                             logger.info(f"上一条消息不是机器人，判断回复：{group_id} {uuid.uuid4()}")
-                            res = model_chat(conversation_id, outer_memory=outer_memory)
+                            res = model_chat(conversation_id)
                             sleep_num = 0
                         elif len(outer_memory) > 1 and outer_memory[-1]["role"] == "James Corden" and outer_memory[-2]["role"] == "James Corden":
                             logger.info("上两条消息是机器人，不回复")
@@ -220,6 +222,7 @@ def chat_thread(group_id: int, main_context: AppContext):
             except Exception as e:
                 logger.error(f"chat_thread error: {traceback.format_exc()}")
                 time.sleep(300)
+                send_feishu_bot(str(e))
                 continue
 
 

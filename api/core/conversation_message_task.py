@@ -120,66 +120,66 @@ class ConversationMessageTask:
 
             db.session.add(self.conversation)
             db.session.commit()
-        if self.is_new_message:
-            self.message = Message(
-                app_id=self.app.id,
-                model_provider=self.provider_name,
-                model_id=self.model_name,
-                override_model_configs=json.dumps(override_model_configs) if override_model_configs else None,
-                conversation_id=self.conversation.id,
-                inputs=self.inputs,
-                query=self.query,
-                message="",
-                message_tokens=0,
-                message_unit_price=0,
-                message_price_unit=0,
-                answer="",
-                answer_tokens=0,
-                answer_unit_price=0,
-                answer_price_unit=0,
-                provider_response_latency=0,
-                total_price=0,
-                currency=self.model_instance.get_currency(),
-                from_source=('console' if isinstance(self.user, Account) else 'api'),
-                from_end_user_id=(self.user.id if isinstance(self.user, EndUser) else None),
-                from_account_id=(self.user.id if isinstance(self.user, Account) else None),
-                agent_based=self.app_model_config.agent_mode_dict.get('enabled'),
-                role=self.user_name
-            )
+        # if self.is_new_message:
+        self.message = Message(
+            app_id=self.app.id,
+            model_provider=self.provider_name,
+            model_id=self.model_name,
+            override_model_configs=json.dumps(override_model_configs) if override_model_configs else None,
+            conversation_id=self.conversation.id,
+            inputs=self.inputs,
+            query=self.query,
+            message="",
+            message_tokens=0,
+            message_unit_price=0,
+            message_price_unit=0,
+            answer="",
+            answer_tokens=0,
+            answer_unit_price=0,
+            answer_price_unit=0,
+            provider_response_latency=0,
+            total_price=0,
+            currency=self.model_instance.get_currency(),
+            from_source=('console' if isinstance(self.user, Account) else 'api'),
+            from_end_user_id=(self.user.id if isinstance(self.user, EndUser) else None),
+            from_account_id=(self.user.id if isinstance(self.user, Account) else None),
+            agent_based=self.app_model_config.agent_mode_dict.get('enabled'),
+            role=self.user_name
+        )
 
-            db.session.add(self.message)
-            db.session.commit()
-        else:
-            if not self.conversation.messages:
-                self.message = Message(
-                    app_id=self.app.id,
-                    model_provider=self.provider_name,
-                    model_id=self.model_name,
-                    override_model_configs=json.dumps(override_model_configs) if override_model_configs else None,
-                    conversation_id=self.conversation.id,
-                    inputs=self.inputs,
-                    query=self.query,
-                    message="",
-                    message_tokens=0,
-                    message_unit_price=0,
-                    message_price_unit=0,
-                    answer="",
-                    answer_tokens=0,
-                    answer_unit_price=0,
-                    answer_price_unit=0,
-                    provider_response_latency=0,
-                    total_price=0,
-                    currency=self.model_instance.get_currency(),
-                    from_source=('console' if isinstance(self.user, Account) else 'api'),
-                    from_end_user_id=(self.user.id if isinstance(self.user, EndUser) else None),
-                    from_account_id=(self.user.id if isinstance(self.user, Account) else None),
-                    agent_based=self.app_model_config.agent_mode_dict.get('enabled'),
-                    role=self.user_name
-                )
-                db.session.add(self.message)
-                db.session.commit()
-            else:
-                self.message = self.conversation.messages[-1]
+        db.session.add(self.message)
+        db.session.commit()
+        # else:
+        #     if not self.conversation.messages:
+        #         self.message = Message(
+        #             app_id=self.app.id,
+        #             model_provider=self.provider_name,
+        #             model_id=self.model_name,
+        #             override_model_configs=json.dumps(override_model_configs) if override_model_configs else None,
+        #             conversation_id=self.conversation.id,
+        #             inputs=self.inputs,
+        #             query=self.query,
+        #             message="",
+        #             message_tokens=0,
+        #             message_unit_price=0,
+        #             message_price_unit=0,
+        #             answer="",
+        #             answer_tokens=0,
+        #             answer_unit_price=0,
+        #             answer_price_unit=0,
+        #             provider_response_latency=0,
+        #             total_price=0,
+        #             currency=self.model_instance.get_currency(),
+        #             from_source=('console' if isinstance(self.user, Account) else 'api'),
+        #             from_end_user_id=(self.user.id if isinstance(self.user, EndUser) else None),
+        #             from_account_id=(self.user.id if isinstance(self.user, Account) else None),
+        #             agent_based=self.app_model_config.agent_mode_dict.get('enabled'),
+        #             role=self.user_name
+        #         )
+        #         db.session.add(self.message)
+        #         db.session.commit()
+        #     else:
+        #         self.message = self.conversation.messages[-1]
 
         for file in self.files:
             message_file = MessageFile(

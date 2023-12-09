@@ -63,7 +63,8 @@ DEFAULTS = {
     'MULTIMODAL_SEND_IMAGE_FORMAT': 'base64',
     'INVITE_EXPIRY_HOURS': 72,
     "MODE": "api",
-    "NEWS_API_KEY": ""
+    "NEWS_API_KEY": "",
+    "FEISHU_ALERT_URL": "",
 }
 
 
@@ -303,6 +304,7 @@ class Config:
         self.HOSTED_MODERATION_ENABLED = get_bool_env('HOSTED_MODERATION_ENABLED')
         self.HOSTED_MODERATION_PROVIDERS = get_env('HOSTED_MODERATION_PROVIDERS')
         self.NEWS_API_KEY = get_env('NEWS_API_KEY')
+        self.FEISHU_ALERT_URL = get_env('FEISHU_ALERT_URL')
 
 
 class CloudEditionConfig(Config):

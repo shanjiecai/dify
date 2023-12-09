@@ -3,6 +3,7 @@ import random
 
 
 news_api_key = os.environ.get("NEWS_API_KEY")
+# print(news_api_key)
 from newsapi import NewsApiClient
 api = NewsApiClient(api_key=news_api_key)
 
@@ -23,6 +24,7 @@ def get_topic():
 
 if __name__ == "__main__":
     res = api.get_top_headlines(sources='bbc-news')
+    print(res)
     for i in res["articles"][:3]:
         print(i)
         print(i["title"])

@@ -10,6 +10,7 @@ from werkzeug.exceptions import NotFound, InternalServerError
 
 import services
 from controllers.app_api import api
+from controllers.app_api.app.utils import send_feishu_bot
 from controllers.service_api.app import create_or_update_end_user_for_user_id
 from controllers.service_api.app.error import AppUnavailableError, ProviderNotInitializeError, NotChatAppError, \
     ConversationCompletedError, CompletionRequestError, ProviderQuotaExceededError, \
@@ -164,70 +165,75 @@ class ChatApi(AppApiResource):
 
 
 class ChatActiveApi(AppApiResource):
-    # 主动询问机器人根据当前群聊历史是否应该回话
-    def post(self, app_model):
-        b = time.time()
-        parser = reqparse.RequestParser()
-        parser.add_argument('conversation_id', type=uuid_value, location='json')
-        parser.add_argument('inputs', type=dict, required=False, location='json', default={})
-        parser.add_argument('query', type=str, required=False, location='json', default='')
-        args = parser.parse_args()
+    try:
+        # 主动询问机器人根据当前群聊历史是否应该回话
+        def post(self, app_model):
+            b = time.time()
+            parser = reqparse.RequestParser()
+            parser.add_argument('conversation_id', type=uuid_value, location='json')
+            parser.add_argument('inputs', type=dict, required=False, location='json', default={})
+            parser.add_argument('query', type=str, required=False, location='json', default='')
+            args = parser.parse_args()
 
-        conversation_filter = [
-            Conversation.id == args['conversation_id'],
-            Conversation.app_id == app_model.id,
-            Conversation.status == 'normal'
-        ]
-        conversation = db.session.query(Conversation).filter(and_(*conversation_filter)).first()
-        if not conversation:
-            raise NotFound("Conversation Not Exists.")
-        app_model_config = db.session.query(AppModelConfig).filter(AppModelConfig.id==conversation.app_model_config_id).first()
-        memory = Completion.get_memory_from_conversation(
-            tenant_id=app_model.tenant_id,
-            app_model_config=app_model_config.copy(),
-            conversation=conversation,
-            return_messages=False,
-            human_prefic="Human",
-            assistant_name=app_model.name
-        )
-
-        memory.ai_prefix = app_model.name
-        memory_key = memory.memory_variables[0]
-        external_context = memory.load_memory_variables({})
-        histories = external_context[memory_key]
-        if memory.last_query:
-            histories += "\n" + memory.last_role + ": " + memory.last_query
-        logger.info(f"histories: {histories}, app_model.name: {app_model.name}")
-        logger.info(f"get histories in {time.time() - b}")
-        judge_result = judge_llm_active(memory.model_instance.credentials["openai_api_key"], histories,
-                                        app_model.name)
-        end_user = create_or_update_end_user_for_user_id(app_model, "")
-        if judge_result:
-            # 对当前conversation上锁，有一个机器人认为应该回话就锁住，避免多个机器人同时回话
-            if redis_client.get(conversation.id) is None:
-                redis_client.setex(conversation.id, 40, 1)
-            else:
-                logger.info(f"conversation {conversation.id} is locked")
-                return Response(response=json.dumps({"result": False}), status=200, mimetype='application/json')
-            response = CompletionService.completion(
-                app_model=app_model,
-                user=end_user,
-                args=args,
-                from_source='api',
-                streaming=False,
-                outer_memory=None,
-                assistant_name=app_model.name,
-                user_name=""
+            conversation_filter = [
+                Conversation.id == args['conversation_id'],
+                Conversation.app_id == app_model.id,
+                Conversation.status == 'normal'
+            ]
+            conversation = db.session.query(Conversation).filter(and_(*conversation_filter)).first()
+            if not conversation:
+                raise NotFound("Conversation Not Exists.")
+            app_model_config = db.session.query(AppModelConfig).filter(AppModelConfig.id==conversation.app_model_config_id).first()
+            memory = Completion.get_memory_from_conversation(
+                tenant_id=app_model.tenant_id,
+                app_model_config=app_model_config.copy(),
+                conversation=conversation,
+                return_messages=False,
+                human_prefic="Human",
+                assistant_name=app_model.name
             )
-            logger.info(f"get response in {time.time() - b}")
-            response["result"] = True
-            logger.info(f"response: {response}")
-            return Response(response=json.dumps(response), status=200, mimetype='application/json')
 
-        logger.info(judge_result)
-        logger.info(time.time() - b)
-        # return {"result": judge_result}
-        return Response(response=json.dumps({"result": judge_result}), status=200, mimetype='application/json')
+            memory.ai_prefix = app_model.name
+            memory_key = memory.memory_variables[0]
+            external_context = memory.load_memory_variables({})
+            histories = external_context[memory_key]
+            if memory.last_query:
+                histories += "\n" + memory.last_role + ": " + memory.last_query
+            logger.info(f"histories: {histories}, app_model.name: {app_model.name}")
+            logger.info(f"get histories in {time.time() - b}")
+            judge_result = judge_llm_active(memory.model_instance.credentials["openai_api_key"], histories,
+                                            app_model.name)
+            end_user = create_or_update_end_user_for_user_id(app_model, "")
+            if judge_result:
+                # 对当前conversation上锁，有一个机器人认为应该回话就锁住，避免多个机器人同时回话
+                if redis_client.get(conversation.id) is None:
+                    redis_client.setex(conversation.id, 40, 1)
+                else:
+                    logger.info(f"conversation {conversation.id} is locked")
+                    return Response(response=json.dumps({"result": False}), status=200, mimetype='application/json')
+                response = CompletionService.completion(
+                    app_model=app_model,
+                    user=end_user,
+                    args=args,
+                    from_source='api',
+                    streaming=False,
+                    outer_memory=None,
+                    assistant_name=app_model.name,
+                    user_name=""
+                )
+                logger.info(f"get response in {time.time() - b}")
+                response["result"] = True
+                logger.info(f"response: {response}")
+                return Response(response=json.dumps(response), status=200, mimetype='application/json')
+
+            logger.info(judge_result)
+            logger.info(time.time() - b)
+            # return {"result": judge_result}
+            return Response(response=json.dumps({"result": judge_result}), status=200, mimetype='application/json')
+    except Exception as e:
+        logger.exception("error in chat active api")
+        send_feishu_bot(str(e))
+        raise e
 
 
 # class ChatStopApi(AppApiResource):
