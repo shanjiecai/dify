@@ -65,6 +65,7 @@ DEFAULTS = {
     "MODE": "api",
     "NEWS_API_KEY": "",
     "FEISHU_ALERT_URL": "",
+    "APP_ENDPOINT": "",
 }
 
 
@@ -306,6 +307,7 @@ class Config:
         self.HOSTED_MODERATION_PROVIDERS = get_env('HOSTED_MODERATION_PROVIDERS')
         self.NEWS_API_KEY = get_env('NEWS_API_KEY')
         self.FEISHU_ALERT_URL = get_env('FEISHU_ALERT_URL')
+        self.APP_ENDPOINT = get_env('APP_ENDPOINT')
 
 
 class CloudEditionConfig(Config):

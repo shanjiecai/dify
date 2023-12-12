@@ -7,6 +7,8 @@ services:
     environment:
       # The environment of the application, supported values are `development`, `testing`, `staging`, `production`.
       ENV: production
+      # APP endpoint
+      APP_ENDPOINT: https://www:vvvapp:org
       # Startup mode, 'api' starts the API server.
       MODE: api
       # The log level for the application. Supported values are `DEBUG`, `INFO`, `WARNING`, `ERROR`, `CRITICAL`

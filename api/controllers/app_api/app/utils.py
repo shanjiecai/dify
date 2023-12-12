@@ -2,10 +2,11 @@ import requests
 import json
 import os
 from mylogger import logger
+app_endpoint = os.getenv("APP_ENDPOINT", "https://rm.triple3v.org")
 
 
 def get_all_groups():
-    url = "https://rm.triple3v.org/api/sys/groups"
+    url = f"{app_endpoint}/api/sys/groups"
 
     payload = {}
     headers = {
@@ -20,7 +21,7 @@ def get_all_groups():
 
 
 def get_triple3v_users_from_ids(ids):
-    url = "https://rm.triple3v.org/api/sys/users?ids=" + ids
+    url = f"{app_endpoint}/api/sys/users?ids=" + ids
 
     payload = {}
     headers = {
@@ -34,7 +35,7 @@ def get_triple3v_users_from_ids(ids):
 
 
 def get_recent_history(group_id: int = None, last_id: int = None):
-    url = "https://rm.triple3v.org/api/sys/chat_messages"
+    url = f"{app_endpoint}/api/sys/chat_messages"
 
     payload = {}
     headers = {
@@ -54,7 +55,7 @@ def get_recent_history(group_id: int = None, last_id: int = None):
 
 
 def send_chat_message(group_id: int, message: str):
-    url = "https://rm.triple3v.org/api/sys/send_chat_message"
+    url = f"{app_endpoint}/api/sys/send_chat_message"
 
     payload = json.dumps({
         "group_id": group_id,
