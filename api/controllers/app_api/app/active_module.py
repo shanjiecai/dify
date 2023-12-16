@@ -186,6 +186,7 @@ def chat_thread(group_id: int, main_context: AppContext):
                             try:
                                 topic = get_topic()
                             except:
+                                logger.info(f"{traceback.format_exc()}")
                                 topic = "What do you think about AI?"
                             query = topic + "Please introduce the story and raise any points you would like to discuss?"
                             logger.info(f"超过24小时，换个话题强制回复：{group_id} {topic} {uuid.uuid4()}")

@@ -2,7 +2,7 @@ import os
 import random
 
 
-news_api_key = os.environ.get("NEWS_API_KEY")
+news_api_key = os.environ.get("NEWS_API_KEY", "cd4c844cee014f92a43b84fc92b117f3")
 # print(news_api_key)
 from newsapi import NewsApiClient
 api = NewsApiClient(api_key=news_api_key)

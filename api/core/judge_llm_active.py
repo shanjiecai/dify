@@ -1,3 +1,7 @@
+import json
+import traceback
+
+import requests
 import random
 
 import openai
@@ -8,8 +12,40 @@ import tiktoken
 
 encoding = tiktoken.encoding_for_model('gpt-3.5-turbo')  # 暂时没用到
 
+en_prompt = '''You are a robot that can only answer 'yes' or 'no'. Given the conversation history in the group chat, you should answer as {user}, and you can only answer 'yes' or 'no'. Here is the conversation history.
+{history}
+Should you answer as {user}:'''
+
 
 def judge_llm_active(api_key: str, histories: str, assistant_name: str, is_random_true: bool = True):
+    try:
+        url = "http://117.50.189.88:19521/generate"
+
+        if assistant_name == "James Corden":
+            assistant_name = "James Corden or DJ Bot"
+        payload = json.dumps({
+            "prompt": en_prompt.format(user=assistant_name, history=histories),
+            "use_beam_search": False,
+            "temperature": 0,
+            "max_tokens": 3
+        })
+        headers = {
+            'Content-Type': 'application/json'
+        }
+
+        response = requests.request("POST", url, headers=headers, data=payload)
+
+        logger.info(response.text)
+        if response.status_code == 200:
+            if "yes" in response.json()["text"][0]:
+                return True
+            else:
+                return False
+        else:
+            pass
+    except:
+        logger.info(f"{traceback.format_exc()}")
+        pass
     if not api_key:
         return False
     openai.api_key = api_key
@@ -57,5 +93,5 @@ def judge_llm_active(api_key: str, histories: str, assistant_name: str, is_rando
 
 
 if __name__ == '__main__':
-    # print(judge_llm_active("", '''''', "James Corden"))
-    print(random.random())
+    print(judge_llm_active("", '''''', "James Corden"))
+    # print(random.random())

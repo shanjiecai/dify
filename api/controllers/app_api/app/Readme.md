@@ -1,14 +1,3 @@
-# 接口
-
-主要文件功能
-active_module.py 主动模块，用于定期轮训主动回复
-app.py app_id接口
-conversation.py conversation接口
-completion.py 模型接口
-message.py message接口
-search_event.py 搜索时事接口
-utils.py 工具函数
-
 
 ## /app_list
 - 每一个app代表一个具体人物和模型
