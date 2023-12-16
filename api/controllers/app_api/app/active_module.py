@@ -162,7 +162,10 @@ def chat_thread(group_id: int, main_context: AppContext):
                         continue
                     logger.info(f"获取最近聊天记录：{group_id} {recent_history['data'][0]['chat_text']}")
                     last_message = recent_history['data'][0]
+                    # logger.info(f"最近一条消息：{group_id} {last_message}")
                     ai_api_info = last_message['ai_api_info']
+                    if "openai" not in ai_api_info:
+                        continue
                     conversation_id = ai_api_info['openai']['conversation_id']
                     if conversation_id:
                         outer_memory = []
