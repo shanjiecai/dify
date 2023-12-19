@@ -12,8 +12,10 @@ from core.callback_handler.main_chain_gather_callback_handler import MainChainGa
 from core.callback_handler.llm_callback_handler import LLMCallbackHandler
 from core.conversation_message_task import ConversationMessageTask, ConversationTaskStoppedException, \
     ConversationTaskInterruptException
+from core.embedding.cached_embedding import CacheEmbedding
 from core.external_data_tool.factory import ExternalDataToolFactory
 from core.file.file_obj import FileObj
+from core.index.vector_index.vector_index import VectorIndex
 from core.model_providers.error import LLMBadRequestError
 from core.memory.read_only_conversation_token_db_buffer_shared_memory import \
     ReadOnlyConversationTokenDBBufferSharedMemory
@@ -26,6 +28,7 @@ from core.model_providers.models.llm.base import BaseLLM
 from core.orchestrator_rule_parser import OrchestratorRuleParser
 from core.prompt.prompt_template import PromptTemplateParser
 from core.prompt.prompt_transform import PromptTransform
+from models.dataset import Dataset
 from models.model import App, AppModelConfig, Account, Conversation, EndUser
 from core.prompt.prompt_builder import PromptBuilder
 # from core.prompt.prompts import MORE_LIKE_THIS_GENERATE_PROMPT
@@ -34,6 +37,8 @@ from models.model import App, AppModelConfig, Account, Conversation, Message, En
 from mylogger import logger
 from core.moderation.base import ModerationException, ModerationAction
 from core.moderation.factory import ModerationFactory
+from services.annotation_service import AppAnnotationService
+from services.dataset_service import DatasetCollectionBindingService
 
 
 class Completion:
@@ -45,7 +50,9 @@ class Completion:
                  outer_memory: Optional[list] = None,
                  assistant_name: str = None,
                  user_name: str = None,
-                 is_new_message=True):
+                 is_new_message=True,
+                 from_source: str = 'console',
+                 ):
         """
         errors: ProviderTokenNotInitError
         """
@@ -151,7 +158,10 @@ class Completion:
                     fake_response=str(e)
                 )
                 return
-
+            # check annotation reply
+            annotation_reply = cls.query_app_annotations_to_reply(conversation_message_task, from_source)
+            if annotation_reply:
+                return
             # fill in variable inputs from external data tools if exists
             # external_data_tools = app_model_config.external_data_tools_list
             # if external_data_tools:
@@ -211,7 +221,6 @@ class Completion:
         except ChunkedEncodingError as e:
             # Interrupt by LLM (like OpenAI), handle it.
             logging.warning(f'ChunkedEncodingError: {e}')
-            conversation_message_task.end()
             return
 
     @classmethod
@@ -390,6 +399,81 @@ class Completion:
         return external_context[memory_key]
 
     @classmethod
+    def query_app_annotations_to_reply(cls, conversation_message_task: ConversationMessageTask,
+                                       from_source: str) -> bool:
+        """Get memory messages."""
+        app_model_config = conversation_message_task.app_model_config
+        app = conversation_message_task.app
+        annotation_reply = app_model_config.annotation_reply_dict
+        if annotation_reply['enabled']:
+            try:
+                score_threshold = annotation_reply.get('score_threshold', 1)
+                embedding_provider_name = annotation_reply['embedding_model']['embedding_provider_name']
+                embedding_model_name = annotation_reply['embedding_model']['embedding_model_name']
+                # get embedding model
+                embedding_model = ModelFactory.get_embedding_model(
+                    tenant_id=app.tenant_id,
+                    model_provider_name=embedding_provider_name,
+                    model_name=embedding_model_name
+                )
+                embeddings = CacheEmbedding(embedding_model)
+
+                dataset_collection_binding = DatasetCollectionBindingService.get_dataset_collection_binding(
+                    embedding_provider_name,
+                    embedding_model_name,
+                    'annotation'
+                )
+
+                dataset = Dataset(
+                    id=app.id,
+                    tenant_id=app.tenant_id,
+                    indexing_technique='high_quality',
+                    embedding_model_provider=embedding_provider_name,
+                    embedding_model=embedding_model_name,
+                    collection_binding_id=dataset_collection_binding.id
+                )
+
+                vector_index = VectorIndex(
+                    dataset=dataset,
+                    config=current_app.config,
+                    embeddings=embeddings,
+                    attributes=['doc_id', 'annotation_id', 'app_id']
+                )
+
+                documents = vector_index.search(
+                    conversation_message_task.query,
+                    search_type='similarity_score_threshold',
+                    search_kwargs={
+                        'k': 1,
+                        'score_threshold': score_threshold,
+                        'filter': {
+                            'group_id': [dataset.id]
+                        }
+                    }
+                )
+                if documents:
+                    annotation_id = documents[0].metadata['annotation_id']
+                    score = documents[0].metadata['score']
+                    annotation = AppAnnotationService.get_annotation_by_id(annotation_id)
+                    if annotation:
+                        conversation_message_task.annotation_end(annotation.content, annotation.id, annotation.account.name)
+                        # insert annotation history
+                        AppAnnotationService.add_annotation_history(annotation.id,
+                                                                    app.id,
+                                                                    annotation.question,
+                                                                    annotation.content,
+                                                                    conversation_message_task.query,
+                                                                    conversation_message_task.user.id,
+                                                                    conversation_message_task.message.id,
+                                                                    from_source,
+                                                                    score)
+                        return True
+            except Exception as e:
+                logging.warning(f'Query annotation failed, exception: {str(e)}.')
+                return False
+        return False
+
+    @classmethod
     def get_memory_from_conversation(cls, tenant_id: str, app_model_config: AppModelConfig,
                                      conversation: Conversation,
                                      **kwargs) -> ReadOnlyConversationTokenDBBufferSharedMemory:
@@ -442,7 +526,8 @@ class Completion:
                                  query: str, inputs: dict, files: List[PromptMessageFile],
                                  outer_memory: Optional[list] = None,
                                  assistant_name: str = None,
-                                 user_name: str = None) -> int:
+                                 user_name: str = None,
+                                 ) -> int:
         model_limited_tokens = model_instance.model_rules.max_tokens.max
         max_tokens = model_instance.get_model_kwargs().max_tokens
 
@@ -467,7 +552,7 @@ class Completion:
                 model_instance=model_instance,
                 outer_memory=outer_memory,
                 assistant_name=assistant_name,
-                user_name=user_name
+                user_name=user_name,
             )
         else:
             prompt_messages = prompt_transform.get_advanced_prompt(
@@ -481,7 +566,7 @@ class Completion:
                 model_instance=model_instance,
                 outer_memory=outer_memory,
                 assistant_name=assistant_name,
-                user_name=user_name
+                user_name=user_name,
             )
 
         prompt_tokens = model_instance.get_num_tokens(prompt_messages)

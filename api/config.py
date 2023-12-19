@@ -1,11 +1,8 @@
 # -*- coding:utf-8 -*-
 import os
-from datetime import timedelta
 
 import dotenv
 
-from extensions.ext_database import db
-from extensions.ext_redis import redis_client
 
 dotenv.load_dotenv()
 
@@ -44,15 +41,11 @@ DEFAULTS = {
     'HOSTED_OPENAI_QUOTA_LIMIT': 200,
     'HOSTED_OPENAI_ENABLED': 'False',
     'HOSTED_OPENAI_PAID_ENABLED': 'False',
-    'HOSTED_OPENAI_PAID_INCREASE_QUOTA': 1,
     'HOSTED_AZURE_OPENAI_ENABLED': 'False',
     'HOSTED_AZURE_OPENAI_QUOTA_LIMIT': 200,
     'HOSTED_ANTHROPIC_QUOTA_LIMIT': 600000,
     'HOSTED_ANTHROPIC_ENABLED': 'False',
     'HOSTED_ANTHROPIC_PAID_ENABLED': 'False',
-    'HOSTED_ANTHROPIC_PAID_INCREASE_QUOTA': 1000000,
-    'HOSTED_ANTHROPIC_PAID_MIN_QUANTITY': 20,
-    'HOSTED_ANTHROPIC_PAID_MAX_QUANTITY': 100,
     'HOSTED_MODERATION_ENABLED': 'False',
     'HOSTED_MODERATION_PROVIDERS': '',
     'CLEAN_DAY_SETTING': 30,
@@ -62,6 +55,7 @@ DEFAULTS = {
     'OUTPUT_MODERATION_BUFFER_SIZE': 300,
     'MULTIMODAL_SEND_IMAGE_FORMAT': 'base64',
     'INVITE_EXPIRY_HOURS': 72,
+    'ETL_TYPE': 'dify',
     "MODE": "api",
     "NEWS_API_KEY": "",
     "FEISHU_ALERT_URL": "",
@@ -98,7 +92,7 @@ class Config:
         # ------------------------
         # General Configurations.
         # ------------------------
-        self.CURRENT_VERSION = "0.3.33"
+        self.CURRENT_VERSION = "0.3.34"
         self.COMMIT_SHA = get_env('COMMIT_SHA')
         self.EDITION = "SELF_HOSTED"
         self.DEPLOY_ENV = get_env('DEPLOY_ENV')
@@ -284,8 +278,6 @@ class Config:
         self.HOSTED_OPENAI_API_ORGANIZATION = get_env('HOSTED_OPENAI_API_ORGANIZATION')
         self.HOSTED_OPENAI_QUOTA_LIMIT = int(get_env('HOSTED_OPENAI_QUOTA_LIMIT'))
         self.HOSTED_OPENAI_PAID_ENABLED = get_bool_env('HOSTED_OPENAI_PAID_ENABLED')
-        self.HOSTED_OPENAI_PAID_STRIPE_PRICE_ID = get_env('HOSTED_OPENAI_PAID_STRIPE_PRICE_ID')
-        self.HOSTED_OPENAI_PAID_INCREASE_QUOTA = int(get_env('HOSTED_OPENAI_PAID_INCREASE_QUOTA'))
 
         self.HOSTED_AZURE_OPENAI_ENABLED = get_bool_env('HOSTED_AZURE_OPENAI_ENABLED')
         self.HOSTED_AZURE_OPENAI_API_KEY = get_env('HOSTED_AZURE_OPENAI_API_KEY')
@@ -297,10 +289,6 @@ class Config:
         self.HOSTED_ANTHROPIC_API_KEY = get_env('HOSTED_ANTHROPIC_API_KEY')
         self.HOSTED_ANTHROPIC_QUOTA_LIMIT = int(get_env('HOSTED_ANTHROPIC_QUOTA_LIMIT'))
         self.HOSTED_ANTHROPIC_PAID_ENABLED = get_bool_env('HOSTED_ANTHROPIC_PAID_ENABLED')
-        self.HOSTED_ANTHROPIC_PAID_STRIPE_PRICE_ID = get_env('HOSTED_ANTHROPIC_PAID_STRIPE_PRICE_ID')
-        self.HOSTED_ANTHROPIC_PAID_INCREASE_QUOTA = int(get_env('HOSTED_ANTHROPIC_PAID_INCREASE_QUOTA'))
-        self.HOSTED_ANTHROPIC_PAID_MIN_QUANTITY = int(get_env('HOSTED_ANTHROPIC_PAID_MIN_QUANTITY'))
-        self.HOSTED_ANTHROPIC_PAID_MAX_QUANTITY = int(get_env('HOSTED_ANTHROPIC_PAID_MAX_QUANTITY'))
 
         self.OPENAI_API_KEY = get_env('OPENAI_API_KEY')
         self.HOSTED_MODERATION_ENABLED = get_bool_env('HOSTED_MODERATION_ENABLED')
@@ -308,6 +296,9 @@ class Config:
         self.NEWS_API_KEY = get_env('NEWS_API_KEY')
         self.FEISHU_ALERT_URL = get_env('FEISHU_ALERT_URL')
         self.APP_ENDPOINT = get_env('APP_ENDPOINT')
+
+        self.ETL_TYPE = get_env('ETL_TYPE')
+        self.UNSTRUCTURED_API_URL = get_env('UNSTRUCTURED_API_URL')
 
 
 class CloudEditionConfig(Config):
@@ -322,6 +313,3 @@ class CloudEditionConfig(Config):
         self.GOOGLE_CLIENT_ID = get_env('GOOGLE_CLIENT_ID')
         self.GOOGLE_CLIENT_SECRET = get_env('GOOGLE_CLIENT_SECRET')
         self.OAUTH_REDIRECT_PATH = get_env('OAUTH_REDIRECT_PATH')
-
-        self.STRIPE_API_KEY = get_env('STRIPE_API_KEY')
-        self.STRIPE_WEBHOOK_SECRET = get_env('STRIPE_WEBHOOK_SECRET')
