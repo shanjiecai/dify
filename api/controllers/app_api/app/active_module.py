@@ -237,9 +237,13 @@ def init_active_chat(main_app: Flask):
     env = main_app.config.get('ENV')
     mode = main_app.config.get('MODE')
     logger.info(f"当前环境：{env}, 当前模式：{mode}")
-    if env == 'production' and mode == 'api':
-        group_id_list = get_all_groups()
-    else:
+    try:
+        if env == 'production' and mode == 'api':
+            group_id_list = get_all_groups()
+        else:
+            group_id_list = []
+    except:
+        logger.info(f"{traceback.format_exc()}")
         group_id_list = []
     # group_id_list = []
     logger.info(f"初始化监控群组：{group_id_list}")
