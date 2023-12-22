@@ -70,6 +70,8 @@ def to_lc_messages(messages: list[PromptMessage|ChatMessage]):
             additional_kwargs = {}
             if message.function_call:
                 additional_kwargs['function_call'] = message.function_call
+            # 回复可能是多个role model
+            # lc_messages.append(ChatMessage(content=message.content, role=message.type, type=message.type, additional_kwargs=additional_kwargs))
             lc_messages.append(AIMessage(content=message.content, additional_kwargs=additional_kwargs))
         elif message.type == MessageType.SYSTEM:
             lc_messages.append(SystemMessage(content=message.content))

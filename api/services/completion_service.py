@@ -59,7 +59,7 @@ class CompletionService:
         if conversation_id:
             conversation_filter = [
                 Conversation.id == args['conversation_id'],
-                Conversation.app_id == app_model.id,
+                # Conversation.app_id == app_model.id,
                 Conversation.status == 'normal'
             ]
             # if user:
@@ -86,23 +86,25 @@ class CompletionService:
             if conversation.status != 'normal':
                 raise ConversationCompletedError()
 
-            if not conversation.override_model_configs:
-                app_model_config = db.session.query(AppModelConfig).filter(
-                    AppModelConfig.id == conversation.app_model_config_id,
-                    AppModelConfig.app_id == app_model.id
-                ).first()
-
-                if not app_model_config:
-                    raise AppModelConfigBrokenError()
-            else:
-                conversation_override_model_configs = json.loads(conversation.override_model_configs)
-
-                app_model_config = AppModelConfig(
-                    id=conversation.app_model_config_id,
-                    app_id=app_model.id,
-                )
-
-                app_model_config = app_model_config.from_model_config_dict(conversation_override_model_configs)
+            # if not conversation.override_model_configs:
+            app_model_config = db.session.query(AppModelConfig).filter(
+                # AppModelConfig.id == conversation.app_model_config_id,
+                AppModelConfig.id == app_model.app_model_config_id,
+                AppModelConfig.app_id == app_model.id
+            ).first()
+            assistant_name = app_model.name if app_model else None
+            # print(f"assistant_name: {assistant_name}")
+            if not app_model_config:
+                raise AppModelConfigBrokenError()
+            # else:
+            #     conversation_override_model_configs = json.loads(conversation.override_model_configs)
+            #
+            #     app_model_config = AppModelConfig(
+            #         id=conversation.app_model_config_id,
+            #         app_id=app_model.id,
+            #     )
+            #
+            #     app_model_config = app_model_config.from_model_config_dict(conversation_override_model_configs)
 
             if is_model_config_override:
                 # build new app model config

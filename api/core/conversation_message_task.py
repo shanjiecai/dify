@@ -23,7 +23,7 @@ from models.model import AppModelConfig, Conversation, Account, Message, EndUser
 class ConversationMessageTask:
     def __init__(self, task_id: str, app: App, app_model_config: AppModelConfig, user: Account,
                  inputs: dict, query: str,  files: List[FileObj],  streaming: bool, model_instance: BaseLLM,
-                 conversation: Optional[Conversation] = None, is_override: bool = False, user_name: str = "Human",
+                 conversation: Optional[Conversation] = None, is_override: bool = False, user_name: str = "Human", assistant_name: str = "Assistant",
                  is_new_message: bool = True,
                  auto_generate_name: bool = True):
         self.start_at = time.perf_counter()
@@ -37,6 +37,7 @@ class ConversationMessageTask:
 
         self.user = user
         self.user_name = user_name
+        self.assistant_name = assistant_name
         self.inputs = inputs
         self.query = query
         self.files = files
@@ -144,7 +145,8 @@ class ConversationMessageTask:
             from_end_user_id=(self.user.id if isinstance(self.user, EndUser) else None),
             from_account_id=(self.user.id if isinstance(self.user, Account) else None),
             agent_based=self.app_model_config.agent_mode_dict.get('enabled'),
-            role=self.user_name
+            role=self.user_name,
+            assistant_name=self.assistant_name,
         )
 
         db.session.add(self.message)

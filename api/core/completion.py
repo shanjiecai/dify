@@ -92,6 +92,7 @@ class Completion:
             streaming=streaming,
             model_instance=final_model_instance,
             user_name=user_name if user_name else "Human",
+            assistant_name=assistant_name if assistant_name else "Assistant",
             is_new_message=is_new_message,
             auto_generate_name=auto_generate_name
         )
