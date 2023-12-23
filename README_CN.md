@@ -4,7 +4,8 @@
   <a href="./README_CN.md">简体中文</a> |
   <a href="./README_JA.md">日本語</a> |
   <a href="./README_ES.md">Español</a> |
-  <a href="./README_KL.md">Klingon</a>
+  <a href="./README_KL.md">Klingon</a> |
+  <a href="./README_FR.md">Français</a>
 </p>
 
 <p align="center">
@@ -23,6 +24,10 @@
 Dify 是一个 LLM 应用开发平台，已经有超过 10 万个应用基于 Dify.AI 构建。它融合了 Backend as Service 和 LLMOps 的理念，涵盖了构建生成式 AI 原生应用所需的核心技术栈，包括一个内置 RAG 引擎。使用 Dify，你可以基于任何模型自部署类似 Assistants API 和 GPTs 的能力。
 
 ![](./images/demo.png)
+
+## 使用云端服务
+
+使用 [Dify.AI Cloud](https://dify.ai) 提供开源版本的所有功能,并包含 200 次 GPT 试用额度。
 
 ## 为什么选择 Dify
 
@@ -53,6 +58,10 @@ Dify 具有模型中立性，相较 LangChain 等硬编码开发库 Dify 是一�
 **5. 持续运营**：监控和分析应用日志和性能，使用生产数据持续改进 Prompt、数据集或模型。
 
 ## 在开始之前
+
+**关注我们，您将立即收到 GitHub 上所有新发布版本的通知！**
+
+![star-us](https://github.com/langgenius/dify/assets/100913391/95f37259-7370-4456-a9f0-0bc01ef8642f)
 
 - [网站](https://dify.ai)
 - [文档](https://docs.dify.ai)
@@ -111,4 +120,4 @@ docker compose up -d
 
 ## License
 
-本仓库遵循 [Dify Open Source License](LICENSE) 开源协议。
+本仓库遵循 [Dify Open Source License](LICENSE) 开源协议，该许可证本质上是 Apache 2.0，但有一些额外的限制。

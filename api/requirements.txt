@@ -60,4 +60,6 @@ opencv-python-headless
 ghostscript
 camelot-py==0.11.0
 unstructured~=0.10.27
-unstructured[docx,pptx]~=0.10.27
+unstructured[docx,pptx,msg,md,ppt]~=0.10.27
+bs4~=0.0.1
+markdown~=3.5.1

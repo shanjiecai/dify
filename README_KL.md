@@ -4,7 +4,8 @@
   <a href="./README_CN.md">简体中文</a> |
   <a href="./README_JA.md">日本語</a> |
   <a href="./README_ES.md">Español</a> |
-  <a href="./README_KL.md">Klingon</a>
+  <a href="./README_KL.md">Klingon</a> |
+  <a href="./README_FR.md">Français</a>
 </p>
 
 <p align="center">
@@ -56,6 +57,10 @@ Dify Daq rIn neutrality 'ej Hoch, LangChain tInHar HubwI'. maH Daqbe'law' Qawqar
 **5. QaS muDHa'wI': cha'logh wa' pIq mI' logs 'ej quv yIn, vItlhutlh tIq 'e'wIj lo'taHmoHmoH Prompts, vItlhutlh, Hurmey ghaH production data jatlh.
 
 ## Do'wI' qabmey lo'taH
+
+**maHvaD jatlhchugh, GitHub Daq Hoch chu' ghompu'vam tIqel yInob!**
+
+![star-us](https://github.com/langgenius/dify/assets/100913391/95f37259-7370-4456-a9f0-0bc01ef8642f)
 
 - [Website](https://dify.ai)
 - [Docs](https://docs.dify.ai)

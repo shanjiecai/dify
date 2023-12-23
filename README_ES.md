@@ -3,7 +3,9 @@
   <a href="./README.md">English</a> |
   <a href="./README_CN.md">简体中文</a> |
   <a href="./README_JA.md">日本語</a> |
-  <a href="./README_ES.md">Español</a>
+  <a href="./README_ES.md">Español</a> |
+  <a href="./README_KL.md">Klingon</a> |
+  <a href="./README_FR.md">Français</a>
 </p>
 
 <p align="center">
@@ -55,6 +57,10 @@ Dify se caracteriza por su neutralidad de modelo y es un conjunto tecnológico c
 **5. Operaciones Continuas**: Monitorear y analizar registros de aplicaciones y rendimiento, mejorando continuamente Prompts, conjuntos de datos o modelos usando datos de producción.
 
 ## Antes de Empezar
+
+**¡Danos una estrella, y recibirás notificaciones instantáneas de todos los nuevos lanzamientos en GitHub!**
+
+![star-us](https://github.com/langgenius/dify/assets/100913391/95f37259-7370-4456-a9f0-0bc01ef8642f)
 
 - [Sitio web](https://dify.ai)
 - [Documentación](https://docs.dify.ai)
@@ -109,4 +115,4 @@ Para proteger tu privacidad, evita publicar problemas de seguridad en GitHub. En
 
 ## Licencia
 
-Este repositorio está disponible bajo la [Licencia de código abierto de Dify](LICENSE).
+Este repositorio está disponible bajo la [Licencia de Código Abierto Dify](LICENSE), que es esencialmente Apache 2.0 con algunas restricciones adicionales.
