@@ -12,6 +12,7 @@ from libs.helper import TimestampField, uuid_value
 from services.message_service import MessageService
 from extensions.ext_database import db
 from models.model import Account, Message, App
+from mylogger import logger
 
 
 class MessageListApi(AppApiResource):
@@ -57,8 +58,8 @@ class MessageListApi(AppApiResource):
 
     @marshal_with(message_infinite_scroll_pagination_fields)
     def get(self, app_model: App):
-        if app_model.mode != 'chat':
-            raise NotChatAppError()
+        # if app_model.mode != 'chat':
+        #     raise NotChatAppError()
 
         parser = reqparse.RequestParser()
         parser.add_argument('conversation_id', required=True, type=uuid_value, location='args')
@@ -71,8 +72,10 @@ class MessageListApi(AppApiResource):
         # end_user = create_or_update_end_user_for_user_id(app_model, args['user'])
 
         try:
-            return MessageService.pagination_by_first_id(app_model, None,
+            messages = MessageService.pagination_by_first_id(app_model, None,
                                                          args['conversation_id'], args['first_id'], args['limit'])
+            logger.info(messages)
+            return messages
         except services.errors.conversation.ConversationNotExistsError:
             raise NotFound("Conversation Not Exists.")
         except services.errors.message.FirstMessageNotExistsError:

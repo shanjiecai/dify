@@ -41,7 +41,14 @@ class ReadOnlyConversationTokenDBBufferSharedMemory(BaseChatMemory):
             self.last_query = messages[-1].query
             self.last_role = messages[-1].role
             messages = messages[:-1]
+        # 如果当前message，回答为空并且问题与下一个相同了话，跳过
         for message in messages:
+            # 判断messages是否有下一个
+            if messages.index(message) + 1 < len(messages):
+                next_message = messages[messages.index(message) + 1]
+                # print(f"message: {message.answer}, next_message: {next_message.answer}")
+                if (message.answer == None or message.answer == "") and message.query == next_message.query and message.role == next_message.role and next_message.answer != None and next_message.answer != "":
+                    continue
             # chat_messages.append(PromptMessage(content=message.query, type=MessageType.USER if message.role == "Human" else message.role))
             # if message.answer:
             #     chat_messages.append(PromptMessage(content=message.answer, type=MessageType.ASSISTANT if self.ai_prefix == "Assistant" else self.ai_prefix))
@@ -64,7 +71,8 @@ class ReadOnlyConversationTokenDBBufferSharedMemory(BaseChatMemory):
                 #     chat_messages.append(PromptMessage(content=message.answer, type=MessageType.ASSISTANT if self.ai_prefix == "Assistant" else self.ai_prefix))
 
             # chat_messages.append(PromptMessage(content=message.answer, type=MessageType.ASSISTANT))
-            chat_messages.append(PromptMessage(content=message.answer, type=MessageType.ASSISTANT if message.assistant_name == None else message.assistant_name))
+            if message.answer:
+                chat_messages.append(PromptMessage(content=message.answer, type=MessageType.USER if message.assistant_name == None else message.assistant_name))
 
         if not chat_messages:
             return []

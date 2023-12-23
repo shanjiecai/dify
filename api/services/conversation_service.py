@@ -110,7 +110,7 @@ class ConversationService:
         conversation = db.session.query(Conversation) \
             .filter(
             Conversation.id == conversation_id,
-            Conversation.app_id == app_model.id,
+            # Conversation.app_id == app_model.id,
             # Conversation.from_source == ('api' if isinstance(user, EndUser) else 'console'),
             # Conversation.from_end_user_id == (user.id if isinstance(user, EndUser) else None),
             # Conversation.from_account_id == (user.id if isinstance(user, Account) else None),

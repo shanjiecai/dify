@@ -19,6 +19,7 @@ Should you answer as {user}:'''
 
 def judge_llm_active(api_key: str, histories: str, assistant_name: str, is_random_true: bool = True):
     try:
+        histories = histories.replace("(AI)", "").replace("(4)", "").replace("(3.5)", "")
         url = "http://117.50.189.88:19521/generate"
 
         if assistant_name == "James Corden":

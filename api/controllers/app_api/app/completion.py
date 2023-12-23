@@ -28,6 +28,7 @@ from models.model import ApiToken, App, Conversation, AppModelConfig
 from mylogger import logger
 
 from extensions.ext_redis import redis_client
+from services.message_service import MessageService
 
 
 class CompletionApi(AppApiResource):
@@ -201,8 +202,32 @@ class ChatActiveApi(AppApiResource):
                 histories += "\n" + memory.last_role + ": " + memory.last_query
             logger.info(f"histories: {histories}, app_model.name: {app_model.name}")
             logger.info(f"get histories in {time.time() - b}")
-            judge_result = judge_llm_active(memory.model_instance.credentials["openai_api_key"], histories,
-                                            app_model.name)
+            # messages = MessageService.pagination_by_first_id(app_model, None,
+            #                                              args['conversation_id'], None, 20)
+            # logger.info(f"messages: {messages.data}, app_model.name: {app_model.name}")
+            '''
+            如果最后三条为：
+            A：@app_model.name hello
+            app_model.name: hi
+            A: how are you?
+            则认为是同一个人的追问，应该回话
+            '''
+            buffer = [dict(item) for item in memory.buffer]
+            if memory.last_query:
+                buffer.append({"role": memory.last_role, "content": memory.last_query})
+            if len(buffer) >= 3:
+                # 截取数组最后三条
+                logger.info(buffer[-3:])
+
+            if len(buffer) >= 3 and buffer[-2].get("role", None) == app_model.name and \
+                        buffer[-1].get("role", None) == buffer[-3].get("role", None) and \
+                        buffer[-1].get("role", None) != app_model.name and \
+                        buffer[-3].get("role", None) != app_model.name:
+                logger.info(f"last three messages are from {app_model.name} and other, should response")
+                judge_result = True
+            else:
+                judge_result = judge_llm_active(memory.model_instance.credentials["openai_api_key"], histories,
+                                                app_model.name)
             end_user = create_or_update_end_user_for_user_id(app_model, "")
             if judge_result:
                 # 对当前conversation上锁，有一个机器人认为应该回话就锁住，避免多个机器人同时回话
