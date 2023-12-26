@@ -178,7 +178,7 @@ class ChatActiveApi(AppApiResource):
 
             conversation_filter = [
                 Conversation.id == args['conversation_id'],
-                Conversation.app_id == app_model.id,
+                # Conversation.app_id == app_model.id,
                 Conversation.status == 'normal'
             ]
             conversation = db.session.query(Conversation).filter(and_(*conversation_filter)).first()
