@@ -6,7 +6,7 @@ import json
 url_base = "http://13.56.164.188"
 dj_app_id = "a756e5d2-c735-4f68-8db0-1de49333501c"
 
-
+st.title("role model group chat")
 def get_app_list():
     global app_name_select
     url = f"{url_base}/backend-api/v1/app/list"
@@ -18,21 +18,43 @@ def get_app_list():
 
     response = requests.request("GET", url, headers=headers, data=payload)
     # print(response.text)
-    app_id_list = [app["app_id"] for app in response.json()["app_list"]]
-    app_name_list = [app["app_name"] for app in response.json()["app_list"]]
+    app_id_list = [app["id"] for app in response.json()]
+    app_name_list = [app["name"] for app in response.json()]
     return app_id_list, app_name_list
 
 
 if "role_model_id_list" not in st.session_state:
-    app_id_list, app_name_list = get_app_list()
-    app_name_select = st.selectbox("Select role model", app_name_list, key="role_model_id_list")
-    app_id_select = app_id_list[app_name_list.index(app_name_select[0])]
-    st.session_state["role_model_id_list"] = [dj_app_id, app_id_select]
-    st.session_state["role_name_list"] = ["DJ Bot", app_name_select]
+    st.session_state.role_model_id_list = []
+    st.session_state.role_name_list = []
+if "user" not in st.session_state:
+    st.session_state.user = None
 
-# url_base = "http://127.0.0.1:5001"
-# role_model_id_list = ["da780e5e-a130-4567-b1cc-b090d59a1d9f", "1e2e3275-216b-4c2b-9b16-53435b72a85a"]
-# role_name_list = ["Mauro Gutiérrez", "Lili Tombe"]
+
+app_id_list, app_name_list = get_app_list()
+
+# if len(st.session_state.role_model_id_list) == 0:
+    # print(app_name_list)
+app_names_select = st.multiselect("Select role models", app_name_list)
+print(app_names_select)
+if st.button("choose role models"):
+    for app_name in app_names_select:
+        app_id = app_id_list[app_name_list.index(app_name)]
+        st.session_state.role_model_id_list.append(app_id)
+        st.session_state.role_name_list.append(app_name)
+    st.session_state.role_model_id_list.append(dj_app_id)
+    st.session_state.role_name_list.append("James Corden")
+
+st.markdown("Current role model: " + "    ".join(st.session_state["role_name_list"]))
+
+# 展示当前的角色
+
+if not st.session_state.user:
+    user = st.text_input("Enter your name")
+    st.session_state.user = user
+
+if "conversation_id" not in st.session_state:
+    st.session_state.conversation_id = None
+
 
 def create_conversation():
 
@@ -47,8 +69,17 @@ def create_conversation():
     }
 
     response = requests.request("POST", url, headers=headers, data=payload)
-
+    print(response.text)
     return response.json()["conversation_id"]
+
+
+if not st.session_state.conversation_id:
+    if st.button("Start conversation"):
+        st.session_state.conversation_id = create_conversation()
+
+# url_base = "http://127.0.0.1:5001"
+# role_model_id_list = ["da780e5e-a130-4567-b1cc-b090d59a1d9f", "1e2e3275-216b-4c2b-9b16-53435b72a85a"]
+# role_name_list = ["Mauro Gutiérrez", "Lili Tombe"]
 
 
 def add_message(conversation_id, message, user):
@@ -65,12 +96,15 @@ def add_message(conversation_id, message, user):
         'Content-Type': 'application/json'
     }
     response = requests.request("POST", url, headers=headers, data=payload)
-    print(response.text)
+    print(f"add message {response.text}")
     return
 
 
-def chat_message_active(app_id, conversation_id):
-    url = f"{url_base}/backend-api/v1/chat-messages-active"
+def chat_message_active(app_id, conversation_id, force=False):
+    if not force:
+        url = f"{url_base}/backend-api/v1/chat-messages-active"
+    else:
+        url = f"{url_base}/backend-api/v1/chat-messages"
 
     payload = json.dumps({
         "app_id": app_id,
@@ -82,18 +116,12 @@ def chat_message_active(app_id, conversation_id):
     }
 
     response = requests.request("POST", url, headers=headers, data=payload)
-    print(response.text)
-    if response.json()["result"]:
+    print(f"chat {app_id} {response.text}")
+    if response.json().get("answer", None):
         return response.json()["answer"]
     else:
         return None
 
-
-if "conversation_id" not in st.session_state:
-    st.session_state.conversation_id = create_conversation()
-
-
-st.title("2 role model chat")
 
 # Initialize chat history
 if "messages" not in st.session_state:
@@ -106,13 +134,15 @@ for message in st.session_state.messages:
 
 # Accept user input
 if prompt := st.chat_input("What is up?"):
-    role_name_list = st.session_state["role_name_list"]
-    role_model_id_list = st.session_state["role_model_id_list"]
+    user = st.session_state["user"]
+    role_name_list = st.session_state.role_name_list
+    role_model_id_list = st.session_state.role_model_id_list
+    print(role_name_list)
     # Add user message to chat history
-    st.session_state.messages.append({"role": "Sjc", "content": prompt})
+    st.session_state.messages.append({"role": user, "content": prompt})
     add_message(st.session_state.conversation_id, prompt, "Sjc")
     # Display user message in chat message container
-    with st.chat_message("Sjc"):
+    with st.chat_message(user):
         st.markdown(prompt)
 
     # Display assistant response in chat message container
@@ -135,24 +165,34 @@ if prompt := st.chat_input("What is up?"):
     #     message_placeholder.markdown(full_response)
     # # Add assistant response to chat history
     # st.session_state.messages.append({"role": "Tom", "content": full_response})
+
     is_new_message = True
     while is_new_message:
         is_new_message = False
+        print(st.session_state.messages[-1]["content"])
+        force_list = [False for _ in role_name_list]
         # 上一句不是他说的
-        if st.session_state.messages[-1]["role"] != role_name_list[0]:
-            assistant1_response = chat_message_active(role_model_id_list[0], st.session_state.conversation_id)
+        for index, role_name in enumerate(role_name_list):
+            if f"@{role_name}" in st.session_state.messages[-1]["content"]:
+                force_list[index] = True
+        for index, role_name in enumerate(role_name_list):
+            print(role_name)
+            assistant1_response = chat_message_active(role_model_id_list[index], st.session_state.conversation_id,
+                                                      force=force_list[index])
             if assistant1_response is not None:
-                with st.chat_message(role_name_list[0]):
+                with st.chat_message(role_name):
                     message_placeholder = st.empty()
                     message_placeholder.markdown(assistant1_response)
-                st.session_state.messages.append({"role": role_name_list[0], "content": assistant1_response})
-        if st.session_state.messages[-1]["role"] != role_name_list[1]:
-            assistant2_response = chat_message_active(role_model_id_list[1], st.session_state.conversation_id)
-            if assistant2_response is not None:
-                with st.chat_message(role_name_list[1]):
-                    message_placeholder = st.empty()
-                    message_placeholder.markdown(assistant2_response)
-                st.session_state.messages.append({"role": role_name_list[1], "content": assistant2_response})
-                is_new_message = True
+                st.session_state.messages.append({"role": role_name, "content": assistant1_response})
+                if index == len(role_name_list) - 1:
+                    is_new_message = True
+        # if st.session_state.messages[-1]["role"] != role_name_list[1]:
+        #     assistant2_response = chat_message_active(role_model_id_list[1], st.session_state.conversation_id)
+        #     if assistant2_response is not None:
+        #         with st.chat_message(role_name_list[1]):
+        #             message_placeholder = st.empty()
+        #             message_placeholder.markdown(assistant2_response)
+        #         st.session_state.messages.append({"role": role_name_list[1], "content": assistant2_response})
+        #         is_new_message = True
 
 
