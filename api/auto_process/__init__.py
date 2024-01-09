@@ -76,7 +76,6 @@ if __name__ == '__main__':
         print(name)
         print(summarize_text(name, text))
         # print("*************")
-
         print(summarize_style(name, text))
     # file_path = "/Users/jiecai/PycharmProjects/dify/api/auto_process/1/Mallory Asis.txt"
     # text = open(file_path, 'r', errors='ignore').read()

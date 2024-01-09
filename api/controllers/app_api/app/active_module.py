@@ -187,12 +187,16 @@ def chat_thread(group_id: int, main_context: AppContext):
                         elif len(outer_memory) >= 5 and (datetime.datetime.now() - datetime.datetime.strptime(recent_history['data'][0]['created_at'], "%Y-%m-%d %H:%M:%S")).total_seconds() > 3600*24:
                             # all([message["role"] == "James Corden" for message in outer_memory[-5:]]) \
                             try:
-                                topic = get_topic()
+                                topic, image_url = get_topic()
                             except:
                                 logger.info(f"{traceback.format_exc()}")
                                 topic = "What do you think about AI?"
+                                image_url = None
                             query = topic + "Please introduce the story and raise any points you would like to discuss?"
                             logger.info(f"超过24小时，换个话题强制回复：{group_id} {topic} {uuid.uuid4()}")
+                            if image_url:
+                                # 发图片
+                                pass
                             res = model_chat(conversation_id, outer_memory=outer_memory, is_force=True, query=query, user_name="Human")
                             # res = model_chat(conversation_id, is_force=True, query=query, user_name="Human")
                         # 如果倒数第二条消息是机器人且最后一条消息不是机器人且与倒数第二条间隔不超过30s,回复

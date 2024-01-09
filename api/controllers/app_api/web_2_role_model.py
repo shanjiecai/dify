@@ -18,8 +18,12 @@ def get_app_list():
 
     response = requests.request("GET", url, headers=headers, data=payload)
     # print(response.text)
-    app_id_list = [app["id"] for app in response.json()]
-    app_name_list = [app["name"] for app in response.json()]
+    app_id_list = []
+    app_name_list = []
+    for app in response.json():
+        if "4" in app["name"]:
+            app_id_list.append(app["id"])
+            app_name_list.append(app["name"])
     return app_id_list, app_name_list
 
 
@@ -36,20 +40,23 @@ app_id_list, app_name_list = get_app_list()
     # print(app_name_list)
 app_names_select = st.multiselect("Select role models", app_name_list)
 print(app_names_select)
+if not st.session_state.role_name_list:
+    st.session_state.role_name_list = ["James Corden"]
+    st.session_state.role_model_id_list.append(dj_app_id)
+
 if st.button("choose role models"):
+
     for app_name in app_names_select:
         app_id = app_id_list[app_name_list.index(app_name)]
         st.session_state.role_model_id_list.append(app_id)
         st.session_state.role_name_list.append(app_name)
-    st.session_state.role_model_id_list.append(dj_app_id)
-    st.session_state.role_name_list.append("James Corden")
 
-st.markdown("Current role model: " + "    ".join(st.session_state["role_name_list"]))
+st.markdown("Current role model: " + "    ".join(st.session_state.role_name_list))
 
 # 展示当前的角色
 
 if not st.session_state.user:
-    user = st.text_input("Enter your name")
+    user = st.text_input("Enter your name and AI will introduce themselves to you")
     st.session_state.user = user
 
 if "conversation_id" not in st.session_state:
@@ -72,10 +79,6 @@ def create_conversation():
     print(response.text)
     return response.json()["conversation_id"]
 
-
-if not st.session_state.conversation_id:
-    if st.button("Start conversation"):
-        st.session_state.conversation_id = create_conversation()
 
 # url_base = "http://127.0.0.1:5001"
 # role_model_id_list = ["da780e5e-a130-4567-b1cc-b090d59a1d9f", "1e2e3275-216b-4c2b-9b16-53435b72a85a"]
@@ -123,6 +126,29 @@ def chat_message_active(app_id, conversation_id, force=False):
         return None
 
 
+if not st.session_state.conversation_id:
+    if st.button("Start conversation"):
+        role_name_list = st.session_state.role_name_list
+        role_model_id_list = st.session_state.role_model_id_list
+        user = st.session_state.user
+        st.session_state.conversation_id = create_conversation()
+
+        # 开场白
+        prompt = f"Hi, I'm {user}, please introduce yourself, @{' @'.join(role_name_list)}"
+        st.session_state.messages.append({"role": user, "content": prompt})
+        add_message(st.session_state.conversation_id, prompt, user)
+
+        for index, role_name in enumerate(role_name_list):
+            print(role_name)
+            assistant1_response = chat_message_active(role_model_id_list[index], st.session_state.conversation_id,
+                                                      force=True)
+            if assistant1_response is not None:
+                # with st.chat_message(role_name):
+                #     message_placeholder = st.empty()
+                #     message_placeholder.markdown(assistant1_response)
+                st.session_state.messages.append({"role": role_name, "content": assistant1_response})
+
+
 # Initialize chat history
 if "messages" not in st.session_state:
     st.session_state.messages = []
@@ -133,7 +159,7 @@ for message in st.session_state.messages:
         st.markdown(message["content"])
 
 # Accept user input
-if prompt := st.chat_input("What is up?"):
+if prompt := st.chat_input("What is up?") and st.session_state.conversation_id:
     user = st.session_state["user"]
     role_name_list = st.session_state.role_name_list
     role_model_id_list = st.session_state.role_model_id_list
