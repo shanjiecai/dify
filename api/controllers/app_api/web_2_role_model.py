@@ -127,7 +127,7 @@ def chat_message_active(app_id, conversation_id, force=False):
 
 
 if not st.session_state.conversation_id:
-    if st.button("Start conversation"):
+    if st.button("Start conversation and role model will introduce themselves first"):
         role_name_list = st.session_state.role_name_list
         role_model_id_list = st.session_state.role_model_id_list
         user = st.session_state.user
@@ -159,66 +159,78 @@ for message in st.session_state.messages:
         st.markdown(message["content"])
 
 # Accept user input
-if prompt := st.chat_input("What is up?") and st.session_state.conversation_id:
-    user = st.session_state["user"]
-    role_name_list = st.session_state.role_name_list
-    role_model_id_list = st.session_state.role_model_id_list
-    print(role_name_list)
-    # Add user message to chat history
-    st.session_state.messages.append({"role": user, "content": prompt})
-    add_message(st.session_state.conversation_id, prompt, "Sjc")
-    # Display user message in chat message container
-    with st.chat_message(user):
-        st.markdown(prompt)
+if prompt := st.chat_input("What is up?"):
+    if st.session_state.conversation_id:
+        user = st.session_state["user"]
+        role_name_list = st.session_state.role_name_list
+        role_model_id_list = st.session_state.role_model_id_list
+        print(role_name_list)
+        # Add user message to chat history
+        print(prompt)
+        st.session_state.messages.append({"role": user, "content": prompt})
+        add_message(st.session_state.conversation_id, prompt, "Sjc")
+        # Display user message in chat message container
+        with st.chat_message(user):
+            st.markdown(prompt)
 
-    # Display assistant response in chat message container
-    # with st.chat_message("Tom"):
-    #     message_placeholder = st.empty()
-    #     full_response = ""
-    #     assistant_response = random.choice(
-    #         [
-    #             "Hello there! How can I assist you today?",
-    #             "Hi, human! Is there anything I can help you with?",
-    #             "Do you need help?",
-    #         ]
-    #     )
-    #     # Simulate stream of response with milliseconds delay
-    #     for chunk in assistant_response.split():
-    #         full_response += chunk + " "
-    #         time.sleep(0.05)
-    #         # Add a blinking cursor to simulate typing
-    #         message_placeholder.markdown(full_response + "▌")
-    #     message_placeholder.markdown(full_response)
-    # # Add assistant response to chat history
-    # st.session_state.messages.append({"role": "Tom", "content": full_response})
+        # Display assistant response in chat message container
+        # with st.chat_message("Tom"):
+        #     message_placeholder = st.empty()
+        #     full_response = ""
+        #     assistant_response = random.choice(
+        #         [
+        #             "Hello there! How can I assist you today?",
+        #             "Hi, human! Is there anything I can help you with?",
+        #             "Do you need help?",
+        #         ]
+        #     )
+        #     # Simulate stream of response with milliseconds delay
+        #     for chunk in assistant_response.split():
+        #         full_response += chunk + " "
+        #         time.sleep(0.05)
+        #         # Add a blinking cursor to simulate typing
+        #         message_placeholder.markdown(full_response + "▌")
+        #     message_placeholder.markdown(full_response)
+        # # Add assistant response to chat history
+        # st.session_state.messages.append({"role": "Tom", "content": full_response})
 
-    is_new_message = True
-    while is_new_message:
-        is_new_message = False
-        print(st.session_state.messages[-1]["content"])
-        force_list = [False for _ in role_name_list]
-        # 上一句不是他说的
-        for index, role_name in enumerate(role_name_list):
-            if f"@{role_name}" in st.session_state.messages[-1]["content"]:
-                force_list[index] = True
-        for index, role_name in enumerate(role_name_list):
-            print(role_name)
-            assistant1_response = chat_message_active(role_model_id_list[index], st.session_state.conversation_id,
-                                                      force=force_list[index])
-            if assistant1_response is not None:
-                with st.chat_message(role_name):
-                    message_placeholder = st.empty()
-                    message_placeholder.markdown(assistant1_response)
-                st.session_state.messages.append({"role": role_name, "content": assistant1_response})
-                if index == len(role_name_list) - 1:
-                    is_new_message = True
-        # if st.session_state.messages[-1]["role"] != role_name_list[1]:
-        #     assistant2_response = chat_message_active(role_model_id_list[1], st.session_state.conversation_id)
-        #     if assistant2_response is not None:
-        #         with st.chat_message(role_name_list[1]):
-        #             message_placeholder = st.empty()
-        #             message_placeholder.markdown(assistant2_response)
-        #         st.session_state.messages.append({"role": role_name_list[1], "content": assistant2_response})
-        #         is_new_message = True
+        is_new_message = True
+        while is_new_message:
+            is_new_message = False
+            # print(st.session_state.messages[-1]["content"])
+            force_list = [False for _ in role_name_list]
+            # 上一句不是他说的
+            for index, role_name in enumerate(role_name_list):
+                if f"@{role_name}" in st.session_state.messages[-1]["content"]:
+                    force_list[index] = True
+            print(f"force_list {force_list}")
+            is_anyone_speak = False
+            for index, role_name in enumerate(role_name_list):
+                print(role_name)
+                # 如果上一句是他说的，跳过
+                if st.session_state.messages[-1]["role"] == role_name:
+                    continue
+                assistant1_response = chat_message_active(role_model_id_list[index], st.session_state.conversation_id,
+                                                          force=force_list[index])
+                if assistant1_response is not None:
+                    is_anyone_speak = True
+                    with st.chat_message(role_name):
+                        message_placeholder = st.empty()
+                        message_placeholder.markdown(assistant1_response)
+                    st.session_state.messages.append({"role": role_name, "content": assistant1_response})
+                    if index == len(role_name_list) - 1:
+                        is_new_message = True
+            if not is_anyone_speak:
+                break
+            # if st.session_state.messages[-1]["role"] != role_name_list[1]:
+            #     assistant2_response = chat_message_active(role_model_id_list[1], st.session_state.conversation_id)
+            #     if assistant2_response is not None:
+            #         with st.chat_message(role_name_list[1]):
+            #             message_placeholder = st.empty()
+            #             message_placeholder.markdown(assistant2_response)
+            #         st.session_state.messages.append({"role": role_name_list[1], "content": assistant2_response})
+            #         is_new_message = True
+    else:
+        st.error("Please start conversation first")
 
 

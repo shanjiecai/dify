@@ -9,8 +9,8 @@ encode_model = tiktoken.get_encoding("cl100k_base")
 
 # 调用openai总结上传文本
 def summarize_text(name, text, max_length=80):
-    if len(text) > 4000:
-        text = text[:4000] + '...'
+    if len(text) > 5000:
+        text = text[:5000] + '...'
     text = f'''{text}\nBased on the above content, summarize this person’s personality characteristics as briefly as possible in {max_length} words or less:\n{name} '''
     messages = [{
         "role": "user",
@@ -66,7 +66,7 @@ def summarize_style(name, text, max_length=8):
 
 
 if __name__ == '__main__':
-    path = "/Users/jiecai/PycharmProjects/dify/api/auto_process/4"
+    path = "/Users/jiecai/PycharmProjects/dify/api/auto_process/5"
     file_list = os.listdir(path)
     for file in file_list:
         file_path = os.path.join(path, file)
