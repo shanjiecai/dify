@@ -30,7 +30,7 @@ import requests
 from core.judge_llm_active import judge_llm_active
 from services.completion_service import CompletionService
 from controllers.app_api.app.utils import *
-from controllers.app_api.app.search_event import get_topic
+from controllers.app_api.app.search_event import get_topic, download_from_url
 from extensions.ext_redis import redis_client
 api_key = os.environ.get('OPENAI_API_KEY')
 # print(api_key)
@@ -149,7 +149,8 @@ message:
 # 主动询问是否回话，每五分钟一次
 # 同时检测历史如果最近一条消息超过两小时，主动发起对话
 def chat_thread(group_id: int, main_context: AppContext):
-    logger.info(f"开始监控：{group_id} {uuid.uuid4()}")
+    import uuid
+    logger.info(f"开始监控：{group_id} {str(uuid.uuid4())}")
     with main_context:
         while True:
             try:
@@ -157,7 +158,7 @@ def chat_thread(group_id: int, main_context: AppContext):
                 while True:
                     # 获取最近聊天记录
                     recent_history = get_recent_history(group_id)
-                    if not recent_history["data"]:
+                    if not recent_history.get("data", None):
                         time.sleep(60)
                         continue
                     logger.info(f"获取最近聊天记录：{group_id} {recent_history['data'][0]['chat_text']}")
@@ -167,14 +168,13 @@ def chat_thread(group_id: int, main_context: AppContext):
                     if "openai" not in ai_api_info:
                         continue
                     conversation_id = ai_api_info['openai']['conversation_id']
+                    outer_memory = []
                     if conversation_id:
-                        outer_memory = []
                         for message in recent_history['data'][:min(50, len(recent_history['data']))]:
                             outer_memory.append(
                                 {"role": model_name_transform(message["from_user"]["name"]), "message": message['chat_text']})
                         # 倒序outer_memory
                         outer_memory.reverse()
-
 
                         if not outer_memory:
                             continue
@@ -192,6 +192,18 @@ def chat_thread(group_id: int, main_context: AppContext):
                                 logger.info(f"{traceback.format_exc()}")
                                 topic = "What do you think about AI?"
                                 image_url = None
+                            if image_url:
+                                try:
+                                    image_name = image_url.split("/")[-1]
+                                    dst = os.path.join(os.path.dirname(os.path.abspath(__file__)), "static", "images", image_name)
+                                    download_from_url(image_url, dst)
+                                    res = upload_file(dst, image_name)
+                                    logger.info(f"上传图片：{res}")
+                                    uuid = res["data"]["uuid"]
+                                    send_chat_message(group_id, type="img", file_uuid=uuid)
+                                except:
+                                    logger.info(f"{traceback.format_exc()}")
+                                    image_url = None
                             query = topic + "Please introduce the story and raise any points you would like to discuss?"
                             logger.info(f"超过24小时，换个话题强制回复：{group_id} {topic} {uuid.uuid4()}")
                             if image_url:
@@ -245,7 +257,8 @@ def init_active_chat(main_app: Flask):
         if env == 'production' and mode == 'api':
             group_id_list = get_all_groups()
         else:
-            group_id_list = []
+            # group_id_list = []
+            group_id_list = [316]
     except:
         logger.info(f"{traceback.format_exc()}")
         group_id_list = []

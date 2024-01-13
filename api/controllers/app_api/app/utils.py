@@ -54,19 +54,41 @@ def get_recent_history(group_id: int = None, last_id: int = None):
     return response.json()
 
 
-def send_chat_message(group_id: int, message: str):
+def send_chat_message(group_id: int, message: str = None, type: str = "txt", file_uuid: str = None):
     url = f"{app_endpoint}/api/sys/send_chat_message"
 
-    payload = json.dumps({
-        "group_id": group_id,
-        "txt": message
-    })
+    if type == "img" and file_uuid:
+        payload = json.dumps({
+            "group_id": group_id,
+            type: type,
+            "file_uuid": file_uuid
+        })
+    else:
+        payload = json.dumps({
+            "group_id": group_id,
+            "txt": message
+        })
     headers = {
         'Authorization': 'Bearer 6520|LyHTtFbuGPxYPNllyTQ5DRu0jIInQt8ZqDeyBG425c19f8cf',
         'Content-Type': 'application/json'
     }
 
     response = requests.request("POST", url, headers=headers, data=payload)
+    # print(response.text)
+    return response.json()
+
+
+def upload_file(file_path: str, file_name: str):
+    url = f"{app_endpoint}/api/sys/upload"
+    payload = {}
+    files = [
+        ('file', (file_name, open(file_path, 'rb'), 'image/jpeg'))
+    ]
+    headers = {
+        'Authorization': 'Bearer 6520|LyHTtFbuGPxYPNllyTQ5DRu0jIInQt8ZqDeyBG425c19f8cf'
+    }
+
+    response = requests.request("POST", url, headers=headers, data=payload, files=files)
     # print(response.text)
     return response.json()
 
