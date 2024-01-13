@@ -1,25 +1,24 @@
 # -*- coding:utf-8 -*-
 import logging
 
-from flask import request
-from libs.login import login_required
-from werkzeug.exceptions import InternalServerError
-
 import services
 from controllers.console import api
 from controllers.console.app import _get_app
-from controllers.console.app.error import AppUnavailableError, \
-    ProviderNotInitializeError, CompletionRequestError, ProviderQuotaExceededError, \
-    ProviderModelCurrentlyNotSupportError, NoAudioUploadedError, AudioTooLargeError, \
-    UnsupportedAudioTypeError, ProviderNotSupportSpeechToTextError
+from controllers.console.app.error import (AppUnavailableError, AudioTooLargeError, CompletionRequestError,
+                                           NoAudioUploadedError, ProviderModelCurrentlyNotSupportError,
+                                           ProviderNotInitializeError, ProviderNotSupportSpeechToTextError,
+                                           ProviderQuotaExceededError, UnsupportedAudioTypeError)
 from controllers.console.setup import setup_required
 from controllers.console.wraps import account_initialization_required
-from core.model_providers.error import LLMBadRequestError, LLMAPIUnavailableError, LLMAuthorizationError, LLMAPIConnectionError, \
-    LLMRateLimitError, ProviderTokenNotInitError, QuotaExceededError, ModelCurrentlyNotSupportError
+from core.errors.error import ModelCurrentlyNotSupportError, ProviderTokenNotInitError, QuotaExceededError
+from core.model_runtime.errors.invoke import InvokeError
+from flask import request
 from flask_restful import Resource
+from libs.login import login_required
 from services.audio_service import AudioService
-from services.errors.audio import NoAudioUploadedServiceError, AudioTooLargeServiceError, \
-    UnsupportedAudioTypeServiceError, ProviderNotSupportSpeechToTextServiceError
+from services.errors.audio import (AudioTooLargeServiceError, NoAudioUploadedServiceError,
+                                   ProviderNotSupportSpeechToTextServiceError, UnsupportedAudioTypeServiceError)
+from werkzeug.exceptions import InternalServerError
 
 
 class ChatMessageAudioApi(Resource):
@@ -56,9 +55,8 @@ class ChatMessageAudioApi(Resource):
             raise ProviderQuotaExceededError()
         except ModelCurrentlyNotSupportError:
             raise ProviderModelCurrentlyNotSupportError()
-        except (LLMBadRequestError, LLMAPIConnectionError, LLMAPIUnavailableError,
-                LLMRateLimitError, LLMAuthorizationError) as e:
-            raise CompletionRequestError(str(e))
+        except InvokeError as e:
+            raise CompletionRequestError(e.description)
         except ValueError as e:
             raise e
         except Exception as e:

@@ -6,35 +6,37 @@ from werkzeug.exceptions import Unauthorized
 if not os.environ.get("DEBUG") or os.environ.get("DEBUG").lower() != 'true':
     from gevent import monkey
     monkey.patch_all()
-    if os.environ.get("VECTOR_STORE") == 'milvus':
-        import grpc.experimental.gevent
-        grpc.experimental.gevent.init_gevent()
+    # if os.environ.get("VECTOR_STORE") == 'milvus':
+    import grpc.experimental.gevent
+    grpc.experimental.gevent.init_gevent()
 
-import time
-import logging
+    import langchain
+    langchain.verbose = True
+
 import json
+import logging
 import threading
+import time
+import warnings
 
-from flask import Flask, request, Response
-from flask_cors import CORS
-
-from core.model_providers.providers import hosted
-from extensions import ext_celery, ext_sentry, ext_redis, ext_login, ext_migrate, \
-    ext_database, ext_storage, ext_mail, ext_code_based_extension
+# from core.model_providers.providers import hosted
+from commands import register_commands
+from config import CloudEditionConfig, Config
+from events import event_handlers
+from extensions import (ext_celery, ext_code_based_extension, ext_database, ext_hosting_provider, ext_login, ext_mail,
+                        ext_migrate, ext_redis, ext_sentry, ext_storage)
 from extensions.ext_database import db
 from extensions.ext_login import login_manager
-
+from flask import Flask, Response, request
+from flask_cors import CORS
+from libs.passport import PassportService
 # DO NOT REMOVE BELOW
-from models import model, account, dataset, web, task, source, tool
-from events import event_handlers
+from models import account, dataset, model, source, task, tool, web
+from services.account_service import AccountService
+
 # DO NOT REMOVE ABOVE
 
-from config import Config, CloudEditionConfig
-from commands import register_commands
-from services.account_service import AccountService
-from libs.passport import PassportService
 
-import warnings
 warnings.simplefilter("ignore", ResourceWarning)
 
 # fix windows platform
@@ -79,7 +81,7 @@ def create_app(test_config=None) -> Flask:
     register_blueprints(app)
     register_commands(app)
 
-    hosted.init_app(app)
+    # hosted.init_app(app)
 
     from controllers.app_api.app.active_module import init_active_chat
     init_active_chat(app)
@@ -97,6 +99,7 @@ def initialize_extensions(app):
     ext_celery.init_app(app)
     ext_login.init_app(app)
     ext_mail.init_app(app)
+    ext_hosting_provider.init_app(app)
     ext_sentry.init_app(app)
 
 
@@ -107,13 +110,18 @@ def load_user_from_request(request_from_flask_login):
     if request.blueprint == 'console':
         # Check if the user_id contains a dot, indicating the old format
         auth_header = request.headers.get('Authorization', '')
-        if ' ' not in auth_header:
-            raise Unauthorized('Invalid Authorization header format. Expected \'Bearer <api-key>\' format.')
-        auth_scheme, auth_token = auth_header.split(None, 1)
-        auth_scheme = auth_scheme.lower()
-        if auth_scheme != 'bearer':
-            raise Unauthorized('Invalid Authorization header format. Expected \'Bearer <api-key>\' format.')
-        
+        if not auth_header:
+            auth_token = request.args.get('_token')
+            if not auth_token:
+                raise Unauthorized('Invalid Authorization token.')
+        else:
+            if ' ' not in auth_header:
+                raise Unauthorized('Invalid Authorization header format. Expected \'Bearer <api-key>\' format.')
+            auth_scheme, auth_token = auth_header.split(None, 1)
+            auth_scheme = auth_scheme.lower()
+            if auth_scheme != 'bearer':
+                raise Unauthorized('Invalid Authorization header format. Expected \'Bearer <api-key>\' format.')
+
         decoded = PassportService().verify(auth_token)
         user_id = decoded.get('user_id')
 
@@ -132,10 +140,10 @@ def unauthorized_handler():
 
 # register blueprint routers
 def register_blueprints(app):
-    from controllers.service_api import bp as service_api_bp
-    from controllers.web import bp as web_bp
     from controllers.console import bp as console_app_bp
     from controllers.files import bp as files_bp
+    from controllers.service_api import bp as service_api_bp
+    from controllers.web import bp as web_bp
     from controllers.app_api import bp as app_api_bp
 
     CORS(service_api_bp,

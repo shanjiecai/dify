@@ -96,6 +96,8 @@ services:
       QDRANT_URL: http://qdrant:6333
       # The Qdrant API key.
       QDRANT_API_KEY: difyai123456
+      # The Qdrant clinet timeout setting.
+      QDRANT_CLIENT_TIMEOUT: 20
       # Milvus configuration Only available when VECTOR_STORE is `milvus`.
       # The milvus host.
       MILVUS_HOST: 127.0.0.1
@@ -113,6 +115,7 @@ services:
       MAIL_DEFAULT_SEND_FROM: 'YOUR EMAIL FROM (eg: no-reply <no-reply@dify.ai>)'
       # the api-key for resend (https://resend.com)
       RESEND_API_KEY: ''
+      RESEND_API_URL: https://api.resend.com
       # The DSN for Sentry error reporting. If not set, Sentry error reporting will be disabled.
       SENTRY_DSN: ''
       # The sample rate for Sentry events. Default: `1.0`
@@ -175,6 +178,8 @@ services:
       QDRANT_URL: http://qdrant:6333
       # The Qdrant API key.
       QDRANT_API_KEY: difyai123456
+      # The Qdrant clinet timeout setting.
+      QDRANT_CLIENT_TIMEOUT: 20
       # Milvus configuration Only available when VECTOR_STORE is `milvus`.
       # The milvus host.
       MILVUS_HOST: 127.0.0.1
@@ -192,6 +197,7 @@ services:
       MAIL_DEFAULT_SEND_FROM: 'YOUR EMAIL FROM (eg: no-reply <no-reply@dify.ai>)'
       # the api-key for resend (https://resend.com)
       RESEND_API_KEY: ''
+      RESEND_API_URL: https://api.resend.com
     depends_on:
       - db
       - redis
@@ -201,7 +207,7 @@ services:
 
   # Frontend web application.
   web:
-    image: langgenius/dify-web:0.3.34
+    image: langgenius/dify-web:0.4.6
     restart: always
     environment:
       EDITION: SELF_HOSTED
@@ -237,7 +243,7 @@ services:
     # ports:
     #   - "5432:5432"
     healthcheck:
-      test: ["CMD", "pg_isready"]
+      test: [ "CMD", "pg_isready" ]
       interval: 1s
       timeout: 3s
       retries: 30
@@ -252,10 +258,10 @@ services:
     # Set the redis password when startup redis server.
     command: redis-server --requirepass difyai123456
     healthcheck:
-      test: ["CMD", "redis-cli","ping"]
-#    uncomment to expose redis port to host
-#    ports:
-#      - "6379:6379"
+      test: [ "CMD", "redis-cli", "ping" ]
+    # uncomment to expose redis port to host
+    # ports:
+    #   - "6379:6379"
 
   # The Weaviate vector store.
   weaviate:

@@ -1,29 +1,28 @@
 # -*- coding:utf-8 -*-
 import flask_restful
-from flask import request, current_app
-from flask_login import current_user
-
-from controllers.console.apikey import api_key_list, api_key_fields
-from libs.login import login_required
-from flask_restful import Resource, reqparse, marshal, marshal_with
-from werkzeug.exceptions import NotFound, Forbidden
 import services
 from controllers.console import api
+from controllers.console.apikey import api_key_fields, api_key_list
 from controllers.console.app.error import ProviderNotInitializeError
 from controllers.console.datasets.error import DatasetNameDuplicateError
 from controllers.console.setup import setup_required
 from controllers.console.wraps import account_initialization_required
+from core.errors.error import LLMBadRequestError, ProviderTokenNotInitError
 from core.indexing_runner import IndexingRunner
-from core.model_providers.error import LLMBadRequestError, ProviderTokenNotInitError
-from core.model_providers.models.entity.model_params import ModelType
+from core.model_runtime.entities.model_entities import ModelType
+from core.provider_manager import ProviderManager
+from extensions.ext_database import db
 from fields.app_fields import related_app_list
 from fields.dataset_fields import dataset_detail_fields, dataset_query_detail_fields
 from fields.document_fields import document_status_fields
-from extensions.ext_database import db
-from models.dataset import DocumentSegment, Document
-from models.model import UploadFile, ApiToken
+from flask import current_app, request
+from flask_login import current_user
+from flask_restful import Resource, marshal, marshal_with, reqparse
+from libs.login import login_required
+from models.dataset import Document, DocumentSegment
+from models.model import ApiToken, UploadFile
 from services.dataset_service import DatasetService, DocumentService
-from services.provider_service import ProviderService
+from werkzeug.exceptions import Forbidden, NotFound
 
 
 def _validate_name(name):
@@ -55,16 +54,20 @@ class DatasetListApi(Resource):
                                                           current_user.current_tenant_id, current_user)
 
         # check embedding setting
-        provider_service = ProviderService()
-        valid_model_list = provider_service.get_valid_model_list(current_user.current_tenant_id,
-                                                                 ModelType.EMBEDDINGS.value)
-        # if len(valid_model_list) == 0:
-        #     raise ProviderNotInitializeError(
-        #         f"No Embedding Model available. Please configure a valid provider "
-        #         f"in the Settings -> Model Provider.")
+        provider_manager = ProviderManager()
+        configurations = provider_manager.get_configurations(
+            tenant_id=current_user.current_tenant_id
+        )
+
+        embedding_models = configurations.get_models(
+            model_type=ModelType.TEXT_EMBEDDING,
+            only_active=True
+        )
+
         model_names = []
-        for valid_model in valid_model_list:
-            model_names.append(f"{valid_model['model_name']}:{valid_model['model_provider']['provider_name']}")
+        for embedding_model in embedding_models:
+            model_names.append(f"{embedding_model.model}:{embedding_model.provider.provider}")
+
         data = marshal(datasets, dataset_detail_fields)
         for item in data:
             if item['indexing_technique'] == 'high_quality':
@@ -75,6 +78,7 @@ class DatasetListApi(Resource):
                     item['embedding_available'] = False
             else:
                 item['embedding_available'] = True
+
         response = {
             'data': data,
             'has_more': len(datasets) == limit,
@@ -130,13 +134,20 @@ class DatasetApi(Resource):
             raise Forbidden(str(e))
         data = marshal(dataset, dataset_detail_fields)
         # check embedding setting
-        provider_service = ProviderService()
-        # get valid model list
-        valid_model_list = provider_service.get_valid_model_list(current_user.current_tenant_id,
-                                                                 ModelType.EMBEDDINGS.value)
+        provider_manager = ProviderManager()
+        configurations = provider_manager.get_configurations(
+            tenant_id=current_user.current_tenant_id
+        )
+
+        embedding_models = configurations.get_models(
+            model_type=ModelType.TEXT_EMBEDDING,
+            only_active=True
+        )
+
         model_names = []
-        for valid_model in valid_model_list:
-            model_names.append(f"{valid_model['model_name']}:{valid_model['model_provider']['provider_name']}")
+        for embedding_model in embedding_models:
+            model_names.append(f"{embedding_model.model}:{embedding_model.provider.provider}")
+
         if data['indexing_technique'] == 'high_quality':
             item_model = f"{data['embedding_model']}:{data['embedding_model_provider']}"
             if item_model in model_names:

@@ -2,35 +2,35 @@
 from datetime import datetime
 from typing import List
 
-from flask import request, current_app
-from flask_login import current_user
-from libs.login import login_required
-from flask_restful import Resource, fields, marshal, marshal_with, reqparse
-from sqlalchemy import desc, asc
-from werkzeug.exceptions import NotFound, Forbidden
-
 import services
 from controllers.console import api
-from controllers.console.app.error import ProviderNotInitializeError, ProviderQuotaExceededError, \
-    ProviderModelCurrentlyNotSupportError
-from controllers.console.datasets.error import DocumentAlreadyFinishedError, InvalidActionError, DocumentIndexingError, \
-    InvalidMetadataError, ArchivedDocumentImmutableError
+from controllers.console.app.error import (ProviderModelCurrentlyNotSupportError, ProviderNotInitializeError,
+                                           ProviderQuotaExceededError)
+from controllers.console.datasets.error import (ArchivedDocumentImmutableError, DocumentAlreadyFinishedError,
+                                                DocumentIndexingError, InvalidActionError, InvalidMetadataError)
 from controllers.console.setup import setup_required
 from controllers.console.wraps import account_initialization_required, cloud_edition_billing_resource_check
+from core.errors.error import (LLMBadRequestError, ModelCurrentlyNotSupportError, ProviderTokenNotInitError,
+                               QuotaExceededError)
 from core.indexing_runner import IndexingRunner
-from core.model_providers.error import ProviderTokenNotInitError, QuotaExceededError, ModelCurrentlyNotSupportError, \
-    LLMBadRequestError
-from core.model_providers.model_factory import ModelFactory
-from extensions.ext_redis import redis_client
-from fields.document_fields import document_with_segments_fields, document_fields, \
-    dataset_and_document_fields, document_status_fields
+from core.model_manager import ModelManager
+from core.model_runtime.entities.model_entities import ModelType
+from core.model_runtime.errors.invoke import InvokeAuthorizationError
 from extensions.ext_database import db
-from models.dataset import DatasetProcessRule, Dataset
-from models.dataset import Document, DocumentSegment
+from extensions.ext_redis import redis_client
+from fields.document_fields import (dataset_and_document_fields, document_fields, document_status_fields,
+                                    document_with_segments_fields)
+from flask import request
+from flask_login import current_user
+from flask_restful import Resource, fields, marshal, marshal_with, reqparse
+from libs.login import login_required
+from models.dataset import Dataset, DatasetProcessRule, Document, DocumentSegment
 from models.model import UploadFile
-from services.dataset_service import DocumentService, DatasetService
+from services.dataset_service import DatasetService, DocumentService
+from sqlalchemy import asc, desc
 from tasks.add_document_to_index_task import add_document_to_index_task
 from tasks.remove_document_from_index_task import remove_document_from_index_task
+from werkzeug.exceptions import Forbidden, NotFound
 
 
 class DocumentResource(Resource):
@@ -272,10 +272,12 @@ class DatasetInitApi(Resource):
         args = parser.parse_args()
         if args['indexing_technique'] == 'high_quality':
             try:
-                ModelFactory.get_embedding_model(
-                    tenant_id=current_user.current_tenant_id
+                model_manager = ModelManager()
+                model_manager.get_default_model_instance(
+                    tenant_id=current_user.current_tenant_id,
+                    model_type=ModelType.TEXT_EMBEDDING
                 )
-            except LLMBadRequestError:
+            except InvokeAuthorizationError:
                 raise ProviderNotInitializeError(
                     f"No Embedding Model available. Please configure a valid provider "
                     f"in the Settings -> Model Provider.")
@@ -410,7 +412,7 @@ class DocumentBatchIndexingEstimateApi(DocumentResource):
         if dataset.data_source_type == 'upload_file':
             file_details = db.session.query(UploadFile).filter(
                 UploadFile.tenant_id == current_user.current_tenant_id,
-                UploadFile.id in info_list
+                UploadFile.id.in_(info_list)
             ).all()
 
             if file_details is None:
@@ -553,7 +555,7 @@ class DocumentDetailApi(DocumentResource):
             }
         else:
             process_rules = DatasetService.get_process_rules(dataset_id)
-            data_source_info = document.data_source_detail_dict_()
+            data_source_info = document.data_source_detail_dict
             response = {
                 'id': document.id,
                 'position': document.position,

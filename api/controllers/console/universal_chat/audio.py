@@ -1,22 +1,21 @@
 # -*- coding:utf-8 -*-
 import logging
 
-from flask import request
-from werkzeug.exceptions import InternalServerError
-
 import services
 from controllers.console import api
-from controllers.console.app.error import AppUnavailableError, ProviderNotInitializeError, \
-    ProviderQuotaExceededError, ProviderModelCurrentlyNotSupportError, CompletionRequestError, \
-    NoAudioUploadedError, AudioTooLargeError, \
-    UnsupportedAudioTypeError, ProviderNotSupportSpeechToTextError
+from controllers.console.app.error import (AppUnavailableError, AudioTooLargeError, CompletionRequestError,
+                                           NoAudioUploadedError, ProviderModelCurrentlyNotSupportError,
+                                           ProviderNotInitializeError, ProviderNotSupportSpeechToTextError,
+                                           ProviderQuotaExceededError, UnsupportedAudioTypeError)
 from controllers.console.universal_chat.wraps import UniversalChatResource
-from core.model_providers.error import LLMBadRequestError, LLMAPIUnavailableError, LLMAuthorizationError, LLMAPIConnectionError, \
-    LLMRateLimitError, ProviderTokenNotInitError, QuotaExceededError, ModelCurrentlyNotSupportError
-from services.audio_service import AudioService
-from services.errors.audio import NoAudioUploadedServiceError, AudioTooLargeServiceError, \
-    UnsupportedAudioTypeServiceError, ProviderNotSupportSpeechToTextServiceError
+from core.errors.error import ModelCurrentlyNotSupportError, ProviderTokenNotInitError, QuotaExceededError
+from core.model_runtime.errors.invoke import InvokeError
+from flask import request
 from models.model import AppModelConfig
+from services.audio_service import AudioService
+from services.errors.audio import (AudioTooLargeServiceError, NoAudioUploadedServiceError,
+                                   ProviderNotSupportSpeechToTextServiceError, UnsupportedAudioTypeServiceError)
+from werkzeug.exceptions import InternalServerError
 
 
 class UniversalChatAudioApi(UniversalChatResource):
@@ -53,9 +52,8 @@ class UniversalChatAudioApi(UniversalChatResource):
             raise ProviderQuotaExceededError()
         except ModelCurrentlyNotSupportError:
             raise ProviderModelCurrentlyNotSupportError()
-        except (LLMBadRequestError, LLMAPIConnectionError, LLMAPIUnavailableError,
-                LLMRateLimitError, LLMAuthorizationError) as e:
-            raise CompletionRequestError(str(e))
+        except InvokeError as e:
+            raise CompletionRequestError(e.description)
         except ValueError as e:
             raise e
         except Exception as e:

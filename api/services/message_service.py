@@ -1,18 +1,23 @@
 import json
-from typing import Optional, Union, List
+from typing import List, Optional, Union
 
-from core.completion import Completion
 from core.generator.llm_generator import LLMGenerator
-from libs.infinite_scroll_pagination import InfiniteScrollPagination
+from core.memory.token_buffer_memory import TokenBufferMemory
+from core.model_manager import ModelManager
+from core.model_runtime.entities.model_entities import ModelType
 from extensions.ext_database import db
+from libs.infinite_scroll_pagination import InfiniteScrollPagination
 from models.account import Account
-from models.model import App, EndUser, Message, MessageFeedback, AppModelConfig
+from models.model import App, AppModelConfig, EndUser, Message, MessageFeedback
 from services.conversation_service import ConversationService
 from services.errors.app_model_config import AppModelConfigBrokenError
 from services.errors.conversation import ConversationNotExistsError, ConversationCompletedError
 from services.errors.message import FirstMessageNotExistsError, MessageNotExistsError, LastMessageNotExistsError, \
     SuggestedQuestionsAfterAnswerDisabledError
 from mylogger import logger
+from services.errors.conversation import ConversationCompletedError, ConversationNotExistsError
+from services.errors.message import (FirstMessageNotExistsError, LastMessageNotExistsError, MessageNotExistsError,
+                                     SuggestedQuestionsAfterAnswerDisabledError)
 
 
 class MessageService:
@@ -217,21 +222,27 @@ class MessageService:
             raise SuggestedQuestionsAfterAnswerDisabledError()
 
         # get memory of conversation (read-only)
-        memory = Completion.get_memory_from_conversation(
+        model_manager = ModelManager()
+        model_instance = model_manager.get_model_instance(
             tenant_id=app_model.tenant_id,
-            app_model_config=app_model_config,
-            conversation=conversation,
-            max_token_limit=3000,
-            message_limit=3,
-            return_messages=False,
-            memory_key="histories"
+            provider=app_model_config.model_dict['provider'],
+            model_type=ModelType.LLM,
+            model=app_model_config.model_dict['name']
         )
 
-        external_context = memory.load_memory_variables({})
+        memory = TokenBufferMemory(
+            conversation=conversation,
+            model_instance=model_instance
+        )
+
+        histories = memory.get_history_prompt_text(
+            max_token_limit=3000,
+            message_limit=3,
+        )
 
         questions = LLMGenerator.generate_suggested_questions_after_answer(
             tenant_id=app_model.tenant_id,
-            **external_context
+            histories=histories
         )
 
         return questions

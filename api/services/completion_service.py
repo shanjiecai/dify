@@ -26,6 +26,19 @@ from services.errors.app_model_config import AppModelConfigBrokenError
 from services.errors.completion import CompletionStoppedError
 from services.errors.conversation import ConversationNotExistsError, ConversationCompletedError
 from services.errors.message import MessageNotExistsError
+from typing import Generator, Union, Any, Optional, List
+
+from core.application_manager import ApplicationManager
+from core.entities.application_entities import InvokeFrom
+from core.file.message_file_parser import MessageFileParser
+from extensions.ext_database import db
+from models.model import Account, App, AppModelConfig, Conversation, EndUser, Message
+from services.app_model_config_service import AppModelConfigService
+from services.errors.app import MoreLikeThisDisabledError
+from services.errors.app_model_config import AppModelConfigBrokenError
+from services.errors.conversation import ConversationCompletedError, ConversationNotExistsError
+from services.errors.message import MessageNotExistsError
+from sqlalchemy import and_
 
 from extensions.ext_redis import redis_client
 
@@ -36,7 +49,9 @@ class CompletionService:
     def completion(cls, app_model: App,
                    user: Optional[Union[Account | EndUser]],
                    args: Any,
-                   from_source: str, streaming: bool = True,
+                   # from_source: str,
+                   invoke_from: InvokeFrom,
+                   streaming: bool = True,
                    is_model_config_override: bool = False,
                    outer_memory: Optional[list] = None,
                    assistant_name: str = None,
@@ -67,6 +82,11 @@ class CompletionService:
             #         conversation_filter.append(Conversation.from_account_id == user.id)
             #     else:
             #         conversation_filter.append(Conversation.from_end_user_id == user.id if user else None)
+
+            if isinstance(user, Account):
+                conversation_filter.append(Conversation.from_account_id == user.id)
+            else:
+                conversation_filter.append(Conversation.from_end_user_id == user.id if user else None)
 
             conversation = db.session.query(Conversation).filter(and_(*conversation_filter)).first()
 
@@ -143,7 +163,7 @@ class CompletionService:
                     tenant_id=app_model.tenant_id,
                     account=user,
                     config=args['model_config'],
-                    mode=app_model.mode
+                    app_mode=app_model.mode
                 )
 
                 app_model_config = AppModelConfig(
@@ -164,44 +184,66 @@ class CompletionService:
             user
         )
 
-        generate_task_id = str(uuid.uuid4())
-
-        pubsub = redis_client.pubsub()
-        pubsub.subscribe(PubHandler.generate_channel_name(user, generate_task_id))
-
-        user = cls.get_real_user_instead_of_proxy_obj(user)
-
-        logging.info(app_model_config)
-        generate_worker_thread = threading.Thread(target=cls.generate_worker, kwargs={
-            'flask_app': current_app._get_current_object(),
-            'generate_task_id': generate_task_id,
-            'detached_app_model': app_model,
-            'app_model_config': app_model_config.copy(),
-            'query': query,
-            'inputs': inputs,
-            'files': file_objs,
-            'detached_user': user,
-            'detached_conversation': conversation,
-            'streaming': streaming,
-            'is_model_config_override': is_model_config_override,
-            'retriever_from': args['retriever_from'] if 'retriever_from' in args else 'dev',
-            'outer_memory': outer_memory,
-            'assistant_name': assistant_name,
-            'user_name': user_name,
-            'is_new_message': is_new_message,
-            'auto_generate_name': auto_generate_name,
-            'from_source': from_source
-        })
-
-        generate_worker_thread.start()
-
-        # wait for 10 minutes to close the thread
-
-        cls.countdown_and_close(current_app._get_current_object(), generate_worker_thread, pubsub, user, generate_task_id)
-        if conversation_id:
-            # 删除上的锁 redis_client.setex(conversation.id, 60, 1)
-            redis_client.delete(conversation_id)
-        return cls.compact_response(pubsub, streaming)
+        # generate_task_id = str(uuid.uuid4())
+        #
+        # pubsub = redis_client.pubsub()
+        # pubsub.subscribe(PubHandler.generate_channel_name(user, generate_task_id))
+        #
+        # user = cls.get_real_user_instead_of_proxy_obj(user)
+        #
+        # logging.info(app_model_config)
+        # generate_worker_thread = threading.Thread(target=cls.generate_worker, kwargs={
+        #     'flask_app': current_app._get_current_object(),
+        #     'generate_task_id': generate_task_id,
+        #     'detached_app_model': app_model,
+        #     'app_model_config': app_model_config.copy(),
+        #     'query': query,
+        #     'inputs': inputs,
+        #     'files': file_objs,
+        #     'detached_user': user,
+        #     'detached_conversation': conversation,
+        #     'streaming': streaming,
+        #     'is_model_config_override': is_model_config_override,
+        #     'retriever_from': args['retriever_from'] if 'retriever_from' in args else 'dev',
+        #     'outer_memory': outer_memory,
+        #     'assistant_name': assistant_name,
+        #     'user_name': user_name,
+        #     'is_new_message': is_new_message,
+        #     'auto_generate_name': auto_generate_name,
+        #     'from_source': from_source
+        # })
+        #
+        # generate_worker_thread.start()
+        #
+        # # wait for 10 minutes to close the thread
+        #
+        # cls.countdown_and_close(current_app._get_current_object(), generate_worker_thread, pubsub, user, generate_task_id)
+        # if conversation_id:
+        #     # 删除上的锁 redis_client.setex(conversation.id, 60, 1)
+        #     redis_client.delete(conversation_id)
+        # return cls.compact_response(pubsub, streaming)
+        application_manager = ApplicationManager()
+        return application_manager.generate(
+            tenant_id=app_model.tenant_id,
+            app_id=app_model.id,
+            app_model_config_id=app_model_config.id,
+            app_model_config_dict=app_model_config.to_dict(),
+            app_model_config_override=is_model_config_override,
+            user=user,
+            invoke_from=invoke_from,
+            inputs=inputs,
+            query=query,
+            files=file_objs,
+            conversation=conversation,
+            stream=streaming,
+            extras={
+                "auto_generate_conversation_name": auto_generate_name
+            },
+            outer_memory=outer_memory,
+            assistant_name=assistant_name,
+            user_name=user_name,
+            is_new_message=is_new_message,
+        )
 
     @classmethod
     def get_real_user_instead_of_proxy_obj(cls, user: Union[Account, EndUser]):
@@ -308,8 +350,8 @@ class CompletionService:
 
     @classmethod
     def generate_more_like_this(cls, app_model: App, user: Union[Account, EndUser],
-                                message_id: str, streaming: bool = True,
-                                retriever_from: str = 'dev') -> Union[dict, Generator]:
+                                message_id: str, invoke_from: InvokeFrom, streaming: bool = True) \
+            -> Union[dict, Generator]:
         if not user:
             raise ValueError('user cannot be None')
 
@@ -343,36 +385,24 @@ class CompletionService:
             message.files, app_model_config
         )
 
-        generate_task_id = str(uuid.uuid4())
-
-        pubsub = redis_client.pubsub()
-        pubsub.subscribe(PubHandler.generate_channel_name(user, generate_task_id))
-
-        user = cls.get_real_user_instead_of_proxy_obj(user)
-
-        generate_worker_thread = threading.Thread(target=cls.generate_worker, kwargs={
-            'flask_app': current_app._get_current_object(),
-            'generate_task_id': generate_task_id,
-            'detached_app_model': app_model,
-            'app_model_config': app_model_config.copy(),
-            'query': message.query,
-            'inputs': message.inputs,
-            'files': file_objs,
-            'detached_user': user,
-            'detached_conversation': None,
-            'streaming': streaming,
-            'is_model_config_override': True,
-            'retriever_from': retriever_from,
-            'auto_generate_name': False
-        })
-
-        generate_worker_thread.start()
-
-        # wait for 10 minutes to close the thread
-        cls.countdown_and_close(current_app._get_current_object(), generate_worker_thread, pubsub, user,
-                                generate_task_id)
-
-        return cls.compact_response(pubsub, streaming)
+        application_manager = ApplicationManager()
+        return application_manager.generate(
+            tenant_id=app_model.tenant_id,
+            app_id=app_model.id,
+            app_model_config_id=app_model_config.id,
+            app_model_config_dict=app_model_config.to_dict(),
+            app_model_config_override=True,
+            user=user,
+            invoke_from=invoke_from,
+            inputs=message.inputs,
+            query=message.query,
+            files=file_objs,
+            conversation=None,
+            stream=streaming,
+            extras={
+                "auto_generate_conversation_name": False
+            }
+        )
 
     @classmethod
     def get_cleaned_inputs(cls, user_inputs: dict, app_model_config: AppModelConfig):
