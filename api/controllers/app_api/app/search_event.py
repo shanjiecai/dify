@@ -9,6 +9,7 @@ from urllib.request import urlretrieve
 news_api_key = os.environ.get("NEWS_API_KEY", "cd4c844cee014f92a43b84fc92b117f3")
 # print(news_api_key)
 from newsapi import NewsApiClient
+from mylogger import logger
 api = NewsApiClient(api_key=news_api_key)
 
 
@@ -29,7 +30,7 @@ def get_image_url(i):
     return images[0]["src"]
 
 
-def get_topic():
+def get_topic(dst="./test2.jpg"):
     # 根据最近的新闻内容总结出热点话题
     res = api.get_top_headlines(sources='bbc-news')
     # for i in res["articles"][:3]:
@@ -45,14 +46,15 @@ def get_topic():
         try:
             image_url = get_image_url(sample_news)
         except:
-            print(str(traceback.format_exc()))
+            logger.info(str(traceback.format_exc()))
             image_url = None
-        download_res = download_from_url(image_url)
+        url = sample_news["url"]
+        download_res = download_from_url(image_url, dst=dst)
         if download_res:
             break
         else:
             continue
-    return "title: "+sample_news["title"]+"\n"+"description: "+sample_news["description"]+"\n"+"content: "+sample_news["content"]+"\n", image_url
+    return "title: "+sample_news["title"]+"\n"+"description: "+sample_news["description"]+"\n"+"content: "+sample_news["content"]+"\n", url, image_url
 
 
 def download_from_url(url, dst="./test2.jpg"):
@@ -89,7 +91,7 @@ def download_from_url(url, dst="./test2.jpg"):
 
 
 if __name__ == "__main__":
-    res = api.get_top_headlines(sources='bbc-news')
+    # res = api.get_top_headlines(sources='bbc-news')
     # # print(res)
     # for i in res["articles"][:3]:
     #     # print(i)
@@ -115,10 +117,10 @@ if __name__ == "__main__":
     #     print(images[0]["src"])
     #     download_from_url(images[0]["src"])
     #     print("-----")
-    a, b = get_topic()
+    a, b, c = get_topic()
     print(a)
     print(b)
     # img_url = "https://ichef.bbci.co.uk/news/976/cpsprodpb/3694/production/_132227931_annapoorani2.jpg"
-    # # img_url = "https://ichef.bbci.co.uk/news/976/cpsprodpb/3B49/production/_132277151_gettyimages-1916272669.jpg"
-    # # img_url = "https://ichef.bbci.co.uk/news/976/cpsprodpb/13D0/production/_132227050_53450363008_67756bd6d1_k.jpg"
-    # download_from_url(img_url)
+    # img_url = "https://ichef.bbci.co.uk/news/976/cpsprodpb/3B49/production/_132277151_gettyimages-1916272669.jpg"
+    # img_url = "https://ichef.bbci.co.uk/news/976/cpsprodpb/13D0/production/_132227050_53450363008_67756bd6d1_k.jpg"
+    download_from_url(b)

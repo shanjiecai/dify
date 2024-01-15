@@ -187,7 +187,7 @@ def chat_thread(group_id: int, main_context: AppContext):
                         elif len(outer_memory) >= 5 and (datetime.datetime.now() - datetime.datetime.strptime(recent_history['data'][0]['created_at'], "%Y-%m-%d %H:%M:%S")).total_seconds() > 3600*24:
                             # all([message["role"] == "James Corden" for message in outer_memory[-5:]]) \
                             try:
-                                topic, image_url = get_topic()
+                                topic, url, image_url = get_topic()
                             except:
                                 logger.info(f"{traceback.format_exc()}")
                                 topic = "What do you think about AI?"
@@ -200,11 +200,15 @@ def chat_thread(group_id: int, main_context: AppContext):
                                     res = upload_file(dst, image_name)
                                     logger.info(f"上传图片：{res}")
                                     uuid = res["data"]["uuid"]
+                                    res = send_chat_message(group_id, type="txt", message=url)
+                                    logger.info(f"发送新闻链接：{res}")
                                     send_chat_message(group_id, type="img", file_uuid=uuid)
+                                    logger.info(f"发送图片：{res}")
                                 except:
                                     logger.info(f"{traceback.format_exc()}")
                                     image_url = None
-                            query = topic + "Please introduce the story and raise any points you would like to discuss?"
+                            query = topic + "Please introduce the story and raise any points or topics you would like to discuss? you can't talk about other topics"
+                            import uuid
                             logger.info(f"超过24小时，换个话题强制回复：{group_id} {topic} {uuid.uuid4()}")
                             if image_url:
                                 # 发图片
@@ -258,7 +262,7 @@ def init_active_chat(main_app: Flask):
             group_id_list = get_all_groups()
         else:
             # group_id_list = []
-            group_id_list = [316]
+            group_id_list = []
     except:
         logger.info(f"{traceback.format_exc()}")
         group_id_list = []
