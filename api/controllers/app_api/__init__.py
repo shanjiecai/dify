@@ -7,3 +7,4 @@ bp = Blueprint('app_api', __name__, url_prefix='/backend-api/v1')
 api = ExternalApi(bp)
 
 from .app import app, completion, conversation, message
+from .summarize import *
