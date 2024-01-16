@@ -5,7 +5,7 @@ from mylogger import logger
 app_endpoint = os.getenv("APP_ENDPOINT", "https://rm.triple3v.org")
 
 
-def get_all_groups():
+def get_all_groups(only_dj_bot: bool = False):
     url = f"{app_endpoint}/api/sys/groups"
 
     payload = {}
@@ -15,7 +15,10 @@ def get_all_groups():
     response = requests.request("GET", url, headers=headers, data=payload)
     group_id_list = []
     for i in response.json()['data']:
-        if i["dj_bot_id"]:
+        if only_dj_bot:
+            if i["dj_bot_id"]:
+                group_id_list.append(i["id"])
+        else:
             group_id_list.append(i["id"])
     return group_id_list
 
