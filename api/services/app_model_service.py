@@ -1,7 +1,7 @@
 import json
 from typing import Optional, Union, List
 
-from core.completion import Completion
+# from core.completion import Completion
 from core.generator.llm_generator import LLMGenerator
 from libs.infinite_scroll_pagination import InfiniteScrollPagination
 from extensions.ext_database import db

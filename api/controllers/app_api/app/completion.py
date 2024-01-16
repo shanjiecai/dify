@@ -11,16 +11,6 @@ from werkzeug.exceptions import NotFound, InternalServerError
 import services
 from controllers.app_api import api
 from controllers.app_api.app.utils import send_feishu_bot
-from controllers.service_api.app import create_or_update_end_user_for_user_id
-from controllers.service_api.app.error import AppUnavailableError, ProviderNotInitializeError, NotChatAppError, \
-    ConversationCompletedError, CompletionRequestError, ProviderQuotaExceededError, \
-    ProviderModelCurrentlyNotSupportError
-from controllers.app_api.wraps import AppApiResource
-from core.conversation_message_task import PubHandler
-from core.completion import Completion
-from core.judge_llm_active import judge_llm_active
-from core.model_providers.error import LLMBadRequestError, LLMAuthorizationError, LLMAPIUnavailableError, LLMAPIConnectionError, \
-    LLMRateLimitError, ProviderTokenNotInitError, QuotaExceededError, ModelCurrentlyNotSupportError
 from extensions.ext_database import db
 from libs.helper import uuid_value
 from services.completion_service import CompletionService
@@ -28,6 +18,26 @@ from models.model import ApiToken, App, Conversation, AppModelConfig
 from mylogger import logger
 
 from extensions.ext_redis import redis_client
+import json
+import logging
+from typing import Generator, Union
+
+import services
+from controllers.service_api import api
+from controllers.service_api.app import create_or_update_end_user_for_user_id
+from controllers.service_api.app.error import (AppUnavailableError, CompletionRequestError, ConversationCompletedError,
+                                               NotChatAppError, ProviderModelCurrentlyNotSupportError,
+                                               ProviderNotInitializeError, ProviderQuotaExceededError)
+from controllers.service_api.wraps import AppApiResource
+from core.application_queue_manager import ApplicationQueueManager
+from core.entities.application_entities import InvokeFrom
+from core.errors.error import ModelCurrentlyNotSupportError, ProviderTokenNotInitError, QuotaExceededError
+from core.model_runtime.errors.invoke import InvokeError
+from flask import Response, stream_with_context, request
+from flask_restful import reqparse
+from libs.helper import uuid_value
+from services.completion_service import CompletionService
+from werkzeug.exceptions import InternalServerError, NotFound
 from services.message_service import MessageService
 
 
@@ -55,7 +65,7 @@ class CompletionApi(AppApiResource):
                 app_model=app_model,
                 user=end_user,
                 args=args,
-                from_source='api',
+                invoke_from=InvokeFrom.APP_API,
                 streaming=streaming
             )
 
@@ -73,9 +83,8 @@ class CompletionApi(AppApiResource):
             raise ProviderQuotaExceededError()
         except ModelCurrentlyNotSupportError:
             raise ProviderModelCurrentlyNotSupportError()
-        except (LLMBadRequestError, LLMAPIConnectionError, LLMAPIUnavailableError,
-                LLMRateLimitError, LLMAuthorizationError) as e:
-            raise CompletionRequestError(str(e))
+        except InvokeError as e:
+            raise CompletionRequestError(e.description)
         except ValueError as e:
             raise e
         except Exception as e:
@@ -83,12 +92,14 @@ class CompletionApi(AppApiResource):
             raise InternalServerError()
 
 
-class CompletionStopApi(AppApiResource):
-    def post(self, app_model, end_user, task_id):
-        if app_model.mode != 'completion':
-            raise AppUnavailableError()
+class ChatStopApi(AppApiResource):
+    def post(self, app_model, _, task_id):
+        if app_model.mode != 'chat':
+            raise NotChatAppError()
 
-        PubHandler.stop(end_user, task_id)
+        end_user_id = request.get_json().get('user')
+
+        ApplicationQueueManager.set_stop_flag(task_id, InvokeFrom.SERVICE_API, end_user_id)
 
         return {'result': 'success'}, 200
 
@@ -134,7 +145,7 @@ class ChatApi(AppApiResource):
                 app_model=app_model,
                 user=end_user,
                 args=args,
-                from_source='api',
+                invoke_from=InvokeFrom.APP_API,
                 streaming=streaming,
                 outer_memory=outer_memory,
                 assistant_name=app_model.name,
@@ -155,9 +166,8 @@ class ChatApi(AppApiResource):
             raise ProviderQuotaExceededError()
         except ModelCurrentlyNotSupportError:
             raise ProviderModelCurrentlyNotSupportError()
-        except (LLMBadRequestError, LLMAPIConnectionError, LLMAPIUnavailableError,
-                LLMRateLimitError, LLMAuthorizationError) as e:
-            raise CompletionRequestError(str(e))
+        except InvokeError as e:
+            raise CompletionRequestError(e.description)
         except ValueError as e:
             raise e
         except Exception as e:

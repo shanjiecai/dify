@@ -199,6 +199,7 @@ class InvokeFrom(Enum):
     Invoke From.
     """
     SERVICE_API = 'service-api'
+    APP_API = 'app-api'
     WEB_APP = 'web-app'
     EXPLORE = 'explore'
     DEBUGGER = 'debugger'

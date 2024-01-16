@@ -10,7 +10,7 @@ from flask import request
 from flask_restful import marshal, reqparse
 from libs.login import current_user
 from services.dataset_service import DatasetService
-from services.provider_service import ProviderService
+# from services.provider_service import ProviderService
 from werkzeug.exceptions import NotFound, Forbidden
 
 

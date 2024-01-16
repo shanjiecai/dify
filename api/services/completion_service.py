@@ -9,13 +9,13 @@ from flask import current_app, Flask
 from redis.client import PubSub
 from sqlalchemy import and_
 
-from core.completion import Completion
-from core.conversation_message_task import PubHandler, ConversationTaskStoppedException, \
-    ConversationTaskInterruptException
+# from core.completion import Completion
+# from core.conversation_message_task import PubHandler, ConversationTaskStoppedException, \
+#     ConversationTaskInterruptException
 from core.file.message_file_parser import MessageFileParser
-from core.model_providers.error import LLMBadRequestError, LLMAPIConnectionError, LLMAPIUnavailableError, \
-    LLMRateLimitError, \
-    LLMAuthorizationError, ProviderTokenNotInitError, QuotaExceededError, ModelCurrentlyNotSupportError
+# from core.model_providers.error import LLMBadRequestError, LLMAPIConnectionError, LLMAPIUnavailableError, \
+#     LLMRateLimitError, \
+#     LLMAuthorizationError, ProviderTokenNotInitError, QuotaExceededError, ModelCurrentlyNotSupportError
 from core.model_providers.models.entity.message import PromptMessageFile
 from extensions.ext_database import db
 from extensions.ext_redis import redis_client
@@ -256,97 +256,97 @@ class CompletionService:
 
         return user
 
-    @classmethod
-    def generate_worker(cls, flask_app: Flask, generate_task_id: str, detached_app_model: App,
-                        app_model_config: AppModelConfig,
-                        query: str, inputs: dict, files: List[PromptMessageFile],
-                        detached_user: Union[Account, EndUser],
-                        detached_conversation: Optional[Conversation], streaming: bool, is_model_config_override: bool,
-                        retriever_from: str = 'dev',
-                        outer_memory: Optional[list] = None,
-                        assistant_name: str = None,
-                        user_name: str = None,
-                        is_new_message: bool = True,
-                        auto_generate_name: bool = True,
-                        from_source: str = 'console',
-                        ):
-        with flask_app.app_context():
-            # fixed the state of the model object when it detached from the original session
-            user = db.session.merge(detached_user)
-            app_model = db.session.merge(detached_app_model)
+    # @classmethod
+    # def generate_worker(cls, flask_app: Flask, generate_task_id: str, detached_app_model: App,
+    #                     app_model_config: AppModelConfig,
+    #                     query: str, inputs: dict, files: List[PromptMessageFile],
+    #                     detached_user: Union[Account, EndUser],
+    #                     detached_conversation: Optional[Conversation], streaming: bool, is_model_config_override: bool,
+    #                     retriever_from: str = 'dev',
+    #                     outer_memory: Optional[list] = None,
+    #                     assistant_name: str = None,
+    #                     user_name: str = None,
+    #                     is_new_message: bool = True,
+    #                     auto_generate_name: bool = True,
+    #                     from_source: str = 'console',
+    #                     ):
+    #     with flask_app.app_context():
+    #         # fixed the state of the model object when it detached from the original session
+    #         user = db.session.merge(detached_user)
+    #         app_model = db.session.merge(detached_app_model)
+    #
+    #         if detached_conversation:
+    #             conversation = db.session.merge(detached_conversation)
+    #         else:
+    #             conversation = None
+    #
+    #         try:
+    #             # run
+    #             Completion.generate(
+    #                 task_id=generate_task_id,
+    #                 app=app_model,
+    #                 app_model_config=app_model_config,
+    #                 query=query,
+    #                 inputs=inputs,
+    #                 user=user,
+    #                 files=files,
+    #                 conversation=conversation,
+    #                 streaming=streaming,
+    #                 is_override=is_model_config_override,
+    #                 retriever_from=retriever_from,
+    #                 outer_memory=outer_memory,
+    #                 assistant_name=assistant_name,
+    #                 user_name=user_name,
+    #                 is_new_message=is_new_message,
+    #                 auto_generate_name=auto_generate_name,
+    #                 from_source=from_source,
+    #             )
+    #         except (ConversationTaskInterruptException, ConversationTaskStoppedException):
+    #             pass
+    #         except (ValueError, LLMBadRequestError, LLMAPIConnectionError, LLMAPIUnavailableError,
+    #                 LLMRateLimitError, ProviderTokenNotInitError, QuotaExceededError,
+    #                 ModelCurrentlyNotSupportError) as e:
+    #             PubHandler.pub_error(user, generate_task_id, e)
+    #         except LLMAuthorizationError:
+    #             PubHandler.pub_error(user, generate_task_id, LLMAuthorizationError('Incorrect API key provided'))
+    #         except Exception as e:
+    #             logging.exception("Unknown Error in completion")
+    #             PubHandler.pub_error(user, generate_task_id, e)
+    #         finally:
+    #             db.session.remove()
 
-            if detached_conversation:
-                conversation = db.session.merge(detached_conversation)
-            else:
-                conversation = None
-
-            try:
-                # run
-                Completion.generate(
-                    task_id=generate_task_id,
-                    app=app_model,
-                    app_model_config=app_model_config,
-                    query=query,
-                    inputs=inputs,
-                    user=user,
-                    files=files,
-                    conversation=conversation,
-                    streaming=streaming,
-                    is_override=is_model_config_override,
-                    retriever_from=retriever_from,
-                    outer_memory=outer_memory,
-                    assistant_name=assistant_name,
-                    user_name=user_name,
-                    is_new_message=is_new_message,
-                    auto_generate_name=auto_generate_name,
-                    from_source=from_source,
-                )
-            except (ConversationTaskInterruptException, ConversationTaskStoppedException):
-                pass
-            except (ValueError, LLMBadRequestError, LLMAPIConnectionError, LLMAPIUnavailableError,
-                    LLMRateLimitError, ProviderTokenNotInitError, QuotaExceededError,
-                    ModelCurrentlyNotSupportError) as e:
-                PubHandler.pub_error(user, generate_task_id, e)
-            except LLMAuthorizationError:
-                PubHandler.pub_error(user, generate_task_id, LLMAuthorizationError('Incorrect API key provided'))
-            except Exception as e:
-                logging.exception("Unknown Error in completion")
-                PubHandler.pub_error(user, generate_task_id, e)
-            finally:
-                db.session.remove()
-
-    @classmethod
-    def countdown_and_close(cls, flask_app: Flask, worker_thread, pubsub, detached_user,
-                            generate_task_id) -> threading.Thread:
-        # wait for 10 minutes to close the thread
-        timeout = 600
-
-        def close_pubsub():
-            with flask_app.app_context():
-                try:
-                    user = db.session.merge(detached_user)
-
-                    sleep_iterations = 0
-                    while sleep_iterations < timeout and worker_thread.is_alive():
-                        if sleep_iterations > 0 and sleep_iterations % 10 == 0:
-                            PubHandler.ping(user, generate_task_id)
-
-                        time.sleep(1)
-                        sleep_iterations += 1
-
-                    if worker_thread.is_alive():
-                        PubHandler.stop(user, generate_task_id)
-                        try:
-                            pubsub.close()
-                        except Exception:
-                            pass
-                finally:
-                    db.session.remove()
-
-        countdown_thread = threading.Thread(target=close_pubsub)
-        countdown_thread.start()
-
-        return countdown_thread
+    # @classmethod
+    # def countdown_and_close(cls, flask_app: Flask, worker_thread, pubsub, detached_user,
+    #                         generate_task_id) -> threading.Thread:
+    #     # wait for 10 minutes to close the thread
+    #     timeout = 600
+    #
+    #     def close_pubsub():
+    #         with flask_app.app_context():
+    #             try:
+    #                 user = db.session.merge(detached_user)
+    #
+    #                 sleep_iterations = 0
+    #                 while sleep_iterations < timeout and worker_thread.is_alive():
+    #                     if sleep_iterations > 0 and sleep_iterations % 10 == 0:
+    #                         PubHandler.ping(user, generate_task_id)
+    #
+    #                     time.sleep(1)
+    #                     sleep_iterations += 1
+    #
+    #                 if worker_thread.is_alive():
+    #                     PubHandler.stop(user, generate_task_id)
+    #                     try:
+    #                         pubsub.close()
+    #                     except Exception:
+    #                         pass
+    #             finally:
+    #                 db.session.remove()
+    #
+    #     countdown_thread = threading.Thread(target=close_pubsub)
+    #     countdown_thread.start()
+    #
+    #     return countdown_thread
 
     @classmethod
     def generate_more_like_this(cls, app_model: App, user: Union[Account, EndUser],
@@ -663,27 +663,27 @@ class CompletionService:
 
         return response_data
 
-    @classmethod
-    def handle_error(cls, result: dict):
-        logging.debug("error: %s", result)
-        error = result.get('error')
-        description = result.get('description')
-
-        # handle errors
-        llm_errors = {
-            'ValueError': LLMBadRequestError,
-            'LLMBadRequestError': LLMBadRequestError,
-            'LLMAPIConnectionError': LLMAPIConnectionError,
-            'LLMAPIUnavailableError': LLMAPIUnavailableError,
-            'LLMRateLimitError': LLMRateLimitError,
-            'ProviderTokenNotInitError': ProviderTokenNotInitError,
-            'QuotaExceededError': QuotaExceededError,
-            'ModelCurrentlyNotSupportError': ModelCurrentlyNotSupportError
-        }
-
-        if error in llm_errors:
-            raise llm_errors[error](description)
-        elif error == 'LLMAuthorizationError':
-            raise LLMAuthorizationError('Incorrect API key provided')
-        else:
-            raise Exception(description)
+    # @classmethod
+    # def handle_error(cls, result: dict):
+    #     logging.debug("error: %s", result)
+    #     error = result.get('error')
+    #     description = result.get('description')
+    #
+    #     # handle errors
+    #     llm_errors = {
+    #         'ValueError': LLMBadRequestError,
+    #         'LLMBadRequestError': LLMBadRequestError,
+    #         'LLMAPIConnectionError': LLMAPIConnectionError,
+    #         'LLMAPIUnavailableError': LLMAPIUnavailableError,
+    #         'LLMRateLimitError': LLMRateLimitError,
+    #         'ProviderTokenNotInitError': ProviderTokenNotInitError,
+    #         'QuotaExceededError': QuotaExceededError,
+    #         'ModelCurrentlyNotSupportError': ModelCurrentlyNotSupportError
+    #     }
+    #
+    #     if error in llm_errors:
+    #         raise llm_errors[error](description)
+    #     elif error == 'LLMAuthorizationError':
+    #         raise LLMAuthorizationError('Incorrect API key provided')
+    #     else:
+    #         raise Exception(description)

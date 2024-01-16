@@ -8,13 +8,9 @@ from langchain.memory.chat_memory import BaseChatMemory
 from langchain.memory import ConversationSummaryBufferMemory
 from langchain.schema import BaseMessage
 
-from core.model_providers.models.entity.model_params import ModelMode
+# from core.model_providers.models.entity.model_params import ModelMode
 from core.model_providers.models.entity.message import PromptMessage, MessageType, to_prompt_messages, PromptMessageFile
-from core.model_providers.models.llm.base import BaseLLM
-from core.model_providers.models.llm.baichuan_model import BaichuanModel
-from core.model_providers.models.llm.huggingface_hub_model import HuggingfaceHubModel
-from core.model_providers.models.llm.openllm_model import OpenLLMModel
-from core.model_providers.models.llm.xinference_model import XinferenceModel
+# from core.model_providers.models.llm.base import BaseLLM
 from core.entities.application_entities import (AdvancedCompletionPromptTemplateEntity, ModelConfigEntity,
                                                 PromptTemplateEntity)
 from core.file.file_obj import FileObj
@@ -150,7 +146,7 @@ class PromptTransform:
             context: Optional[str],
             memory: Optional[BaseChatMemory],
             model_config: ModelConfigEntity,
-            model_instance: BaseLLM = None,
+            # model_instance: BaseLLM = None,
             outer_memory: Optional[list] = None,
             assistant_name: str = None,
             user_name: str = None) -> List[PromptMessage]:
@@ -269,7 +265,7 @@ class PromptTransform:
                                                         memory: Optional[TokenBufferMemory],
                                                         model_config: ModelConfigEntity,
                                                         # memory: Optional[BaseChatMemory],
-                                                        model_instance: BaseLLM = None,
+                                                        # model_instance: BaseLLM = None,
                                                         # files: List[PromptMessageFile],
                                                         outer_memory: Optional[list] = [],
                                                         assistant_name: str = None,
