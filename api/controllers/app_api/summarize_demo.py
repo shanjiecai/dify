@@ -2,6 +2,7 @@ import streamlit as st
 import requests
 import json
 url_base = "http://127.0.0.1:5001"
+# url_base = "http://13.56.164.188"
 import requests
 import json
 import os
@@ -84,6 +85,7 @@ def get_summarized_text(prompt, system_prompt, kwargs):
     }
     data = json.dumps(data)
     response = requests.post(url, headers=headers, data=data)
+    print(response.text)
     return response.json()["result"]
 
 

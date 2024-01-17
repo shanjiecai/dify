@@ -67,7 +67,7 @@ class PromptTransform:
 
     def get_advanced_prompt(self, 
             app_mode: str,
-            app_model_config: str, 
+            app_model_config: AppModelConfig,
             inputs: dict,
             query: str,
             files: List[PromptMessageFile],
@@ -92,7 +92,8 @@ class PromptTransform:
                                                                                       model_instance)
             elif model_mode_enum == ModelMode.CHAT:
                 prompt_messages = self._get_chat_app_chat_model_prompt_messages(app_model_config, inputs, query, files,
-                                                                                context, memory, model_instance)
+                                                                                context, memory, model_instance,
+                                                                                outer_memory, assistant_name, user_name)
         elif app_mode_enum == AppMode.COMPLETION:
             if model_mode_enum == ModelMode.CHAT:
                 prompt_messages = self._get_completion_app_chat_model_prompt_messages(app_model_config, inputs,
@@ -404,7 +405,11 @@ class PromptTransform:
                                                  files: List[PromptMessageFile],
                                                  context: Optional[str],
                                                  memory: Optional[BaseChatMemory],
-                                                 model_instance: BaseLLM) -> List[PromptMessage]:
+                                                 model_instance: BaseLLM,
+                                                 outer_memory: Optional[list] = None,
+                                                 assistant_name: str = None,
+                                                 user_name: str = None
+                                                 ) -> List[PromptMessage]:
         raw_prompt_list = app_model_config.chat_prompt_config_dict['prompt']
 
         prompt_messages = []
