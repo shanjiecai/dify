@@ -338,38 +338,38 @@ class Completion:
         prompt_transform = PromptTransform()
 
         # get llm prompt
-        if app_model_config.prompt_type == 'simple':
-            prompt_messages, stop_words = prompt_transform.get_prompt(
-                app_mode=mode,
-                pre_prompt=app_model_config.pre_prompt,
-                inputs=inputs,
-                query=query,
-                files=files,
-                context=agent_execute_result.output if agent_execute_result else None,
-                memory=memory,
-                model_instance=model_instance,
-                outer_memory=outer_memory,
-                assistant_name=assistant_name,
-                user_name=user_name
-            )
-        else:
-            prompt_messages = prompt_transform.get_advanced_prompt(
-                app_mode=mode,
-                app_model_config=app_model_config,
-                inputs=inputs,
-                query=query,
-                files=files,
-                context=agent_execute_result.output if agent_execute_result else None,
-                memory=memory,
-                model_instance=model_instance,
-                outer_memory=outer_memory,
-                assistant_name=assistant_name,
-                user_name=user_name
-            )
-
-            model_config = app_model_config.model_dict
-            completion_params = model_config.get("completion_params", {})
-            stop_words = completion_params.get("stop", [])
+        # if app_model_config.prompt_type == 'simple':
+        prompt_messages, stop_words = prompt_transform.get_prompt(
+            app_mode=mode,
+            pre_prompt=app_model_config.pre_prompt,
+            inputs=inputs,
+            query=query,
+            files=files,
+            context=agent_execute_result.output if agent_execute_result else None,
+            memory=memory,
+            model_instance=model_instance,
+            outer_memory=outer_memory,
+            assistant_name=assistant_name,
+            user_name=user_name
+        )
+        # else:
+        #     prompt_messages = prompt_transform.get_advanced_prompt(
+        #         app_mode=mode,
+        #         app_model_config=app_model_config,
+        #         inputs=inputs,
+        #         query=query,
+        #         files=files,
+        #         context=agent_execute_result.output if agent_execute_result else None,
+        #         memory=memory,
+        #         model_instance=model_instance,
+        #         outer_memory=outer_memory,
+        #         assistant_name=assistant_name,
+        #         user_name=user_name
+        #     )
+        #
+        #     model_config = app_model_config.model_dict
+        #     completion_params = model_config.get("completion_params", {})
+        #     stop_words = completion_params.get("stop", [])
 
         logger.info(f"prompt_messages: {prompt_messages[0].content}")
         logger.info(f"stop_words: {stop_words}")

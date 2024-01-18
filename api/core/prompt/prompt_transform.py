@@ -187,11 +187,48 @@ class PromptTransform:
             elif order == 'pre_prompt':
                 prompt += pre_prompt_content
 
+        query_prompt = prompt_rules['query_prompt'] if 'query_prompt' in prompt_rules else '{{query}}'
+        if memory and 'histories_prompt' in prompt_rules:
+            # append chat histories
+            tmp_human_message = PromptBuilder.to_human_message(
+                prompt_content=prompt + query_prompt,
+                inputs={
+                    'user_name': user_name if user_name else 'Human',
+                    'query': query,
+                    'assistant_name': assistant_name if assistant_name else 'Assistant'
+                }
+            )
+            rest_tokens = self._calculate_rest_token([tmp_human_message], model_instance)
+            if not user_name:
+                memory.human_prefix = prompt_rules['human_prefix'] if 'human_prefix' in prompt_rules else 'Human'
+            else:
+                memory.human_prefix = user_name
+            if not assistant_name:
+                memory.ai_prefix = prompt_rules[
+                    'assistant_prefix'] if 'assistant_prefix' in prompt_rules else 'Assistant'
+            else:
+                memory.ai_prefix = assistant_name
+            histories = self._get_history_messages_from_memory(memory, rest_tokens)
+        else:
+            histories = ''
+        prompt_template = PromptTemplateParser(template=prompt_rules['histories_prompt'])
+        histories_prompt_content = prompt_template.format(
+            {'histories': histories}
+        )
+        prompt = ''
+        for order in prompt_rules['system_prompt_orders']:
+            if order == 'context_prompt':
+                prompt += context_prompt_content
+            elif order == 'pre_prompt':
+                prompt += pre_prompt_content
+            elif order == 'histories_prompt':
+                prompt += histories_prompt_content
+
         prompt = re.sub(r'<\|.*?\|>', '', prompt)
 
         prompt_messages.append(PromptMessage(type=MessageType.SYSTEM, content=prompt))
 
-        self._append_chat_histories(memory, prompt_messages, model_instance)
+        # self._append_chat_histories(memory, prompt_messages, model_instance)
 
         prompt_messages.append(PromptMessage(type=MessageType.USER, content=query, files=files))
 
@@ -349,7 +386,7 @@ class PromptTransform:
             histories = self._get_history_messages_list_from_memory(memory, rest_tokens)
             prompt_messages.extend(histories)
 
-    def _calculate_rest_token(self, prompt_messages: BaseMessage, model_instance: BaseLLM) -> int:
+    def _calculate_rest_token(self, prompt_messages: list[BaseMessage], model_instance: BaseLLM) -> int:
         rest_tokens = 2000
 
         if model_instance.model_rules.max_tokens.max:
