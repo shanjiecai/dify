@@ -201,7 +201,7 @@ def chat_thread(group_id: int, main_context: AppContext):
                                     logger.info(f"上传图片：{res}")
                                     uuid = res["data"]["uuid"]
                                     res = send_chat_message(group_id, type="txt", message=url)
-                                    logger.info(f"发送新闻链接：{res}")
+                                    logger.info(f"发送新闻链接：{res} {url}")
                                     send_chat_message(group_id, type="img", file_uuid=uuid)
                                     logger.info(f"发送图片：{res}")
                                 except:
