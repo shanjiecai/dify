@@ -63,7 +63,7 @@ def send_chat_message(group_id: int, message: str = None, type: str = "txt", fil
     if type == "img" and file_uuid:
         payload = json.dumps({
             "group_id": group_id,
-            type: type,
+            "type": type,
             "file_uuid": file_uuid
         })
     else:
