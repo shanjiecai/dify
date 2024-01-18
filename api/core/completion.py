@@ -541,34 +541,34 @@ class Completion:
         prompt_transform = PromptTransform()
 
         # get prompt without memory and context
-        if app_model_config.prompt_type == 'simple':
-            prompt_messages, _ = prompt_transform.get_prompt(
-                app_mode=mode,
-                pre_prompt=app_model_config.pre_prompt,
-                inputs=inputs,
-                query=query,
-                files=files,
-                context=None,
-                memory=None,
-                model_instance=model_instance,
-                outer_memory=outer_memory,
-                assistant_name=assistant_name,
-                user_name=user_name,
-            )
-        else:
-            prompt_messages = prompt_transform.get_advanced_prompt(
-                app_mode=mode,
-                app_model_config=app_model_config,
-                inputs=inputs,
-                query=query,
-                files=files,
-                context=None,
-                memory=None,
-                model_instance=model_instance,
-                outer_memory=outer_memory,
-                assistant_name=assistant_name,
-                user_name=user_name,
-            )
+        # if app_model_config.prompt_type == 'simple':
+        prompt_messages, _ = prompt_transform.get_prompt(
+            app_mode=mode,
+            pre_prompt=app_model_config.pre_prompt,
+            inputs=inputs,
+            query=query,
+            files=files,
+            context=None,
+            memory=None,
+            model_instance=model_instance,
+            outer_memory=outer_memory,
+            assistant_name=assistant_name,
+            user_name=user_name,
+        )
+        # else:
+        #     prompt_messages = prompt_transform.get_advanced_prompt(
+        #         app_mode=mode,
+        #         app_model_config=app_model_config,
+        #         inputs=inputs,
+        #         query=query,
+        #         files=files,
+        #         context=None,
+        #         memory=None,
+        #         model_instance=model_instance,
+        #         outer_memory=outer_memory,
+        #         assistant_name=assistant_name,
+        #         user_name=user_name,
+        #     )
 
         prompt_tokens = model_instance.get_num_tokens(prompt_messages)
         rest_tokens = model_limited_tokens - max_tokens - prompt_tokens
