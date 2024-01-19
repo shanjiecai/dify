@@ -336,40 +336,39 @@ class Completion:
         if outer_memory is not None:
             logger.info(f"outer_memory: {outer_memory[:min(len(outer_memory), 2)]}")
         prompt_transform = PromptTransform()
-
         # get llm prompt
-        # if app_model_config.prompt_type == 'simple':
-        prompt_messages, stop_words = prompt_transform.get_prompt(
-            app_mode=mode,
-            pre_prompt=app_model_config.pre_prompt,
-            inputs=inputs,
-            query=query,
-            files=files,
-            context=agent_execute_result.output if agent_execute_result else None,
-            memory=memory,
-            model_instance=model_instance,
-            outer_memory=outer_memory,
-            assistant_name=assistant_name,
-            user_name=user_name
-        )
-        # else:
-        #     prompt_messages = prompt_transform.get_advanced_prompt(
-        #         app_mode=mode,
-        #         app_model_config=app_model_config,
-        #         inputs=inputs,
-        #         query=query,
-        #         files=files,
-        #         context=agent_execute_result.output if agent_execute_result else None,
-        #         memory=memory,
-        #         model_instance=model_instance,
-        #         outer_memory=outer_memory,
-        #         assistant_name=assistant_name,
-        #         user_name=user_name
-        #     )
-        #
-        #     model_config = app_model_config.model_dict
-        #     completion_params = model_config.get("completion_params", {})
-        #     stop_words = completion_params.get("stop", [])
+        if app_model_config.prompt_type == 'simple':
+            prompt_messages, stop_words = prompt_transform.get_prompt(
+                app_mode=mode,
+                pre_prompt=app_model_config.pre_prompt,
+                inputs=inputs,
+                query=query,
+                files=files,
+                context=agent_execute_result.output if agent_execute_result else None,
+                memory=memory,
+                model_instance=model_instance,
+                outer_memory=outer_memory,
+                assistant_name=assistant_name,
+                user_name=user_name
+            )
+        else:
+            prompt_messages = prompt_transform.get_advanced_prompt(
+                app_mode=mode,
+                app_model_config=app_model_config,
+                inputs=inputs,
+                query=query,
+                files=files,
+                context=agent_execute_result.output if agent_execute_result else None,
+                memory=memory,
+                model_instance=model_instance,
+                outer_memory=outer_memory,
+                assistant_name=assistant_name,
+                user_name=user_name
+            )
+
+            model_config = app_model_config.model_dict
+            completion_params = model_config.get("completion_params", {})
+            stop_words = completion_params.get("stop", [])
 
         logger.info(f"prompt_messages: {prompt_messages[0].content}")
         logger.info(f"stop_words: {stop_words}")
@@ -508,12 +507,12 @@ class Completion:
         memory = ReadOnlyConversationTokenDBBufferSharedMemory(
             conversation=conversation,
             model_instance=memory_model_instance,
-            max_token_limit=kwargs.get("max_token_limit", 1500),
+            max_token_limit=kwargs.get("max_token_limit", 3000),
             memory_key=kwargs.get("memory_key", "chat_history"),
             return_messages=kwargs.get("return_messages", True),
             input_key=kwargs.get("input_key", "input"),
             output_key=kwargs.get("output_key", "output"),
-            message_limit=kwargs.get("message_limit", 50),
+            message_limit=kwargs.get("message_limit", 100),
             human_prefix=kwargs.get("human_prefix", "Human"),
             ai_prefix=kwargs.get("assistant_name", None),
             moving_summary_buffer="",
