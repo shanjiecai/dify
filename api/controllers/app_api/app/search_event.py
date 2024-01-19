@@ -63,6 +63,9 @@ def download_from_url(url, dst="./test2.jpg"):
     @param: dst place to put the file
     """
     try:
+        # 如果dst已经存在，跳过
+        if os.path.exists(dst):
+            return True
 
         headers = {
             "authority": "ichef.bbci.co.uk",
