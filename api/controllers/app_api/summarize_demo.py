@@ -1,7 +1,7 @@
 import streamlit as st
 import requests
 import json
-url_base = "http://127.0.0.1:5001"
+url_base = "http://13.56.164.188"
 # url_base = "http://13.56.164.188"
 import requests
 import json
@@ -102,7 +102,7 @@ if group_id:
         if message['chat_text']:
             message['chat_text'].replace("\n", " ")
         history_str += f"{model_name_transform(message['from_user']['name'])}:{message['chat_text']}\n\n"
-    # print(history_str)
+    print(json.dumps(history_str, ensure_ascii=False))
     st.text(history_str)
     st.session_state.history_str = history_str
 

@@ -36,7 +36,7 @@ from controllers.app_api.base import generate_response
 
 api_key = os.environ.get('OPENAI_API_KEY')
 
-default_system_prompt = "You are an expert at summarising conversations. The user gives you the content of the dialogue, you summarize the main points of the dialogue, ignoring the meaningless dialogue, summarizing the content in no more than 100 words, and summarizing no more than three tags. Please make sure to output the following format: Summary: 50 words or less based on the current dialogue \n tags: tag 1, tag 2, tag 3"
+default_system_prompt = "You are an expert at summarising conversations. The user gives you the content of the dialogue, you summarize the main points of the dialogue, ignoring the meaningless dialogue, summarizing the content in no more than 100 words, and summarizing no more than three tags. Please make sure to output the following format: Summary: 50 words or less based on the current dialogue \nTags: tag 1, tag 2, tag 3"
 
 
 class SummarizeApi(AppApiResource):
@@ -58,9 +58,19 @@ class SummarizeApi(AppApiResource):
                 api_key,
                 prompt, system_prompt, **kwargs
             )
+            # 提取出summary和tags
+            try:
+                summary = response["choices"][0]["text"].split("Tags:")[0].strip().split("Summary:")[1].strip()
+            except:
+                summary = ""
+            try:
+                tags = response["choices"][0]["text"].split("Tags:")[1].strip().split(",")
+            except:
+                tags = []
             return {"result": response["choices"][0]["message"]["content"], "completion_tokens":
                     response["usage"]["completion_tokens"],
                     "prompt_tokens": response["usage"]["prompt_tokens"],
+                    "summary": summary, "tags": tags
                     }, 200
         except Exception as e:
             logging.exception(f"internal server error: {traceback.format_exc()}")
