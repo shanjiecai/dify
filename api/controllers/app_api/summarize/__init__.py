@@ -11,7 +11,7 @@ from werkzeug.exceptions import NotFound, InternalServerError
 
 import services
 from controllers.app_api import api
-from controllers.app_api.app.utils import send_feishu_bot
+from controllers.app_api.app.utils import send_feishu_bot, get_recent_history
 from controllers.service_api.app import create_or_update_end_user_for_user_id
 from controllers.service_api.app.error import AppUnavailableError, ProviderNotInitializeError, NotChatAppError, \
     ConversationCompletedError, CompletionRequestError, ProviderQuotaExceededError, \
@@ -37,17 +37,37 @@ from controllers.app_api.base import generate_response
 api_key = os.environ.get('OPENAI_API_KEY')
 
 default_system_prompt = "You are an expert at summarising conversations. The user gives you the content of the dialogue, you summarize the main points of the dialogue, ignoring the meaningless dialogue, summarizing the content in no more than 100 words, and summarizing no more than three tags. Please make sure to output the following format: Summary: 50 words or less based on the current dialogue \nTags: tag 1, tag 2, tag 3"
+model_name_dict = {
+    "DJ Bot": "James Corden",
+}
+def model_name_transform(model_name: str):
+    if model_name in model_name_dict:
+        return model_name_dict[model_name]
+    return model_name
 
 
 class SummarizeApi(AppApiResource):
     def post(self, app_model: App):
 
         parser = reqparse.RequestParser()
-        parser.add_argument('prompt', type=str, required=True, location='json')
+        parser.add_argument('prompt', type=str, required=False, location='json')
+        parser.add_argument('group_id', type=int, required=False, location='json')
         parser.add_argument('system_prompt', type=str, required=False, default=default_system_prompt, location='json')
         parser.add_argument('kwargs', type=dict, required=False, default={}, location='json')
         args = parser.parse_args()
         prompt = args['prompt']
+        history_str = ""
+        if args.get("group_id", None):
+            recent_history = get_recent_history(group_id=args["group_id"])
+            recent_history['data'].reverse()
+            for message in recent_history['data'][:min(50, len(recent_history['data']))]:
+                # outer_memory.append({"role": model_name_transform(message["from_user"]["name"]), "message": message['chat_text']})
+                # role:content\n
+                # print(message)
+                if message['chat_text']:
+                    message['chat_text'].replace("\n", " ")
+                history_str += f"{model_name_transform(message['from_user']['name'])}:{message['chat_text']}\n\n"
+            print(json.dumps(history_str, ensure_ascii=False))
         system_prompt = args['system_prompt']
         if not system_prompt:
             system_prompt = default_system_prompt
@@ -56,7 +76,9 @@ class SummarizeApi(AppApiResource):
         try:
             response = generate_response(
                 api_key,
-                prompt, system_prompt, **kwargs
+                prompt if not history_str else history_str,
+                system_prompt,
+                **kwargs
             )
             # 提取出summary和tags
             try:
