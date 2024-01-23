@@ -36,17 +36,21 @@ from controllers.app_api.base import generate_response
 
 api_key = os.environ.get('OPENAI_API_KEY')
 
+default_system_prompt = "You are an expert at summarising conversations. The user gives you the content of the dialogue, you summarize the main points of the dialogue, ignoring the meaningless dialogue, summarizing the content in no more than 100 words, and summarizing no more than three tags. Please make sure to output the following format: Summary: 50 words or less based on the current dialogue \n tags: tag 1, tag 2, tag 3"
+
 
 class SummarizeApi(AppApiResource):
     def post(self, app_model: App):
 
         parser = reqparse.RequestParser()
         parser.add_argument('prompt', type=str, required=True, location='json')
-        parser.add_argument('system_prompt', type=str, required=False, default=None, location='json')
+        parser.add_argument('system_prompt', type=str, required=False, default=default_system_prompt, location='json')
         parser.add_argument('kwargs', type=dict, required=False, default={}, location='json')
         args = parser.parse_args()
         prompt = args['prompt']
         system_prompt = args['system_prompt']
+        if not system_prompt:
+            system_prompt = default_system_prompt
         kwargs = args['kwargs']
         logger.info(f"prompt: {prompt} system_prompt: {system_prompt} kwargs: {kwargs}")
         try:

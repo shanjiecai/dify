@@ -106,12 +106,14 @@ if group_id:
     st.text(history_str)
     st.session_state.history_str = history_str
 
-st.session_state.prompt = "Summarize the following text:\n{text}\n\nSummary in 50 words:"
-if prompt := st.text_input("prompt", value="Summarize the following text:\n{text}\n\nSummary in 50 words:"):
+# st.session_state.prompt = "Summarize the following text:\n{text}\n\nSummary in 50 words:"
+st.session_state.prompt = "{text}"
+# if prompt := st.text_input("prompt", value="Summarize the following text:\n{text}\n\nSummary in 50 words:"):
+if prompt := st.text_input("prompt", value="{text}"):
     st.session_state.prompt = prompt
 
-st.session_state.system_prompt = "You are a highly intelligent chatbot that can summarize text.\n"
-if system_prompt := st.text_input("system_prompt", value="You are a highly intelligent chatbot that can summarize text.\n"):
+# st.session_state.system_prompt = "You are a highly intelligent chatbot that can summarize text.\n"
+if system_prompt := st.text_input("system_prompt", value=""):
     st.session_state.system_prompt = system_prompt
 
 st.session_state.kwargs = {"max_tokens": 100}
