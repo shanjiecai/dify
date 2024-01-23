@@ -60,11 +60,11 @@ class SummarizeApi(AppApiResource):
             )
             # 提取出summary和tags
             try:
-                summary = response["choices"][0]["text"].split("Tags:")[0].strip().split("Summary:")[1].strip()
+                summary = response["choices"][0]["message"]["content"].split("Tags:")[0].strip().split("Summary:")[1].strip()
             except:
                 summary = ""
             try:
-                tags = response["choices"][0]["text"].split("Tags:")[1].strip().split(",")
+                tags = response["choices"][0]["message"]["content"].split("Tags:")[1].strip().split(",")
             except:
                 tags = []
             return {"result": response["choices"][0]["message"]["content"], "completion_tokens":
