@@ -2,7 +2,7 @@ import requests
 import json
 import os
 from mylogger import logger
-app_endpoint = os.getenv("APP_ENDPOINT", "https://rm.triple3v.org")
+app_endpoint = os.getenv("APP_ENDPOINT", "https://www.vvvapp.org")
 
 
 def get_all_groups(only_dj_bot: bool = False):
@@ -57,6 +57,25 @@ def get_recent_history(group_id: int = None, last_id: int = None):
     return response.json()
 
 
+def get_recent_history_within_timestamp(group_id: int = None, start_timestamp: int = None, end_timestamp: int = None):
+    res = get_recent_history(group_id)
+    # print(res)
+    history_all = {"data": []}
+    while res['data']:
+        break_flag = False
+        for i in res['data']:
+            if (not start_timestamp or i["timestamp"] >= start_timestamp) and (not end_timestamp or i["timestamp"] <= end_timestamp):
+                # print(i["timestamp"])
+                history_all["data"].append(i)
+            elif i["timestamp"] < start_timestamp:
+                break_flag = True
+                break
+        if break_flag:
+            break
+        res = get_recent_history(group_id, res['data'][-1]['id'])
+    return history_all
+
+
 def send_chat_message(group_id: int, message: str = None, type: str = "txt", file_uuid: str = None):
     url = f"{app_endpoint}/api/sys/send_chat_message"
 
@@ -108,3 +127,9 @@ def send_feishu_bot(message):
     response = requests.post(feishu_alert_url, headers=headers, json=data)
     logger.info(response.text)
     return response.json()
+
+
+if __name__ == '__main__':
+    print(app_endpoint)
+    print(get_recent_history_within_timestamp(312, 1705709751592, 1706049943669))
+    pass

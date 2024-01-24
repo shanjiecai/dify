@@ -11,7 +11,7 @@ from werkzeug.exceptions import NotFound, InternalServerError
 
 import services
 from controllers.app_api import api
-from controllers.app_api.app.utils import send_feishu_bot, get_recent_history
+from controllers.app_api.app.utils import send_feishu_bot, get_recent_history, get_recent_history_within_timestamp
 from controllers.service_api.app import create_or_update_end_user_for_user_id
 from controllers.service_api.app.error import AppUnavailableError, ProviderNotInitializeError, NotChatAppError, \
     ConversationCompletedError, CompletionRequestError, ProviderQuotaExceededError, \
@@ -53,12 +53,14 @@ class SummarizeApi(AppApiResource):
         parser.add_argument('prompt', type=str, required=False, location='json')
         parser.add_argument('group_id', type=int, required=False, location='json')
         parser.add_argument('system_prompt', type=str, required=False, default=default_system_prompt, location='json')
+        parser.add_argument("start_timestamp", type=int, required=False, location="json", default=None)
+        parser.add_argument("end_timestamp", type=int, required=False, location="json", default=None)
         parser.add_argument('kwargs', type=dict, required=False, default={}, location='json')
         args = parser.parse_args()
         prompt = args['prompt']
         history_str = ""
         if args.get("group_id", None):
-            recent_history = get_recent_history(group_id=args["group_id"])
+            recent_history = get_recent_history_within_timestamp(group_id=args["group_id"], start_timestamp=args["start_timestamp"], end_timestamp=args["end_timestamp"])
             recent_history['data'].reverse()
             for message in recent_history['data'][:min(50, len(recent_history['data']))]:
                 # outer_memory.append({"role": model_name_transform(message["from_user"]["name"]), "message": message['chat_text']})
