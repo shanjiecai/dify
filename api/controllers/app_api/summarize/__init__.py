@@ -68,7 +68,7 @@ class SummarizeApi(AppApiResource):
                 # print(message)
                 if message['chat_text']:
                     message['chat_text'].replace("\n", " ")
-                history_str += f"{model_name_transform(message['from_user']['name'])}:{message['chat_text']}\n\n"
+                history_str += f"{model_name_transform(message['from_user']['name'] if message['from_user'] else message['from_user_id'])}:{message['chat_text']}\n\n"
             print(json.dumps(history_str, ensure_ascii=False))
         system_prompt = args['system_prompt']
         if not system_prompt:
