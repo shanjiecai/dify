@@ -3,6 +3,7 @@
 # 2、如果长时间没有聊天，主动发起聊天
 # 3、根据时事热点，主动发起聊天
 import datetime
+import re
 import traceback
 import uuid
 import os
@@ -240,7 +241,15 @@ def chat_thread(group_id: int, main_context: AppContext):
                             # logger.info(f"model_chat: {res}")
                             # 发送消息
                             logger.info(f"send_message to: {group_id}, {res}")
-                            send_chat_message(group_id, res["answer"])
+                            # 如果answer过长，分段发送
+                            if len(res["answer"]) > 250:
+                                # 按照标点符号分段
+                                answer_list = re.split(r"(?<=[.!?])\s", res["answer"])
+                                for answer in answer_list:
+                                    if answer:
+                                        send_chat_message(group_id, answer)
+                            else:
+                                send_chat_message(group_id, res["answer"])
                         else:
                             logger.info(f"{group_id}判断不回复:{datetime.datetime.now()}")
                             sleep_num += 1
