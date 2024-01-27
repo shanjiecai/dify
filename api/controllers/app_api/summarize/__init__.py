@@ -31,12 +31,14 @@ from mylogger import logger
 from extensions.ext_redis import redis_client
 from controllers.app_api import api
 import traceback
+# import spacy
+# nlp = spacy.load("en_core_web_sm")
 from controllers.app_api.base import generate_response
 
 
 api_key = os.environ.get('OPENAI_API_KEY')
 
-default_system_prompt = "You are an expert at summarising conversations. The user gives you the content of the dialogue, you summarize the main points of the dialogue, ignoring the meaningless dialogue, summarizing the content in no more than 50 words, and summarizing no more than three tags. Please make sure to output the following format: Summary: 50 words or less based on the current dialogue \nTags: tag 1, tag 2, tag 3"
+default_system_prompt = "You are an expert at summarising conversations. The user gives you the content of the dialogue, you summarize the main points of the dialogue, ignoring the meaningless dialogue, summarizing the content in no more than 50 words, and summarizing no more than three tags and no more than ten meaningful noun except name. Please make sure to output the following format: Summary: 50 words or less based on the current dialogue \nTags: tag 1, tag 2, tag 3 \nNouns: noun 1, noun 2, noun 3"
 model_name_dict = {
     "DJ Bot": "James Corden",
 }
@@ -59,6 +61,7 @@ class SummarizeApi(AppApiResource):
         args = parser.parse_args()
         prompt = args['prompt']
         history_str = ""
+        history_with_no_user = ""
         if args.get("group_id", None):
             recent_history = get_recent_history_within_timestamp(group_id=args["group_id"], start_timestamp=args["start_timestamp"], end_timestamp=args["end_timestamp"])
             recent_history['data'].reverse()
@@ -69,13 +72,18 @@ class SummarizeApi(AppApiResource):
                 if message['chat_text']:
                     message['chat_text'].replace("\n", " ")
                 history_str += f"{model_name_transform(message['from_user']['name'] if message['from_user'] else message['from_user_id'])}:{message['chat_text']}\n\n"
+                history_with_no_user += f"{message['chat_text']}\n\n"
             print(json.dumps(history_str, ensure_ascii=False))
+            # print(json.dumps(history_with_no_user, ensure_ascii=False))
         system_prompt = args['system_prompt']
         if not system_prompt:
             system_prompt = default_system_prompt
         kwargs = args['kwargs']
         logger.info(f"prompt: {prompt} system_prompt: {system_prompt} kwargs: {kwargs}")
         try:
+            # doc = nlp(history_with_no_user)
+            # nouns = [token.text for token in doc if token.pos_ == "NOUN"]
+            # print(nouns)
             response = generate_response(
                 api_key,
                 prompt if not history_str else history_str,
@@ -88,13 +96,18 @@ class SummarizeApi(AppApiResource):
             except:
                 summary = ""
             try:
-                tags = response["choices"][0]["message"]["content"].split("Tags:")[1].strip().split(",")
+                tags = response["choices"][0]["message"]["content"].split("Tags:")[1].strip().split("Nouns:")[0].strip().split(",")
             except:
                 tags = []
+            try:
+                nouns = response["choices"][0]["message"]["content"].split("Nouns:")[1].strip().split(",")
+            except:
+                nouns = []
             return {"result": response["choices"][0]["message"]["content"], "completion_tokens":
                     response["usage"]["completion_tokens"],
                     "prompt_tokens": response["usage"]["prompt_tokens"],
-                    "summary": summary, "tags": tags
+                    "summary": summary, "tags": tags,
+                    "nouns": nouns
                     }, 200
         except Exception as e:
             logging.exception(f"internal server error: {traceback.format_exc()}")
