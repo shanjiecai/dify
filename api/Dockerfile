@@ -35,7 +35,7 @@ COPY --from=base /pkg /usr/local
 COPY . /app/api/
 
 RUN python -c "from transformers import GPT2TokenizerFast; GPT2TokenizerFast.from_pretrained('gpt2')"
-RUN pip install https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.7.1/en_core_web_sm-3.7.1.tar.gz
+#RUN pip install https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.7.1/en_core_web_sm-3.7.1.tar.gz
 ENV TRANSFORMERS_OFFLINE true
 
 COPY docker/entrypoint.sh /entrypoint.sh
