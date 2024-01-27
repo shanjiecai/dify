@@ -97,10 +97,14 @@ class SummarizeApi(AppApiResource):
                 summary = ""
             try:
                 tags = response["choices"][0]["message"]["content"].split("Tags:")[1].strip().split("Nouns:")[0].strip().split(",")
+                for i in range(len(tags)):
+                    tags[i] = tags[i].strip()
             except:
                 tags = []
             try:
                 nouns = response["choices"][0]["message"]["content"].split("Nouns:")[1].strip().split(",")
+                for i in range(len(nouns)):
+                    nouns[i] = nouns[i].strip()
             except:
                 nouns = []
             return {"result": response["choices"][0]["message"]["content"], "completion_tokens":
