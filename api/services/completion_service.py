@@ -77,16 +77,12 @@ class CompletionService:
                 # Conversation.app_id == app_model.id,
                 Conversation.status == 'normal'
             ]
+
             # if user:
-            #     if from_source == 'console':
+            #     if isinstance(user, Account):
             #         conversation_filter.append(Conversation.from_account_id == user.id)
             #     else:
             #         conversation_filter.append(Conversation.from_end_user_id == user.id if user else None)
-
-            if isinstance(user, Account):
-                conversation_filter.append(Conversation.from_account_id == user.id)
-            else:
-                conversation_filter.append(Conversation.from_end_user_id == user.id if user else None)
 
             conversation = db.session.query(Conversation).filter(and_(*conversation_filter)).first()
 
@@ -94,7 +90,7 @@ class CompletionService:
                 raise ConversationNotExistsError()
 
             if not query:
-                is_new_message = False
+                # is_new_message = False
                 # 选取最后一条message的query作为query
                 message = db.session.query(Message).filter(
                     Message.conversation_id == conversation.id,
@@ -242,7 +238,7 @@ class CompletionService:
             outer_memory=outer_memory,
             assistant_name=assistant_name,
             user_name=user_name,
-            is_new_message=is_new_message,
+            # is_new_message=is_new_message,
         )
 
     @classmethod

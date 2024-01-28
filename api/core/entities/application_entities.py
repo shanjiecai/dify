@@ -263,3 +263,8 @@ class ApplicationGenerateEntity(BaseModel):
 
     # extra parameters, like: auto_generate_conversation_name
     extras: dict[str, Any] = {}
+
+    # app_api
+    outer_memory: Optional[list] = None
+    assistant_name: str = None
+    user_name: str = None

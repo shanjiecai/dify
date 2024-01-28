@@ -269,7 +269,8 @@ class PromptTransform:
                                                         # files: List[PromptMessageFile],
                                                         outer_memory: Optional[list] = [],
                                                         assistant_name: str = None,
-                                                        user_name: str = None) -> List[PromptMessage]:
+                                                        user_name: str = None
+                                                        ) -> List[PromptMessage]:
         prompt_messages = []
 
         context_prompt_content = ''
@@ -329,14 +330,6 @@ class PromptTransform:
                                            user_name: str = None
                                            ) -> List[PromptMessage]:
 
-    # def _get_prompt_and_stop(self, prompt_rules: dict, pre_prompt: str, inputs: dict,
-    #                          query: str,
-    #                          context: Optional[str],
-    #                          memory: Optional[BaseChatMemory],
-    #                          model_instance: BaseLLM,
-    #                          outer_memory: Optional[list],
-    #                          assistant_name: str = None,
-    #                          user_name: str = None) -> Tuple[str, Optional[list]]:
         context_prompt_content = ''
         if context and 'context_prompt' in prompt_rules:
             prompt_template = PromptTemplateParser(template=prompt_rules['context_prompt'])
@@ -364,15 +357,15 @@ class PromptTransform:
         # outer memory优先级高于memory
         if outer_memory and 'group_histories_prompt' in prompt_rules:
             # append group chat histories
-            tmp_human_message = PromptBuilder.to_human_message(
-                prompt_content=prompt + query_prompt,
+            tmp_human_message = UserPromptMessage(content=PromptBuilder.parse_prompt(
+                prompt=prompt + query_prompt,
                 inputs={
                     'user_name': user_name if user_name else 'Human',
                     'query': query,
                     'assistant_name': assistant_name if assistant_name else 'Assistant'
                 }
-            )
-            rest_tokens = self._calculate_rest_token(tmp_human_message, model_config)
+            ))
+            rest_tokens = self._calculate_rest_token([tmp_human_message], model_config)
             histories = ""
             for item in outer_memory:
                 histories += item["role"] if item["role"] else "Human"
@@ -391,7 +384,7 @@ class PromptTransform:
                 )
             )
 
-            rest_tokens = self._calculate_rest_token(tmp_human_message, model_config)
+            rest_tokens = self._calculate_rest_token([tmp_human_message], model_config)
             if not user_name:
                 memory.human_prefix = prompt_rules['human_prefix'] if 'human_prefix' in prompt_rules else 'Human'
             else:
@@ -402,8 +395,7 @@ class PromptTransform:
                 memory.ai_prefix = assistant_name
             # # 测试用
             # rest_tokens = 100
-
-            histories = self._get_history_messages_from_memory(memory, rest_tokens)
+            histories = self._get_history_messages_from_memory(memory, rest_tokens, memory.human_prefix, memory.ai_prefix)
         else:
             histories = ''
         prompt_template = PromptTemplateParser(template=prompt_rules['histories_prompt'])

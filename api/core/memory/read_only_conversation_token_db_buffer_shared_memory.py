@@ -5,7 +5,7 @@ from langchain.schema import get_buffer_string, BaseMessage
 
 from core.file.message_file_parser import MessageFileParser
 from core.model_providers.models.entity.message import PromptMessage, MessageType, to_lc_messages
-from core.model_providers.models.llm.base import BaseLLM
+# from core.model_providers.models.llm.base import BaseLLM
 from extensions.ext_database import db
 from models.model import Conversation, Message
 

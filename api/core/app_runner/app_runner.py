@@ -20,7 +20,11 @@ class AppRunner:
                                       prompt_template_entity: PromptTemplateEntity,
                                       inputs: dict[str, str],
                                       files: list[FileObj],
-                                      query: Optional[str] = None) -> int:
+                                      query: Optional[str] = None,
+                                      outer_memory: Optional[list] = None,
+                                      assistant_name: Optional[str] = None,
+                                      user_name: Optional[str] = None,
+                                      ) -> int:
         """
         Get pre calculate rest tokens
         :param app_record: app record
@@ -29,6 +33,9 @@ class AppRunner:
         :param inputs: inputs
         :param files: files
         :param query: query
+        :param outer_memory: outer memory
+        :param assistant_name: assistant name
+        :param user_name: user_name
         :return:
         """
         model_type_instance = model_config.provider_model_bundle.model_type_instance
@@ -56,7 +63,10 @@ class AppRunner:
             prompt_template_entity=prompt_template_entity,
             inputs=inputs,
             files=files,
-            query=query
+            query=query,
+            outer_memory=outer_memory,
+            assistant_name=assistant_name,
+            user_name=user_name,
         )
 
         prompt_tokens = model_type_instance.get_num_tokens(
@@ -114,7 +124,11 @@ class AppRunner:
                                  files: list[FileObj],
                                  query: Optional[str] = None,
                                  context: Optional[str] = None,
-                                 memory: Optional[TokenBufferMemory] = None) \
+                                 memory: Optional[TokenBufferMemory] = None,
+                                 outer_memory: Optional[list] = None,
+                                 assistant_name: Optional[str] = None,
+                                 user_name: Optional[str] = None,
+                                 ) \
             -> Tuple[List[PromptMessage], Optional[List[str]]]:
         """
         Organize prompt messages
@@ -126,6 +140,9 @@ class AppRunner:
         :param files: files
         :param query: query
         :param memory: memory
+        :param outer_memory: outer memory
+        :param assistant_name: assistant name
+        :param user_name: user name
         :return:
         """
         prompt_transform = PromptTransform()

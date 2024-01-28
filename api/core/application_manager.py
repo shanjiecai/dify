@@ -49,7 +49,11 @@ class ApplicationManager:
                  files: Optional[list[FileObj]] = None,
                  conversation: Optional[Conversation] = None,
                  stream: bool = False,
-                 extras: Optional[dict[str, Any]] = None) \
+                 extras: Optional[dict[str, Any]] = None,
+                 outer_memory: Optional[list] = None,
+                 assistant_name: str = None,
+                 user_name: str = None,
+                 ) \
             -> Union[dict, Generator]:
         """
         Generate App response.
@@ -67,6 +71,9 @@ class ApplicationManager:
         :param conversation: conversation
         :param stream: is stream
         :param extras: extras
+        :param outer_memory: outer memory
+        :param assistant_name: assistant name
+        :param user_name: user_name
         """
         # init task id
         task_id = str(uuid.uuid4())
@@ -90,7 +97,10 @@ class ApplicationManager:
             user_id=user.id,
             stream=stream,
             invoke_from=invoke_from,
-            extras=extras
+            extras=extras,
+            outer_memory=outer_memory,
+            assistant_name=assistant_name,
+            user_name=user_name,
         )
 
         # init generate records
@@ -116,6 +126,9 @@ class ApplicationManager:
             'queue_manager': queue_manager,
             'conversation_id': conversation.id,
             'message_id': message.id,
+            'outer_memory': outer_memory,
+            'assistant_name': assistant_name,
+            'user_name': user_name,
         })
 
         worker_thread.start()
@@ -133,7 +146,11 @@ class ApplicationManager:
                          application_generate_entity: ApplicationGenerateEntity,
                          queue_manager: ApplicationQueueManager,
                          conversation_id: str,
-                         message_id: str) -> None:
+                         message_id: str,
+                         outer_memory: Optional[list] = None,
+                         assistant_name: Optional[str] = None,
+                         user_name: Optional[str] = None
+                         ) -> None:
         """
         Generate worker in a new thread.
         :param flask_app: Flask app
@@ -165,7 +182,10 @@ class ApplicationManager:
                         application_generate_entity=application_generate_entity,
                         queue_manager=queue_manager,
                         conversation=conversation,
-                        message=message
+                        message=message,
+                        outer_memory=outer_memory,
+                        assistant_name=assistant_name,
+                        user_name=user_name
                     )
             except ConversationTaskStoppedException:
                 pass
@@ -504,6 +524,8 @@ class ApplicationManager:
         :return:
         """
         app_orchestration_config_entity = application_generate_entity.app_orchestration_config_entity
+        user_name = application_generate_entity.user_name
+        assistant_name = application_generate_entity.assistant_name
 
         model_type_instance = app_orchestration_config_entity.model_config.provider_model_bundle.model_type_instance
         model_type_instance = cast(LargeLanguageModel, model_type_instance)
@@ -590,7 +612,9 @@ class ApplicationManager:
             from_source=from_source,
             from_end_user_id=end_user_id,
             from_account_id=account_id,
-            agent_based=app_orchestration_config_entity.agent is not None
+            agent_based=app_orchestration_config_entity.agent is not None,
+            role=user_name,
+            assistant_name=assistant_name,
         )
 
         db.session.add(message)

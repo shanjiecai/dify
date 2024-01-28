@@ -30,13 +30,20 @@ class BasicApplicationRunner(AppRunner):
     def run(self, application_generate_entity: ApplicationGenerateEntity,
             queue_manager: ApplicationQueueManager,
             conversation: Conversation,
-            message: Message) -> None:
+            message: Message,
+            outer_memory: Optional[list] = None,
+            assistant_name: Optional[str] = None,
+            user_name: Optional[str] = None,
+            ) -> None:
         """
         Run application
         :param application_generate_entity: application generate entity
         :param queue_manager: application queue manager
         :param conversation: conversation
         :param message: message
+        :param outer_memory: outer memory
+        :param assistant_name: assistant name
+        :param user_name: user name
         :return:
         """
         app_record = db.session.query(App).filter(App.id == application_generate_entity.app_id).first()
@@ -60,7 +67,10 @@ class BasicApplicationRunner(AppRunner):
             prompt_template_entity=app_orchestration_config.prompt_template,
             inputs=inputs,
             files=files,
-            query=query
+            query=query,
+            outer_memory=outer_memory,
+            assistant_name=assistant_name,
+            user_name=user_name,
         )
 
         memory = None
@@ -86,7 +96,10 @@ class BasicApplicationRunner(AppRunner):
             inputs=inputs,
             files=files,
             query=query,
-            memory=memory
+            memory=memory,
+            outer_memory=outer_memory,
+            assistant_name=assistant_name,
+            user_name=user_name,
         )
 
         # moderation

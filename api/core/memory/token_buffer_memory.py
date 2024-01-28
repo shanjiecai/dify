@@ -25,7 +25,7 @@ class TokenBufferMemory:
         # fetch limited messages, and return reversed
         messages = db.session.query(Message).filter(
             Message.conversation_id == self.conversation.id,
-            Message.answer != ''
+            # Message.answer != ''
         ).order_by(Message.created_at.desc()).limit(message_limit).all()
 
         messages = list(reversed(messages))
@@ -33,9 +33,20 @@ class TokenBufferMemory:
             tenant_id=app_record.tenant_id,
             app_id=app_record.id
         )
+        if messages[-1].answer is None or messages[-1].answer == "":
+            # self.last_query = messages[-1].query
+            # self.last_role = messages[-1].role
+            messages = messages[:-1]
 
         prompt_messages = []
         for message in messages:
+            if messages.index(message) + 1 < len(messages):
+                next_message = messages[messages.index(message) + 1]
+                # print(f"message: {message.answer}, next_message: {next_message.answer}")
+                if (message.answer is None or message.answer == "") and message.query == next_message.query and \
+                        message.role == next_message.role and next_message.answer is not None and \
+                        next_message.answer != "":
+                    continue
             files = message.message_files
             if files:
                 file_objs = message_file_parser.transform_message_files(
