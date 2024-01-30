@@ -10,7 +10,7 @@ from controllers.app_api import api
 from controllers.service_api.app import create_or_update_end_user_for_user_id
 from controllers.service_api.app.error import NotChatAppError
 from controllers.app_api.wraps import AppApiResource
-from core.model_providers.model_factory import ModelFactory
+# from core.model_providers.model_factory import ModelFactory
 from core.model_providers.models.entity.message import to_prompt_messages
 from core.prompt.prompt_builder import PromptBuilder
 from fields.conversation_fields import conversation_infinite_scroll_pagination_fields, simple_conversation_fields

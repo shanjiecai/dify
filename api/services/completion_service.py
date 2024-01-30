@@ -49,7 +49,6 @@ class CompletionService:
     def completion(cls, app_model: App,
                    user: Optional[Union[Account | EndUser]],
                    args: Any,
-                   # from_source: str,
                    invoke_from: InvokeFrom,
                    streaming: bool = True,
                    is_model_config_override: bool = False,
@@ -78,19 +77,13 @@ class CompletionService:
                 Conversation.status == 'normal'
             ]
 
-            # if user:
-            #     if isinstance(user, Account):
-            #         conversation_filter.append(Conversation.from_account_id == user.id)
-            #     else:
-            #         conversation_filter.append(Conversation.from_end_user_id == user.id if user else None)
-
             conversation = db.session.query(Conversation).filter(and_(*conversation_filter)).first()
 
             if not conversation:
                 raise ConversationNotExistsError()
 
             if not query:
-                # is_new_message = False
+                is_new_message = False
                 # 选取最后一条message的query作为query
                 message = db.session.query(Message).filter(
                     Message.conversation_id == conversation.id,
@@ -238,7 +231,7 @@ class CompletionService:
             outer_memory=outer_memory,
             assistant_name=assistant_name,
             user_name=user_name,
-            # is_new_message=is_new_message,
+            is_new_message=is_new_message,
         )
 
     @classmethod

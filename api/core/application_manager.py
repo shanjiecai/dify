@@ -53,6 +53,7 @@ class ApplicationManager:
                  outer_memory: Optional[list] = None,
                  assistant_name: str = None,
                  user_name: str = None,
+                 is_new_message: bool = True
                  ) \
             -> Union[dict, Generator]:
         """
@@ -74,6 +75,7 @@ class ApplicationManager:
         :param outer_memory: outer memory
         :param assistant_name: assistant name
         :param user_name: user_name
+        :param is_new_message: is new message, default is True
         """
         # init task id
         task_id = str(uuid.uuid4())

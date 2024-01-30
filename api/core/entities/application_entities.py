@@ -268,3 +268,4 @@ class ApplicationGenerateEntity(BaseModel):
     outer_memory: Optional[list] = None
     assistant_name: str = None
     user_name: str = None
+    is_new_message: bool = False

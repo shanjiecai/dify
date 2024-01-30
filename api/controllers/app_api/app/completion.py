@@ -11,6 +11,7 @@ from werkzeug.exceptions import NotFound, InternalServerError
 import services
 from controllers.app_api import api
 from controllers.app_api.app.utils import send_feishu_bot
+from core.judge_llm_active import judge_llm_active
 from extensions.ext_database import db
 from libs.helper import uuid_value
 from services.completion_service import CompletionService
@@ -290,21 +291,23 @@ def compact_response(response: Union[dict | Generator]) -> Response:
                 for chunk in response:
                     yield chunk
             except services.errors.conversation.ConversationNotExistsError:
-                yield "data: " + json.dumps(api.handle_error(NotFound("Conversation Not Exists.")).get_json()) + "\n\n"
+                yield "data: " + json.dumps(
+                api.handle_error(NotFound("Conversation Not Exists.")).get_json()) + "\n\n"
             except services.errors.conversation.ConversationCompletedError:
                 yield "data: " + json.dumps(api.handle_error(ConversationCompletedError()).get_json()) + "\n\n"
             except services.errors.app_model_config.AppModelConfigBrokenError:
                 logging.exception("App model config broken.")
                 yield "data: " + json.dumps(api.handle_error(AppUnavailableError()).get_json()) + "\n\n"
             except ProviderTokenNotInitError as ex:
-                yield "data: " + json.dumps(api.handle_error(ProviderNotInitializeError(ex.description)).get_json()) + "\n\n"
+                yield "data: " + json.dumps(
+                    api.handle_error(ProviderNotInitializeError(ex.description)).get_json()) + "\n\n"
             except QuotaExceededError:
                 yield "data: " + json.dumps(api.handle_error(ProviderQuotaExceededError()).get_json()) + "\n\n"
             except ModelCurrentlyNotSupportError:
-                yield "data: " + json.dumps(api.handle_error(ProviderModelCurrentlyNotSupportError()).get_json()) + "\n\n"
-            except (LLMBadRequestError, LLMAPIConnectionError, LLMAPIUnavailableError,
-                    LLMRateLimitError, LLMAuthorizationError) as e:
-                yield "data: " + json.dumps(api.handle_error(CompletionRequestError(str(e))).get_json()) + "\n\n"
+                yield "data: " + json.dumps(
+                    api.handle_error(ProviderModelCurrentlyNotSupportError()).get_json()) + "\n\n"
+            except InvokeError as e:
+                yield "data: " + json.dumps(api.handle_error(CompletionRequestError(e.description)).get_json()) + "\n\n"
             except ValueError as e:
                 yield "data: " + json.dumps(api.handle_error(e).get_json()) + "\n\n"
             except Exception:

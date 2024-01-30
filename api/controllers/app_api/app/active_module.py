@@ -16,7 +16,7 @@ from flask import Flask, current_app
 from flask.ctx import AppContext
 
 from controllers.service_api.app import create_or_update_end_user_for_user_id
-from core.completion import Completion
+# from core.completion import Completion
 from extensions.ext_database import db
 from models.model import Conversation, App, AppModelConfig
 from mylogger import logger

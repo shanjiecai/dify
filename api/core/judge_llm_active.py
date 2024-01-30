@@ -7,7 +7,7 @@ import random
 import openai
 from mylogger import logger
 
-from core.model_providers.models.llm.base import BaseLLM
+# from core.model_providers.models.llm.base import BaseLLM
 import tiktoken
 
 encoding = tiktoken.encoding_for_model('gpt-3.5-turbo')  # 暂时没用到

@@ -110,7 +110,10 @@ class PromptTransform:
                 files=files,
                 context=context,
                 memory=memory,
-                model_config=model_config
+                model_config=model_config,
+                outer_memory=outer_memory,
+                assistant_name=assistant_name,
+                user_name=user_name,
             )
         else:
             stops = prompt_rules.get('stops')
@@ -300,11 +303,17 @@ class PromptTransform:
         if prompt:
             prompt_messages.append(SystemPromptMessage(content=prompt))
 
-        self._append_chat_histories(
-            memory=memory,
-            prompt_messages=prompt_messages,
-            model_config=model_config
-        )
+        # self._append_chat_histories(
+        #     memory=memory,
+        #     prompt_messages=prompt_messages,
+        #     model_config=model_config
+        # )
+
+        if memory and 'histories_prompt' in prompt_rules:
+            rest_tokens = self._calculate_rest_token(prompt_messages, model_config)
+            histories = self._get_history_messages_list_from_memory(memory, rest_tokens)
+
+
 
         if files:
             prompt_message_contents = [TextPromptMessageContent(data=query)]
