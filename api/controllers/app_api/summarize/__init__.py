@@ -112,6 +112,10 @@ class SummarizeApi(AppApiResource):
                 title = response["choices"][0]["message"]["content"].split("Title:")[1].strip()
             except:
                 title = ""
+            for n in nouns:
+                if n in ["I", "i", "you", "You", "He", "he", "She", "she", "It", "it", "We", "we", "They", "they"]\
+                        or "dj bot" in n.lower() or "djbot" in n.lower():
+                    nouns.remove(n)
             return {"result": response["choices"][0]["message"]["content"], "completion_tokens":
                     response["usage"]["completion_tokens"],
                     "prompt_tokens": response["usage"]["prompt_tokens"],
