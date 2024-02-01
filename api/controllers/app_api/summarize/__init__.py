@@ -38,7 +38,7 @@ from controllers.app_api.base import generate_response
 
 api_key = os.environ.get('OPENAI_API_KEY')
 
-default_system_prompt = "You are an expert at summarising conversations. The user gives you the content of the dialogue, you summarize the main points of the dialogue, ignoring the meaningless dialogue, summarizing the content in no more than 50 words, and summarizing no more than three tags and no more than ten meaningful noun except name. Please make sure to output the following format: Summary: 50 words or less based on the current dialogue \nTags: tag 1, tag 2, tag 3 \nNouns: noun 1, noun 2, noun 3"
+default_system_prompt = "You are an expert at summarising conversations. The user gives you the content of the dialogue, you summarize the main points of the dialogue, ignoring the meaningless dialogue, summarizing the content in no more than 50 words, and summarizing no more than three tags, no more than ten meaningful noun except name and no more than 10 words title. Please generate summary,title,tags using Chinese if the primary language of the conversation is Chinese and make sure to output the following format: Summary: 50 words or less based on the current dialogue \nTags: tag 1, tag 2, tag 3 \nNouns: noun 1, noun 2, noun 3 \nTitle: title of the summary. \n\nFor example: Summary: The cat sat on the mat. \nTags: cat, mat, sat \nNouns: cat, mat, sat \nTitle: The cat sat on the mat. \n\nPlease make sure to output the following format: Summary: 50 words or less based on the current dialogue \nTags: tag 1, tag 2, tag 3 \nNouns: noun 1, noun 2, noun 3 \nTitle: title of the summary in 10 words or less."
 model_name_dict = {
     "DJ Bot": "James Corden",
 }
@@ -71,7 +71,8 @@ class SummarizeApi(AppApiResource):
                 # print(message)
                 if message['chat_text']:
                     message['chat_text'].replace("\n", " ")
-                history_str += f"{model_name_transform(message['from_user']['name'] if message['from_user'] else message['from_user_id'])}:{message['chat_text']}\n\n"
+                # history_str += f"{model_name_transform(message['from_user']['name'] if message['from_user'] else message['from_user_id'])}:{message['chat_text']}\n\n"
+                history_str += f"{message['from_user']['name'] if message['from_user'] else message['from_user_id']}:{message['chat_text']}\n\n"
                 history_with_no_user += f"{message['chat_text']}\n\n"
             print(json.dumps(history_str, ensure_ascii=False))
             # print(json.dumps(history_with_no_user, ensure_ascii=False))
@@ -102,16 +103,25 @@ class SummarizeApi(AppApiResource):
             except:
                 tags = []
             try:
-                nouns = response["choices"][0]["message"]["content"].split("Nouns:")[1].strip().split(",")
+                nouns = response["choices"][0]["message"]["content"].split("Nouns:")[1].strip().split("Title:")[0].strip().split(",")
                 for i in range(len(nouns)):
                     nouns[i] = nouns[i].strip()
             except:
                 nouns = []
+            try:
+                title = response["choices"][0]["message"]["content"].split("Title:")[1].strip()
+            except:
+                title = ""
+            for n in nouns:
+                if n in ["I", "i", "you", "You", "He", "he", "She", "she", "It", "it", "We", "we", "They", "they"]\
+                        or "dj bot" in n.lower() or "djbot" in n.lower():
+                    nouns.remove(n)
             return {"result": response["choices"][0]["message"]["content"], "completion_tokens":
                     response["usage"]["completion_tokens"],
                     "prompt_tokens": response["usage"]["prompt_tokens"],
                     "summary": summary, "tags": tags,
-                    "nouns": nouns
+                    "nouns": nouns,
+                    "title": title
                     }, 200
         except Exception as e:
             logging.exception(f"internal server error: {traceback.format_exc()}")
