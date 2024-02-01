@@ -87,7 +87,7 @@ class ApplicationManager:
             app_id=app_id,
             app_model_config_id=app_model_config_id,
             app_model_config_dict=app_model_config_dict,
-            app_orchestration_config_entity=self._convert_from_app_model_config_dict(
+            app_orchestration_config_entity=self.convert_from_app_model_config_dict(
                 tenant_id=tenant_id,
                 app_model_config_dict=app_model_config_dict
             ),
@@ -103,6 +103,7 @@ class ApplicationManager:
             outer_memory=outer_memory,
             assistant_name=assistant_name,
             user_name=user_name,
+            is_new_message=is_new_message
         )
 
         # init generate records
@@ -175,7 +176,10 @@ class ApplicationManager:
                         application_generate_entity=application_generate_entity,
                         queue_manager=queue_manager,
                         conversation=conversation,
-                        message=message
+                        message=message,
+                        # outer_memory=outer_memory,
+                        # assistant_name=assistant_name,
+                        # user_name=user_name
                     )
                 else:
                     # basic app
@@ -240,7 +244,7 @@ class ApplicationManager:
         finally:
             db.session.remove()
 
-    def _convert_from_app_model_config_dict(self, tenant_id: str, app_model_config_dict: dict) \
+    def convert_from_app_model_config_dict(self, tenant_id: str, app_model_config_dict: dict) \
             -> AppOrchestrationConfigEntity:
         """
         Convert app model config dict to entity.
@@ -591,36 +595,43 @@ class ApplicationManager:
             )
 
         currency = model_schema.pricing.currency if model_schema.pricing else 'USD'
+        if application_generate_entity.is_new_message:
+            message = Message(
+                app_id=app_record.id,
+                model_provider=app_orchestration_config_entity.model_config.provider,
+                model_id=app_orchestration_config_entity.model_config.model,
+                override_model_configs=json.dumps(override_model_configs) if override_model_configs else None,
+                conversation_id=conversation.id,
+                inputs=application_generate_entity.inputs,
+                query=application_generate_entity.query or "",
+                message="",
+                message_tokens=0,
+                message_unit_price=0,
+                message_price_unit=0,
+                answer="",
+                answer_tokens=0,
+                answer_unit_price=0,
+                answer_price_unit=0,
+                provider_response_latency=0,
+                total_price=0,
+                currency=currency,
+                from_source=from_source,
+                from_end_user_id=end_user_id,
+                from_account_id=account_id,
+                agent_based=app_orchestration_config_entity.agent is not None,
+                role=user_name,
+                assistant_name=assistant_name,
+            )
 
-        message = Message(
-            app_id=app_record.id,
-            model_provider=app_orchestration_config_entity.model_config.provider,
-            model_id=app_orchestration_config_entity.model_config.model,
-            override_model_configs=json.dumps(override_model_configs) if override_model_configs else None,
-            conversation_id=conversation.id,
-            inputs=application_generate_entity.inputs,
-            query=application_generate_entity.query or "",
-            message="",
-            message_tokens=0,
-            message_unit_price=0,
-            message_price_unit=0,
-            answer="",
-            answer_tokens=0,
-            answer_unit_price=0,
-            answer_price_unit=0,
-            provider_response_latency=0,
-            total_price=0,
-            currency=currency,
-            from_source=from_source,
-            from_end_user_id=end_user_id,
-            from_account_id=account_id,
-            agent_based=app_orchestration_config_entity.agent is not None,
-            role=user_name,
-            assistant_name=assistant_name,
-        )
-
-        db.session.add(message)
-        db.session.commit()
+            db.session.add(message)
+            db.session.commit()
+        else:
+            message = (
+                db.session.query(Message)
+                .filter(
+                    Message.conversation_id == application_generate_entity.conversation_id,
+                ).order_by(Message.created_at.desc()).first()
+            )
 
         for file in application_generate_entity.files:
             message_file = MessageFile(

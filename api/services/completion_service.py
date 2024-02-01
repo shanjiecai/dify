@@ -83,14 +83,19 @@ class CompletionService:
                 raise ConversationNotExistsError()
 
             if not query:
-                is_new_message = False
                 # 选取最后一条message的query作为query
                 message = db.session.query(Message).filter(
                     Message.conversation_id == conversation.id,
                     # Message.status == 'normal'
                 ).order_by(Message.created_at.desc()).first()
-                query = message.query if message else ''
-                user_name = message.role if message else ''
+                if not message.answer:
+                    is_new_message = False
+                    query = message.query if message else ''
+                    user_name = message.role if message else ''
+                else:
+                    is_new_message = True
+                    # query = message.answer
+                    # user_name = message.role if message else ''
 
             if conversation.status != 'normal':
                 raise ConversationCompletedError()

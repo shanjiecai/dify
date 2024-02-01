@@ -59,9 +59,11 @@ class TokenBufferMemory:
 
                 prompt_messages.append(UserPromptMessage(content=prompt_message_contents))
             else:
-                prompt_messages.append(UserPromptMessage(content=message.query))
+                prompt_messages.append(UserPromptMessage(content=message.query, role=PromptMessageRole.USER if message.role == "Human" else message.role))
 
-            prompt_messages.append(AssistantPromptMessage(content=message.answer))
+            # prompt_messages.append(AssistantPromptMessage(content=message.answer))
+            if message.answer:
+                prompt_messages.append(UserPromptMessage(content=message.answer, role=PromptMessageRole.USER if message.assistant_name == None else message.assistant_name))
 
         if not prompt_messages:
             return []
@@ -112,7 +114,7 @@ class TokenBufferMemory:
             elif m.role == PromptMessageRole.ASSISTANT:
                 role = ai_prefix
             else:
-                continue
+                role = m.role
 
             message = f"{role}: {m.content}"
             string_messages.append(message)

@@ -186,7 +186,10 @@ class BasicApplicationRunner(AppRunner):
             files=files,
             query=query,
             context=context,
-            memory=memory
+            memory=memory,
+            outer_memory=outer_memory,
+            assistant_name=assistant_name,
+            user_name=user_name,
         )
 
         # check hosting moderation
@@ -210,6 +213,7 @@ class BasicApplicationRunner(AppRunner):
             provider_model_bundle=app_orchestration_config.model_config.provider_model_bundle,
             model=app_orchestration_config.model_config.model
         )
+        # print(f"prompt_messages: {prompt_messages}")
 
         invoke_result = model_instance.invoke_llm(
             prompt_messages=prompt_messages,

@@ -11,7 +11,10 @@ from werkzeug.exceptions import NotFound, InternalServerError
 import services
 from controllers.app_api import api
 from controllers.app_api.app.utils import send_feishu_bot
+from core.application_manager import ApplicationManager
 from core.judge_llm_active import judge_llm_active
+from core.memory.token_buffer_memory import TokenBufferMemory
+from core.model_manager import ModelInstance
 from extensions.ext_database import db
 from libs.helper import uuid_value
 from services.completion_service import CompletionService
@@ -24,12 +27,12 @@ import logging
 from typing import Generator, Union
 
 import services
-from controllers.service_api import api
-from controllers.service_api.app import create_or_update_end_user_for_user_id
-from controllers.service_api.app.error import (AppUnavailableError, CompletionRequestError, ConversationCompletedError,
+from controllers.app_api import api
+from controllers.app_api.app import create_or_update_end_user_for_user_id
+from controllers.app_api.app.error import (AppUnavailableError, CompletionRequestError, ConversationCompletedError,
                                                NotChatAppError, ProviderModelCurrentlyNotSupportError,
                                                ProviderNotInitializeError, ProviderQuotaExceededError)
-from controllers.service_api.wraps import AppApiResource
+from controllers.app_api.wraps import AppApiResource
 from core.application_queue_manager import ApplicationQueueManager
 from core.entities.application_entities import InvokeFrom
 from core.errors.error import ModelCurrentlyNotSupportError, ProviderTokenNotInitError, QuotaExceededError
@@ -185,7 +188,15 @@ class ChatActiveApi(AppApiResource):
             parser.add_argument('conversation_id', type=uuid_value, location='json')
             parser.add_argument('inputs', type=dict, required=False, location='json', default={})
             parser.add_argument('query', type=str, required=False, location='json', default='')
+            parser.add_argument('outer_memory', type=list, required=False, default=None, location='json')
+            # validate
+            outer_memory = parser.parse_args()['outer_memory']
+            if outer_memory is not None:
+                for item in outer_memory:
+                    if 'role' not in item or 'message' not in item:
+                        raise ValueError("outer_memory should be a list of dict with keys 'role' and 'message'")
             args = parser.parse_args()
+            streaming = args.get('response_mode', 'blocking') == 'streaming'
 
             conversation_filter = [
                 Conversation.id == args['conversation_id'],
@@ -196,21 +207,32 @@ class ChatActiveApi(AppApiResource):
             if not conversation:
                 raise NotFound("Conversation Not Exists.")
             app_model_config = db.session.query(AppModelConfig).filter(AppModelConfig.id==conversation.app_model_config_id).first()
-            memory = Completion.get_memory_from_conversation(
-                tenant_id=app_model.tenant_id,
-                app_model_config=app_model_config.copy(),
+            # memory = Completion.get_memory_from_conversation(
+            #     tenant_id=app_model.tenant_id,
+            #     app_model_config=app_model_config.copy(),
+            #     conversation=conversation,
+            #     return_messages=False,
+            #     human_prefic="Human",
+            #     assistant_name=app_model.name
+            # )
+            application_manager = ApplicationManager()
+            app_orchestration_config = application_manager.convert_from_app_model_config_dict(app_model.tenant_id, app_model_config.to_dict())
+
+            model_instance = ModelInstance(
+                provider_model_bundle=app_orchestration_config.model_config.provider_model_bundle,
+                model=app_orchestration_config.model_config.model
+            )
+            memory = TokenBufferMemory(
                 conversation=conversation,
-                return_messages=False,
-                human_prefic="Human",
-                assistant_name=app_model.name
+                model_instance=model_instance
             )
 
-            memory.ai_prefix = app_model.name
-            memory_key = memory.memory_variables[0]
-            external_context = memory.load_memory_variables({})
-            histories = external_context[memory_key]
-            if memory.last_query:
-                histories += "\n" + memory.last_role + ": " + memory.last_query
+            history_list = memory.get_history_prompt_messages(
+                max_token_limit=2000
+            )
+            histories = ""
+            for history in history_list:
+                histories += history.role + ": " + history.content + "\n"
             logger.info(f"histories: {histories}, app_model.name: {app_model.name}")
             logger.info(f"get histories in {time.time() - b}")
             # messages = MessageService.pagination_by_first_id(app_model, None,
@@ -223,22 +245,24 @@ class ChatActiveApi(AppApiResource):
             A: how are you?
             则认为是同一个人的追问，应该回话
             '''
-            buffer = [dict(item) for item in memory.buffer]
-            if memory.last_query:
-                buffer.append({"role": memory.last_role, "content": memory.last_query})
-            if len(buffer) >= 3:
-                # 截取数组最后三条
-                logger.info(buffer[-3:])
-
-            if len(buffer) >= 3 and buffer[-2].get("role", None) == app_model.name and \
-                        buffer[-1].get("role", None) == buffer[-3].get("role", None) and \
-                        buffer[-1].get("role", None) != app_model.name and \
-                        buffer[-3].get("role", None) != app_model.name:
-                logger.info(f"last three messages are from {app_model.name} and other, should response")
-                judge_result = True
-            else:
-                judge_result = judge_llm_active(memory.model_instance.credentials["openai_api_key"], histories,
-                                                app_model.name)
+            # buffer = [dict(item) for item in memory.buffer]
+            # if memory.last_query:
+            #     buffer.append({"role": memory.last_role, "content": memory.last_query})
+            # if len(buffer) >= 3:
+            #     # 截取数组最后三条
+            #     logger.info(buffer[-3:])
+            #
+            # if len(buffer) >= 3 and buffer[-2].get("role", None) == app_model.name and \
+            #             buffer[-1].get("role", None) == buffer[-3].get("role", None) and \
+            #             buffer[-1].get("role", None) != app_model.name and \
+            #             buffer[-3].get("role", None) != app_model.name:
+            #     logger.info(f"last three messages are from {app_model.name} and other, should response")
+            #     judge_result = True
+            # else:
+            #     judge_result = judge_llm_active(memory.model_instance.credentials["openai_api_key"], histories,
+            #                                     app_model.name)
+            judge_result = judge_llm_active(memory.model_instance.credentials["openai_api_key"], histories,
+                                                                                app_model.name)
             end_user = create_or_update_end_user_for_user_id(app_model, "")
             if judge_result:
                 # 对当前conversation上锁，有一个机器人认为应该回话就锁住，避免多个机器人同时回话
@@ -247,13 +271,23 @@ class ChatActiveApi(AppApiResource):
                 else:
                     logger.info(f"conversation {conversation.id} is locked")
                     return Response(response=json.dumps({"result": False}), status=200, mimetype='application/json')
+                # response = CompletionService.completion(
+                #     app_model=app_model,
+                #     user=end_user,
+                #     args=args,
+                #     from_source='api',
+                #     streaming=False,
+                #     outer_memory=None,
+                #     assistant_name=app_model.name,
+                #     user_name=""
+                # )
                 response = CompletionService.completion(
                     app_model=app_model,
                     user=end_user,
                     args=args,
-                    from_source='api',
-                    streaming=False,
-                    outer_memory=None,
+                    invoke_from=InvokeFrom.APP_API,
+                    streaming=streaming,
+                    outer_memory=outer_memory,
                     assistant_name=app_model.name,
                     user_name=""
                 )

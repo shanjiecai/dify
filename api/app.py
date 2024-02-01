@@ -184,7 +184,7 @@ def register_blueprints(app):
          )
     app.register_blueprint(app_api_bp)
     # 列出所有的路由
-    # print(app.url_map)
+    print(app.url_map)
 
     CORS(files_bp,
          allow_headers=['Content-Type'],

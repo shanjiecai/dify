@@ -157,7 +157,10 @@ class AppRunner:
                 files=files,
                 context=context,
                 memory=memory,
-                model_config=model_config
+                model_config=model_config,
+                outer_memory=outer_memory,
+                assistant_name=assistant_name,
+                user_name=user_name
             )
         else:
             prompt_messages = prompt_transform.get_advanced_prompt(
@@ -168,7 +171,10 @@ class AppRunner:
                 files=files,
                 context=context,
                 memory=memory,
-                model_config=model_config
+                model_config=model_config,
+                outer_memory=outer_memory,
+                assistant_name=assistant_name,
+                user_name=user_name
             )
             stop = model_config.stop
 

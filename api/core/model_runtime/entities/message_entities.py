@@ -84,7 +84,7 @@ class PromptMessage(ABC, BaseModel):
     """
     Model class for prompt message.
     """
-    role: PromptMessageRole
+    role: PromptMessageRole | str
     content: Optional[str | list[PromptMessageContent]] = None
     name: Optional[str] = None
 
@@ -93,7 +93,7 @@ class UserPromptMessage(PromptMessage):
     """
     Model class for user prompt message.
     """
-    role: PromptMessageRole = PromptMessageRole.USER
+    role: PromptMessageRole | str = PromptMessageRole.USER
 
 
 class AssistantPromptMessage(PromptMessage):

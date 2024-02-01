@@ -5,7 +5,7 @@ from werkzeug.exceptions import NotFound
 
 import services
 from controllers.app_api import api
-from controllers.service_api.app import create_or_update_end_user_for_user_id
+from controllers.app_api.app import create_or_update_end_user_for_user_id
 from controllers.app_api.app.error import NotChatAppError
 from controllers.app_api.wraps import AppApiResource
 from libs.helper import TimestampField, uuid_value

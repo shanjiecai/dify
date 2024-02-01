@@ -71,8 +71,9 @@ class PromptTransform:
                    memory: Optional[TokenBufferMemory],
                    model_config: ModelConfigEntity,
                    outer_memory: Optional[list] = None,
-                   assistant_name: str = None,
-                   user_name: str = None) -> \
+                   assistant_name: Optional[str] = None,
+                   user_name: Optional[str] = None,
+                   ) -> \
             Tuple[List[PromptMessage], Optional[List[str]]]:
         app_mode = AppMode.value_of(app_mode)
         model_mode = ModelMode.value_of(model_config.mode)
@@ -151,8 +152,9 @@ class PromptTransform:
             model_config: ModelConfigEntity,
             # model_instance: BaseLLM = None,
             outer_memory: Optional[list] = None,
-            assistant_name: str = None,
-            user_name: str = None) -> List[PromptMessage]:
+            assistant_name: Optional[str] = None,
+            user_name: Optional[str] = None,
+            ) -> List[PromptMessage]:
 
         # model_mode = app_model_config.model_dict['mode']
         # app_mode_enum = AppMode(app_mode)
@@ -182,7 +184,10 @@ class PromptTransform:
                     files=files,
                     context=context,
                     memory=memory,
-                    model_config=model_config
+                    model_config=model_config,
+                    outer_memory=outer_memory,
+                    assistant_name=assistant_name,
+                    user_name=user_name,
                 )
         elif app_mode == AppMode.COMPLETION:
             if model_mode == ModelMode.CHAT:
@@ -290,13 +295,32 @@ class PromptTransform:
             pre_prompt_content = prompt_template.format(
                 prompt_inputs
             )
-
+        history_str = ""
+        if memory and 'histories_prompt' in prompt_rules:
+            rest_tokens = self._calculate_rest_token(prompt_messages, model_config)
+            if user_name:
+                memory.human_prefix = user_name
+            if assistant_name:
+                memory.ai_prefix = assistant_name
+            histories = self._get_history_messages_list_from_memory(memory, rest_tokens)
+            if histories:
+                history_str = ""
+                for history in histories:
+                    history_str += str(history.role) + ":" + history.content + "\n"
+        prompt_template = PromptTemplateParser(template=prompt_rules['histories_prompt'])
+        histories_prompt_content = prompt_template.format(
+            {'histories': history_str}
+        )
         prompt = ''
         for order in prompt_rules['system_prompt_orders']:
             if order == 'context_prompt':
                 prompt += context_prompt_content
             elif order == 'pre_prompt':
                 prompt += pre_prompt_content
+            elif order == 'histories_prompt':
+                if user_name:
+                    query = histories_prompt_content + user_name + ": " + query
+                query += assistant_name if assistant_name else "user" + ": "
 
         prompt = re.sub(r'<\|.*?\|>', '', prompt)
 
@@ -308,12 +332,6 @@ class PromptTransform:
         #     prompt_messages=prompt_messages,
         #     model_config=model_config
         # )
-
-        if memory and 'histories_prompt' in prompt_rules:
-            rest_tokens = self._calculate_rest_token(prompt_messages, model_config)
-            histories = self._get_history_messages_list_from_memory(memory, rest_tokens)
-
-
 
         if files:
             prompt_message_contents = [TextPromptMessageContent(data=query)]
@@ -581,7 +599,11 @@ class PromptTransform:
                                                  files: List[FileObj],
                                                  context: Optional[str],
                                                  memory: Optional[TokenBufferMemory],
-                                                 model_config: ModelConfigEntity) -> List[PromptMessage]:
+                                                 model_config: ModelConfigEntity,
+                                                 outer_memory: Optional[list] = None,
+                                                 assistant_name: Optional[str] = None,
+                                                 user_name: Optional[str] = None
+                                                 ) -> List[PromptMessage]:
         raw_prompt_list = prompt_template_entity.advanced_chat_prompt_template.messages
 
         prompt_messages = []
@@ -602,8 +624,24 @@ class PromptTransform:
                 prompt_messages.append(SystemPromptMessage(content=prompt))
             elif prompt_item.role == PromptMessageRole.ASSISTANT:
                 prompt_messages.append(AssistantPromptMessage(content=prompt))
-
-        self._append_chat_histories(memory, prompt_messages, model_config)
+        # 群聊改为放到一个prompt message里
+        if memory:
+            if user_name:
+                memory.human_prefix = user_name
+            if assistant_name:
+                memory.ai_prefix = assistant_name
+            rest_tokens = self._calculate_rest_token(prompt_messages, model_config)
+            histories = self._get_history_messages_list_from_memory(memory, rest_tokens)
+            if histories:
+                history_str = ""
+                for history in histories:
+                    history_str += str(history.role) + ":" + history.content + "\n"
+                # if user_name:
+                #     query = history_str + user_name + ":" + query
+                # else:
+                #     query = history_str + query
+                query = history_str + (assistant_name if assistant_name else "assistant") + ": " + (query if query else "")
+        # self._append_chat_histories(memory, prompt_messages, model_config)
 
         if files:
             prompt_message_contents = [TextPromptMessageContent(data=query)]
@@ -612,7 +650,8 @@ class PromptTransform:
 
             prompt_messages.append(UserPromptMessage(content=prompt_message_contents))
         else:
-            prompt_messages.append(UserPromptMessage(content=query))
+            if query:
+                prompt_messages.append(UserPromptMessage(content=query))
 
         return prompt_messages
 
