@@ -222,7 +222,7 @@ class PromptTransform:
             elif order == 'pre_prompt':
                 prompt += pre_prompt_content
             elif order == 'histories_prompt':
-                query = histories_prompt_content + assistant_name + ": " + query
+                query = histories_prompt_content + (assistant_name if assistant_name else "") + ": " + query
 
         prompt = re.sub(r'<\|.*?\|>', '', prompt)
 
@@ -458,7 +458,7 @@ class PromptTransform:
         histories_prompt_content = prompt_template.format(
             {'histories': histories}
         )
-        query = histories_prompt_content + assistant_name + ": " + query
+        query = histories_prompt_content + (assistant_name if assistant_name else "") + ": " + query
 
         for prompt_item in raw_prompt_list:
             raw_prompt = prompt_item['text']
