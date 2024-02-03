@@ -23,12 +23,21 @@ def handle(sender, **kwargs):
     for quota_configuration in system_configuration.quota_configurations:
         if quota_configuration.quota_type == system_configuration.current_quota_type:
             quota_unit = quota_configuration.quota_unit
+
+            if quota_configuration.quota_limit == -1:
+                return
+
             break
 
     used_quota = None
     if quota_unit:
-        if quota_unit == QuotaUnit.TOKENS.value:
-            used_quota = message.message_tokens + message.prompt_tokens
+        if quota_unit == QuotaUnit.TOKENS:
+            used_quota = message.message_tokens + message.answer_tokens
+        elif quota_unit == QuotaUnit.CREDITS:
+            used_quota = 1
+
+            if 'gpt-4' in model_config.model:
+                used_quota = 20
         else:
             used_quota = 1
 

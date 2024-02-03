@@ -3,15 +3,15 @@ from typing import Generator, Iterator, List, Optional, Union, cast
 from core.model_runtime.entities.common_entities import I18nObject
 from core.model_runtime.entities.llm_entities import LLMMode, LLMResult, LLMResultChunk, LLMResultChunkDelta
 from core.model_runtime.entities.message_entities import (AssistantPromptMessage, PromptMessage, PromptMessageTool,
-                                                          SystemPromptMessage, UserPromptMessage)
-from core.model_runtime.entities.model_entities import (AIModelEntity, FetchFrom, ModelPropertyKey, ModelType,
-                                                        ParameterRule, ParameterType)
+                                                          SystemPromptMessage, ToolPromptMessage, UserPromptMessage)
+from core.model_runtime.entities.model_entities import (AIModelEntity, FetchFrom, ModelFeature, ModelPropertyKey,
+                                                        ModelType, ParameterRule, ParameterType)
 from core.model_runtime.errors.invoke import (InvokeAuthorizationError, InvokeBadRequestError, InvokeConnectionError,
                                               InvokeError, InvokeRateLimitError, InvokeServerUnavailableError)
 from core.model_runtime.errors.validate import CredentialsValidateFailedError
 from core.model_runtime.model_providers.__base.large_language_model import LargeLanguageModel
-from core.model_runtime.model_providers.xinference.llm.xinference_helper import (XinferenceHelper,
-                                                                                 XinferenceModelExtraParameter)
+from core.model_runtime.model_providers.xinference.xinference_helper import (XinferenceHelper,
+                                                                             XinferenceModelExtraParameter)
 from core.model_runtime.utils import helper
 from openai import (APIConnectionError, APITimeoutError, AuthenticationError, ConflictError, InternalServerError,
                     NotFoundError, OpenAI, PermissionDeniedError, RateLimitError, Stream, UnprocessableEntityError)
@@ -33,6 +33,12 @@ class XinferenceAILargeLanguageModel(LargeLanguageModel):
 
             see `core.model_runtime.model_providers.__base.large_language_model.LargeLanguageModel._invoke`
         """
+        if 'temperature' in model_parameters:
+            if model_parameters['temperature'] < 0.01:
+                model_parameters['temperature'] = 0.01
+            elif model_parameters['temperature'] > 1.0:
+                model_parameters['temperature'] = 0.99
+
         return self._generate(
             model=model, credentials=credentials, prompt_messages=prompt_messages, model_parameters=model_parameters,
             tools=tools, stop=stop, stream=stream, user=user,
@@ -65,6 +71,12 @@ class XinferenceAILargeLanguageModel(LargeLanguageModel):
                     credentials['completion_type'] = 'completion'
                 else:
                     raise ValueError(f'xinference model ability {extra_param.model_ability} is not supported')
+                
+            if extra_param.support_function_call:
+                credentials['support_function_call'] = True
+
+            if extra_param.context_length:
+                credentials['context_length'] = extra_param.context_length
 
         except RuntimeError as e:
             raise CredentialsValidateFailedError(f'Xinference credentials validate failed: {e}')
@@ -220,6 +232,9 @@ class XinferenceAILargeLanguageModel(LargeLanguageModel):
         elif isinstance(message, SystemPromptMessage):
             message = cast(SystemPromptMessage, message)
             message_dict = {"role": "system", "content": message.content}
+        elif isinstance(message, ToolPromptMessage):
+            message = cast(ToolPromptMessage, message)
+            message_dict = {"tool_call_id": message.tool_call_id, "role": "tool", "content": message.content}
         else:
             raise ValueError(f"Unknown message type {type(message)}")
         
@@ -237,7 +252,7 @@ class XinferenceAILargeLanguageModel(LargeLanguageModel):
                 label=I18nObject(
                     zh_Hans='温度',
                     en_US='Temperature'
-                )
+                ),
             ),
             ParameterRule(
                 name='top_p',
@@ -282,6 +297,9 @@ class XinferenceAILargeLanguageModel(LargeLanguageModel):
                 completion_type = LLMMode.COMPLETION.value
             else:
                 raise ValueError(f'xinference model ability {extra_args.model_ability} is not supported')
+            
+        support_function_call = credentials.get('support_function_call', False)
+        context_length = credentials.get('context_length', 2048)
 
         entity = AIModelEntity(
             model=model,
@@ -290,8 +308,12 @@ class XinferenceAILargeLanguageModel(LargeLanguageModel):
             ),
             fetch_from=FetchFrom.CUSTOMIZABLE_MODEL,
             model_type=ModelType.LLM,
+            features=[
+                ModelFeature.TOOL_CALL
+            ] if support_function_call else [],
             model_properties={ 
                 ModelPropertyKey.MODE: completion_type,
+                ModelPropertyKey.CONTEXT_SIZE: context_length
             },
             parameter_rules=rules
         )
@@ -310,6 +332,12 @@ class XinferenceAILargeLanguageModel(LargeLanguageModel):
             
             extra_model_kwargs can be got by `XinferenceHelper.get_xinference_extra_parameter`
         """
+        if 'server_url' not in credentials:
+            raise CredentialsValidateFailedError('server_url is required in credentials')
+        
+        if credentials['server_url'].endswith('/'):
+            credentials['server_url'] = credentials['server_url'][:-1]
+
         client = OpenAI(
             base_url=f'{credentials["server_url"]}/v1',
             api_key='abc',

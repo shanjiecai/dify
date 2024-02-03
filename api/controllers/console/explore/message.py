@@ -17,9 +17,9 @@ from core.model_runtime.errors.invoke import InvokeError
 from fields.message_fields import message_infinite_scroll_pagination_fields
 from flask import Response, stream_with_context
 from flask_login import current_user
-from flask_restful import marshal_with, reqparse
+from flask_restful import fields, marshal_with, reqparse
 from flask_restful.inputs import int_range
-from libs.helper import uuid_value
+from libs.helper import TimestampField, uuid_value
 from services.completion_service import CompletionService
 from services.errors.app import MoreLikeThisDisabledError
 from services.errors.conversation import ConversationNotExistsError
@@ -29,7 +29,6 @@ from werkzeug.exceptions import InternalServerError, NotFound
 
 
 class MessageListApi(InstalledAppResource):
-
     @marshal_with(message_infinite_scroll_pagination_fields)
     def get(self, installed_app):
         app_model = installed_app.app
@@ -50,7 +49,6 @@ class MessageListApi(InstalledAppResource):
             raise NotFound("Conversation Not Exists.")
         except services.errors.message.FirstMessageNotExistsError:
             raise NotFound("First Message Not Exists.")
-
 
 class MessageFeedbackApi(InstalledAppResource):
     def post(self, installed_app, message_id):
@@ -117,26 +115,8 @@ def compact_response(response: Union[dict, Generator]) -> Response:
         return Response(response=json.dumps(response), status=200, mimetype='application/json')
     else:
         def generate() -> Generator:
-            try:
-                for chunk in response:
-                    yield chunk
-            except MessageNotExistsError:
-                yield "data: " + json.dumps(api.handle_error(NotFound("Message Not Exists.")).get_json()) + "\n\n"
-            except MoreLikeThisDisabledError:
-                yield "data: " + json.dumps(api.handle_error(AppMoreLikeThisDisabledError()).get_json()) + "\n\n"
-            except ProviderTokenNotInitError as ex:
-                yield "data: " + json.dumps(api.handle_error(ProviderNotInitializeError(ex.description)).get_json()) + "\n\n"
-            except QuotaExceededError:
-                yield "data: " + json.dumps(api.handle_error(ProviderQuotaExceededError()).get_json()) + "\n\n"
-            except ModelCurrentlyNotSupportError:
-                yield "data: " + json.dumps(api.handle_error(ProviderModelCurrentlyNotSupportError()).get_json()) + "\n\n"
-            except InvokeError as e:
-                yield "data: " + json.dumps(api.handle_error(CompletionRequestError(e.description)).get_json()) + "\n\n"
-            except ValueError as e:
-                yield "data: " + json.dumps(api.handle_error(e).get_json()) + "\n\n"
-            except Exception:
-                logging.exception("internal server error.")
-                yield "data: " + json.dumps(api.handle_error(InternalServerError()).get_json()) + "\n\n"
+            for chunk in response:
+                yield chunk
 
         return Response(stream_with_context(generate()), status=200,
                         mimetype='text/event-stream')

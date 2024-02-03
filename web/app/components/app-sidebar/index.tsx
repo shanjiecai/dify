@@ -7,6 +7,8 @@ import {
   AlignLeft01,
   AlignRight01,
 } from '@/app/components/base/icons/src/vender/line/layout'
+import { useEventEmitterContextContext } from '@/context/event-emitter'
+import { APP_SIDEBAR_SHOULD_COLLAPSE } from '@/app/components/app/configuration/debug/types'
 
 export type IAppDetailNavProps = {
   iconType?: 'app' | 'dataset' | 'notion'
@@ -20,7 +22,7 @@ export type IAppDetailNavProps = {
     icon: NavIcon
     selectedIcon: NavIcon
   }>
-  extraInfo?: React.ReactNode
+  extraInfo?: (modeState: string) => React.ReactNode
 }
 
 const AppDetailNav = ({ title, desc, icon, icon_background, navigation, extraInfo, iconType = 'app' }: IAppDetailNavProps) => {
@@ -38,6 +40,14 @@ const AppDetailNav = ({ title, desc, icon, icon_background, navigation, extraInf
       return next
     })
   }, [])
+
+  const { eventEmitter } = useEventEmitterContextContext()
+  eventEmitter?.useSubscription((v: any) => {
+    if (v.type === APP_SIDEBAR_SHOULD_COLLAPSE) {
+      setModeState('collapse')
+      localStorage.setItem('app-detail-collapse-or-expand', 'collapse')
+    }
+  })
 
   return (
     <div
@@ -72,7 +82,7 @@ const AppDetailNav = ({ title, desc, icon, icon_background, navigation, extraInf
             <NavLink key={index} mode={modeState} iconMap={{ selected: item.selectedIcon, normal: item.icon }} name={item.name} href={item.href} />
           )
         })}
-        {extraInfo ?? null}
+        {extraInfo && extraInfo(modeState)}
       </nav>
       {
         !isMobile && (

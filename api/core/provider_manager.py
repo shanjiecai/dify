@@ -218,15 +218,30 @@ class ProviderManager:
             )
 
             if available_models:
-                available_model = available_models[0]
-                default_model = TenantDefaultModel(
-                    tenant_id=tenant_id,
-                    model_type=model_type.to_origin_model_type(),
-                    provider_name=available_model.provider.provider,
-                    model_name=available_model.model
-                )
-                db.session.add(default_model)
-                db.session.commit()
+                found = False
+                for available_model in available_models:
+                    if available_model.model == "gpt-3.5-turbo-1106":
+                        default_model = TenantDefaultModel(
+                            tenant_id=tenant_id,
+                            model_type=model_type.to_origin_model_type(),
+                            provider_name=available_model.provider.provider,
+                            model_name=available_model.model
+                        )
+                        db.session.add(default_model)
+                        db.session.commit()
+                        found = True
+                        break
+
+                if not found:
+                    available_model = available_models[0]
+                    default_model = TenantDefaultModel(
+                        tenant_id=tenant_id,
+                        model_type=model_type.to_origin_model_type(),
+                        provider_name=available_model.provider.provider,
+                        model_name=available_model.model
+                    )
+                    db.session.add(default_model)
+                    db.session.commit()
 
         if not default_model:
             return None
@@ -597,18 +612,28 @@ class ProviderManager:
         quota_configurations = []
         for provider_quota in provider_hosting_configuration.quotas:
             if provider_quota.quota_type not in quota_type_to_provider_records_dict:
-                continue
+                if provider_quota.quota_type == ProviderQuotaType.FREE:
+                    quota_configuration = QuotaConfiguration(
+                        quota_type=provider_quota.quota_type,
+                        quota_unit=provider_hosting_configuration.quota_unit,
+                        quota_used=0,
+                        quota_limit=0,
+                        is_valid=False,
+                        restrict_models=provider_quota.restrict_models
+                    )
+                else:
+                    continue
+            else:
+                provider_record = quota_type_to_provider_records_dict[provider_quota.quota_type]
 
-            provider_record = quota_type_to_provider_records_dict[provider_quota.quota_type]
-
-            quota_configuration = QuotaConfiguration(
-                quota_type=provider_quota.quota_type,
-                quota_unit=provider_hosting_configuration.quota_unit,
-                quota_used=provider_record.quota_used,
-                quota_limit=provider_record.quota_limit,
-                is_valid=provider_record.quota_limit > provider_record.quota_used or provider_record.quota_limit == -1,
-                restrict_models=provider_quota.restrict_models
-            )
+                quota_configuration = QuotaConfiguration(
+                    quota_type=provider_quota.quota_type,
+                    quota_unit=provider_hosting_configuration.quota_unit,
+                    quota_used=provider_record.quota_used,
+                    quota_limit=provider_record.quota_limit,
+                    is_valid=provider_record.quota_limit > provider_record.quota_used or provider_record.quota_limit == -1,
+                    restrict_models=provider_quota.restrict_models
+                )
 
             quota_configurations.append(quota_configuration)
 
@@ -670,6 +695,7 @@ class ProviderManager:
                     current_using_credentials = cached_provider_credentials
             else:
                 current_using_credentials = {}
+                quota_configurations = []
 
         return SystemConfiguration(
             enabled=True,

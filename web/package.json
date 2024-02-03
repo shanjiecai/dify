@@ -1,6 +1,6 @@
 {
   "name": "dify-web",
-  "version": "0.4.6",
+  "version": "0.5.3",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -42,12 +42,13 @@
     "js-audio-recorder": "^1.0.7",
     "js-cookie": "^3.0.1",
     "katex": "^0.16.7",
-    "lamejs": "1.2.0",
+    "lamejs": "^1.2.1",
     "lexical": "^0.12.2",
     "lodash-es": "^4.17.21",
     "mermaid": "10.4.0",
     "negotiator": "^0.6.3",
     "next": "^14.0.4",
+    "next-nprogress-bar": "^2.1.2",
     "qrcode.react": "^3.1.0",
     "qs": "^6.11.1",
     "rc-textarea": "^1.5.2",
@@ -74,6 +75,7 @@
     "remark-math": "^5.1.1",
     "scheduler": "^0.23.0",
     "server-only": "^0.0.1",
+    "sharp": "^0.33.2",
     "sortablejs": "^1.15.0",
     "swr": "^2.1.0",
     "use-context-selector": "^1.4.1"

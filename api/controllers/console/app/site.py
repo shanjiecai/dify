@@ -1,4 +1,5 @@
 # -*- coding:utf-8 -*-
+from constants.languages import supported_language
 from controllers.console import api
 from controllers.console.app import _get_app
 from controllers.console.setup import setup_required
@@ -7,7 +8,6 @@ from extensions.ext_database import db
 from fields.app_fields import app_site_fields
 from flask_login import current_user
 from flask_restful import Resource, marshal_with, reqparse
-from libs.helper import supported_language
 from libs.login import login_required
 from models.model import Site
 from werkzeug.exceptions import Forbidden, NotFound
@@ -42,7 +42,7 @@ class AppSite(Resource):
         app_model = _get_app(app_id)
 
         # The role of the current user in the ta table must be admin or owner
-        if current_user.current_tenant.current_role not in ['admin', 'owner']:
+        if not current_user.is_admin_or_owner:
             raise Forbidden()
 
         site = db.session.query(Site). \
@@ -88,7 +88,7 @@ class AppSiteAccessTokenReset(Resource):
         app_model = _get_app(app_id)
 
         # The role of the current user in the ta table must be admin or owner
-        if current_user.current_tenant.current_role not in ['admin', 'owner']:
+        if not current_user.is_admin_or_owner:
             raise Forbidden()
 
         site = db.session.query(Site).filter(Site.app_id == app_model.id).first()

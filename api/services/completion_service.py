@@ -77,6 +77,11 @@ class CompletionService:
                 Conversation.status == 'normal'
             ]
 
+            # if isinstance(user, Account):
+            #     conversation_filter.append(Conversation.from_account_id == user.id)
+            # else:
+            #     conversation_filter.append(Conversation.from_end_user_id == user.id if user else None)
+
             conversation = db.session.query(Conversation).filter(and_(*conversation_filter)).first()
 
             if not conversation:
@@ -414,6 +419,8 @@ class CompletionService:
             input_type = list(config.keys())[0]
 
             if variable not in user_inputs or not user_inputs[variable]:
+                if input_type == "external_data_tool":
+                    continue
                 if "required" in input_config and input_config["required"]:
                     raise ValueError(f"{variable} is required in input form")
                 else:
@@ -421,6 +428,10 @@ class CompletionService:
                     continue
 
             value = user_inputs[variable]
+
+            if value:
+                if not isinstance(value, str):
+                    raise ValueError(f"{variable} in input form must be a string")
 
             if input_type == "select":
                 options = input_config["options"] if "options" in input_config else []

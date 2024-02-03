@@ -35,6 +35,7 @@ import FloatPopoverContainer from '@/app/components/base/float-popover-container
 import DatasetDetailContext from '@/context/dataset-detail'
 import { DataSourceType } from '@/models/datasets'
 import useBreakpoints, { MediaType } from '@/hooks/use-breakpoints'
+import { LanguagesSupported, getModelRuntimeSupported } from '@/utils/language'
 
 export type IAppDetailLayoutProps = {
   children: React.ReactNode
@@ -55,16 +56,16 @@ const LikedItem = ({
   isMobile,
 }: ILikedItemProps) => {
   return (
-    <Link className={classNames(s.itemWrapper, 'px-0 sm:px-3 justify-center sm:justify-start')} href={`/app/${detail?.id}/overview`}>
-      <div className={classNames(s.iconWrapper, 'mr-0 sm:mr-2')}>
-        <AppIcon size='tiny' icon={detail?.icon} background={detail?.icon_background}/>
+    <Link className={classNames(s.itemWrapper, 'px-0', isMobile && 'justify-center')} href={`/app/${detail?.id}/overview`}>
+      <div className={classNames(s.iconWrapper, 'mr-0')}>
+        <AppIcon size='tiny' icon={detail?.icon} background={detail?.icon_background} />
         {type === 'app' && (
           <div className={s.statusPoint}>
             <Indicator color={appStatus ? 'green' : 'gray'} />
           </div>
         )}
       </div>
-      {!isMobile && <div className={s.appInfo}>{detail?.name || '--'}</div>}
+      {!isMobile && <div className={classNames(s.appInfo, 'ml-2')}>{detail?.name || '--'}</div>}
     </Link>
   )
 }
@@ -104,6 +105,7 @@ type IExtraInfoProps = {
 
 const ExtraInfo = ({ isMobile, relatedApps }: IExtraInfoProps) => {
   const locale = getLocaleOnClient()
+  const language = getModelRuntimeSupported(locale)
   const [isShowTips, { toggle: toggleTips, set: setShowTips }] = useBoolean(!isMobile)
   const { t } = useTranslation()
 
@@ -147,8 +149,12 @@ const ExtraInfo = ({ isMobile, relatedApps }: IExtraInfoProps) => {
           <div className='text-xs text-gray-500 mt-2'>{t('common.datasetMenus.emptyTip')}</div>
           <a
             className='inline-flex items-center text-xs text-primary-600 mt-2 cursor-pointer'
-            href={`https://docs.dify.ai/${locale === 'zh-Hans' ? 'v/zh-hans' : ''}/application/prompt-engineering`}
-            target='_blank'
+            href={
+              language === LanguagesSupported[1]
+                ? 'https://docs.dify.ai/v/zh-hans/guides/application-design/prompt-engineering'
+                : 'https://docs.dify.ai/user-guide/creating-dify-apps/prompt-engineering'
+            }
+            target='_blank' rel='noopener noreferrer'
           >
             <BookOpenIcon className='mr-1' />
             {t('common.datasetMenus.viewDoc')}
@@ -197,14 +203,14 @@ const DatasetDetailLayout: FC<IAppDetailLayoutProps> = (props) => {
     return <Loading />
 
   return (
-    <div className='flex overflow-hidden'>
+    <div className='grow flex overflow-hidden'>
       {!hideSideBar && <AppSideBar
         title={datasetRes?.name || '--'}
         icon={datasetRes?.icon || 'https://static.dify.ai/images/dataset-default-icon.png'}
         icon_background={datasetRes?.icon_background || '#F5F5F5'}
         desc={datasetRes?.description || '--'}
         navigation={navigation}
-        extraInfo={<ExtraInfo isMobile={isMobile} relatedApps={relatedApps} />}
+        extraInfo={mode => <ExtraInfo isMobile={mode === 'collapse'} relatedApps={relatedApps} />}
         iconType={datasetRes?.data_source_type === DataSourceType.NOTION ? 'notion' : 'dataset'}
       />}
       <DatasetDetailContext.Provider value={{

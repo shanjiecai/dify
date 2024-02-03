@@ -8,9 +8,10 @@ from datetime import datetime, timedelta
 from hashlib import sha256
 from typing import Any, Dict, Optional
 
+from constants.languages import language_timezone_mapping, languages
 from events.tenant_event import tenant_was_created
 from extensions.ext_redis import redis_client
-from flask import current_app, session
+from flask import current_app
 from libs.helper import get_remote_ip
 from libs.passport import PassportService
 from libs.password import compare_password, hash_password
@@ -22,7 +23,8 @@ from services.errors.account import (AccountAlreadyInTenantError, AccountLoginEr
                                      NoPermissionError, RoleAlreadyAssignedError, TenantNotFound)
 from sqlalchemy import func
 from tasks.mail_invite_member_task import send_invite_member_mail_task
-from werkzeug.exceptions import Forbidden, Unauthorized
+from werkzeug.exceptions import Forbidden
+from sqlalchemy import exc
 
 
 def _create_tenant_for_account(account) -> Tenant:
@@ -38,60 +40,39 @@ class AccountService:
 
     @staticmethod
     def load_user(user_id: str) -> Account:
-        # todo: used by flask_login
-        if '.' in user_id:
-            tenant_id, account_id = user_id.split('.')
+        account = Account.query.filter_by(id=user_id).first()
+        if not account:
+            return None
+
+        if account.status in [AccountStatus.BANNED.value, AccountStatus.CLOSED.value]:
+            raise Forbidden('Account is banned or closed.')
+        
+        # init owner's tenant
+        tenant_owner = TenantAccountJoin.query.filter_by(account_id=account.id, role='owner').first()
+        if not tenant_owner:
+            _create_tenant_for_account(account)
+        
+        current_tenant = TenantAccountJoin.query.filter_by(account_id=account.id, current=True).first()
+        if current_tenant:
+            account.current_tenant_id = current_tenant.tenant_id
         else:
-            account_id = user_id
-
-        account = db.session.query(Account).filter(Account.id == account_id).first()
-
-        if account:
-            if account.status == AccountStatus.BANNED.value or account.status == AccountStatus.CLOSED.value:
-                raise Forbidden('Account is banned or closed.')
-
-            workspace_id = session.get('workspace_id')
-            if workspace_id:
-                tenant_account_join = db.session.query(TenantAccountJoin).filter(
-                    TenantAccountJoin.account_id == account.id,
-                    TenantAccountJoin.tenant_id == workspace_id
-                ).first()
-
-                if not tenant_account_join:
-                    tenant_account_join = db.session.query(TenantAccountJoin).filter(
-                        TenantAccountJoin.account_id == account.id).first()
-
-                    if tenant_account_join:
-                        account.current_tenant_id = tenant_account_join.tenant_id
-                    else:
-                        _create_tenant_for_account(account)
-                    session['workspace_id'] = account.current_tenant_id
-                else:
-                    account.current_tenant_id = workspace_id
-            else:
-                tenant_account_join = db.session.query(TenantAccountJoin).filter(
-                    TenantAccountJoin.account_id == account.id).first()
-                if tenant_account_join:
-                    account.current_tenant_id = tenant_account_join.tenant_id
-                else:
-                    _create_tenant_for_account(account)
-                session['workspace_id'] = account.current_tenant_id
-
-            current_time = datetime.utcnow()
-
-            # update last_active_at when last_active_at is more than 10 minutes ago
-            if current_time - account.last_active_at > timedelta(minutes=10):
-                account.last_active_at = current_time
-                db.session.commit()
+            account.current_tenant_id = tenant_owner.tenant_id
+            tenant_owner.current = True
+            db.session.commit()
+       
+        if datetime.utcnow() - account.last_active_at > timedelta(minutes=10):
+            account.last_active_at = datetime.utcnow()
+            db.session.commit()
 
         return account
-    
+
+
     @staticmethod
     def get_account_jwt_token(account):
         payload = {
             "user_id": account.id,
             "exp": datetime.utcnow() + timedelta(days=30),
-            "iss":  current_app.config['EDITION'],
+            "iss": current_app.config['EDITION'],
             "sub": 'Console API Passport',
         }
 
@@ -137,8 +118,9 @@ class AccountService:
         return account
 
     @staticmethod
-    def create_account(email: str, name: str, password: str = None,
-                       interface_language: str = 'en-US', interface_theme: str = 'light',
+    def create_account(email: str, name: str, interface_language: str,
+                       password: str = None,
+                       interface_theme: str = 'light',
                        timezone: str = 'America/New_York', ) -> Account:
         """create account"""
         account = Account()
@@ -159,11 +141,9 @@ class AccountService:
 
         account.interface_language = interface_language
         account.interface_theme = interface_theme
-
-        if interface_language == 'zh-Hans':
-            account.timezone = 'Asia/Shanghai'
-        else:
-            account.timezone = timezone
+        
+        # Set timezone based on language
+        account.timezone = language_timezone_mapping.get(interface_language, 'UTC') 
 
         db.session.add(account)
         db.session.commit()
@@ -277,18 +257,20 @@ class TenantService:
     @staticmethod
     def switch_tenant(account: Account, tenant_id: int = None) -> None:
         """Switch the current workspace for the account"""
-        if not tenant_id:
-            tenant_account_join = TenantAccountJoin.query.filter_by(account_id=account.id).first()
-        else:
-            tenant_account_join = TenantAccountJoin.query.filter_by(account_id=account.id, tenant_id=tenant_id).first()
 
-        # Check if the tenant exists and the account is a member of the tenant
+        # Ensure tenant_id is provided
+        if tenant_id is None:
+            raise ValueError("Tenant ID must be provided.")
+
+        tenant_account_join = TenantAccountJoin.query.filter_by(account_id=account.id, tenant_id=tenant_id).first()
         if not tenant_account_join:
             raise AccountNotLinkTenantError("Tenant not found or account is not a member of the tenant.")
-
-        # Set the current tenant for the account
-        account.current_tenant_id = tenant_account_join.tenant_id
-        session['workspace_id'] = account.current_tenant.id
+        else: 
+            TenantAccountJoin.query.filter(TenantAccountJoin.account_id == account.id, TenantAccountJoin.tenant_id != tenant_id).update({'current': False})
+            tenant_account_join.current = True
+            db.session.commit()
+            # Set the current tenant for the account
+            account.current_tenant_id = tenant_account_join.tenant_id
 
     @staticmethod
     def get_tenant_members(tenant: Tenant) -> List[Account]:
@@ -346,7 +328,7 @@ class TenantService:
         }
         if action not in ['add', 'remove', 'update']:
             raise InvalidActionError("Invalid action.")
-        
+
         if member:
             if operator.id == member.id:
                 raise CannotOperateSelfError("Cannot operate self.")
@@ -430,7 +412,7 @@ class RegisterService:
         db.session.begin_nested()
         """Register account"""
         try:
-            account = AccountService.create_account(email, name, password)
+            account = AccountService.create_account(email, name, interface_language=languages[0], password=password)
             account.status = AccountStatus.ACTIVE.value
             account.initialized_at = datetime.utcnow()
 
@@ -453,27 +435,31 @@ class RegisterService:
         return account
 
     @classmethod
-    def invite_new_member(cls, tenant: Tenant, email: str, role: str = 'normal',
-                          inviter: Account = None) -> str:
+    def invite_new_member(cls, tenant: Tenant, email: str, language: str, role: str = 'normal', inviter: Account = None) -> str:    
         """Invite new member"""
         account = Account.query.filter_by(email=email).first()
 
         if not account:
             TenantService.check_member_permission(tenant, inviter, None, 'add')
             name = email.split('@')[0]
-            account = AccountService.create_account(email, name)
+            account = AccountService.create_account(email, name, interface_language=language)
             account.status = AccountStatus.PENDING.value
             db.session.commit()
+
+            TenantService.create_tenant_member(tenant, account, role)
         else:
             TenantService.check_member_permission(tenant, inviter, account, 'add')
             ta = TenantAccountJoin.query.filter_by(
                 tenant_id=tenant.id,
                 account_id=account.id
             ).first()
-            if ta:
-                raise AccountAlreadyInTenantError("Account already in tenant.")
 
-        TenantService.create_tenant_member(tenant, account, role)
+            if not ta:
+                TenantService.create_tenant_member(tenant, account, role)
+
+            # Support resend invitation email when the account is pending status
+            if account.status != AccountStatus.PENDING.value:
+                raise AccountAlreadyInTenantError("Account already in tenant.")
 
         token = cls.generate_invite_token(tenant, account)
 
@@ -542,10 +528,10 @@ class RegisterService:
             return None
 
         return {
-                'account': account,
-                'data': invitation_data,
-                'tenant': tenant,
-                }
+            'account': account,
+            'data': invitation_data,
+            'tenant': tenant,
+        }
 
     @classmethod
     def _get_invitation_by_token(cls, token: str, workspace_id: str, email: str) -> Optional[Dict[str, str]]:

@@ -9,6 +9,7 @@ import I18n from '@/context/i18n'
 import Button from '@/app/components/base/button'
 import Modal from '@/app/components/base/modal'
 import Tag from '@/app/components/base/tag'
+import { LanguagesSupportedUnderscore, getModelRuntimeSupported } from '@/utils/language'
 
 type IShareLinkProps = {
   isShow: boolean
@@ -43,6 +44,7 @@ const CustomizeModal: FC<IShareLinkProps> = ({
 }) => {
   const { t } = useTranslation()
   const { locale } = useContext(I18n)
+  const language = getModelRuntimeSupported(locale)
   const isChatApp = mode === 'chat'
 
   return <Modal
@@ -61,7 +63,7 @@ const CustomizeModal: FC<IShareLinkProps> = ({
         <div className='flex flex-col'>
           <div className='text-gray-900'>{t(`${prefixCustomize}.way1.step1`)}</div>
           <div className='text-gray-500 text-xs mt-1 mb-2'>{t(`${prefixCustomize}.way1.step1Tip`)}</div>
-          <a href={`https://github.com/langgenius/${isChatApp ? 'webapp-conversation' : 'webapp-text-generator'}`} target='_blank'>
+          <a href={`https://github.com/langgenius/${isChatApp ? 'webapp-conversation' : 'webapp-text-generator'}`} target='_blank' rel='noopener noreferrer'>
             <Button className='text-gray-800 text-sm w-fit'><GithubIcon className='text-gray-800 mr-2' />{t(`${prefixCustomize}.way1.step1Operation`)}</Button>
           </a>
         </div>
@@ -71,7 +73,7 @@ const CustomizeModal: FC<IShareLinkProps> = ({
         <div className='flex flex-col'>
           <div className='text-gray-900'>{t(`${prefixCustomize}.way1.step3`)}</div>
           <div className='text-gray-500 text-xs mt-1 mb-2'>{t(`${prefixCustomize}.way1.step2Tip`)}</div>
-          <a href="https://vercel.com/docs/concepts/deployments/git/vercel-for-github" target='_blank'>
+          <a href="https://vercel.com/docs/concepts/deployments/git/vercel-for-github" target='_blank' rel='noopener noreferrer'>
             <Button className='text-gray-800 text-sm w-fit'>
               <div className='mr-1.5 border-solid border-t-0 border-r-[7px] border-l-[7px] border-b-[12px] border-r-transparent border-b-black border-l-transparent border-t-transparent'></div>
               <span>{t(`${prefixCustomize}.way1.step2Operation`)}</span>
@@ -98,7 +100,15 @@ const CustomizeModal: FC<IShareLinkProps> = ({
       <p className='mt-2 text-base font-medium text-gray-800'>{t(`${prefixCustomize}.way2.name`)}</p>
       <Button
         className='w-36 mt-2'
-        onClick={() => window.open(`https://docs.dify.ai/${locale === 'en' ? '' : `v/${locale.toLowerCase()}`}/application/developing-with-apis`, '_blank')}
+        onClick={() =>
+          window.open(
+            `https://docs.dify.ai/${language !== LanguagesSupportedUnderscore[1]
+              ? 'user-guide/launching-dify-apps/developing-with-apis'
+              : `v/${locale.toLowerCase()}/guides/application-publishing/developing-with-apis`
+            }`,
+            '_blank',
+          )
+        }
       >
         <span className='text-sm text-gray-800'>{t(`${prefixCustomize}.way2.operation`)}</span>
         <ArrowTopRightOnSquareIcon className='w-4 h-4 ml-1 text-gray-800 shrink-0' />

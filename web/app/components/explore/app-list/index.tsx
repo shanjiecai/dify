@@ -10,18 +10,20 @@ import ExploreContext from '@/context/explore-context'
 import type { App, AppCategory } from '@/models/explore'
 import Category from '@/app/components/explore/category'
 import AppCard from '@/app/components/explore/app-card'
-import { fetchAppDetail, fetchAppList, installApp } from '@/service/explore'
+import { fetchAppDetail, fetchAppList } from '@/service/explore'
 import { createApp } from '@/service/apps'
 import CreateAppModal from '@/app/components/explore/create-app-modal'
 import type { CreateAppModalProps } from '@/app/components/explore/create-app-modal'
 import Loading from '@/app/components/base/loading'
 import { NEED_REFRESH_APP_LIST_KEY } from '@/config'
 import { type AppMode } from '@/types/app'
+import { useAppContext } from '@/context/app-context'
 
 const Apps: FC = () => {
   const { t } = useTranslation()
+  const { isCurrentWorkspaceManager } = useAppContext()
   const router = useRouter()
-  const { setControlUpdateInstalledApps, hasEditPermission } = useContext(ExploreContext)
+  const { hasEditPermission } = useContext(ExploreContext)
   const [currCategory, setCurrCategory] = React.useState<AppCategory | ''>('')
   const [allList, setAllList] = React.useState<App[]>([])
   const [isLoaded, setIsLoaded] = React.useState(false)
@@ -36,20 +38,13 @@ const Apps: FC = () => {
   useEffect(() => {
     (async () => {
       const { categories, recommended_apps }: any = await fetchAppList()
+      const sortedRecommendedApps = [...recommended_apps]
+      sortedRecommendedApps.sort((a, b) => a.position - b.position) // position from small to big
       setCategories(categories)
-      setAllList(recommended_apps)
+      setAllList(sortedRecommendedApps)
       setIsLoaded(true)
     })()
   }, [])
-
-  const handleAddToWorkspace = async (appId: string) => {
-    await installApp(appId)
-    Toast.notify({
-      type: 'success',
-      message: t('common.api.success'),
-    })
-    setControlUpdateInstalledApps(Date.now())
-  }
 
   const [currApp, setCurrApp] = React.useState<App | null>(null)
   const [isShowCreateModal, setIsShowCreateModal] = React.useState(false)
@@ -70,7 +65,7 @@ const Apps: FC = () => {
         message: t('app.newApp.appCreated'),
       })
       localStorage.setItem(NEED_REFRESH_APP_LIST_KEY, '1')
-      router.push(`/app/${app.id}/overview`)
+      router.push(`/app/${app.id}/${isCurrentWorkspaceManager ? 'configuration' : 'overview'}`)
     }
     catch (e) {
       Toast.notify({ type: 'error', message: t('app.newApp.appCreateFailed') })
@@ -109,7 +104,6 @@ const Apps: FC = () => {
                 setCurrApp(app)
                 setIsShowCreateModal(true)
               }}
-              onAddToWorkspace={handleAddToWorkspace}
             />
           ))}
         </nav>

@@ -9,6 +9,7 @@ from fields.dataset_fields import dataset_detail_fields
 from flask import request
 from flask_restful import marshal, reqparse
 from libs.login import current_user
+from models.dataset import Dataset
 from services.dataset_service import DatasetService
 # from services.provider_service import ProviderService
 from werkzeug.exceptions import NotFound, Forbidden
@@ -71,7 +72,7 @@ class DatasetApi(DatasetApiResource):
                             help='type is required. Name must be between 1 to 40 characters.',
                             type=_validate_name)
         parser.add_argument('indexing_technique', type=str, location='json',
-                            choices=('high_quality', 'economy'),
+                            choices=Dataset.INDEXING_TECHNIQUE_LIST,
                             help='Invalid indexing technique.')
         args = parser.parse_args()
 

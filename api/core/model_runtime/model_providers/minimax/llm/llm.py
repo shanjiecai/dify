@@ -1,9 +1,8 @@
-from typing import Generator, List, Optional, Union
+from typing import Generator, List
 
-from core.model_runtime.entities.llm_entities import LLMMode, LLMResult, LLMResultChunk, LLMResultChunkDelta, LLMUsage
+from core.model_runtime.entities.llm_entities import LLMResult, LLMResultChunk, LLMResultChunkDelta
 from core.model_runtime.entities.message_entities import (AssistantPromptMessage, PromptMessage, PromptMessageTool,
-                                                          SystemPromptMessage, UserPromptMessage)
-from core.model_runtime.entities.model_entities import AIModelEntity, FetchFrom, ModelType, ParameterRule, ParameterType
+                                                          SystemPromptMessage, ToolPromptMessage, UserPromptMessage)
 from core.model_runtime.errors.invoke import (InvokeAuthorizationError, InvokeBadRequestError, InvokeConnectionError,
                                               InvokeError, InvokeRateLimitError, InvokeServerUnavailableError)
 from core.model_runtime.errors.validate import CredentialsValidateFailedError
@@ -18,6 +17,8 @@ from core.model_runtime.model_providers.minimax.llm.types import MinimaxMessage
 
 class MinimaxLargeLanguageModel(LargeLanguageModel):
     model_apis = {
+        'abab6-chat': MinimaxChatCompletionPro,
+        'abab5.5s-chat': MinimaxChatCompletionPro,
         'abab5.5-chat': MinimaxChatCompletionPro,
         'abab5-chat': MinimaxChatCompletion
     }
@@ -54,7 +55,7 @@ class MinimaxLargeLanguageModel(LargeLanguageModel):
                 stream=False,
                 user=''
             )
-        except InvalidAuthenticationError as e:
+        except (InvalidAuthenticationError, InsufficientAccountBalanceError) as e:
             raise CredentialsValidateFailedError(f"Invalid API key: {e}")
 
     def get_num_tokens(self, model: str, credentials: dict, prompt_messages: list[PromptMessage],
@@ -83,6 +84,13 @@ class MinimaxLargeLanguageModel(LargeLanguageModel):
         """
         client: MinimaxChatCompletionPro = self.model_apis[model]()
 
+        if tools:
+            tools = [{
+                "name": tool.name,
+                "description": tool.description,
+                "parameters": tool.parameters
+            } for tool in tools]
+
         response = client.generate(
             model=model,
             api_key=credentials['minimax_api_key'],
@@ -108,7 +116,19 @@ class MinimaxLargeLanguageModel(LargeLanguageModel):
         elif isinstance(prompt_message, UserPromptMessage):
             return MinimaxMessage(role=MinimaxMessage.Role.USER.value, content=prompt_message.content)
         elif isinstance(prompt_message, AssistantPromptMessage):
+            if prompt_message.tool_calls:
+                message = MinimaxMessage(
+                    role=MinimaxMessage.Role.ASSISTANT.value,
+                    content=''
+                )
+                message.function_call={
+                    'name': prompt_message.tool_calls[0].function.name,
+                    'arguments': prompt_message.tool_calls[0].function.arguments
+                }
+                return message
             return MinimaxMessage(role=MinimaxMessage.Role.ASSISTANT.value, content=prompt_message.content)
+        elif isinstance(prompt_message, ToolPromptMessage):
+            return MinimaxMessage(role=MinimaxMessage.Role.FUNCTION.value, content=prompt_message.content)
         else:
             raise NotImplementedError(f'Prompt message type {type(prompt_message)} is not supported')
 
@@ -148,6 +168,28 @@ class MinimaxLargeLanguageModel(LargeLanguageModel):
                         ),
                         usage=usage,
                         finish_reason=message.stop_reason if message.stop_reason else None,
+                    ),
+                )
+            elif message.function_call:
+                if 'name' not in message.function_call or 'arguments' not in message.function_call:
+                    continue
+
+                yield LLMResultChunk(
+                    model=model,
+                    prompt_messages=prompt_messages,
+                    delta=LLMResultChunkDelta(
+                        index=0,
+                        message=AssistantPromptMessage(
+                            content='',
+                            tool_calls=[AssistantPromptMessage.ToolCall(
+                                id='',
+                                type='function',
+                                function=AssistantPromptMessage.ToolCall.ToolCallFunction(
+                                    name=message.function_call['name'],
+                                    arguments=message.function_call['arguments']
+                                )
+                            )]
+                        ),
                     ),
                 )
             else:
