@@ -295,44 +295,44 @@ class PromptTransform:
             pre_prompt_content = prompt_template.format(
                 prompt_inputs
             )
-        history_str = ""
-        if memory and 'histories_prompt' in prompt_rules:
-            rest_tokens = self._calculate_rest_token(prompt_messages, model_config)
-            if user_name:
-                memory.human_prefix = user_name
-            if assistant_name:
-                memory.ai_prefix = assistant_name
-            histories = self._get_history_messages_list_from_memory(memory, rest_tokens)
-            if histories:
-                history_str = ""
-                for history in histories:
-                    history_str += str(history.role) + ":" + history.content + "\n"
-        prompt_template = PromptTemplateParser(template=prompt_rules['histories_prompt'])
-        histories_prompt_content = prompt_template.format(
-            {'histories': history_str}
-        )
-        prompt = ''
-        for order in prompt_rules['system_prompt_orders']:
-            if order == 'context_prompt':
-                prompt += context_prompt_content
-            elif order == 'pre_prompt':
-                prompt += pre_prompt_content
-            elif order == 'histories_prompt':
+        if assistant_name:
+            history_str = ""
+            if memory and 'histories_prompt' in prompt_rules:
+                rest_tokens = self._calculate_rest_token(prompt_messages, model_config)
                 if user_name:
-                    query = histories_prompt_content + user_name + ": " + query
-                query += assistant_name if assistant_name else "user" + ": "
+                    memory.human_prefix = user_name
+                if assistant_name:
+                    memory.ai_prefix = assistant_name
+                histories = self._get_history_messages_list_from_memory(memory, rest_tokens)
+                if histories:
+                    history_str = ""
+                    for history in histories:
+                        history_str += str(history.role) + ":" + history.content + "\n"
+            prompt_template = PromptTemplateParser(template=prompt_rules['histories_prompt'])
+            histories_prompt_content = prompt_template.format(
+                {'histories': history_str}
+            )
+            prompt = ''
+            for order in prompt_rules['system_prompt_orders']:
+                if order == 'context_prompt':
+                    prompt += context_prompt_content
+                elif order == 'pre_prompt':
+                    prompt += pre_prompt_content
+                elif order == 'histories_prompt':
+                    if user_name:
+                        query = histories_prompt_content + user_name + ": " + query
+                    query += assistant_name if assistant_name else "user" + ": "
 
-        prompt = re.sub(r'<\|.*?\|>', '', prompt)
+            prompt = re.sub(r'<\|.*?\|>', '', prompt)
 
-        if prompt:
-            prompt_messages.append(SystemPromptMessage(content=prompt))
-
-        # self._append_chat_histories(
-        #     memory=memory,
-        #     prompt_messages=prompt_messages,
-        #     model_config=model_config
-        # )
-
+            if prompt:
+                prompt_messages.append(SystemPromptMessage(content=prompt))
+        else:
+            self._append_chat_histories(
+                memory=memory,
+                prompt_messages=prompt_messages,
+                model_config=model_config
+            )
         if files:
             prompt_message_contents = [TextPromptMessageContent(data=query)]
             for file in files:
@@ -384,6 +384,7 @@ class PromptTransform:
         # outer memory优先级高于memory
         if outer_memory and 'group_histories_prompt' in prompt_rules:
             # append group chat histories
+            query_prompt = prompt_rules["group_query_prompt"] if "group_query_prompt" in prompt_rules else query_prompt
             tmp_human_message = UserPromptMessage(content=PromptBuilder.parse_prompt(
                 prompt=prompt + query_prompt,
                 inputs={
@@ -625,7 +626,7 @@ class PromptTransform:
             elif prompt_item.role == PromptMessageRole.ASSISTANT:
                 prompt_messages.append(AssistantPromptMessage(content=prompt))
         # 群聊改为放到一个prompt message里
-        if memory:
+        if memory and assistant_name:
             if user_name:
                 memory.human_prefix = user_name
             if assistant_name:
