@@ -2,6 +2,9 @@ import requests
 import json
 import os
 from mylogger import logger
+import spacy
+import time
+nlp = spacy.load("en_core_web_sm")
 app_endpoint = os.getenv("APP_ENDPOINT", "https://www.vvvapp.org")
 
 
@@ -127,6 +130,22 @@ def send_feishu_bot(message):
     response = requests.post(feishu_alert_url, headers=headers, json=data)
     logger.info(response.text)
     return response.json()
+
+
+def split_and_get_interval(text):
+    begin = time.time()
+    doc = nlp(text)
+    sentence_list = []
+    interval_list = []
+    sentences = [sent.text for sent in doc.sents]
+    for index, sentence in enumerate(sentences):
+        # print(sentence)
+        sentence_list.append(sentence)
+        if index < len(sentences) - 1:
+            # 假设每秒打字速度为10个字
+            interval_list.append(len(sentences[index+1]) / 10)
+    print(time.time() - begin)
+    return sentence_list, interval_list
 
 
 if __name__ == '__main__':

@@ -242,12 +242,21 @@ def chat_thread(group_id: int, main_context: AppContext):
                             # 发送消息
                             logger.info(f"send_message to: {group_id}, {res}")
                             # 如果answer过长，分段发送
-                            if len(res["answer"]) > 250:
+                            if len(res["answer"]) > 200:
                                 # 按照标点符号分段
-                                answer_list = re.split(r"(?<=[.!?])\s", res["answer"])
-                                for answer in answer_list:
-                                    if answer:
-                                        send_chat_message(group_id, answer)
+                                # answer_list = re.split(r"(?<=[.!?])\s", res["answer"])
+                                # for index, answer in enumerate(answer_list):
+                                #     if answer:
+                                #         send_chat_message(group_id, answer)
+                                #         # 模拟人的打字时间来停顿
+                                #         if index < len(answer_list) - 1:
+                                #             # 根据下一句的长度来停顿
+                                #             time.sleep(len(answer_list[index+1]) / 10)
+                                sentence_list, interval_list = split_and_get_interval(res["answer"])
+                                for index, sentence in enumerate(sentence_list):
+                                    send_chat_message(group_id, sentence)
+                                    if index < len(interval_list):
+                                        time.sleep(interval_list[index])
                             else:
                                 send_chat_message(group_id, res["answer"])
                         else:

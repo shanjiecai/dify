@@ -10,7 +10,7 @@ from werkzeug.exceptions import NotFound, InternalServerError
 
 import services
 from controllers.app_api import api
-from controllers.app_api.app.utils import send_feishu_bot
+from controllers.app_api.app.utils import send_feishu_bot, split_and_get_interval
 from controllers.service_api.app import create_or_update_end_user_for_user_id
 from controllers.service_api.app.error import AppUnavailableError, ProviderNotInitializeError, NotChatAppError, \
     ConversationCompletedError, CompletionRequestError, ProviderQuotaExceededError, \
@@ -273,6 +273,10 @@ class ChatActiveApi(AppApiResource):
 
 def compact_response(response: Union[dict | Generator]) -> Response:
     if isinstance(response, dict):
+        if "answer" in response and response["answer"] is not None and len(response["answer"]) > 200:
+            sentence_list, interval_list = split_and_get_interval(response["answer"])
+            response["sentence_list"] = sentence_list
+            response["interval_list"] = interval_list
         return Response(response=json.dumps(response), status=200, mimetype='application/json')
     else:
         def generate() -> Generator:
