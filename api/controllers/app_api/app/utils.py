@@ -143,7 +143,7 @@ def split_and_get_interval(text):
         sentence_list.append(sentence)
         if index < len(sentences) - 1:
             # 假设每秒打字速度为15个字
-            interval_list.append(round(len(sentences[index+1]) / 15, 1))
+            interval_list.append(round(len(sentences[index+1]) / 7, 1))
     print(time.time() - begin)
     return sentence_list, interval_list
 

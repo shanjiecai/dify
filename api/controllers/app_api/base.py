@@ -20,7 +20,7 @@ def generate_response(api_key, prompt, system_prompt=None, **kwargs):
 
     response = openai.ChatCompletion.create(
         model="gpt-3.5-turbo-0125",
-        max_tokens=kwargs.get('max_tokens', 200),
+        max_tokens=kwargs.get('max_tokens', 300),
         temperature=kwargs.get('temperature', 0.7),
         presence_penalty=kwargs.get('presence_penalty', 0),
         frequency_penalty=kwargs.get('frequency_penalty', 0),
