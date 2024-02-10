@@ -458,7 +458,7 @@ class PromptTransform:
         histories_prompt_content = prompt_template.format(
             {'histories': histories}
         )
-        query = histories_prompt_content + (assistant_name if assistant_name else "") + ": " + query
+        query = histories_prompt_content + (assistant_name if assistant_name else "") + ": "
 
         for prompt_item in raw_prompt_list:
             raw_prompt = prompt_item['text']
