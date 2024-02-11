@@ -217,7 +217,7 @@ def chat_thread(group_id: int, main_context: AppContext):
                             res = model_chat(conversation_id, outer_memory=outer_memory, is_force=True, query=query, user_name="Human")
                             if res and res.get("answer", None):
                                 res_answer_new = ""
-                                for line in res_answer_new.split("\n"):
+                                for line in res.get("answer").split("\n"):
                                     if line.startswith("Question"):
                                         question_list.append(line.split(":")[1].strip())
                                     else:
