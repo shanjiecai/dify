@@ -1,6 +1,7 @@
 import logging
 from pprint import pprint
 from typing import List, Optional
+from typing import Optional
 
 from langchain.document_loaders import PyPDFium2Loader, PDFPlumberLoader
 import camelot
@@ -8,6 +9,8 @@ from extensions.ext_storage import storage
 from langchain.document_loaders import PyPDFium2Loader
 from langchain.document_loaders.base import BaseLoader
 from langchain.schema import Document
+
+from extensions.ext_storage import storage
 from models.model import UploadFile
 
 # logger = logging.getLogger(__name__)
@@ -32,7 +35,7 @@ class PdfLoader(BaseLoader):
         self._file_path = file_path
         self._upload_file = upload_file
 
-    def load(self) -> List[Document]:
+    def load(self) -> list[Document]:
         plaintext_file_key = ''
         plaintext_file_exists = False
         if self._upload_file:
