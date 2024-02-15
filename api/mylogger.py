@@ -1,6 +1,7 @@
 # import logging
 # import colorlog
 from loguru import logger
+
 logger.add(
     "./log/log_{time:YYYY-MM-DD}.tsv",
     rotation="10000KB",

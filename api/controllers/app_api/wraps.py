@@ -1,16 +1,10 @@
-# -*- coding:utf-8 -*-
-from datetime import datetime
-from functools import wraps
 
-from flask import request, current_app
-from flask_login import user_logged_in
+from flask import request
 from flask_restful import Resource
-from werkzeug.exceptions import NotFound, Unauthorized
+from werkzeug.exceptions import Unauthorized
 
-from libs.login import _get_user
 from extensions.ext_database import db
-from models.account import Tenant, TenantAccountJoin, Account
-from models.model import ApiToken, App
+from models.model import App
 
 
 def validate_app_token(func):

@@ -3,41 +3,36 @@
 # 2、如果长时间没有聊天，主动发起聊天
 # 3、根据时事热点，主动发起聊天
 import datetime
-import re
-import traceback
-import uuid
-import os
-
-from sqlalchemy import and_
-from typing import List
 import json
-
-from flask import Flask, current_app
-from flask.ctx import AppContext
-
-from controllers.service_api.app import create_or_update_end_user_for_user_id
-# from core.completion import Completion
-from extensions.ext_database import db
-from models.model import Conversation, App, AppModelConfig
-from mylogger import logger
-
-
+import os
+import re
 import threading
 import time
-import random
+import traceback
+import uuid
+
 import requests
+from flask import Flask
+from flask.ctx import AppContext
+from sqlalchemy import and_
 
-
-from core.judge_llm_active import judge_llm_active
-from services.completion_service import CompletionService
+from controllers.app_api.app.search_event import download_from_url, get_topic
 from controllers.app_api.app.utils import *
-from controllers.app_api.app.search_event import get_topic, download_from_url
+from controllers.service_api.app import create_or_update_end_user_for_user_id
+from core.judge_llm_active import judge_llm_active
+
+# from core.completion import Completion
+from extensions.ext_database import db
 from extensions.ext_redis import redis_client
+from models.model import App, Conversation
+from mylogger import logger
+from services.completion_service import CompletionService
+
 api_key = os.environ.get('OPENAI_API_KEY')
 # print(api_key)
 
 
-def model_chat(conversation_id: str, outer_memory: List=None, is_force=False, query="", user_name=''):
+def model_chat(conversation_id: str, outer_memory: list=None, is_force=False, query="", user_name=''):
     # time.sleep(10000)
     # 对当前conversation上锁
     if redis_client.get(conversation_id) is None:

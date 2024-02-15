@@ -1,10 +1,11 @@
-from typing import Any, List, Dict
+from typing import Any
 
 from langchain.memory.chat_memory import BaseChatMemory
-from langchain.schema import get_buffer_string, BaseMessage
+from langchain.schema import BaseMessage, get_buffer_string
 
 from core.file.message_file_parser import MessageFileParser
-from core.model_providers.models.entity.message import PromptMessage, MessageType, to_lc_messages
+from core.model_providers.models.entity.message import MessageType, PromptMessage, to_lc_messages
+
 # from core.model_providers.models.llm.base import BaseLLM
 from extensions.ext_database import db
 from models.model import Conversation, Message
@@ -22,7 +23,7 @@ class ReadOnlyConversationTokenDBBufferSharedMemory(BaseChatMemory):
     last_role: str = ""
 
     @property
-    def buffer(self) -> List[BaseMessage]:
+    def buffer(self) -> list[BaseMessage]:
         """String buffer of memory."""
         app_model = self.conversation.app
 
@@ -36,7 +37,7 @@ class ReadOnlyConversationTokenDBBufferSharedMemory(BaseChatMemory):
         messages = list(reversed(messages))
         message_file_parser = MessageFileParser(tenant_id=app_model.tenant_id, app_id=self.conversation.app_id)
 
-        chat_messages: List[PromptMessage] = []
+        chat_messages: list[PromptMessage] = []
         # 去掉最后一个
         if messages[-1].answer == None or messages[-1].answer == "":
             self.last_query = messages[-1].query
@@ -89,14 +90,14 @@ class ReadOnlyConversationTokenDBBufferSharedMemory(BaseChatMemory):
         return to_lc_messages(chat_messages)
 
     @property
-    def memory_variables(self) -> List[str]:
+    def memory_variables(self) -> list[str]:
         """Will always return list of memory variables.
 
         :meta private:
         """
         return [self.memory_key]
 
-    def load_memory_variables(self, inputs: Dict[str, Any]) -> Dict[str, Any]:
+    def load_memory_variables(self, inputs: dict[str, Any]) -> dict[str, Any]:
         """Return history buffer."""
         buffer: Any = self.buffer
         if self.return_messages:
@@ -109,7 +110,7 @@ class ReadOnlyConversationTokenDBBufferSharedMemory(BaseChatMemory):
             )
         return {self.memory_key: final_buffer}
 
-    def save_context(self, inputs: Dict[str, Any], outputs: Dict[str, str]) -> None:
+    def save_context(self, inputs: dict[str, Any], outputs: dict[str, str]) -> None:
         """Nothing should be saved or changed"""
         pass
 

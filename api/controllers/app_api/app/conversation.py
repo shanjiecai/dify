@@ -1,26 +1,25 @@
-# -*- coding:utf-8 -*-
-import json
 
 from flask import request
-from flask_restful import fields, marshal_with, reqparse
+from flask_restful import marshal_with, reqparse
 from flask_restful.inputs import int_range
 from werkzeug.exceptions import NotFound
 
+import services
 from controllers.app_api import api
 from controllers.app_api.app import create_or_update_end_user_for_user_id
 from controllers.app_api.app.error import NotChatAppError
 from controllers.app_api.wraps import AppApiResource
+
 # from core.model_providers.model_factory import ModelFactory
 from core.model_providers.models.entity.message import to_prompt_messages
 from core.prompt.prompt_builder import PromptBuilder
+from extensions.ext_database import db
 from fields.conversation_fields import conversation_infinite_scroll_pagination_fields, simple_conversation_fields
 from libs.exception import BaseHTTPException
-from libs.helper import TimestampField, uuid_value
-import services
-from services.conversation_service import ConversationService
-from extensions.ext_database import db
-from models.model import AppModelConfig, Conversation, App, Message
+from libs.helper import uuid_value
+from models.model import App, AppModelConfig, Conversation, Message
 from mylogger import logger
+from services.conversation_service import ConversationService
 
 
 class ConversationApi(AppApiResource):
@@ -49,19 +48,19 @@ class ConversationApi(AppApiResource):
         app_model_config = app_model.app_model_config.copy()
         model_dict = app_model_config.model_dict
 
-        if app_model_config.pre_prompt:
-            system_message = PromptBuilder.to_system_message(app_model_config.pre_prompt, {})
-            system_instruction = system_message.content
-            model_instance = ModelFactory.get_text_generation_model(
-                tenant_id=app_model.tenant_id,
-                model_provider_name=model_dict.get('provider'),
-                model_name=model_dict.get('name')
-            )
-            system_instruction_tokens = model_instance.get_num_tokens(to_prompt_messages([system_message]))
-        else:
-            system_message = ""
-            system_instruction = ""
-            system_instruction_tokens = 0
+        # if app_model_config.pre_prompt:
+        #     system_message = PromptBuilder.to_system_message(app_model_config.pre_prompt, {})
+        #     system_instruction = system_message.content
+        #     # model_instance = ModelFactory.get_text_generation_model(
+        #     #     tenant_id=app_model.tenant_id,
+        #     #     model_provider_name=model_dict.get('provider'),
+        #     #     model_name=model_dict.get('name')
+        #     # )
+        #     # system_instruction_tokens = model_instance.get_num_tokens(to_prompt_messages([system_message]))
+        # else:
+        #     system_message = ""
+        #     system_instruction = ""
+        #     system_instruction_tokens = 0
         # print(system_instruction)
         end_user = create_or_update_end_user_for_user_id(app_model, "")
 
@@ -75,8 +74,8 @@ class ConversationApi(AppApiResource):
             name='',
             inputs={},
             introduction=app_model_config.opening_statement,
-            system_instruction=system_instruction,
-            system_instruction_tokens=system_instruction_tokens,
+            system_instruction="",
+            system_instruction_tokens=0,
             status='normal',
             from_source='api',
             from_end_user_id=end_user.id,

@@ -1,11 +1,7 @@
-# -*- coding:utf-8 -*-
 from flask_restful import fields, marshal_with, reqparse
-from flask_restful.inputs import int_range
 
 from controllers.app_api import api
 from controllers.app_api.wraps import AppApiResource
-
-from models.model import App
 from services.app_model_service import AppModelService
 
 

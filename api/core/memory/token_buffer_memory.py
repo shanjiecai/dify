@@ -1,7 +1,6 @@
 from core.file.message_file_parser import MessageFileParser
 from core.model_manager import ModelInstance
 from core.model_runtime.entities.message_entities import (
-    AssistantPromptMessage,
     PromptMessage,
     PromptMessageRole,
     TextPromptMessageContent,
@@ -11,6 +10,7 @@ from core.model_runtime.entities.model_entities import ModelType
 from core.model_runtime.model_providers import model_provider_factory
 from extensions.ext_database import db
 from models.model import Conversation, Message
+from typing import Optional
 
 
 class TokenBufferMemory:
@@ -19,12 +19,22 @@ class TokenBufferMemory:
         self.model_instance = model_instance
 
     def get_history_prompt_messages(self, max_token_limit: int = 2000,
-                                    message_limit: int = 10) -> list[PromptMessage]:
+                                    message_limit: int = 10,
+                                    assistant_name: Optional[str] = None,
+                                    user_name: Optional[str] = None
+                                    ) -> list[PromptMessage]:
         """
         Get history prompt messages.
         :param max_token_limit: max token limit
         :param message_limit: message limit
+        :param assistant_name: assistant name
+        :param user_name: user name
         """
+        if not assistant_name:
+            assistant_name = PromptMessageRole.USER.value
+        if not user_name:
+            user_name = PromptMessageRole.USER.value
+
         app_record = self.conversation.app
 
         # fetch limited messages, and return reversed
@@ -64,11 +74,12 @@ class TokenBufferMemory:
 
                 prompt_messages.append(UserPromptMessage(content=prompt_message_contents))
             else:
-                prompt_messages.append(UserPromptMessage(content=message.query, role=PromptMessageRole.USER if message.role == "Human" else message.role))
+                if message.query:
+                    prompt_messages.append(UserPromptMessage(content=message.query, role=user_name if message.role == "Human" else message.role))
 
             # prompt_messages.append(AssistantPromptMessage(content=message.answer))
             if message.answer:
-                prompt_messages.append(UserPromptMessage(content=message.answer, role=PromptMessageRole.USER if message.assistant_name == None else message.assistant_name))
+                prompt_messages.append(UserPromptMessage(content=message.answer, role=assistant_name if message.assistant_name == None else message.assistant_name))
 
         if not prompt_messages:
             return []

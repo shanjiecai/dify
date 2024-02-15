@@ -1,22 +1,22 @@
 from __future__ import annotations
 
 import datetime
-from typing import Any, List, Dict
+from typing import Any
 
 from langchain.memory.chat_memory import BaseChatMemory
-from langchain.schema import get_buffer_string, BaseMessage, ChatMessage
-from langchain.memory import ConversationSummaryBufferMemory
 from langchain.memory.summary import SummarizerMixin
+from langchain.schema import BaseMessage, ChatMessage, get_buffer_string
+
 # from .summary import SummarizerMixin
 from langchain.schema.language_model import BaseLanguageModel
 from pydantic import root_validator
 
 from controllers.service_api.app import create_or_update_end_user_for_user_id
-from core.model_providers.models.entity.message import PromptMessage, MessageType, to_lc_messages, to_prompt_messages
+from core.model_providers.models.entity.message import MessageType, PromptMessage, to_lc_messages, to_prompt_messages
 from core.model_providers.models.llm.base import BaseLLM
 from core.prompt.prompt_builder import PromptBuilder
 from extensions.ext_database import db
-from models.model import Conversation, Message, App
+from models.model import App, Conversation, Message
 
 
 class ReadOnlyConversationSummaryBufferSharedMemory(BaseChatMemory, SummarizerMixin):
@@ -33,11 +33,11 @@ class ReadOnlyConversationSummaryBufferSharedMemory(BaseChatMemory, SummarizerMi
     moving_summary_buffer: str = ""
     # 默认1970年
     previous_summary_updated_at: datetime.datetime = datetime.datetime(1970, 1, 1)
-    messages: List[Message] = None
+    messages: list[Message] = None
     final_buffer: str|None = None
 
     @property
-    def buffer(self) -> List[BaseMessage]:
+    def buffer(self) -> list[BaseMessage]:
         """String buffer of memory."""
         # fetch limited messages desc, and return reversed
         print(f"conversation: {self.conversation.previous_summary_updated_at}")
@@ -55,7 +55,7 @@ class ReadOnlyConversationSummaryBufferSharedMemory(BaseChatMemory, SummarizerMi
         print(f"messages: {messages[-1].updated_at}")
         self.messages = messages.copy()
 
-        chat_messages: List[PromptMessage|ChatMessage] = []
+        chat_messages: list[PromptMessage|ChatMessage] = []
         for message in messages[:-1]:
             if message.role == "Human":
                 chat_messages.append(PromptMessage(content=message.query, type=MessageType.USER))
@@ -81,14 +81,14 @@ class ReadOnlyConversationSummaryBufferSharedMemory(BaseChatMemory, SummarizerMi
         return to_lc_messages(chat_messages)
 
     @property
-    def memory_variables(self) -> List[str]:
+    def memory_variables(self) -> list[str]:
         """Will always return list of memory variables.
 
         :meta private:
         """
         return [self.memory_key]
 
-    def load_memory_variables(self, inputs: Dict[str, Any]) -> Dict[str, Any]:
+    def load_memory_variables(self, inputs: dict[str, Any]) -> dict[str, Any]:
         """Return history buffer."""
         if self.final_buffer:
             return {self.memory_key: self.final_buffer}
@@ -107,7 +107,7 @@ class ReadOnlyConversationSummaryBufferSharedMemory(BaseChatMemory, SummarizerMi
         # self.predict_new_summary(buffer, self.moving_summary_buffer)
         if self.moving_summary_buffer != "":
             # buffer = self.buffer
-            first_messages: List[BaseMessage] = [
+            first_messages: list[BaseMessage] = [
                 # self.summary_message_cls(content=self.moving_summary_buffer, role="Previous conversation", type="Previous conversation")
                 self.summary_message_cls(content=self.moving_summary_buffer)
             ]
@@ -127,7 +127,7 @@ class ReadOnlyConversationSummaryBufferSharedMemory(BaseChatMemory, SummarizerMi
         return {self.memory_key: final_buffer}
 
     @root_validator()
-    def validate_prompt_input_variables(cls, values: Dict) -> Dict:
+    def validate_prompt_input_variables(cls, values: dict) -> dict:
         """Validate that prompt input variables are consistent."""
         prompt_variables = values["prompt"].input_variables
         expected_keys = {"summary", "new_lines"}
@@ -138,7 +138,7 @@ class ReadOnlyConversationSummaryBufferSharedMemory(BaseChatMemory, SummarizerMi
             )
         return values
 
-    def save_context(self, inputs: Dict[str, Any], outputs: Dict[str, str]) -> None:
+    def save_context(self, inputs: dict[str, Any], outputs: dict[str, str]) -> None:
         """Nothing should be saved or changed"""
         # super().save_context(inputs, outputs)
         # self.prune()

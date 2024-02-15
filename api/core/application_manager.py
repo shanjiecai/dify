@@ -721,6 +721,9 @@ class ApplicationManager:
                     Message.conversation_id == application_generate_entity.conversation_id,
                 ).order_by(Message.created_at.desc()).first()
             )
+            # update assistant_name
+            message.assistant_name = assistant_name
+            db.session.commit()
 
         for file in application_generate_entity.files:
             message_file = MessageFile(

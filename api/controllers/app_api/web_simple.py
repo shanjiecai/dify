@@ -1,6 +1,7 @@
-import streamlit as st
 import random
 import time
+
+import streamlit as st
 
 st.title("Simple chat")
 

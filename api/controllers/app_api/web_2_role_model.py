@@ -1,8 +1,8 @@
-import streamlit as st
-import random
-import time
-import requests
 import json
+
+import requests
+import streamlit as st
+
 url_base = "http://13.56.164.188"
 dj_app_id = "a756e5d2-c735-4f68-8db0-1de49333501c"
 

@@ -22,9 +22,6 @@ from libs.login import current_user
 from models.dataset import Dataset, Document, DocumentSegment
 from services.dataset_service import DocumentService
 from services.file_service import FileService
-import logging
-from sqlalchemy import desc
-from werkzeug.exceptions import NotFound
 
 
 class DocumentAddByTextApi(DatasetApiResource):

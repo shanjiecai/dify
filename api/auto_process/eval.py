@@ -1,7 +1,8 @@
-import requests
 import json
-import csv
+
 import openpyxl
+import requests
+
 
 def get_result(query, app_id="94aad33c-d817-4da7-917a-fc34df0dedfc"):
     url = "http://13.56.164.188/backend-api/v1/chat-messages"
@@ -24,7 +25,7 @@ def get_result(query, app_id="94aad33c-d817-4da7-917a-fc34df0dedfc"):
 
 app_id_list = ["94aad33c-d817-4da7-917a-fc34df0dedfc", "9fb89632-9904-4471-b2f6-c2cc54a6aa2e", "5c321cdb-e7ac-413e-85b6-b631f21fb7a2", "5e8bcd24-eec2-4df5-bf8e-7b809e7b4265", ]
 if __name__ == '__main__':
-    with open("./data/Adarina_test.txt", "r") as f:
+    with open("./data/Adarina_test.txt") as f:
         query = f.readlines()
     Adarina_Daniels_res_list = []
     # Adrianna_Corona_res_list = []
@@ -60,7 +61,7 @@ if __name__ == '__main__':
     wb.save("./data/test_Adarina_Daniels_1201.xlsx")
 
 
-    with open("./data/Maria_test.txt", "r") as f:
+    with open("./data/Maria_test.txt") as f:
         query = f.readlines()
     Maria_Paula_Noriega_res_list = []
 

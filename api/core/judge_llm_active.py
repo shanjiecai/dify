@@ -1,14 +1,15 @@
 import json
+import random
 import traceback
 
-import requests
-import random
+from openai import OpenAI
 
-import openai
-from mylogger import logger
+import requests
 
 # from core.model_providers.models.llm.base import BaseLLM
 import tiktoken
+
+from mylogger import logger
 
 encoding = tiktoken.encoding_for_model('gpt-3.5-turbo')  # 暂时没用到
 
@@ -38,7 +39,7 @@ def judge_llm_active(api_key: str, histories: str, assistant_name: str, is_rando
 
         logger.info(response.text)
         if response.status_code == 200:
-            if "yes" in response.json()["text"][0]:
+            if "yes" in response.json().text[0]:
                 return True
             else:
                 return False
@@ -49,7 +50,6 @@ def judge_llm_active(api_key: str, histories: str, assistant_name: str, is_rando
         pass
     if not api_key:
         return False
-    openai.api_key = api_key
     if assistant_name != "James Corden":
         prompt = f'''You are {assistant_name} in a group chat.
         You need to participate in the group chat. Here is the group chat histories, inside <histories></histories> XML tags.
@@ -77,20 +77,19 @@ def judge_llm_active(api_key: str, histories: str, assistant_name: str, is_rando
             "content": prompt
         }
     ]
-    response = openai.ChatCompletion.create(
-        model="gpt-3.5-turbo-1106",
-        max_tokens=1,
-        temperature=0,
-        presence_penalty=0,
-        frequency_penalty=0,
-        top_p=1,
-        messages=messages,
-        stream=False
-    )
+    client = OpenAI(api_key=api_key)
+    response = client.chat.completions.create(model="gpt-3.5-turbo-0125",
+    max_tokens=1,
+    temperature=0,
+    presence_penalty=0,
+    frequency_penalty=0,
+    top_p=1,
+    messages=messages,
+    stream=False)
     # 加入一定概率让能返回True
     if is_random_true and random.random() < 0.2:
         return True
-    return response["choices"][0]["message"]["content"].strip().lower().startswith("yes")
+    return response.choices[0].message.content.strip().lower().startswith("yes")
 
 
 if __name__ == '__main__':

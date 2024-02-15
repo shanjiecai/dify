@@ -1,11 +1,12 @@
-import streamlit as st
-import requests
 import json
+
+import requests
+import streamlit as st
+
 url_base = "http://13.56.164.188"
 # url_base = "http://13.56.164.188"
-import requests
-import json
 import os
+
 # from mylogger import logger
 app_endpoint = os.getenv("APP_ENDPOINT", "https://www.vvvapp.org")
 

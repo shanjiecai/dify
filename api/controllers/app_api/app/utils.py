@@ -1,7 +1,10 @@
-import requests
 import json
 import os
+
+import requests
+
 from mylogger import logger
+
 app_endpoint = os.getenv("APP_ENDPOINT", "https://www.vvvapp.org")
 
 

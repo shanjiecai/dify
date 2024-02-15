@@ -1,49 +1,31 @@
 import json
-from collections.abc import Generator
-from typing import Any, Union
-
-from sqlalchemy import and_
 import logging
-import threading
 import time
-import uuid
-from typing import Generator, Union, Any, Optional, List
+from collections.abc import Generator
+from typing import Any, Optional, Union
 
-from flask import current_app, Flask
 from redis.client import PubSub
 from sqlalchemy import and_
+
+from core.application_manager import ApplicationManager
+from core.entities.application_entities import InvokeFrom
 
 # from core.completion import Completion
 # from core.conversation_message_task import PubHandler, ConversationTaskStoppedException, \
 #     ConversationTaskInterruptException
 from core.file.message_file_parser import MessageFileParser
+
 # from core.model_providers.error import LLMBadRequestError, LLMAPIConnectionError, LLMAPIUnavailableError, \
 #     LLMRateLimitError, \
 #     LLMAuthorizationError, ProviderTokenNotInitError, QuotaExceededError, ModelCurrentlyNotSupportError
-from core.model_providers.models.entity.message import PromptMessageFile
-from extensions.ext_database import db
-from extensions.ext_redis import redis_client
-from models.model import Conversation, AppModelConfig, App, Account, EndUser, Message
-from services.app_model_config_service import AppModelConfigService
-from services.errors.app import MoreLikeThisDisabledError
-from services.errors.app_model_config import AppModelConfigBrokenError
-from services.errors.completion import CompletionStoppedError
-from services.errors.conversation import ConversationNotExistsError, ConversationCompletedError
-from services.errors.message import MessageNotExistsError
-from typing import Generator, Union, Any, Optional, List
-
-from core.application_manager import ApplicationManager
-from core.entities.application_entities import InvokeFrom
-from core.file.message_file_parser import MessageFileParser
 from extensions.ext_database import db
 from models.model import Account, App, AppModelConfig, Conversation, EndUser, Message
 from services.app_model_config_service import AppModelConfigService
 from services.errors.app import MoreLikeThisDisabledError
 from services.errors.app_model_config import AppModelConfigBrokenError
+from services.errors.completion import CompletionStoppedError
 from services.errors.conversation import ConversationCompletedError, ConversationNotExistsError
 from services.errors.message import MessageNotExistsError
-
-from extensions.ext_redis import redis_client
 
 
 class CompletionService:

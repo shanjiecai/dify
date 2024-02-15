@@ -2,7 +2,7 @@ import datetime
 import hashlib
 import uuid
 from collections.abc import Generator
-from typing import Union
+from typing import Union, BinaryIO
 
 from flask import current_app
 from flask_login import current_user
@@ -29,8 +29,9 @@ PREVIEW_WORDS_LIMIT = 3000
 class FileService:
 
     @staticmethod
-    def upload_file(file: FileStorage, user: Union[Account, EndUser], only_image: bool = False) -> UploadFile:
-        extension = file.filename.split('.')[-1]
+    def upload_file(file: FileStorage | BinaryIO, user: Union[Account, EndUser], only_image: bool = False,
+                    filename: str = None) -> UploadFile:
+        extension = file.filename.split('.')[-1] if isinstance(file, FileStorage) else filename.split('.')[-1]
         etl_type = current_app.config['ETL_TYPE']
         allowed_extensions = UNSTRUSTURED_ALLOWED_EXTENSIONS if etl_type == 'Unstructured' else ALLOWED_EXTENSIONS
         if extension.lower() not in allowed_extensions:
@@ -73,10 +74,10 @@ class FileService:
             tenant_id=current_tenant_id,
             storage_type=config['STORAGE_TYPE'],
             key=file_key,
-            name=file.filename,
+            name=file.filename if isinstance(file, FileStorage) else filename,
             size=file_size,
             extension=extension,
-            mime_type=file.mimetype,
+            mime_type=file.mimetype if isinstance(file, FileStorage) else "text/plain",
             created_by_role=('account' if isinstance(user, Account) else 'end_user'),
             created_by=user.id,
             created_at=datetime.datetime.utcnow(),

@@ -86,39 +86,38 @@ class SummarizeApi(AppApiResource):
             # nouns = [token.text for token in doc if token.pos_ == "NOUN"]
             # print(nouns)
             response = generate_response(
-                api_key,
                 prompt if not history_str else history_str,
                 system_prompt,
                 **kwargs
             )
             # 提取出summary和tags
             try:
-                summary = response["choices"][0]["message"]["content"].split("Tags:")[0].strip().split("Summary:")[1].strip()
+                summary = response.choices[0].message.content.split("Tags:")[0].strip().split("Summary:")[1].strip()
             except:
                 summary = ""
             try:
-                tags = response["choices"][0]["message"]["content"].split("Tags:")[1].strip().split("Nouns:")[0].strip().split(",")
+                tags = response.choices[0].message.content.split("Tags:")[1].strip().split("Nouns:")[0].strip().split(",")
                 for i in range(len(tags)):
                     tags[i] = tags[i].strip()
             except:
                 tags = []
             try:
-                nouns = response["choices"][0]["message"]["content"].split("Nouns:")[1].strip().split("Title:")[0].strip().split(",")
+                nouns = response.choices[0].message.content.split("Nouns:")[1].strip().split("Title:")[0].strip().split(",")
                 for i in range(len(nouns)):
                     nouns[i] = nouns[i].strip()
             except:
                 nouns = []
             try:
-                title = response["choices"][0]["message"]["content"].split("Title:")[1].strip()
+                title = response.choices[0].message.content.split("Title:")[1].strip()
             except:
                 title = ""
             for n in nouns:
                 if n in ["I", "i", "you", "You", "He", "he", "She", "she", "It", "it", "We", "we", "They", "they"]\
                         or "dj bot" in n.lower() or "djbot" in n.lower():
                     nouns.remove(n)
-            return {"result": response["choices"][0]["message"]["content"], "completion_tokens":
-                    response["usage"]["completion_tokens"],
-                    "prompt_tokens": response["usage"]["prompt_tokens"],
+            return {"result": response.choices[0].message.content, "completion_tokens":
+                    response.usage.completion_tokens,
+                    "prompt_tokens": response.usage.prompt_tokens,
                     "summary": summary, "tags": tags,
                     "nouns": nouns,
                     "title": title

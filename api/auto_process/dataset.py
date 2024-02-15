@@ -1,12 +1,11 @@
-# -*- coding: utf-8 -*-
-import json
+import os
 import traceback
 
 import requests
-import os
-import openai
 import tiktoken
-from auto_process.config import base_url, dataset_api_key as api_key
+
+from auto_process.config import base_url
+from auto_process.config import dataset_api_key as api_key
 
 encode_model = tiktoken.get_encoding("cl100k_base")
 

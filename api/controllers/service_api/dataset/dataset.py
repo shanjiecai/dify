@@ -1,7 +1,9 @@
 from flask import request
 from flask_restful import marshal, reqparse
 
-from flask_restful import reqparse, marshal
+# from services.provider_service import ProviderService
+from werkzeug.exceptions import NotFound
+
 import services.dataset_service
 from controllers.service_api import api
 from controllers.service_api.dataset.error import DatasetNameDuplicateError
@@ -12,8 +14,6 @@ from fields.dataset_fields import dataset_detail_fields
 from libs.login import current_user
 from models.dataset import Dataset
 from services.dataset_service import DatasetService
-# from services.provider_service import ProviderService
-from werkzeug.exceptions import NotFound, Forbidden
 
 
 def _validate_name(name):

@@ -104,7 +104,7 @@ class ConversationService:
         return conversation
 
     @classmethod
-    def get_conversation(cls, app_model: App, conversation_id: str
+    def get_conversation(cls, app_model: Optional[App], conversation_id: str
                          # , user: Optional[Union[Account, EndUser]]
                          ):
         conversation = db.session.query(Conversation) \

@@ -11,10 +11,6 @@ from models.account import Account
 from models.model import App, AppModelConfig, EndUser, Message, MessageFeedback
 from services.conversation_service import ConversationService
 from services.errors.app_model_config import AppModelConfigBrokenError
-from services.errors.conversation import ConversationNotExistsError, ConversationCompletedError
-from services.errors.message import FirstMessageNotExistsError, MessageNotExistsError, LastMessageNotExistsError, \
-    SuggestedQuestionsAfterAnswerDisabledError
-from mylogger import logger
 from services.errors.conversation import ConversationCompletedError, ConversationNotExistsError
 from services.errors.message import (
     FirstMessageNotExistsError,
@@ -26,7 +22,7 @@ from services.errors.message import (
 
 class MessageService:
     @classmethod
-    def pagination_by_first_id(cls, app_model: App, user: Optional[Union[Account, EndUser]],
+    def pagination_by_first_id(cls, app_model: Optional[App], user: Optional[Union[Account, EndUser]],
                                conversation_id: str, first_id: Optional[str], limit: int) -> InfiniteScrollPagination:
         # if not user:
         #     return InfiniteScrollPagination(data=[], limit=limit, has_more=False)
@@ -35,7 +31,8 @@ class MessageService:
             return InfiniteScrollPagination(data=[], limit=limit, has_more=False)
 
         conversation = ConversationService.get_conversation(
-            app_model=app_model,
+            # app_model=app_model,
+            app_model=None,
             # user=user,
             conversation_id=conversation_id
         )

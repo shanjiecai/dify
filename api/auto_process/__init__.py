@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 import requests
 import os
-import openai
+from openai import OpenAI
+
+client = OpenAI()
 import tiktoken
 from auto_process.dataset import get_file_list, create_dataset, upload_file
 encode_model = tiktoken.get_encoding("cl100k_base")
@@ -16,19 +18,18 @@ def summarize_text(name, text, max_length=80):
         "role": "user",
         "content": text
     }]
-    response = openai.ChatCompletion.create(
-        model="gpt-4-1106-preview",
-        messages=messages,
-        # temperature=0.3,
-        max_tokens=max_length+50,
-        temperature=0.8,
-        top_p=0.9,
-        presence_penalty=0.1,
-        frequency_penalty=0.1
-        # top_p=1,
-        # frequency_penalty=0,
-        # presence_penalty=0,
-        # stop=["\n"]
+    response = client.chat.completions.create(model="gpt-4-1106-preview",
+    messages=messages,
+    # temperature=0.3,
+    max_tokens=max_length+50,
+    temperature=0.8,
+    top_p=0.9,
+    presence_penalty=0.1,
+    frequency_penalty=0.1
+    # top_p=1,
+    # frequency_penalty=0,
+    # presence_penalty=0,
+    # stop=["\n"])
     )
     result = ''
     for choice in response.choices:
@@ -45,19 +46,18 @@ def summarize_style(name, text, max_length=8):
         "role": "user",
         "content": text
     }]
-    response = openai.ChatCompletion.create(
-        model="gpt-4-1106-preview",
-        messages=messages,
-        # temperature=0.3,
-        max_tokens=max_length + 50,
-        temperature=0.2,
-        top_p=0.7,
-        presence_penalty=0.1,
-        frequency_penalty=0.1
-        # top_p=1,
-        # frequency_penalty=0,
-        # presence_penalty=0,
-        # stop=["\n"]
+    response = client.chat.completions.create(model="gpt-4-1106-preview",
+    messages=messages,
+    # temperature=0.3,
+    max_tokens=max_length + 50,
+    temperature=0.2,
+    top_p=0.7,
+    presence_penalty=0.1,
+    frequency_penalty=0.1
+    # top_p=1,
+    # frequency_penalty=0,
+    # presence_penalty=0,
+    # stop=["\n"])
     )
     result = ''
     for choice in response.choices:

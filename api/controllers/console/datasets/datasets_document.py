@@ -207,7 +207,7 @@ class DatasetDocumentListApi(Resource):
 
     @setup_required
     @login_required
-    @account_initialization_required
+    # @account_initialization_required
     @marshal_with(documents_and_batch_fields)
     @cloud_edition_billing_resource_check('vector_space')
     def post(self, dataset_id):

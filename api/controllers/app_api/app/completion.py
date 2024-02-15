@@ -1,48 +1,42 @@
 import json
 import logging
 import time
-from typing import Union, Generator
+from collections.abc import Generator
+from typing import Union
 
-from flask import stream_with_context, Response
+from flask import Response, request, stream_with_context
 from flask_restful import reqparse
 from sqlalchemy import and_
-from werkzeug.exceptions import NotFound, InternalServerError
-
-import services
-from controllers.app_api import api
-from controllers.app_api.app.utils import send_feishu_bot
-from core.application_manager import ApplicationManager
-from core.judge_llm_active import judge_llm_active
-from core.memory.token_buffer_memory import TokenBufferMemory
-from core.model_manager import ModelInstance
-from extensions.ext_database import db
-from libs.helper import uuid_value
-from services.completion_service import CompletionService
-from models.model import ApiToken, App, Conversation, AppModelConfig
-from mylogger import logger
-
-from extensions.ext_redis import redis_client
-import json
-import logging
-from typing import Generator, Union
+from werkzeug.exceptions import InternalServerError, NotFound
 
 import services
 from controllers.app_api import api
 from controllers.app_api.app import create_or_update_end_user_for_user_id
-from controllers.app_api.app.error import (AppUnavailableError, CompletionRequestError, ConversationCompletedError,
-                                               NotChatAppError, ProviderModelCurrentlyNotSupportError,
-                                               ProviderNotInitializeError, ProviderQuotaExceededError)
+from controllers.app_api.app.error import (
+    AppUnavailableError,
+    CompletionRequestError,
+    ConversationCompletedError,
+    NotChatAppError,
+    ProviderModelCurrentlyNotSupportError,
+    ProviderNotInitializeError,
+    ProviderQuotaExceededError,
+)
+from controllers.app_api.app.utils import send_feishu_bot
 from controllers.app_api.wraps import AppApiResource
+from core.application_manager import ApplicationManager
 from core.application_queue_manager import ApplicationQueueManager
 from core.entities.application_entities import InvokeFrom
 from core.errors.error import ModelCurrentlyNotSupportError, ProviderTokenNotInitError, QuotaExceededError
+from core.judge_llm_active import judge_llm_active
+from core.memory.token_buffer_memory import TokenBufferMemory
+from core.model_manager import ModelInstance
 from core.model_runtime.errors.invoke import InvokeError
-from flask import Response, stream_with_context, request
-from flask_restful import reqparse
+from extensions.ext_database import db
+from extensions.ext_redis import redis_client
 from libs.helper import uuid_value
+from models.model import App, AppModelConfig, Conversation
+from mylogger import logger
 from services.completion_service import CompletionService
-from werkzeug.exceptions import InternalServerError, NotFound
-from services.message_service import MessageService
 
 
 class CompletionApi(AppApiResource):

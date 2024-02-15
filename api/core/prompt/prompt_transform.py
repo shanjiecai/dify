@@ -2,17 +2,11 @@ import enum
 import json
 import os
 import re
-from typing import Optional, cast
+from typing import Optional, cast, List
 
 from langchain.memory.chat_memory import BaseChatMemory
-from langchain.memory import ConversationSummaryBufferMemory
-from langchain.schema import BaseMessage
 
-# from core.model_providers.models.entity.model_params import ModelMode
-from core.model_providers.models.entity.message import PromptMessage, MessageType, to_prompt_messages, PromptMessageFile
 # from core.model_providers.models.llm.base import BaseLLM
-from core.entities.application_entities import (AdvancedCompletionPromptTemplateEntity, ModelConfigEntity,
-                                                PromptTemplateEntity)
 from core.entities.application_entities import (
     AdvancedCompletionPromptTemplateEntity,
     ModelConfigEntity,
@@ -20,9 +14,11 @@ from core.entities.application_entities import (
 )
 from core.file.file_obj import FileObj
 from core.memory.token_buffer_memory import TokenBufferMemory
+
+# from core.model_providers.models.entity.model_params import ModelMode
+from core.model_providers.models.entity.message import PromptMessage
 from core.model_runtime.entities.message_entities import (
     AssistantPromptMessage,
-    PromptMessage,
     PromptMessageRole,
     SystemPromptMessage,
     TextPromptMessageContent,
@@ -236,10 +232,15 @@ class PromptTransform:
         )
 
     def _get_history_messages_list_from_memory(self, memory: TokenBufferMemory,
-                                               max_token_limit: int) -> list[PromptMessage]:
+                                               max_token_limit: int,
+                                               assistant_name: Optional[str] = None,
+                                               user_name: Optional[str] = None
+                                               ) -> list[PromptMessage]:
         """Get memory messages."""
         return memory.get_history_prompt_messages(
-            max_token_limit=max_token_limit
+            max_token_limit=max_token_limit,
+            assistant_name=assistant_name,
+            user_name=user_name
         )
 
     def _prompt_file_name(self, app_mode: AppMode, provider: str, model: str) -> str:
@@ -614,7 +615,8 @@ class PromptTransform:
                                                  outer_memory: Optional[list] = None,
                                                  assistant_name: Optional[str] = None,
                                                  user_name: Optional[str] = None
-                                                 ) -> list[PromptMessage]:
+                                                 ) -> list[
+        UserPromptMessage | SystemPromptMessage | AssistantPromptMessage]:
         raw_prompt_list = prompt_template_entity.advanced_chat_prompt_template.messages
 
         prompt_messages = []
@@ -642,7 +644,7 @@ class PromptTransform:
             if assistant_name:
                 memory.ai_prefix = assistant_name
             rest_tokens = self._calculate_rest_token(prompt_messages, model_config)
-            histories = self._get_history_messages_list_from_memory(memory, rest_tokens)
+            histories = self._get_history_messages_list_from_memory(memory, rest_tokens, assistant_name, user_name)
             if histories:
                 history_str = ""
                 for history in histories:
@@ -651,7 +653,10 @@ class PromptTransform:
                 #     query = history_str + user_name + ":" + query
                 # else:
                 #     query = history_str + query
-                query = history_str + (assistant_name if assistant_name else "assistant") + ": " + (query if query else "")
+                if user_name and query:
+                    query = user_name + ":" + query + "\n"
+                query += assistant_name + ": "
+                query = history_str + query
         # self._append_chat_histories(memory, prompt_messages, model_config)
 
         if files:

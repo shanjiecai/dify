@@ -1,18 +1,21 @@
-# -*- coding:utf-8 -*-
 from flask_restful import fields, marshal_with, reqparse
 from flask_restful.inputs import int_range
 from werkzeug.exceptions import NotFound
 
 import services
-from controllers.app_api import api
 from controllers.app_api.app import create_or_update_end_user_for_user_id
 from controllers.app_api.app.error import NotChatAppError
+from controllers.app_api.update_real_time import get_conversation_message_str, save_conversation_to_file, \
+    upload_file_to_dify, update_dataset_id_with_conversation_id_pipeline
 from controllers.app_api.wraps import AppApiResource
-from libs.helper import TimestampField, uuid_value
-from services.message_service import MessageService
 from extensions.ext_database import db
-from models.model import Account, Message, App
+from libs.helper import TimestampField, uuid_value
+from models.dataset import AppDatasetJoin
+from models.model import Account, App, Message
 from mylogger import logger
+from controllers.app_api import api
+from controllers.app_api.base import generate_response
+from services.message_service import MessageService
 
 
 class MessageListApi(AppApiResource):
@@ -48,6 +51,7 @@ class MessageListApi(AppApiResource):
         'retriever_resources': fields.List(fields.Nested(retriever_resource_fields)),
         'created_at': TimestampField,
         'role': fields.String,
+        'assistant_name': fields.String,
     }
 
     message_infinite_scroll_pagination_fields = {
@@ -75,6 +79,21 @@ class MessageListApi(AppApiResource):
             messages = MessageService.pagination_by_first_id(app_model, None,
                                                          args['conversation_id'], args['first_id'], args['limit'])
             logger.info(messages)
+            # 获取与app_model相关的dataset_id
+            # app_dataset_joins = db.session.query(AppDatasetJoin).filter(
+            #     AppDatasetJoin.app_id == "a756e5d2-c735-4f68-8db0-1de49333501c"
+            # ).all()
+            # dataset_id_list = []
+            # if app_dataset_joins:
+            #     for app_dataset_join in app_dataset_joins:
+            #         dataset_id_list.append(app_dataset_join.dataset_id)
+            # logger.info(f"update dataset_id_list: {dataset_id_list}")
+            # for dataset_id in dataset_id_list:
+            #     update_dataset_id_with_conversation_id_pipeline(args['conversation_id'], dataset_id)
+            message_str = get_conversation_message_str(args['conversation_id'])
+            logger.info(message_str)
+            # prompt = f"{message_str}\n请从上述对话中总结出james Corden的基本信息，注意不要脱离对话内容，分段回答。"
+            # logger.info(generate_response(prompt))
             return messages
         except services.errors.conversation.ConversationNotExistsError:
             raise NotFound("Conversation Not Exists.")
@@ -132,6 +151,6 @@ class MessageSuggestedApi(AppApiResource):
         return {'result': 'success', 'data': questions}
 
 
-# api.add_resource(MessageListApi, '/messages')
+api.add_resource(MessageListApi, '/messages')
 # api.add_resource(MessageFeedbackApi, '/messages/<uuid:message_id>/feedbacks')
 # api.add_resource(MessageSuggestedApi, '/messages/<uuid:message_id>/suggested')
