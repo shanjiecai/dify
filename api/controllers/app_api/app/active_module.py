@@ -170,7 +170,7 @@ def chat_thread(group_id: int, main_context: AppContext):
                                 {"role": model_name_transform(message["from_user"]["name"]), "message": message['chat_text']})
                         # 倒序outer_memory
                         outer_memory.reverse()
-
+                        question_list = []
                         if not outer_memory:
                             continue
                         elif (datetime.datetime.now() - datetime.datetime.strptime(recent_history['data'][0]['created_at'], "%Y-%m-%d %H:%M:%S")).total_seconds() > 3600*4 and outer_memory[-1]["role"] != "James Corden":
@@ -202,13 +202,25 @@ def chat_thread(group_id: int, main_context: AppContext):
                                 except:
                                     logger.info(f"{traceback.format_exc()}")
                                     image_url = None
-                            query = topic + "you must introduce the story and raise any points or topics you would like to discuss. you can't say no or talk about other topics"
+                            query = topic + "you must introduce the story and raise any points or topics you would like to discuss. you can't say no or talk about other topics. After expressing your views, list some questions related to the news topic on a separate line, with each question not exceeding 10 words, using Question 1: question\nQuestion 2: question\n as serial numbers. Please follow this format closely to ensure consistency and accuracy of output."
                             import uuid
                             logger.info(f"超过24小时，换个话题强制回复：{group_id} {topic} {uuid.uuid4()}")
                             if image_url:
                                 # 发图片
                                 pass
                             res = model_chat(conversation_id, outer_memory=outer_memory, is_force=True, query=query, user_name="Human")
+                            if res and res.get("answer", None):
+                                res_answer_new = ""
+                                for line in res.get("answer").split("\n"):
+                                    if line.startswith("Question"):
+                                        question_list.append(line.split(":")[1].strip())
+                                    else:
+                                        res_answer_new += line + "\n"
+                                res_answer_new = res_answer_new.strip()
+                                res["answer"] = res_answer_new
+                                logger.info(f"res_answer_new: {res_answer_new}")
+                                logger.info(f"question_list: {question_list}")
+
                             # res = model_chat(conversation_id, is_force=True, query=query, user_name="Human")
                         # 如果倒数第二条消息是机器人且最后一条消息不是机器人且与倒数第二条间隔不超过30s,回复
                         elif len(outer_memory) > 1 and \
@@ -236,12 +248,21 @@ def chat_thread(group_id: int, main_context: AppContext):
                             # 发送消息
                             logger.info(f"send_message to: {group_id}, {res}")
                             # 如果answer过长，分段发送
-                            if len(res["answer"]) > 250:
+                            if len(res["answer"]) > 200:
                                 # 按照标点符号分段
-                                answer_list = re.split(r"(?<=[.!?])\s", res["answer"])
-                                for answer in answer_list:
-                                    if answer:
-                                        send_chat_message(group_id, answer)
+                                # answer_list = re.split(r"(?<=[.!?])\s", res["answer"])
+                                # for index, answer in enumerate(answer_list):
+                                #     if answer:
+                                #         send_chat_message(group_id, answer)
+                                #         # 模拟人的打字时间来停顿
+                                #         if index < len(answer_list) - 1:
+                                #             # 根据下一句的长度来停顿
+                                #             time.sleep(len(answer_list[index+1]) / 10)
+                                sentence_list, interval_list = split_and_get_interval(res["answer"])
+                                for index, sentence in enumerate(sentence_list):
+                                    send_chat_message(group_id, sentence)
+                                    if index < len(interval_list):
+                                        time.sleep(interval_list[index])
                             else:
                                 send_chat_message(group_id, res["answer"])
                         else:

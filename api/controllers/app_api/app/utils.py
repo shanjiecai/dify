@@ -4,6 +4,9 @@ import os
 import requests
 
 from mylogger import logger
+import spacy
+import time
+nlp = spacy.load("en_core_web_sm")
 
 app_endpoint = os.getenv("APP_ENDPOINT", "https://www.vvvapp.org")
 
@@ -132,7 +135,25 @@ def send_feishu_bot(message):
     return response.json()
 
 
+def split_and_get_interval(text):
+    begin = time.time()
+    doc = nlp(text)
+    sentence_list = []
+    interval_list = []
+    sentences = [sent.text for sent in doc.sents]
+    for index, sentence in enumerate(sentences):
+        # print(sentence)
+        sentence_list.append(sentence)
+        if index < len(sentences) - 1:
+            # 假设每秒打字速度为15个字
+            interval_list.append(round(len(sentences[index+1]) / 7, 1))
+    print(time.time() - begin)
+    return sentence_list, interval_list
+
+
 if __name__ == '__main__':
     print(app_endpoint)
     print(get_recent_history_within_timestamp(312, 1705709751592, 1706049943669))
+    s = "James Corden: Alright folks, let's make this chat pop like bubble wrap.let's hhhhhhhhhhhhhhhhhhhhhhhhhhhhhh! What's tickling your fancy these days? What's that one thing you can't get enough of? Let's hear it, I'm all ears! 🎤😄"
+    print(split_and_get_interval(s))
     pass
