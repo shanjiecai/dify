@@ -21,7 +21,7 @@ from controllers.app_api.app.error import (
     ProviderNotInitializeError,
     ProviderQuotaExceededError,
 )
-from controllers.app_api.app.utils import send_feishu_bot
+from controllers.app_api.app.utils import send_feishu_bot, split_and_get_interval
 from controllers.app_api.wraps import AppApiResource
 from core.application_manager import ApplicationManager
 from core.application_queue_manager import ApplicationQueueManager
@@ -312,6 +312,10 @@ class ChatActiveApi(AppApiResource):
 
 def compact_response(response: Union[dict | Generator]) -> Response:
     if isinstance(response, dict):
+        if "answer" in response and response["answer"] is not None and len(response["answer"]) > 200:
+            sentence_list, interval_list = split_and_get_interval(response["answer"])
+            response["sentence_list"] = sentence_list
+            response["interval_list"] = interval_list
         return Response(response=json.dumps(response), status=200, mimetype='application/json')
     else:
         def generate() -> Generator:
