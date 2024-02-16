@@ -4,6 +4,7 @@ from openai.types.chat import ChatCompletion
 
 api_key = os.environ.get('OPENAI_API_KEY')
 from openai import OpenAI
+
 client = OpenAI(api_key=api_key)
 
 

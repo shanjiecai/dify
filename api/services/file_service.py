@@ -2,7 +2,7 @@ import datetime
 import hashlib
 import uuid
 from collections.abc import Generator
-from typing import Union, BinaryIO
+from typing import BinaryIO, Union
 
 from flask import current_app
 from flask_login import current_user

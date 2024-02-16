@@ -2,7 +2,7 @@ import enum
 import json
 import os
 import re
-from typing import Optional, cast, List
+from typing import Optional, cast
 
 from langchain.memory.chat_memory import BaseChatMemory
 

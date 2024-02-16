@@ -9,7 +9,6 @@ import re
 import threading
 import time
 import traceback
-import uuid
 
 import requests
 from flask import Flask

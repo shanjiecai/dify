@@ -2,12 +2,11 @@ import json
 import random
 import traceback
 
-from openai import OpenAI
-
 import requests
 
 # from core.model_providers.models.llm.base import BaseLLM
 import tiktoken
+from openai import OpenAI
 
 from mylogger import logger
 
