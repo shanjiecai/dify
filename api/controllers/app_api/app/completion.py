@@ -200,7 +200,7 @@ class ChatActiveApi(AppApiResource):
             histories = external_context[memory_key]
             if memory.last_query:
                 histories += "\n" + memory.last_role + ": " + memory.last_query
-            logger.info(f"histories: {histories}, app_model.name: {app_model.name}")
+            logger.info(f"histories: {histories[-100:]}, histories_len: {len(histories)} app_model.name: {app_model.name}")
             logger.info(f"get histories in {time.time() - b}")
             # messages = MessageService.pagination_by_first_id(app_model, None,
             #                                              args['conversation_id'], None, 20)
