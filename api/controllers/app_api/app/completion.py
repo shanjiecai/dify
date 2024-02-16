@@ -215,18 +215,18 @@ class ChatActiveApi(AppApiResource):
             buffer = [dict(item) for item in memory.buffer]
             if memory.last_query:
                 buffer.append({"role": memory.last_role, "content": memory.last_query})
-            if len(buffer) >= 3:
-                # 截取数组最后三条
-                logger.info(buffer[-3:])
-
-            if len(buffer) >= 3 and buffer[-2].get("role", None) == app_model.name and \
-                        buffer[-1].get("role", None) == buffer[-3].get("role", None) and \
-                        buffer[-1].get("role", None) != app_model.name and \
-                        buffer[-3].get("role", None) != app_model.name:
-                logger.info(f"last three messages are from {app_model.name} and other, should response")
-                judge_result = True
-            else:
-                judge_result = judge_llm_active(memory.model_instance.credentials["openai_api_key"], histories,
+            # if len(buffer) >= 3:
+            #     # 截取数组最后三条
+            #     logger.info(buffer[-3:])
+            #
+            # if len(buffer) >= 3 and buffer[-2].get("role", None) == app_model.name and \
+            #             buffer[-1].get("role", None) == buffer[-3].get("role", None) and \
+            #             buffer[-1].get("role", None) != app_model.name and \
+            #             buffer[-3].get("role", None) != app_model.name:
+            #     logger.info(f"last three messages are from {app_model.name} and other, should response")
+            #     judge_result = True
+            # else:
+            judge_result = judge_llm_active(memory.model_instance.credentials["openai_api_key"], histories,
                                                 app_model.name)
             end_user = create_or_update_end_user_for_user_id(app_model, "")
             if judge_result:
