@@ -1,11 +1,12 @@
 import json
 import os
+import time
 
 import requests
+import spacy
 
 from mylogger import logger
-import spacy
-import time
+
 nlp = spacy.load("en_core_web_sm")
 
 app_endpoint = os.getenv("APP_ENDPOINT", "https://www.vvvapp.org")
