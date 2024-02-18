@@ -27,4 +27,19 @@ class AppListApi(AppApiResource):
         return app_models
 
 
+class PersonListApi(AppApiResource):
+    person_name_fields = {
+        'name': fields.String,
+    }
+
+    @marshal_with(person_name_fields)
+    def get(self):
+        # app_name去掉后面的()之后去重
+        app_models = AppModelService.get_app_model_config_list()
+        app_models = [app_model.name.split('(')[0] for app_model in app_models]
+        app_models = list(set(app_models))
+        return [{'name': app_model} for app_model in app_models]
+
+
 api.add_resource(AppListApi, '/app/list')
+api.add_resource(PersonListApi, '/person/list')

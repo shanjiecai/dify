@@ -6,7 +6,7 @@ from core.model_runtime.entities.message_entities import (
     PromptMessage,
     PromptMessageRole,
     TextPromptMessageContent,
-    UserPromptMessage,
+    UserPromptMessage, AssistantPromptMessage,
 )
 from core.model_runtime.entities.model_entities import ModelType
 from core.model_runtime.model_providers import model_provider_factory
@@ -31,10 +31,12 @@ class TokenBufferMemory:
         :param assistant_name: assistant name
         :param user_name: user name
         """
+        old_assistant_name = assistant_name
+        old_user_name = user_name
         if not assistant_name:
-            assistant_name = PromptMessageRole.USER.value
+            assistant_name = PromptMessageRole.USER
         if not user_name:
-            user_name = PromptMessageRole.USER.value
+            user_name = PromptMessageRole.USER
 
         app_record = self.conversation.app
 
@@ -75,12 +77,16 @@ class TokenBufferMemory:
 
                 prompt_messages.append(UserPromptMessage(content=prompt_message_contents))
             else:
-                if message.query:
-                    prompt_messages.append(UserPromptMessage(content=message.query, role=user_name if message.role == "Human" else message.role))
+                if not old_user_name and (not old_assistant_name or old_assistant_name == "test"):
+                    prompt_messages.append(UserPromptMessage(content=message.query))
+                elif message.query:
+                    prompt_messages.append(UserPromptMessage(content=message.query, role=user_name if (not message.role or message.role == "Human") else message.role))
 
             # prompt_messages.append(AssistantPromptMessage(content=message.answer))
-            if message.answer:
-                prompt_messages.append(UserPromptMessage(content=message.answer, role=assistant_name if message.assistant_name == None else message.assistant_name))
+            if (not old_assistant_name or old_assistant_name == "test") and not old_user_name:
+                prompt_messages.append(AssistantPromptMessage(content=message.answer))
+            elif message.answer:
+                prompt_messages.append(UserPromptMessage(content=message.answer, role=assistant_name if not message.assistant_name else message.assistant_name))
 
         if not prompt_messages:
             return []
@@ -131,7 +137,10 @@ class TokenBufferMemory:
             elif m.role == PromptMessageRole.ASSISTANT:
                 role = ai_prefix
             else:
-                role = m.role
+                if m.role:
+                    role = m.role
+                else:
+                    continue
 
             message = f"{role}: {m.content}"
             string_messages.append(message)

@@ -15,9 +15,11 @@ from extensions.ext_database import db
 from fields.conversation_fields import conversation_infinite_scroll_pagination_fields, simple_conversation_fields
 from libs.exception import BaseHTTPException
 from libs.helper import uuid_value
+from models.dataset import DatasetUpdateRealTime
 from models.model import App, AppModelConfig, Conversation, Message
 from mylogger import logger
 from services.conversation_service import ConversationService
+import datetime
 
 
 class ConversationApi(AppApiResource):
@@ -194,8 +196,32 @@ class ConversationRenameApi(AppApiResource):
             raise NotFound("Conversation Not Exists.")
 
 
+class ConversationUpdateDataset(AppApiResource):
+
+    def post(self, app_model: App):
+        # conversation_id, dataset_id
+        parser = reqparse.RequestParser()
+        parser.add_argument('conversation_id', type=str, required=False, location='json', default=None)
+        parser.add_argument('dataset_id', type=str, required=True, location='json')
+        parser.add_argument('group_id', type=str, required=False, location='json', default=None)
+        args = parser.parse_args()
+
+        dataset_update_real_time = DatasetUpdateRealTime(
+            dataset_id=args['dataset_id'],
+            conversation_id=args['conversation_id'],
+            group_id=args['group_id'],
+            created_at=datetime.datetime.utcnow(),
+            last_updated_at=datetime.datetime.utcnow(),
+        )
+        db.session.add(dataset_update_real_time)
+        db.session.commit()
+        return {"result": "success"}, 200
+
+
+
 # api.add_resource(ConversationRenameApi, '/conversations/<uuid:c_id>/name', endpoint='conversation_name')
 api.add_resource(ConversationApi, '/conversations')
 api.add_resource(ConversationApi, '/conversations/<uuid:c_id>', endpoint='conversation')
 api.add_resource(ConversationAddMessage, '/conversations/add_message', endpoint='conversation_message')
+api.add_resource(ConversationUpdateDataset, '/conversations/update_knowledge', endpoint='conversation_update_knowledge')
 # api.add_resource(ConversationDetailApi, '/conversations/<uuid:c_id>', endpoint='conversation_detail')

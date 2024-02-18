@@ -75,7 +75,7 @@ class MessageService:
         )
 
     @classmethod
-    def pagination_by_last_id(cls, app_model: App, user: Optional[Union[Account, EndUser]],
+    def pagination_by_last_id(cls, app_model: Optional[App], user: Optional[Union[Account, EndUser]],
                               last_id: Optional[str], limit: int, conversation_id: Optional[str] = None,
                               include_ids: Optional[list] = None) -> InfiniteScrollPagination:
         # if not user:
@@ -85,7 +85,8 @@ class MessageService:
 
         if conversation_id is not None:
             conversation = ConversationService.get_conversation(
-                app_model=app_model,
+                # app_model=app_model,
+                app_model=None,
                 # user=user,
                 conversation_id=conversation_id
             )
@@ -107,6 +108,58 @@ class MessageService:
             ).order_by(Message.created_at.desc()).limit(limit).all()
         else:
             history_messages = base_query.order_by(Message.created_at.desc()).limit(limit).all()
+
+        has_more = False
+        if len(history_messages) == limit:
+            current_page_first_message = history_messages[-1]
+            rest_count = base_query.filter(
+                Message.created_at < current_page_first_message.created_at,
+                Message.id != current_page_first_message.id
+            ).count()
+
+            if rest_count > 0:
+                has_more = True
+
+        return InfiniteScrollPagination(
+            data=history_messages,
+            limit=limit,
+            has_more=has_more
+        )
+
+    @classmethod
+    def pagination_by_more_than_last_id(cls, app_model: Optional[App], user: Optional[Union[Account, EndUser]],
+                              last_id: Optional[str], limit: int, conversation_id: Optional[str] = None,
+                              include_ids: Optional[list] = None) -> InfiniteScrollPagination:
+        # if not user:
+        #     return InfiniteScrollPagination(data=[], limit=limit, has_more=False)
+
+        base_query = db.session.query(Message)
+
+        if conversation_id is not None:
+            conversation = ConversationService.get_conversation(
+                # app_model=app_model,
+                app_model=None,
+                # user=user,
+                conversation_id=conversation_id
+            )
+
+            base_query = base_query.filter(Message.conversation_id == conversation.id)
+
+        if include_ids is not None:
+            base_query = base_query.filter(Message.id.in_(include_ids))
+
+        if last_id:
+            last_message = base_query.filter(Message.id == last_id).first()
+
+            if not last_message:
+                raise LastMessageNotExistsError()
+
+            history_messages = base_query.filter(
+                Message.created_at > last_message.created_at,
+                Message.id != last_message.id
+            ).order_by(Message.created_at.asc()).limit(limit).all()
+        else:
+            history_messages = base_query.order_by(Message.created_at.asc()).limit(limit).all()
 
         has_more = False
         if len(history_messages) == limit:

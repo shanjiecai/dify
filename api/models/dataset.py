@@ -479,3 +479,20 @@ class DatasetCollectionBinding(db.Model):
     type = db.Column(db.String(40), server_default=db.text("'dataset'::character varying"), nullable=False)
     collection_name = db.Column(db.String(64), nullable=False)
     created_at = db.Column(db.DateTime, nullable=False, server_default=db.text('CURRENT_TIMESTAMP(0)'))
+
+
+# 利用历史conversation对话信息实时更新数据集
+class DatasetUpdateRealTime(db.Model):
+    __tablename__ = 'dataset_update_real_time'
+    __table_args__ = (
+        db.PrimaryKeyConstraint('id', name='dataset_update_real_time_pkey'),
+        db.Index('dataset_update_real_time_dataset_id_idx', 'dataset_id'),
+    )
+
+    id = db.Column(UUID, primary_key=True, server_default=db.text('uuid_generate_v4()'))
+    dataset_id = db.Column(UUID, nullable=False)
+    conversation_id = db.Column(UUID, nullable=True)
+    group_id = db.Column(db.String(40), nullable=True)
+    created_at = db.Column(db.DateTime, nullable=False, server_default=db.func.current_timestamp())
+    last_updated_at = db.Column(db.DateTime, nullable=False, server_default=db.func.current_timestamp())
+    last_update_message_id = db.Column(db.String(40), nullable=True)

@@ -32,8 +32,10 @@ from controllers.app_api.app.search_event import get_topic, download_from_url
 from extensions.ext_redis import redis_client
 from services.conversation_service import ConversationService
 from services.dataset_service import DocumentService
+from services.dataset_update_real_time_service import DatasetUpdateRealTimeService
 from services.file_service import FileService
 from services.message_service import MessageService
+from extensions.ext_database import db
 
 api_key = os.environ.get('OPENAI_API_KEY')
 
@@ -85,35 +87,53 @@ def init_real_time_update(main_app: Flask):
         t.start()
 
 
-def get_conversation_message_str(conversation_id: str, limit=100):
-    messages = MessageService.pagination_by_first_id(None, None,
-                                                     conversation_id, "", limit)
-    messages = messages.data
+def get_conversation_message_str(conversation_id: str=None, group_id: str = None, limit=1000, last_id=None):
     conversation_messages_str = ""
-    conversation = ConversationService.get_conversation(
-        # app_model=app_model,
-        app_model=None,
-        # user=user,
-        conversation_id=conversation_id
-    )
-    app_id = conversation.app_id
-    app = AppModelService.get_app_model_by_app_id(app_id)
-    conversation_assistant_name = app.name.split("(")[0]
-    for message in messages:
-        if message.query:
-            conversation_messages_str += message.role + ": " + message.query + "\n"
-        if message.answer:
-            conversation_messages_str += conversation_assistant_name + ": " + message.answer + "\n"
-    return conversation_messages_str
+    if conversation_id:
+        messages = MessageService.pagination_by_more_than_last_id(None, None, last_id=last_id, limit=limit,
+                                                                  conversation_id=conversation_id, include_ids=None)
+        messages = messages.data
+
+        conversation = ConversationService.get_conversation(
+            # app_model=app_model,
+            app_model=None,
+            # user=user,
+            conversation_id=conversation_id
+        )
+        app_id = conversation.app_id
+        app = AppModelService.get_app_model_by_app_id(app_id)
+        conversation_assistant_name = app.name.split("(")[0]
+        if messages:
+            for message in messages:
+                if message.query:
+                    conversation_messages_str += message.role + ": " + message.query + "\n"
+                if message.answer:
+                    conversation_messages_str += (message.assistant_name if message.assistant_name else conversation_assistant_name) + ": " + message.answer + "\n"
+            last_id = messages[-1].id
+            return conversation_messages_str, last_id
+        else:
+            return conversation_messages_str, None
+    elif group_id:
+        messages = get_recent_history_all_with_last_id(int(group_id), last_id=last_id)
+        if messages:
+            messages.reverse()
+            for message in messages:
+                if message["chat_text"]:
+                    conversation_messages_str += message["from_user"]["name"] + ": " + message["chat_text"] + "\n"
+            return conversation_messages_str, messages[-1]["id"]
+        else:
+            return None, None
+    else:
+        return None, None
 
 
 # 将历史对话存到临时文件中
-def save_conversation_to_file(conversation_id: str, conversation_messages_str: str):
+def save_conversation_to_file(conversation_id: str, group_id: str, conversation_messages_str: str):
     # 获取当前日期
-    current_date = datetime.datetime.now().strftime('%Y-%m-%d')
+    current_date = datetime.datetime.utcnow().strftime('%Y-%m-%d_%H:%M:%S')
     # 获取当前对话的对话内容
     conversation_file_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'tmp',
-                                          f"{current_date}_{conversation_id}.txt")
+                                          f"{current_date}_{conversation_id if conversation_id else group_id}.txt")
     with open(conversation_file_path, "w") as f:
         f.write(conversation_messages_str)
     return conversation_file_path
@@ -153,6 +173,7 @@ def upload_document_with_dataset_id(upload_file: UploadFile, dataset_id: str):
         Dataset.id == dataset_id
     ).first()
     user = AccountService.load_user("1c795cbf-0924-4f01-aec5-1b5abef50bca")
+    # logger.info(user)
     try:
         documents, batch = DocumentService.save_document_with_dataset_id(
             dataset=dataset,
@@ -168,14 +189,22 @@ def upload_document_with_dataset_id(upload_file: UploadFile, dataset_id: str):
     return documents
 
 
-def update_dataset_id_with_conversation_id_pipeline(conversation_id: str, dataset_id: str):
-    message_str = get_conversation_message_str(conversation_id)
+def update_dataset_id_with_conversation_id_pipeline(dataset_id: str, conversation_id: str = None, group_id: str = None):
+    dataset_update_real_time = DatasetUpdateRealTimeService.get(dataset_id, group_id=group_id, conversation_id=conversation_id)
+    message_str, last_id = get_conversation_message_str(conversation_id, group_id,
+                                                        last_id=dataset_update_real_time.last_update_message_id)
     logger.info(message_str)
-    tmp_file_path = save_conversation_to_file(conversation_id, message_str)
-    logger.info(tmp_file_path)
-    upload_file = upload_file_to_dify(tmp_file_path)
-    logger.info(upload_file.__dict__)
-    upload_document_with_dataset_id(upload_file, dataset_id)
+    if message_str:
+        tmp_file_path = save_conversation_to_file(conversation_id, group_id, message_str)
+        logger.info(tmp_file_path)
+        upload_file = upload_file_to_dify(tmp_file_path)
+        logger.info(upload_file)
+        upload_document_with_dataset_id(upload_file, dataset_id)
+        dataset_update_real_time.last_update_message_id = last_id
+        dataset_update_real_time.last_updated_at = datetime.datetime.utcnow()
+        db.session.commit()
+    else:
+        logger.info(f"conversation_id: {conversation_id} dataset_id: {dataset_id} 最新对话为空，不更新")
 
 
 if __name__ == '__main__':

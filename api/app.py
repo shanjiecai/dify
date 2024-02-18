@@ -94,6 +94,8 @@ def create_app(test_config=None) -> Flask:
 
     from controllers.app_api.app.active_module import init_active_chat
     init_active_chat(app)
+    from controllers.app_api.update_real_time.update_real_time_module import init_dataset_update_real_time
+    init_dataset_update_real_time(app)
     return app
 
 

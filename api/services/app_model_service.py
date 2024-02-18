@@ -10,7 +10,7 @@ from services.errors.app_model_config import AppModelConfigBrokenError
 class AppModelService:
     @classmethod
     def get_app_model_config_list(cls) -> list[App]:
-        app_list = db.session.query(App).all()
+        app_list = db.session.query(App).filter(App.name != "test").all()
         # 获取app_model_configs下的model_id
         for app in app_list:
             app_model_config = cls.get_app_model_config(app)

@@ -7,7 +7,7 @@ from controllers.app_api import api
 from controllers.app_api.app import create_or_update_end_user_for_user_id
 from controllers.app_api.app.error import NotChatAppError
 from controllers.app_api.update_real_time import (
-    get_conversation_message_str,
+    get_conversation_message_str, update_dataset_id_with_conversation_id_pipeline,
 )
 from controllers.app_api.wraps import AppApiResource
 from extensions.ext_database import db
@@ -89,8 +89,10 @@ class MessageListApi(AppApiResource):
             # logger.info(f"update dataset_id_list: {dataset_id_list}")
             # for dataset_id in dataset_id_list:
             #     update_dataset_id_with_conversation_id_pipeline(args['conversation_id'], dataset_id)
-            message_str = get_conversation_message_str(args['conversation_id'])
-            logger.info(message_str)
+            # update_dataset_id_with_conversation_id_pipeline(conversation_id="14889eb6-267c-41b4-878b-3e3bd75bcf82", dataset_id="d5839cd2-6f76-4a5f-8915-36b22757903a")
+            # update_dataset_id_with_conversation_id_pipeline(group_id="316", dataset_id="d5839cd2-6f76-4a5f-8915-36b22757903a")
+            # message_str, last_id = get_conversation_message_str(args['conversation_id'])
+            # logger.info(f"{message_str} {last_id}")
             # prompt = f"{message_str}\n请从上述对话中总结出james Corden的基本信息，注意不要脱离对话内容，分段回答。"
             # logger.info(generate_response(prompt))
             return messages

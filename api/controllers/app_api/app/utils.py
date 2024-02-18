@@ -83,6 +83,21 @@ def get_recent_history_within_timestamp(group_id: int = None, start_timestamp: i
     return history_all
 
 
+def get_recent_history_all_with_last_id(group_id = None, last_id = None):
+    res = get_recent_history(group_id)
+    history_all = {"data": []}
+    while res['data']:
+        for i in res['data']:
+            if not last_id or i["id"] > int(last_id):
+                history_all["data"].append(i)
+            else:
+                break
+        # history_all["data"] += res['data']
+        res = get_recent_history(group_id, res['data'][-1]['id'])
+    # print(len(history_all["data"]))
+    return history_all["data"]
+
+
 def send_chat_message(group_id: int, message: str = None, type: str = "txt", file_uuid: str = None):
     url = f"{app_endpoint}/api/sys/send_chat_message"
 
@@ -153,8 +168,9 @@ def split_and_get_interval(text):
 
 
 if __name__ == '__main__':
-    print(app_endpoint)
-    print(get_recent_history_within_timestamp(312, 1705709751592, 1706049943669))
-    s = "James Corden: Alright folks, let's make this chat pop like bubble wrap.let's hhhhhhhhhhhhhhhhhhhhhhhhhhhhhh! What's tickling your fancy these days? What's that one thing you can't get enough of? Let's hear it, I'm all ears! 🎤😄"
-    print(split_and_get_interval(s))
+    # print(app_endpoint)
+    # print(get_recent_history_within_timestamp(312, 1705709751592, 1706049943669))
+    # s = "James Corden: Alright folks, let's make this chat pop like bubble wrap.let's hhhhhhhhhhhhhhhhhhhhhhhhhhhhhh! What's tickling your fancy these days? What's that one thing you can't get enough of? Let's hear it, I'm all ears! 🎤😄"
+    # print(split_and_get_interval(s))
+    print(get_recent_history_all_with_last_id(316, 17999))
     pass

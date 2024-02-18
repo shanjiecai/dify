@@ -12,7 +12,7 @@ def validate_app_token(func):
         auth_token = validate_and_get_api_token()
         if auth_token != "b10dd914-d28d-10b4-11c4-3a8b61d8a77f":
             raise Unauthorized('Invalid Authorization header')
-        if request.path == "/backend-api/v1/app/list":
+        if request.path in ["/backend-api/v1/app/list", "/backend-api/v1/person/list"]:
             return func(*args, **kwargs)
         if request.method == "GET":
             app_id = request.args.get('app_id')

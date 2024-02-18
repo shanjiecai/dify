@@ -475,7 +475,7 @@ class DocumentService:
             if document_data["indexing_technique"] == 'high_quality':
                 model_manager = ModelManager()
                 embedding_model = model_manager.get_default_model_instance(
-                    tenant_id=current_user.current_tenant_id,
+                    tenant_id="15270d9e-94bd-4b91-8e2e-a9f33f28f259",
                     model_type=ModelType.TEXT_EMBEDDING
                 )
                 dataset.embedding_model = embedding_model.model
