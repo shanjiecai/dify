@@ -7,7 +7,7 @@ import spacy
 
 from mylogger import logger
 
-nlp = spacy.load("en_core_web_sm")
+nlp = spacy.load("en_core_web_md")
 
 app_endpoint = os.getenv("APP_ENDPOINT", "https://www.vvvapp.org")
 

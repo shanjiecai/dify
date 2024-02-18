@@ -17,6 +17,7 @@ from sqlalchemy import and_
 from controllers.app_api.app.search_event import download_from_url, get_topic
 from controllers.app_api.app.utils import *
 from controllers.service_api.app import create_or_update_end_user_for_user_id
+from core.entities.application_entities import InvokeFrom
 from core.judge_llm_active import judge_llm_active
 
 # from core.completion import Completion
@@ -69,7 +70,7 @@ def model_chat(conversation_id: str, outer_memory: list=None, is_force=False, qu
             app_model=app_model,
             user=end_user,
             args=args,
-            from_source='api',
+            invoke_from=InvokeFrom.APP_API,
             streaming=False,
             # outer_memory=outer_memory,
             assistant_name=app_model.name,
