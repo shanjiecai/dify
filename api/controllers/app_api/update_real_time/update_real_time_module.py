@@ -1,27 +1,16 @@
 import datetime
-import json
-import os
 import threading
 import time
 import traceback
 
-import requests
 from flask import Flask
 from flask.ctx import AppContext
-from sqlalchemy import and_
 
-from controllers.app_api.app.search_event import download_from_url, get_topic
 from controllers.app_api.app.utils import *
 from controllers.app_api.update_real_time import update_dataset_id_with_conversation_id_pipeline
-from controllers.service_api.app import create_or_update_end_user_for_user_id
-from core.judge_llm_active import judge_llm_active
 
 # from core.completion import Completion
-from extensions.ext_database import db
-from extensions.ext_redis import redis_client
-from models.model import App, Conversation
 from mylogger import logger
-from services.completion_service import CompletionService
 from services.dataset_update_real_time_service import DatasetUpdateRealTimeService
 
 

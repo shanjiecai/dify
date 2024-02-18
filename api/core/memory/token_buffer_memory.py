@@ -3,10 +3,11 @@ from typing import Optional
 from core.file.message_file_parser import MessageFileParser
 from core.model_manager import ModelInstance
 from core.model_runtime.entities.message_entities import (
+    AssistantPromptMessage,
     PromptMessage,
     PromptMessageRole,
     TextPromptMessageContent,
-    UserPromptMessage, AssistantPromptMessage,
+    UserPromptMessage,
 )
 from core.model_runtime.entities.model_entities import ModelType
 from core.model_runtime.model_providers import model_provider_factory

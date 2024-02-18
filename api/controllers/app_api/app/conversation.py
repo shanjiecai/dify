@@ -1,4 +1,6 @@
 
+import datetime
+
 from flask import request
 from flask_restful import marshal_with, reqparse
 from flask_restful.inputs import int_range
@@ -19,7 +21,6 @@ from models.dataset import DatasetUpdateRealTime
 from models.model import App, AppModelConfig, Conversation, Message
 from mylogger import logger
 from services.conversation_service import ConversationService
-import datetime
 
 
 class ConversationApi(AppApiResource):

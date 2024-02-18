@@ -6,9 +6,6 @@ import services
 from controllers.app_api import api
 from controllers.app_api.app import create_or_update_end_user_for_user_id
 from controllers.app_api.app.error import NotChatAppError
-from controllers.app_api.update_real_time import (
-    get_conversation_message_str, update_dataset_id_with_conversation_id_pipeline,
-)
 from controllers.app_api.wraps import AppApiResource
 from extensions.ext_database import db
 from libs.helper import TimestampField, uuid_value
