@@ -38,7 +38,7 @@ def judge_llm_active(api_key: str, histories: str, assistant_name: str, is_rando
 
         logger.info(response.text)
         if response.status_code == 200:
-            if "yes" in response.json().text[0]:
+            if "yes" in response.json()["text"][0]:
                 return True
             else:
                 return False
