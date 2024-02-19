@@ -684,7 +684,7 @@ class ApplicationManager:
                 db.session.query(Conversation)
                 .filter(
                     Conversation.id == application_generate_entity.conversation_id,
-                    Conversation.app_id == app_record.id
+                    # Conversation.app_id == app_record.id
                 ).first()
             )
 
