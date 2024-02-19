@@ -35,9 +35,9 @@ class TokenBufferMemory:
         old_assistant_name = assistant_name
         old_user_name = user_name
         if not assistant_name:
-            assistant_name = PromptMessageRole.USER.value
+            assistant_name = PromptMessageRole.USER.name
         if not user_name:
-            user_name = PromptMessageRole.USER.value
+            user_name = PromptMessageRole.USER.name
 
         app_record = self.conversation.app
 
