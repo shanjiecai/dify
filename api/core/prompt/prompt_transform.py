@@ -28,6 +28,7 @@ from core.model_runtime.entities.model_entities import ModelPropertyKey
 from core.model_runtime.model_providers.__base.large_language_model import LargeLanguageModel
 from core.prompt.prompt_builder import PromptBuilder
 from core.prompt.prompt_template import PromptTemplateParser
+from mylogger import logger
 
 
 class AppMode(enum.Enum):
@@ -655,6 +656,7 @@ class PromptTransform:
                 #     query = history_str + query
                 if user_name and query:
                     query = user_name + ":" + query + "\n"
+                logger.info(f"assistant_name: {assistant_name}")
                 query += assistant_name + ": "
                 query = history_str + query
         # self._append_chat_histories(memory, prompt_messages, model_config)
