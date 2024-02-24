@@ -165,10 +165,13 @@ class ChatApi(AppApiResource):
         except ModelCurrentlyNotSupportError:
             raise ProviderModelCurrentlyNotSupportError()
         except InvokeError as e:
+            send_feishu_bot(str(e))
             raise CompletionRequestError(e.description)
         except ValueError as e:
+            send_feishu_bot(str(e))
             raise e
         except Exception as e:
+            send_feishu_bot(str(e))
             logging.exception("internal server error.")
             raise InternalServerError()
 

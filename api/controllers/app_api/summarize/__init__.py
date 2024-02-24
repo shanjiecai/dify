@@ -80,7 +80,7 @@ class SummarizeApi(AppApiResource):
         if not system_prompt:
             system_prompt = default_system_prompt
         kwargs = args['kwargs']
-        logger.info(f"prompt: {prompt} system_prompt: {system_prompt} kwargs: {kwargs}")
+        # logger.info(f"prompt: {prompt} system_prompt: {system_prompt} kwargs: {kwargs}")
         try:
             # doc = nlp(history_with_no_user)
             # nouns = [token.text for token in doc if token.pos_ == "NOUN"]
@@ -124,6 +124,7 @@ class SummarizeApi(AppApiResource):
                     }, 200
         except Exception as e:
             logging.exception(f"internal server error: {traceback.format_exc()}")
+            send_feishu_bot(str(e))
             raise InternalServerError()
 
 
