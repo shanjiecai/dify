@@ -144,7 +144,7 @@ services:
   # worker service
   # The Celery worker for processing the queue.
   worker:
-    image: dify-api:dev_new
+    image: dify-api:dev_new_celery
     restart: always
     environment:
       # Startup mode, 'worker' starts the Celery worker for processing the queue.
@@ -248,8 +248,8 @@ services:
     volumes:
       - ./volumes/db/data:/var/lib/postgresql/data
     # uncomment to expose db(postgresql) port to host
-    # ports:
-    #   - "5432:5432"
+    ports:
+      - "5432:5432"
     healthcheck:
       test: [ "CMD", "pg_isready" ]
       interval: 1s
@@ -293,8 +293,8 @@ services:
       AUTHORIZATION_ADMINLIST_USERS: 'hello@dify.ai'
       DISK_USE_READONLY_PERCENTAGE: '99'
 #    uncomment to expose weaviate port to host
-#    ports:
-#      - "8080:8080"
+    ports:
+      - "8080:8080"
 
   # Qdrant vector store.
   # uncomment to use qdrant as vector store.

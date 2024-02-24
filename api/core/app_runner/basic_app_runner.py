@@ -13,7 +13,8 @@ from core.prompt.prompt_transform import AppMode
 from extensions.ext_database import db
 from models.model import App, Conversation, Message
 
-logger = logging.getLogger(__name__)
+# logger = logging.getLogger(__name__)
+from mylogger import logger
 
 
 class BasicApplicationRunner(AppRunner):
@@ -208,6 +209,7 @@ class BasicApplicationRunner(AppRunner):
             model=app_orchestration_config.model_config.model
         )
         # print(f"prompt_messages: {prompt_messages}")
+        logger.info(f"{app_orchestration_config.model_config.model} prompt_messages: {prompt_messages}")
 
         invoke_result = model_instance.invoke_llm(
             prompt_messages=prompt_messages,
@@ -275,4 +277,3 @@ class BasicApplicationRunner(AppRunner):
             hit_callback=hit_callback,
             memory=memory
         )
-    

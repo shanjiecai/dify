@@ -7,7 +7,11 @@ import spacy
 
 from mylogger import logger
 
-nlp = spacy.load("en_core_web_trf")
+try:
+    nlp = spacy.load("en_core_web_trf")
+except Exception as e:
+    print(f"spacy load fail {e}")
+    pass
 
 app_endpoint = os.getenv("APP_ENDPOINT", "https://www.vvvapp.org")
 
