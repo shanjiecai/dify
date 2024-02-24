@@ -1,4 +1,3 @@
-import logging
 from typing import Optional
 
 from core.app_runner.app_runner import AppRunner

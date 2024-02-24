@@ -1,7 +1,8 @@
 # base image
-FROM python:3.10-slim-bookworm AS base
-
-LABEL maintainer="takatost@gmail.com"
+#FROM python:3.10-slim-bookworm AS base
+#
+#LABEL maintainer="takatost@gmail.com"
+FROM dify-api:dev_new_base AS base
 
 # install packages
 FROM base as packages
