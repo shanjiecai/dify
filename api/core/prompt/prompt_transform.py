@@ -657,8 +657,8 @@ class PromptTransform:
                 if user_name and query:
                     query = user_name + ":" + query + "\n"
                 logger.info(f"assistant_name: {assistant_name}")
+                query = history_str + (query if query else "")
                 query += assistant_name + ": "
-                query = history_str + query
         # self._append_chat_histories(memory, prompt_messages, model_config)
 
         if files:

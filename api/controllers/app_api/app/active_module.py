@@ -156,6 +156,10 @@ def chat_thread(group_id: int, main_context: AppContext):
                     if not recent_history.get("data", None):
                         time.sleep(60)
                         continue
+                    else:
+                        # 过滤message_type不是txt的消息
+                        recent_history['data'] = [message for message in recent_history['data'] if
+                                                    message['message_type'] == "txt"]
                     logger.info(f"获取最近聊天记录：{group_id} {recent_history['data'][0]['chat_text']}")
                     last_message = recent_history['data'][0]
                     # logger.info(f"最近一条消息：{group_id} {last_message}")

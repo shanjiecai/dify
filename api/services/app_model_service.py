@@ -13,6 +13,9 @@ class AppModelService:
         app_list = db.session.query(App).filter(App.name != "test").all()
         # 获取app_model_configs下的model_id
         for app in app_list:
+            if "test" in app.name:
+                app_list.remove(app)
+                continue
             app_model_config = cls.get_app_model_config(app)
             app.model_id = app_model_config.model_id
         return app_list
