@@ -8,7 +8,8 @@ import spacy
 from mylogger import logger
 
 try:
-    nlp = spacy.load("en_core_web_trf")
+    # nlp = spacy.load("en_core_web_trf")
+    nlp = spacy.load("en_core_web_md")
 except Exception as e:
     print(f"spacy load fail {e}")
     pass

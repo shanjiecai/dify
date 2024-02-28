@@ -1,8 +1,8 @@
 # base image
-#FROM python:3.10-slim-bookworm AS base
-#
-#LABEL maintainer="takatost@gmail.com"
-FROM dify-api:dev_new_base AS base
+FROM python:3.10-slim-bookworm AS base
+
+LABEL maintainer="takatost@gmail.com"
+#FROM dify-api:dev_new_base AS base
 
 # install packages
 FROM base as packages
@@ -41,6 +41,7 @@ COPY --from=packages /pkg /usr/local
 COPY . /app/api/
 
 RUN python -c "from transformers import GPT2TokenizerFast; GPT2TokenizerFast.from_pretrained('gpt2')"
+RUN pip install https://github.com/explosion/spacy-models/releases/download/en_core_web_md-3.7.1/en_core_web_md-3.7.1.tar.gz
 #RUN pip install https://github.com/explosion/spacy-models/releases/download/en_core_web_trf-3.7.3/en_core_web_trf-3.7.3.tar.gz
 ENV TRANSFORMERS_OFFLINE true
 
