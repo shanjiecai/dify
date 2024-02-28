@@ -144,7 +144,7 @@ services:
   # worker service
   # The Celery worker for processing the queue.
   worker:
-    image: dify-api:dev_new_celery
+    image: dify-api:dev_new
     restart: always
     environment:
       # Startup mode, 'worker' starts the Celery worker for processing the queue.
