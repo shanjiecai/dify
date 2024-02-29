@@ -118,7 +118,7 @@ def get_conversation_message_str(conversation_id: str=None, group_id: str = None
         if messages:
             messages.reverse()
             for message in messages:
-                if message["chat_text"]:
+                if message["chat_text"] and message.get("from_user") and message["from_user"].get("name"):
                     conversation_messages_str += message["from_user"]["name"] + ": " + message["chat_text"] + "\n"
             return conversation_messages_str, messages[-1]["id"]
         else:
