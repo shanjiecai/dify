@@ -12,7 +12,7 @@ from werkzeug.exceptions import NotFound, InternalServerError
 import services
 from controllers.app_api import api
 from controllers.app_api.app.utils import send_feishu_bot, get_recent_history, get_recent_history_within_timestamp
-from controllers.service_api.app import create_or_update_end_user_for_user_id
+# from controllers.service_api.app import create_or_update_end_user_for_user_id
 from controllers.service_api.app.error import AppUnavailableError, ProviderNotInitializeError, NotChatAppError, \
     ConversationCompletedError, CompletionRequestError, ProviderQuotaExceededError, \
     ProviderModelCurrentlyNotSupportError
