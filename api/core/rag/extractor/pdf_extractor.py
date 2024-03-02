@@ -3,12 +3,12 @@ from collections.abc import Iterator
 from typing import Optional
 
 import camelot
-from mylogger import logger
 
 from core.rag.extractor.blod.blod import Blob
 from core.rag.extractor.extractor_base import BaseExtractor
 from core.rag.models.document import Document
 from extensions.ext_storage import storage
+from mylogger import logger
 
 
 class PdfExtractor(BaseExtractor):
