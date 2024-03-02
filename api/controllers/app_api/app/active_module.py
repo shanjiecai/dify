@@ -206,7 +206,8 @@ def chat_thread(group_id: int, main_context: AppContext):
                                 except:
                                     logger.info(f"{traceback.format_exc()}")
                                     image_url = None
-                            query = topic + "you must introduce the story and raise any points or topics you would like to discuss. you can't say no or talk about other topics. After expressing your views, list some questions related to the news topic on a separate line, with each question not exceeding 10 words, using Question 1: question\nQuestion 2: question\n as serial numbers. Please follow this format closely to ensure consistency and accuracy of output."
+                            query = "<news>" + topic + "</news>" + "you must introduce the story and raise any points or topics you would like to discuss. you can\'t say sorry or mix up or talk about other topics. "
+                            # query += "After expressing your views, list some questions related to the news topic on a separate line, with each question not exceeding 10 words, using Question 1: question\nQuestion 2: question\n as serial numbers. Please follow this format closely to ensure consistency and accuracy of output."
                             import uuid
                             logger.info(f"超过24小时，换个话题强制回复：{group_id} {topic} {uuid.uuid4()}")
                             if image_url:
