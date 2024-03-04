@@ -71,9 +71,9 @@ class SummarizeApi(AppApiResource):
                 # print(message)
                 if message['chat_text']:
                     message['chat_text'].replace("\n", " ")
-                # history_str += f"{model_name_transform(message['from_user']['name'] if message['from_user'] else message['from_user_id'])}:{message['chat_text']}\n\n"
-                history_str += f"{message['from_user']['name'] if message['from_user'] else message['from_user_id']}:{message['chat_text']}\n\n"
-                history_with_no_user += f"{message['chat_text']}\n\n"
+                    # history_str += f"{model_name_transform(message['from_user']['name'] if message['from_user'] else message['from_user_id'])}:{message['chat_text']}\n\n"
+                    history_str += f"{message['from_user']['name'] if message['from_user'] else message['from_user_id']}:{message['chat_text']}\n\n"
+                    history_with_no_user += f"{message['chat_text']}\n\n"
             print(json.dumps(history_str, ensure_ascii=False))
             # print(json.dumps(history_with_no_user, ensure_ascii=False))
         system_prompt = args['system_prompt']
@@ -85,8 +85,13 @@ class SummarizeApi(AppApiResource):
             # doc = nlp(history_with_no_user)
             # nouns = [token.text for token in doc if token.pos_ == "NOUN"]
             # print(nouns)
+            query = prompt if not history_str else history_str,
+            if not query:
+                logger.info(f"query is empty args: {args}")
+                return {"result": "", "completion_tokens": [], "prompt_tokens": [], "summary": "", "tags": [], "nouns": [], "title": ""}, 200
+
             response = generate_response(
-                prompt if not history_str else history_str,
+                query,
                 system_prompt,
                 **kwargs
             )
@@ -123,7 +128,7 @@ class SummarizeApi(AppApiResource):
                     "title": title
                     }, 200
         except Exception as e:
-            logging.exception(f"internal server error: {traceback.format_exc()}")
+            logger.info(f"internal server error: {traceback.format_exc()}")
             send_feishu_bot(str(e))
             raise InternalServerError()
 
