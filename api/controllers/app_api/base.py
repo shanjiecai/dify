@@ -1,7 +1,6 @@
 import os
 
 from openai.types.chat import ChatCompletion
-from mylogger import logger
 
 api_key = os.environ.get('OPENAI_API_KEY')
 from openai import OpenAI
