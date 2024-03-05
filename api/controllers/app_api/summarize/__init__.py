@@ -85,7 +85,7 @@ class SummarizeApi(AppApiResource):
             # doc = nlp(history_with_no_user)
             # nouns = [token.text for token in doc if token.pos_ == "NOUN"]
             # print(nouns)
-            query = prompt if not history_str else history_str,
+            query = prompt if not history_str else history_str
             if not query:
                 logger.info(f"query is empty args: {args}")
                 return {"result": "", "completion_tokens": [], "prompt_tokens": [], "summary": "", "tags": [], "nouns": [], "title": ""}, 200
@@ -129,6 +129,7 @@ class SummarizeApi(AppApiResource):
                     }, 200
         except Exception as e:
             logger.info(f"internal server error: {traceback.format_exc()}")
+            logger.info(f"args: {args}")
             send_feishu_bot(str(e))
             raise InternalServerError()
 
