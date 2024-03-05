@@ -23,7 +23,7 @@ def generate_response(prompt, system_prompt=None, model="gpt-3.5-turbo-0125", **
         {"role": "user", "content": prompt},
     ]
     if system_prompt:
-        messages.insert(0, {"role": "assistant", "content": system_prompt})
+        messages.insert(0, {"role": "system", "content": system_prompt})
 
     response = client.chat.completions.create(model=model,
     max_tokens=kwargs.get('max_tokens', 100),
