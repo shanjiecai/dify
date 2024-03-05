@@ -11,7 +11,7 @@ class AppListApi(AppApiResource):
     parameters_fields = {
         'name': fields.String,
         'id': fields.String,
-        'model': fields.String,
+        # 'model': fields.String,
     }
 
     @marshal_with(parameters_fields)
@@ -22,9 +22,15 @@ class AppListApi(AppApiResource):
         # parser.add_argument('size', type=int_range(1, 100), default=10, location='args')
         # args = parser.parse_args()
         app_models = AppModelService.get_app_model_config_list()
+        # print(app_models)
         # 只取name和id
-        app_models = [{'name': app_model.name, 'id': app_model.id, 'model': app_model.model_id} for app_model in app_models]
-        return app_models
+        app_models_new = []
+        for app_model in app_models:
+            # print(f"app_model:{app_model.name} {app_model.id}")
+            # print(f"app_model:{app_model.model_id}")
+            # app_models_new.append({'name': app_model.name, 'id': app_model.id, 'model': app_model.model_id})
+            app_models_new.append({'name': app_model.name, 'id': app_model.id})
+        return app_models_new
 
 
 class PersonListApi(AppApiResource):

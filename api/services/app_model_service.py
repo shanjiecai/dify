@@ -17,6 +17,7 @@ class AppModelService:
                 app_list.remove(app)
                 continue
             app_model_config = cls.get_app_model_config(app)
+            # print(f"{app.name} {app_model_config.model_id}")
             app.model_id = app_model_config.model_id
         return app_list
 
