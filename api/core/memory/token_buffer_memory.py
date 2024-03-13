@@ -72,11 +72,14 @@ class TokenBufferMemory:
                     files, message.app_model_config
                 )
 
-                prompt_message_contents = [TextPromptMessageContent(data=message.query)]
-                for file_obj in file_objs:
-                    prompt_message_contents.append(file_obj.prompt_message_content)
+                if not file_objs:
+                    prompt_messages.append(UserPromptMessage(content=message.query))
+                else:
+                    prompt_message_contents = [TextPromptMessageContent(data=message.query)]
+                    for file_obj in file_objs:
+                        prompt_message_contents.append(file_obj.prompt_message_content)
 
-                prompt_messages.append(UserPromptMessage(content=prompt_message_contents))
+                    prompt_messages.append(UserPromptMessage(content=prompt_message_contents))
             else:
                 if not old_user_name and (not old_assistant_name or old_assistant_name == "test"):
                     prompt_messages.append(UserPromptMessage(content=message.query))

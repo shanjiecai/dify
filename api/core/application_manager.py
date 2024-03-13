@@ -227,7 +227,7 @@ class ApplicationManager:
                 logger.exception("Unknown Error when generating")
                 queue_manager.publish_error(e, PublishFrom.APPLICATION_MANAGER)
             finally:
-                db.session.remove()
+                db.session.close()
 
     def _handle_response(self, application_generate_entity: ApplicationGenerateEntity,
                          queue_manager: ApplicationQueueManager,
@@ -259,8 +259,6 @@ class ApplicationManager:
             else:
                 logger.exception(e)
                 raise e
-        finally:
-            db.session.remove()
 
     def convert_from_app_model_config_dict(self, tenant_id: str, app_model_config_dict: dict) \
             -> AppOrchestrationConfigEntity:
@@ -679,6 +677,7 @@ class ApplicationManager:
 
             db.session.add(conversation)
             db.session.commit()
+            db.session.refresh(conversation)
         else:
             conversation = (
                 db.session.query(Conversation)
@@ -729,6 +728,7 @@ class ApplicationManager:
             # update assistant_name
             message.assistant_name = assistant_name
             db.session.commit()
+        db.session.refresh(message)
 
         for file in application_generate_entity.files:
             message_file = MessageFile(

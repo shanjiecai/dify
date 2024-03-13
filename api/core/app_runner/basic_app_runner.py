@@ -210,6 +210,8 @@ class BasicApplicationRunner(AppRunner):
         # print(f"prompt_messages: {prompt_messages}")
         logger.info(f"{app_orchestration_config.model_config.model} prompt_messages: {prompt_messages}")
 
+        db.session.close()
+
         invoke_result = model_instance.invoke_llm(
             prompt_messages=prompt_messages,
             model_parameters=app_orchestration_config.model_config.parameters,
