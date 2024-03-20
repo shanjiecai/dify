@@ -26,8 +26,10 @@ from core.model_runtime.entities.message_entities import (
 )
 from core.model_runtime.entities.model_entities import ModelPropertyKey
 from core.model_runtime.model_providers.__base.large_language_model import LargeLanguageModel
+from core.prompt.const import plan_question_template
 from core.prompt.prompt_builder import PromptBuilder
 from core.prompt.prompt_template import PromptTemplateParser
+from models.model import Conversation
 from mylogger import logger
 
 
@@ -80,6 +82,7 @@ class PromptTransform:
                    outer_memory: Optional[list] = None,
                    assistant_name: Optional[str] = None,
                    user_name: Optional[str] = None,
+                   conversation: Conversation = None,
                    ) -> \
             tuple[list[PromptMessage], Optional[list[str]]]:
         app_mode = AppMode.value_of(app_mode)
@@ -161,6 +164,7 @@ class PromptTransform:
             outer_memory: Optional[list] = None,
             assistant_name: Optional[str] = None,
             user_name: Optional[str] = None,
+            conversation: Conversation = None,
             ) -> list[PromptMessage]:
 
         # model_mode = app_model_config.model_dict['mode']
@@ -195,6 +199,7 @@ class PromptTransform:
                     outer_memory=outer_memory,
                     assistant_name=assistant_name,
                     user_name=user_name,
+                    conversation=conversation,
                 )
         elif app_mode == AppMode.COMPLETION:
             if model_mode == ModelMode.CHAT:
@@ -522,10 +527,14 @@ class PromptTransform:
 
     def _append_chat_histories(self, memory: TokenBufferMemory,
                                prompt_messages: list[PromptMessage],
-                               model_config: ModelConfigEntity) -> None:
+                               model_config: ModelConfigEntity,
+                               assistant_name: Optional[str] = None,
+                               user_name: Optional[str] = None,
+                               ) -> None:
         if memory:
             rest_tokens = self._calculate_rest_token(prompt_messages, model_config)
-            histories = self._get_history_messages_list_from_memory(memory, rest_tokens)
+            histories = self._get_history_messages_list_from_memory(memory, rest_tokens,
+                                                                    assistant_name, user_name)
             prompt_messages.extend(histories)
 
     def _calculate_rest_token(self, prompt_messages: list[PromptMessage], model_config: ModelConfigEntity) -> int:
@@ -605,6 +614,75 @@ class PromptTransform:
 
         return prompt_messages
 
+    # def _get_chat_app_chat_model_prompt_messages(self,
+    #                                              prompt_template_entity: PromptTemplateEntity,
+    #                                              inputs: dict,
+    #                                              query: str,
+    #                                              files: list[FileObj],
+    #                                              context: Optional[str],
+    #                                              memory: Optional[TokenBufferMemory],
+    #                                              model_config: ModelConfigEntity,
+    #                                              outer_memory: Optional[list] = None,
+    #                                              assistant_name: Optional[str] = None,
+    #                                              user_name: Optional[str] = None
+    #                                              ) -> list[
+    #     UserPromptMessage | SystemPromptMessage | AssistantPromptMessage]:
+    #     raw_prompt_list = prompt_template_entity.advanced_chat_prompt_template.messages
+    #
+    #     prompt_messages = []
+    #
+    #     for prompt_item in raw_prompt_list:
+    #         raw_prompt = prompt_item.text
+    #
+    #         prompt_template = PromptTemplateParser(template=raw_prompt)
+    #         prompt_inputs = {k: inputs[k] for k in prompt_template.variable_keys if k in inputs}
+    #
+    #         self._set_context_variable(context, prompt_template, prompt_inputs)
+    #
+    #         prompt = self._format_prompt(prompt_template, prompt_inputs)
+    #
+    #         if prompt_item.role == PromptMessageRole.USER:
+    #             prompt_messages.append(UserPromptMessage(content=prompt))
+    #         elif prompt_item.role == PromptMessageRole.SYSTEM and prompt:
+    #             prompt_messages.append(SystemPromptMessage(content=prompt))
+    #         elif prompt_item.role == PromptMessageRole.ASSISTANT:
+    #             prompt_messages.append(AssistantPromptMessage(content=prompt))
+    #     # 群聊改为放到一个prompt message里
+    #     if memory and assistant_name:
+    #         if user_name:
+    #             memory.human_prefix = user_name
+    #         if assistant_name:
+    #             memory.ai_prefix = assistant_name
+    #         rest_tokens = self._calculate_rest_token(prompt_messages, model_config)
+    #         histories = self._get_history_messages_list_from_memory(memory, rest_tokens, assistant_name, user_name)
+    #         if histories:
+    #             history_str = ""
+    #             for history in histories:
+    #                 history_str += str(history.role) + ":" + history.content + "\n"
+    #             # if user_name:
+    #             #     query = history_str + user_name + ":" + query
+    #             # else:
+    #             #     query = history_str + query
+    #             if user_name and query:
+    #                 query = user_name + ":" + query + "\n"
+    #             logger.info(f"assistant_name: {assistant_name}")
+    #             query = history_str + (query if query else "")
+    #             query += assistant_name + ": "
+    #     # self._append_chat_histories(memory, prompt_messages, model_config)
+    #
+    #     if files:
+    #         prompt_message_contents = [TextPromptMessageContent(data=query)]
+    #         for file in files:
+    #             prompt_message_contents.append(file.prompt_message_content)
+    #
+    #         prompt_messages.append(UserPromptMessage(content=prompt_message_contents))
+    #     else:
+    #         if query:
+    #             prompt_messages.append(UserPromptMessage(content=query))
+    #
+    #     return prompt_messages
+
+    # 重构使用openai messages name参数
     def _get_chat_app_chat_model_prompt_messages(self,
                                                  prompt_template_entity: PromptTemplateEntity,
                                                  inputs: dict,
@@ -615,9 +693,10 @@ class PromptTransform:
                                                  model_config: ModelConfigEntity,
                                                  outer_memory: Optional[list] = None,
                                                  assistant_name: Optional[str] = None,
-                                                 user_name: Optional[str] = None
-                                                 ) -> list[
-        UserPromptMessage | SystemPromptMessage | AssistantPromptMessage]:
+                                                 user_name: Optional[str] = None,
+                                                 conversation: Conversation = None,
+                                                 # ) -> list[UserPromptMessage | SystemPromptMessage | AssistantPromptMessage]:
+                                                 ) -> list[PromptMessage]:
         raw_prompt_list = prompt_template_entity.advanced_chat_prompt_template.messages
 
         prompt_messages = []
@@ -635,31 +714,51 @@ class PromptTransform:
             if prompt_item.role == PromptMessageRole.USER:
                 prompt_messages.append(UserPromptMessage(content=prompt))
             elif prompt_item.role == PromptMessageRole.SYSTEM and prompt:
+                # 增加plan_questions，去掉人设信息
+                if conversation and conversation.plan_question:
+                    def remove_character_info(text):
+                        start_phrase = "character information:"
+                        end_phrase = "Don’t be verbose or too formal or polite when speaking."
+                        start_index = text.find(start_phrase)
+                        end_index = text.find(end_phrase)
+                        if start_index == -1 or end_index == -1:
+                            return text  # 如果没找到起始或结束短语，返回原文本
+                        # 删除指定部分
+                        return text[:start_index] + text[end_index + len(end_phrase):]
+                    # 去掉人设信息，prompt中 character information:和Don’t be verbose or too formal or polite when speaking之间的内容
+                    prompt = remove_character_info(prompt)
+                    questions = "\n".join(conversation.plan_question)
+                    plan_question_prompt = plan_question_template.format(questions=questions)
+                    logger.info(f"plan_question_prompt: {plan_question_prompt}")
+                    prompt += plan_question_prompt
+                    # prompt = plan_question_prompt
                 prompt_messages.append(SystemPromptMessage(content=prompt))
+
+
             elif prompt_item.role == PromptMessageRole.ASSISTANT:
                 prompt_messages.append(AssistantPromptMessage(content=prompt))
         # 群聊改为放到一个prompt message里
-        if memory and assistant_name:
-            if user_name:
-                memory.human_prefix = user_name
-            if assistant_name:
-                memory.ai_prefix = assistant_name
-            rest_tokens = self._calculate_rest_token(prompt_messages, model_config)
-            histories = self._get_history_messages_list_from_memory(memory, rest_tokens, assistant_name, user_name)
-            if histories:
-                history_str = ""
-                for history in histories:
-                    history_str += str(history.role) + ":" + history.content + "\n"
-                # if user_name:
-                #     query = history_str + user_name + ":" + query
-                # else:
-                #     query = history_str + query
-                if user_name and query:
-                    query = user_name + ":" + query + "\n"
-                logger.info(f"assistant_name: {assistant_name}")
-                query = history_str + (query if query else "")
-                query += assistant_name + ": "
-        # self._append_chat_histories(memory, prompt_messages, model_config)
+        # if memory and assistant_name:
+        #     if user_name:
+        #         memory.human_prefix = user_name
+        #     if assistant_name:
+        #         memory.ai_prefix = assistant_name
+        #     rest_tokens = self._calculate_rest_token(prompt_messages, model_config)
+        #     histories = self._get_history_messages_list_from_memory(memory, rest_tokens, assistant_name, user_name)
+        #     if histories:
+        #         history_str = ""
+        #         for history in histories:
+        #             history_str += str(history.role) + ":" + history.content + "\n"
+        #         # if user_name:
+        #         #     query = history_str + user_name + ":" + query
+        #         # else:
+        #         #     query = history_str + query
+        #         if user_name and query:
+        #             query = user_name + ":" + query + "\n"
+        #         logger.info(f"assistant_name: {assistant_name}")
+        #         query = history_str + (query if query else "")
+        #         query += assistant_name + ": "
+        self._append_chat_histories(memory, prompt_messages, model_config, assistant_name=assistant_name, user_name=user_name)
 
         if files:
             prompt_message_contents = [TextPromptMessageContent(data=query)]

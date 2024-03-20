@@ -54,8 +54,8 @@ def init_dataset_update_real_time(main_app: Flask):
     logger.info(f"init_dataset_update_real_time, 当前环境：{env}, 当前模式：{mode}")
     with main_app.app_context():
         try:
-            # if env == 'production' and mode == 'api':
-            if mode == 'api':
+            if env == 'production' and mode == 'api':
+            # if mode == 'api':
                 dataset_upload_real_time_list = DatasetUpdateRealTimeService.get_all_dataset_upload_real_time()
             else:
                 dataset_upload_real_time_list = []
@@ -81,8 +81,8 @@ def restart_dataset_update_real_time(main_app: Flask):
     logger.info(f"restart_dataset_update_real_time, 当前环境：{env}, 当前模式：{mode}")
     with main_app.app_context():
         try:
-            # if env == 'production' and mode == 'api':
-            if mode == 'api':
+            if env == 'production' and mode == 'api':
+            # if mode == 'api':
                 dataset_upload_real_time_list = DatasetUpdateRealTimeService.get_all_dataset_upload_real_time()
             else:
                 dataset_upload_real_time_list = []

@@ -184,6 +184,16 @@ conversation_detail_fields = {
     'admin_feedback_stats': fields.Nested(feedback_stat_fields)
 }
 
+app_conversation_detail_fields = {
+    'id': fields.String,
+    'created_at': TimestampField,
+    # 'introduction': fields.String,
+    'model_config': fields.Nested(model_config_fields),
+    # 'message_count': fields.Integer,
+    'plan_question_invoke_plan': fields.String,
+    'plan_question_invoke_user': fields.String,
+}
+
 simple_conversation_fields = {
     'id': fields.String,
     'name': fields.String,

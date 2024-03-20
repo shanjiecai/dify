@@ -11,6 +11,7 @@ from core.model_runtime.entities.message_entities import (
 )
 from core.model_runtime.entities.model_entities import ModelType
 from core.model_runtime.model_providers import model_provider_factory
+from core.tools.utils.openai_name_convert import correct_name_field
 from extensions.ext_database import db
 from models.model import Conversation, Message
 
@@ -81,16 +82,25 @@ class TokenBufferMemory:
 
                     prompt_messages.append(UserPromptMessage(content=prompt_message_contents))
             else:
-                if not old_user_name and (not old_assistant_name or old_assistant_name == "test"):
-                    prompt_messages.append(UserPromptMessage(content=message.query))
+                if not old_user_name and message.query and (not old_assistant_name or old_assistant_name == "test"):
+                    if not message.role or message.role == "Human":
+                        prompt_messages.append(UserPromptMessage(content=message.query))
+                    else:
+                        prompt_messages.append(UserPromptMessage(content=message.query, name=correct_name_field(message.role)))
                 elif message.query:
-                    prompt_messages.append(UserPromptMessage(content=message.query, role=user_name if (not message.role or message.role == "Human") else message.role))
+                    if not message.role or message.role == "Human":
+                        prompt_messages.append(UserPromptMessage(content=message.query,))
+                    else:
+                        prompt_messages.append(UserPromptMessage(content=message.query, name=correct_name_field(message.role)))
 
             # prompt_messages.append(AssistantPromptMessage(content=message.answer))
             if (not old_assistant_name or old_assistant_name == "test") and not old_user_name:
                 prompt_messages.append(AssistantPromptMessage(content=message.answer))
             elif message.answer:
-                prompt_messages.append(UserPromptMessage(content=message.answer, role=assistant_name if not message.assistant_name else message.assistant_name))
+                if message.assistant_name:
+                    prompt_messages.append(UserPromptMessage(content=message.answer, name=correct_name_field(assistant_name if not message.assistant_name else message.assistant_name)))
+                else:
+                    prompt_messages.append(AssistantPromptMessage(content=message.answer))
 
         if not prompt_messages:
             return []

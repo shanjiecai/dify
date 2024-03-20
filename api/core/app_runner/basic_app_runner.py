@@ -94,6 +94,7 @@ class BasicApplicationRunner(AppRunner):
             outer_memory=outer_memory,
             assistant_name=assistant_name,
             user_name=user_name,
+            conversation=conversation,
         )
 
         # moderation
@@ -184,6 +185,7 @@ class BasicApplicationRunner(AppRunner):
             outer_memory=outer_memory,
             assistant_name=assistant_name,
             user_name=user_name,
+            conversation=conversation,
         )
 
         # check hosting moderation

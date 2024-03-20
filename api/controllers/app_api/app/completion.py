@@ -1,10 +1,12 @@
+import datetime
 import json
 import logging
+import threading
 import time
 from collections.abc import Generator
 from typing import Union
 
-from flask import Response, request, stream_with_context
+from flask import Response, request, stream_with_context, current_app
 from flask_restful import reqparse
 from sqlalchemy import and_
 from werkzeug.exceptions import InternalServerError, NotFound
@@ -22,6 +24,7 @@ from controllers.app_api.app.error import (
     ProviderQuotaExceededError,
 )
 from controllers.app_api.app.utils import send_feishu_bot, split_and_get_interval
+from controllers.app_api.plan.pipeline import plan_question_background
 from controllers.app_api.wraps import AppApiResource
 from core.application_manager import ApplicationManager
 from core.application_queue_manager import ApplicationQueueManager
@@ -134,6 +137,19 @@ class ChatApi(AppApiResource):
             raise ValueError("conversation_id , query and outer_memory cannot be None all")
 
         streaming = args['response_mode'] == 'streaming'
+        if args["conversation_id"]:
+            conversation_filter = [
+                Conversation.id == args['conversation_id'],
+                # Conversation.app_id == app_model.id,
+                Conversation.status == 'normal'
+            ]
+            conversation = db.session.query(Conversation).filter(and_(*conversation_filter)).first()
+            if conversation and (not conversation.plan_question_invoke_user or conversation.plan_question_invoke_time < datetime.datetime.utcnow() - datetime.timedelta(
+                    hours=8)):
+                # 另起线程执行plan_question
+                threading.Thread(target=plan_question_background,
+                                 args=(current_app._get_current_object(), args["query"], conversation,
+                                       args["user"], None)).start()
 
         # if end_user is None and args['user'] is not None:
         end_user = create_or_update_end_user_for_user_id(app_model, args['user'])
@@ -203,15 +219,15 @@ class ChatActiveApi(AppApiResource):
             conversation = db.session.query(Conversation).filter(and_(*conversation_filter)).first()
             if not conversation:
                 raise NotFound("Conversation Not Exists.")
+
+            if (not conversation.plan_question_invoke_user or conversation.plan_question_invoke_time < datetime.datetime.utcnow() - datetime.timedelta(
+                    hours=8)):
+                # 另起线程执行plan_question
+                threading.Thread(target=plan_question_background,
+                                 args=(current_app._get_current_object(), args["query"], conversation,
+                                       args["user"], None)).start()
+
             app_model_config = db.session.query(AppModelConfig).filter(AppModelConfig.id==conversation.app_model_config_id).first()
-            # memory = Completion.get_memory_from_conversation(
-            #     tenant_id=app_model.tenant_id,
-            #     app_model_config=app_model_config.copy(),
-            #     conversation=conversation,
-            #     return_messages=False,
-            #     human_prefic="Human",
-            #     assistant_name=app_model.name
-            # )
             application_manager = ApplicationManager()
             app_orchestration_config = application_manager.convert_from_app_model_config_dict(app_model.tenant_id, app_model_config.to_dict())
 
@@ -229,7 +245,7 @@ class ChatActiveApi(AppApiResource):
             )
             histories = ""
             for history in history_list:
-                histories += history.role + ": " + history.content + "\n"
+                histories += history.name + ": " + history.content + "\n"
             logger.info(f"histories: {histories}, app_model.name: {app_model.name}")
             logger.info(f"get histories in {time.time() - b}")
             # messages = MessageService.pagination_by_first_id(app_model, None,
@@ -258,7 +274,10 @@ class ChatActiveApi(AppApiResource):
             # else:
             #     judge_result = judge_llm_active(memory.model_instance.credentials["openai_api_key"], histories,
             #                                     app_model.name)
-            judge_result = judge_llm_active(memory.model_instance.credentials["openai_api_key"], histories,
+            if conversation.plan_question:
+                judge_result = True
+            else:
+                judge_result = judge_llm_active(memory.model_instance.credentials["openai_api_key"], histories,
                                                                                 app_model.name)
             end_user = create_or_update_end_user_for_user_id(app_model, "")
             if judge_result:

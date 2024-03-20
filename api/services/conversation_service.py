@@ -1,10 +1,16 @@
+import json
+import traceback
 from typing import Optional, Union
 
+from flask import Flask
+from mylogger import logger
+
+from controllers.app_api.plan.generate_plan_from_conversation import generate_plan_from_conversation, generate_plan_introduction
 from core.generator.llm_generator import LLMGenerator
 from extensions.ext_database import db
 from libs.infinite_scroll_pagination import InfiniteScrollPagination
 from models.account import Account
-from models.model import App, Conversation, EndUser, Message
+from models.model import App, Conversation, EndUser, Message, ConversationPlanDetail
 from services.errors.conversation import ConversationNotExistsError, LastConversationNotExistsError
 from services.errors.message import MessageNotExistsError
 
@@ -104,7 +110,8 @@ class ConversationService:
         return conversation
 
     @classmethod
-    def get_conversation(cls, app_model: Optional[App], conversation_id: str
+    def get_conversation(cls, app_model: Optional[App] = None,
+                         conversation_id: str = None,
                          # , user: Optional[Union[Account, EndUser]]
                          ):
         conversation = db.session.query(Conversation) \
@@ -128,3 +135,60 @@ class ConversationService:
 
         conversation.is_deleted = True
         db.session.commit()
+
+    @classmethod
+    def generate_plan(cls, conversation_id: str, plan: str = None, outer_history_str: str = None):
+        history_str = ""
+        if not outer_history_str:
+            conversation = cls.get_conversation(conversation_id=conversation_id)
+            # if not conversation.plan_question_invoke_plan and not plan:
+            #     return None
+            plan = plan if plan else conversation.plan_question_invoke_plan
+            messages = db.session.query(Message).filter(
+                Message.conversation_id == conversation.id,
+            ).order_by(Message.created_at.desc()).limit(50).all()
+            messages = list(reversed(messages))
+            for message in messages:
+                if messages.index(message) + 1 < len(messages):
+                    next_message = messages[messages.index(message) + 1]
+                    if (message.answer is None or message.answer == "") and message.query == next_message.query and \
+                            message.role == next_message.role and next_message.answer is not None and \
+                            next_message.answer != "":
+                        continue
+                if not message.role:
+                    history_str += "User: " + message.query + "\n"
+                else:
+                    history_str += message.role + ": " + message.query + "\n"
+                if message.answer:
+                    if not message.assistant_name:
+                        history_str += "Assistant: " + message.answer + "\n"
+                    else:
+                        history_str += message.assistant_name + ": " + message.answer + "\n"
+            plan_detail = generate_plan_from_conversation(history_str, plan)
+        else:
+            plan_detail = generate_plan_from_conversation(outer_history_str, plan)
+
+        introduction = generate_plan_introduction(json.dumps(plan_detail))
+        plan_detail["introduction"] = introduction
+        return plan_detail, plan, history_str if not outer_history_str else outer_history_str
+
+    @classmethod
+    def generate_plan_and_notice_app(cls, flask_app: Flask,  conversation_id: str, plan: str = None):
+        try:
+            with flask_app.app_context():
+                plan_detail, plan, history_str = cls.generate_plan(conversation_id, plan)
+                conversation_plan_detail = ConversationPlanDetail(
+                    conversation_id=conversation_id,
+                    plan=plan,
+                    plan_detail_list=[plan_detail],
+                    plan_conversation_history=history_str
+                )
+                db.session.add(conversation_plan_detail)
+                db.session.commit()
+                # notice app
+                # TODO
+
+                return
+        except:
+            logger.info(f"generate_plan_and_notice_app error: {traceback.format_exc(limit=10)}")
+

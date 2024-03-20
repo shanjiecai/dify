@@ -23,7 +23,7 @@ from core.model_runtime.entities.model_entities import ModelPropertyKey
 from core.model_runtime.errors.invoke import InvokeBadRequestError
 from core.model_runtime.model_providers.__base.large_language_model import LargeLanguageModel
 from core.prompt.prompt_transform import PromptTransform
-from models.model import App, Message, MessageAnnotation
+from models.model import App, Message, MessageAnnotation, Conversation
 
 
 class AppRunner:
@@ -139,7 +139,8 @@ class AppRunner:
                                  memory: Optional[TokenBufferMemory] = None,
                                  outer_memory: Optional[list] = None,
                                  assistant_name: Optional[str] = None,
-                                 user_name: Optional[str] = None) \
+                                 user_name: Optional[str] = None,
+                                 conversation: Conversation = None) \
             -> tuple[list[PromptMessage], Optional[list[str]]]:
 
         """
@@ -172,7 +173,8 @@ class AppRunner:
                 model_config=model_config,
                 outer_memory=outer_memory,
                 assistant_name=assistant_name,
-                user_name=user_name
+                user_name=user_name,
+                conversation=conversation
             )
         else:
             prompt_messages = prompt_transform.get_advanced_prompt(
@@ -186,7 +188,8 @@ class AppRunner:
                 model_config=model_config,
                 outer_memory=outer_memory,
                 assistant_name=assistant_name,
-                user_name=user_name
+                user_name=user_name,
+                conversation=conversation,
             )
             stop = model_config.stop
 

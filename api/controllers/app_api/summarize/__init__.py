@@ -33,7 +33,7 @@ from controllers.app_api import api
 import traceback
 # import spacy
 # nlp = spacy.load("en_core_web_sm")
-from controllers.app_api.base import generate_response
+from controllers.app_api.openai_base_request import generate_response
 
 
 api_key = os.environ.get('OPENAI_API_KEY')

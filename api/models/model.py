@@ -4,7 +4,7 @@ import uuid
 from flask import current_app, request
 from flask_login import UserMixin
 from sqlalchemy import Float, text
-from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.dialects.postgresql import UUID, JSONB
 
 from core.file.tool_file_parser import ToolFileParser
 from core.file.upload_file_parser import UploadFileParser
@@ -12,6 +12,7 @@ from extensions.ext_database import db
 from libs.helper import generate_string
 
 from .account import Account, Tenant
+from .plan_question import PlanQuestion
 
 
 class DifySetup(db.Model):
@@ -453,6 +454,19 @@ class Conversation(db.Model):
     previous_summary = db.Column(db.Text, nullable=True)
     previous_summary_updated_at = db.Column(db.DateTime, nullable=True)
 
+    plan_question_invoke_user = db.Column(db.String(255), nullable=True)
+    plan_question_invoke_user_id = db.Column(db.String(255), nullable=True)
+    plan_question_invoke_time = db.Column(db.DateTime, nullable=True, server_default=db.text('CURRENT_TIMESTAMP(0)'))
+    plan_question_invoke_plan = db.Column(db.Text, nullable=True)
+
+    @property
+    def plan_question(self):
+        plan_question_item = db.session.query(PlanQuestion).filter(PlanQuestion.plan == self.plan_question_invoke_plan).first()
+        if plan_question_item:
+            return plan_question_item.questions
+        else:
+            return []
+
     @property
     def model_config(self):
         model_config = {}
@@ -547,6 +561,23 @@ class Conversation(db.Model):
     @property
     def in_debug_mode(self):
         return self.override_model_configs is not None
+
+
+class ConversationPlanDetail(db.Model):
+    __tablename__ = 'conversation_plan_detail'
+    __table_args__ = (
+        db.PrimaryKeyConstraint('id', name='conversation_plan_detail_pkey'),
+        db.Index('conversation_plan_detail_conversation_id_idx', 'conversation_id'),
+        db.Index('conversation_plan_detail_plan_idx', 'plan')
+    )
+    id = db.Column(UUID, server_default=db.text('uuid_generate_v4()'))
+    conversation_id = db.Column(UUID, db.ForeignKey('conversations.id'), nullable=False)
+    plan = db.Column(db.Text, nullable=False)
+    plan_introduction = db.Column(db.Text, nullable=True)
+    plan_detail_list = db.Column(JSONB, nullable=False)
+    plan_conversation_history = db.Column(db.Text, nullable=True)
+    created_at = db.Column(db.DateTime, nullable=False, server_default=db.text('CURRENT_TIMESTAMP(0)'))
+    updated_at = db.Column(db.DateTime, nullable=False, server_default=db.text('CURRENT_TIMESTAMP(0)'))
 
 
 class Message(db.Model):

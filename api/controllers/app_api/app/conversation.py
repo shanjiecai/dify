@@ -1,7 +1,7 @@
-
 import datetime
+import threading
 
-from flask import request
+from flask import request, current_app
 from flask_restful import marshal_with, reqparse
 from flask_restful.inputs import int_range
 from werkzeug.exceptions import NotFound
@@ -10,15 +10,17 @@ import services
 from controllers.app_api import api
 from controllers.app_api.app import create_or_update_end_user_for_user_id
 from controllers.app_api.app.error import NotChatAppError
+from controllers.app_api.plan.pipeline import plan_question_background
 from controllers.app_api.wraps import AppApiResource
 
 # from core.model_providers.model_factory import ModelFactory
 from extensions.ext_database import db
-from fields.conversation_fields import conversation_infinite_scroll_pagination_fields, simple_conversation_fields
+from fields.conversation_fields import conversation_infinite_scroll_pagination_fields, simple_conversation_fields, \
+    app_conversation_detail_fields
 from libs.exception import BaseHTTPException
 from libs.helper import uuid_value
 from models.dataset import DatasetUpdateRealTime
-from models.model import App, AppModelConfig, Conversation, Message
+from models.model import App, AppModelConfig, Conversation, Message, ConversationPlanDetail
 from mylogger import logger
 from services.conversation_service import ConversationService
 
@@ -151,8 +153,16 @@ class ConversationAddMessage(AppApiResource):
 
         db.session.add(message_class)
         db.session.commit()
+        # 如果没有或生成时间超过8小时，就生成plan_question
+        if not conversation.plan_question_invoke_plan or conversation.plan_question_invoke_time < datetime.datetime.utcnow() - datetime.timedelta(
+                hours=8):
+            # 另起线程执行plan_question
+            threading.Thread(target=plan_question_background,
+                             args=(current_app._get_current_object(), message, conversation,
+                                   user, user_id)).start()
 
         return {"result": "success"}, 200
+
 
 class ConversationDetailApi(AppApiResource):
     @marshal_with(simple_conversation_fields)
@@ -172,6 +182,14 @@ class ConversationDetailApi(AppApiResource):
         except services.errors.conversation.ConversationNotExistsError:
             raise NotFound("Conversation Not Exists.")
         return {"result": "success"}, 204
+
+    @marshal_with(app_conversation_detail_fields)
+    def get(self, app_model, conversation_id):
+        conversation = db.session.query(Conversation) \
+            .filter(Conversation.id == str(conversation_id)).first()
+        if not conversation:
+            raise NotFound("Conversation Not Exists.")
+        return conversation
 
 
 class ConversationRenameApi(AppApiResource):
@@ -219,10 +237,55 @@ class ConversationUpdateDataset(AppApiResource):
         return {"result": "success"}, 200
 
 
+class ConversationPlan(AppApiResource):
+    def post(self, app_model: App):
+        parser = reqparse.RequestParser()
+        parser.add_argument('conversation_id', type=str, required=True, location='json')
+        parser.add_argument('plan', type=dict, required=False, location='json')
+        parser.add_argument('plan_detail_number', type=int, required=False, location='json', default=1)
+        parser.add_argument('outer_history', type=str, required=False, location='json', default='')
+        args = parser.parse_args()
+        conversation_id = args['conversation_id']
+        plan = args['plan']
+        plan_detail_number = int(args['plan_detail_number'])
+        plan_detail_list = []
+        for _ in range(plan_detail_number):
+            plan_detail, plan, history_str = ConversationService.generate_plan(conversation_id, plan=plan,
+                                                                                             outer_history_str=args[
+                                                                                                 'outer_history']
+                                                                                             )
+            plan_detail_list.append(plan_detail)
+        conversation_plan_detail = ConversationPlanDetail(
+            conversation_id=conversation_id,
+            plan=plan,
+            plan_detail_list=plan_detail_list,
+            plan_conversation_history=history_str
+        )
+        db.session.add(conversation_plan_detail)
+        db.session.commit()
+        return {"result": "success", "plan_detail_list": plan_detail_list, "plan": plan}, 200
+
+
+class ConversationPlanDetailApi(AppApiResource):
+    def get(self, app_model: App, conversation_id: str):
+        conversation_plan_detail = ConversationPlanDetail.query.filter_by(conversation_id=conversation_id).first()
+        if not conversation_plan_detail:
+            raise NotFound("Conversation Plan Detail Not Exists.")
+        return {"result": "success", "plan_detail_list": conversation_plan_detail.plan_detail_list,
+                "plan": conversation_plan_detail.plan}, 200
+
+
+
 
 # api.add_resource(ConversationRenameApi, '/conversations/<uuid:c_id>/name', endpoint='conversation_name')
 api.add_resource(ConversationApi, '/conversations')
-api.add_resource(ConversationApi, '/conversations/<uuid:c_id>', endpoint='conversation')
+# api.add_resource(ConversationApi, '/conversations/<uuid:c_id>', endpoint='conversation')
 api.add_resource(ConversationAddMessage, '/conversations/add_message', endpoint='conversation_message')
 api.add_resource(ConversationUpdateDataset, '/conversations/update_knowledge', endpoint='conversation_update_knowledge')
+
+api.add_resource(ConversationDetailApi, '/conversations/plan/<uuid:conversation_id>', endpoint='conversation_detail')
+api.add_resource(ConversationPlanDetailApi, '/conversations/plan/detail/<conversation_id>', endpoint='conversation_plan_detail')
+
+api.add_resource(ConversationPlan, '/conversations/plan', endpoint='conversation_plan')
+
 # api.add_resource(ConversationDetailApi, '/conversations/<uuid:c_id>', endpoint='conversation_detail')

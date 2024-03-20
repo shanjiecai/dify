@@ -94,6 +94,7 @@ class UserPromptMessage(PromptMessage):
     Model class for user prompt message.
     """
     role: PromptMessageRole | str = PromptMessageRole.USER
+    name: Optional[str] = None
 
 
 class AssistantPromptMessage(PromptMessage):
@@ -117,6 +118,7 @@ class AssistantPromptMessage(PromptMessage):
 
     role: PromptMessageRole = PromptMessageRole.ASSISTANT
     tool_calls: list[ToolCall] = []
+    name: Optional[str] = None
 
 
 class SystemPromptMessage(PromptMessage):

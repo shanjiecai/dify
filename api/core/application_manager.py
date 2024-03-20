@@ -160,7 +160,9 @@ class ApplicationManager:
             queue_manager=queue_manager,
             conversation=conversation,
             message=message,
-            stream=stream
+            stream=stream,
+            assistant_name=assistant_name,
+            user_name=user_name,
         )
 
     def _generate_worker(self, flask_app: Flask,
@@ -231,7 +233,10 @@ class ApplicationManager:
                          queue_manager: ApplicationQueueManager,
                          conversation: Conversation,
                          message: Message,
-                         stream: bool = False) -> Union[dict, Generator]:
+                         stream: bool = False,
+                         assistant_name: str = None,
+                         user_name: str = None,
+                         ) -> Union[dict, Generator]:
         """
         Handle response.
         :param application_generate_entity: application generate entity
@@ -246,7 +251,9 @@ class ApplicationManager:
             application_generate_entity=application_generate_entity,
             queue_manager=queue_manager,
             conversation=conversation,
-            message=message
+            message=message,
+            assistant_name=assistant_name,
+            user_name=user_name
         )
 
         try:

@@ -6,6 +6,7 @@ from typing import Optional, Union, cast
 
 from pydantic import BaseModel
 
+from controllers.app_api.plan.generate_plan_from_conversation import generate_plan_from_conversation
 from core.app_runner.moderation_handler import ModerationRule, OutputModerationHandler
 from core.application_queue_manager import ApplicationQueueManager, PublishFrom
 from core.entities.application_entities import ApplicationGenerateEntity, InvokeFrom
@@ -39,8 +40,9 @@ from core.prompt.prompt_template import PromptTemplateParser
 from core.tools.tool_file_manager import ToolFileManager
 from events.message_event import message_was_created
 from extensions.ext_database import db
-from models.model import Conversation, Message, MessageAgentThought, MessageFile
+from models.model import Conversation, Message, MessageAgentThought, MessageFile, ConversationPlanDetail
 from services.annotation_service import AppAnnotationService
+from services.conversation_service import ConversationService
 
 logger = logging.getLogger(__name__)
 
@@ -61,7 +63,10 @@ class GenerateTaskPipeline:
     def __init__(self, application_generate_entity: ApplicationGenerateEntity,
                  queue_manager: ApplicationQueueManager,
                  conversation: Conversation,
-                 message: Message) -> None:
+                 message: Message,
+                 assistant_name: str = None,
+                 user_name: str = None,
+                 ) -> None:
         """
         Initialize GenerateTaskPipeline.
         :param application_generate_entity: application generate entity
@@ -83,6 +88,9 @@ class GenerateTaskPipeline:
         )
         self._start_at = time.perf_counter()
         self._output_moderation_handler = self._init_output_moderation()
+        self._assistant_name = assistant_name
+        self._user_name = user_name
+        # print(f"init {assistant_name} {user_name}")
 
     def process(self, stream: bool) -> Union[dict, Generator]:
         """
@@ -171,6 +179,20 @@ class GenerateTaskPipeline:
                     )
 
                 # Save message
+                # 去掉末尾的<finish_question>
+                if self._task_state.llm_result.message.content.endswith('<finish_question>'):
+                    logger.info(f"remove conversation {self._conversation.id} <finish_question> from {self._task_state.llm_result.message.content}")
+                    self._task_state.llm_result.message.content = self._task_state.llm_result.message.content[:-17]
+                    # 问题提问结束，删除conversation plan_question
+                    conversation: Conversation = db.session.query(Conversation).filter(Conversation.id == self._conversation.id).first()
+                    ConversationService.generate_plan(self._conversation.id, plan=self._conversation.plan_question_invoke_plan)
+                    if conversation:
+                        conversation.plan_question_invoke_plan = None
+                        conversation.plan_question_invoke_user = None
+                        conversation.plan_question_invoke_user_id = None
+                        conversation.plan_question_invoke_time = None
+                        db.session.commit()
+
                 self._save_message(self._task_state.llm_result)
 
                 response = {
@@ -199,6 +221,7 @@ class GenerateTaskPipeline:
         Process stream response.
         :return:
         """
+        answer_all = ""
         for message in self._queue_manager.listen():
             event = message.event
 
@@ -209,6 +232,8 @@ class GenerateTaskPipeline:
             elif isinstance(event, QueueStopEvent | QueueMessageEndEvent):
                 if isinstance(event, QueueMessageEndEvent):
                     self._task_state.llm_result = event.llm_result
+                    logger.info(f"message: {event.llm_result}")
+                    answer_all += event.llm_result.message.content
                 else:
                     model_config = self._application_generate_entity.app_orchestration_config_entity.model_config
                     model = model_config.model
@@ -265,9 +290,33 @@ class GenerateTaskPipeline:
 
                     if self._conversation.mode == 'chat':
                         replace_response['conversation_id'] = self._conversation.id
-
                     yield self._yield_response(replace_response)
 
+                # 去掉末尾的<finish_question>
+                if answer_all.endswith('<finish_question>'):
+                    logger.info(f"remove conversation {self._conversation.id} <finish_question> from {self._task_state.llm_result.message.content}")
+                    # self._task_state.llm_result.message.content = self._task_state.llm_result.message.content[:-17]
+                    # 问题提问结束，删除conversation plan_question
+                    conversation: Conversation = db.session.query(Conversation).filter(Conversation.id == self._conversation.id).first()
+                    if conversation:
+                        plan_detail_list = []
+                        for _ in range(2):
+                            plan_detail, plan, history_str = ConversationService.generate_plan(conversation.id, plan=conversation.plan_question_invoke_plan)
+
+                            plan_detail_list.append(plan_detail)
+                        logger.info(f"generate_plan_from_conversation response: {plan_detail_list}")
+                        # conversation.plan_question_invoke_plan = None
+                        conversation.plan_question_invoke_user = None
+                        conversation.plan_question_invoke_user_id = None
+                        conversation.plan_question_invoke_time = None
+                        conversation_plan_detail = ConversationPlanDetail(
+                            conversation_id=self._conversation.id,
+                            plan=plan,
+                            plan_detail_list=plan_detail_list,
+                            plan_conversation_history=history_str
+                        )
+                        db.session.add(conversation_plan_detail)
+                        db.session.commit()
                 # Save message
                 self._save_message(self._task_state.llm_result)
 
@@ -401,6 +450,7 @@ class GenerateTaskPipeline:
                     'answer': event.text,
                     'created_at': int(self._message.created_at.timestamp())
                 }
+                answer_all += event.text
 
                 if self._conversation.mode == 'chat':
                     response['conversation_id'] = self._conversation.id
@@ -433,6 +483,9 @@ class GenerateTaskPipeline:
         self._message.answer_price_unit = usage.completion_price_unit
         self._message.provider_response_latency = time.perf_counter() - self._start_at
         self._message.total_price = usage.total_price
+        self._message.role = self._user_name
+        self._message.assistant_name = self._assistant_name
+        # print(f"save {self._message.assistant_name} {self._message.role}")
 
         db.session.commit()
 

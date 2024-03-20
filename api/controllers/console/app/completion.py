@@ -1,11 +1,17 @@
+import datetime
 import json
 import logging
+import threading
 from collections.abc import Generator
 from typing import Union
 
 import flask_login
-from flask import Response, stream_with_context
+from flask import Response, stream_with_context, current_app
 from flask_restful import Resource, reqparse
+from sqlalchemy import and_
+
+from controllers.app_api.plan.pipeline import plan_question_background
+from extensions.ext_database import db
 from werkzeug.exceptions import InternalServerError, NotFound
 
 import services
@@ -27,6 +33,7 @@ from core.errors.error import ModelCurrentlyNotSupportError, ProviderTokenNotIni
 from core.model_runtime.errors.invoke import InvokeError
 from libs.helper import uuid_value
 from libs.login import login_required
+from models.model import Conversation
 from services.completion_service import CompletionService
 
 
@@ -131,6 +138,19 @@ class ChatMessageApi(Resource):
 
         account = flask_login.current_user
 
+        if args["query"] and args["conversation_id"]:
+            conversation_filter = [
+                Conversation.id == args['conversation_id'],
+                # Conversation.app_id == app_model.id,
+                Conversation.status == 'normal'
+            ]
+            conversation = db.session.query(Conversation).filter(and_(*conversation_filter)).first()
+            if conversation and (not conversation.plan_question_invoke_plan or conversation.plan_question_invoke_time < datetime.datetime.utcnow() - datetime.timedelta(
+                    hours=8)):
+                # 另起线程执行plan_question
+                threading.Thread(target=plan_question_background,
+                                 args=(current_app._get_current_object(), args["query"], conversation,
+                                       "test", None)).start()
         try:
             response = CompletionService.completion(
                 app_model=app_model,
@@ -138,7 +158,9 @@ class ChatMessageApi(Resource):
                 args=args,
                 invoke_from=InvokeFrom.DEBUGGER,
                 streaming=streaming,
-                is_model_config_override=True
+                is_model_config_override=True,
+                assistant_name=app_model.name,
+                user_name=None
             )
 
             return compact_response(response)
