@@ -3,14 +3,17 @@ import traceback
 from typing import Optional, Union
 
 from flask import Flask
-from mylogger import logger
 
-from controllers.app_api.plan.generate_plan_from_conversation import generate_plan_from_conversation, generate_plan_introduction
+from controllers.app_api.plan.generate_plan_from_conversation import (
+    generate_plan_from_conversation,
+    generate_plan_introduction,
+)
 from core.generator.llm_generator import LLMGenerator
 from extensions.ext_database import db
 from libs.infinite_scroll_pagination import InfiniteScrollPagination
 from models.account import Account
-from models.model import App, Conversation, EndUser, Message, ConversationPlanDetail
+from models.model import App, Conversation, ConversationPlanDetail, EndUser, Message
+from mylogger import logger
 from services.errors.conversation import ConversationNotExistsError, LastConversationNotExistsError
 from services.errors.message import MessageNotExistsError
 

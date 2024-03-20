@@ -1,7 +1,6 @@
 from typing import Optional
 
 from extensions.ext_database import db
-
 from models.plan_question import PlanQuestion
 
 

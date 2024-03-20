@@ -3,7 +3,7 @@ import time
 
 import requests
 import streamlit as st
-from streamlit.runtime.scriptrunner import get_script_run_ctx, add_script_run_ctx
+from streamlit.runtime.scriptrunner import add_script_run_ctx, get_script_run_ctx
 
 # url_base = "http://54.193.59.10"
 url_base = "http://127.0.0.1:5001"
@@ -13,7 +13,6 @@ st.set_page_config(
     layout="wide"
 )
 # url_base = "http://13.56.164.188"
-import os
 
 # from mylogger import logger
 # app_endpoint = os.getenv("APP_ENDPOINT", "https://www.vvvapp.org")

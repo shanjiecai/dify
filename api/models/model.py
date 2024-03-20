@@ -4,7 +4,7 @@ import uuid
 from flask import current_app, request
 from flask_login import UserMixin
 from sqlalchemy import Float, text
-from sqlalchemy.dialects.postgresql import UUID, JSONB
+from sqlalchemy.dialects.postgresql import JSONB, UUID
 
 from core.file.tool_file_parser import ToolFileParser
 from core.file.upload_file_parser import UploadFileParser

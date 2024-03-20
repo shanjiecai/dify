@@ -3,13 +3,12 @@ import datetime
 
 from flask import Flask
 
-from extensions.ext_database import db
-from models.model import Conversation
-from mylogger import logger
-
 from controllers.app_api.plan.generate_knowledge_point_question import generate_knowledge_point_question
 from controllers.app_api.plan.judge_plan import judge_plan
+from extensions.ext_database import db
+from models.model import Conversation
 from models.plan_question import PlanQuestion
+from mylogger import logger
 from services.plan_question_service import PlanQuestionService
 
 

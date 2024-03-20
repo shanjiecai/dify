@@ -1,7 +1,7 @@
 import datetime
 import threading
 
-from flask import request, current_app
+from flask import current_app, request
 from flask_restful import marshal_with, reqparse
 from flask_restful.inputs import int_range
 from werkzeug.exceptions import NotFound
@@ -15,12 +15,15 @@ from controllers.app_api.wraps import AppApiResource
 
 # from core.model_providers.model_factory import ModelFactory
 from extensions.ext_database import db
-from fields.conversation_fields import conversation_infinite_scroll_pagination_fields, simple_conversation_fields, \
-    app_conversation_detail_fields
+from fields.conversation_fields import (
+    app_conversation_detail_fields,
+    conversation_infinite_scroll_pagination_fields,
+    simple_conversation_fields,
+)
 from libs.exception import BaseHTTPException
 from libs.helper import uuid_value
 from models.dataset import DatasetUpdateRealTime
-from models.model import App, AppModelConfig, Conversation, Message, ConversationPlanDetail
+from models.model import App, AppModelConfig, Conversation, ConversationPlanDetail, Message
 from mylogger import logger
 from services.conversation_service import ConversationService
 

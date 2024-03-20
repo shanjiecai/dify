@@ -6,7 +6,6 @@ from typing import Optional, Union, cast
 
 from pydantic import BaseModel
 
-from controllers.app_api.plan.generate_plan_from_conversation import generate_plan_from_conversation
 from core.app_runner.moderation_handler import ModerationRule, OutputModerationHandler
 from core.application_queue_manager import ApplicationQueueManager, PublishFrom
 from core.entities.application_entities import ApplicationGenerateEntity, InvokeFrom
@@ -40,7 +39,7 @@ from core.prompt.prompt_template import PromptTemplateParser
 from core.tools.tool_file_manager import ToolFileManager
 from events.message_event import message_was_created
 from extensions.ext_database import db
-from models.model import Conversation, Message, MessageAgentThought, MessageFile, ConversationPlanDetail
+from models.model import Conversation, ConversationPlanDetail, Message, MessageAgentThought, MessageFile
 from services.annotation_service import AppAnnotationService
 from services.conversation_service import ConversationService
 

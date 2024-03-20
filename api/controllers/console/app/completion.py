@@ -6,15 +6,13 @@ from collections.abc import Generator
 from typing import Union
 
 import flask_login
-from flask import Response, stream_with_context, current_app
+from flask import Response, current_app, stream_with_context
 from flask_restful import Resource, reqparse
 from sqlalchemy import and_
-
-from controllers.app_api.plan.pipeline import plan_question_background
-from extensions.ext_database import db
 from werkzeug.exceptions import InternalServerError, NotFound
 
 import services
+from controllers.app_api.plan.pipeline import plan_question_background
 from controllers.console import api
 from controllers.console.app import _get_app
 from controllers.console.app.error import (
@@ -31,6 +29,7 @@ from core.application_queue_manager import ApplicationQueueManager
 from core.entities.application_entities import InvokeFrom
 from core.errors.error import ModelCurrentlyNotSupportError, ProviderTokenNotInitError, QuotaExceededError
 from core.model_runtime.errors.invoke import InvokeError
+from extensions.ext_database import db
 from libs.helper import uuid_value
 from libs.login import login_required
 from models.model import Conversation

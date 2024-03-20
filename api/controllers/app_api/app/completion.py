@@ -6,7 +6,7 @@ import time
 from collections.abc import Generator
 from typing import Union
 
-from flask import Response, request, stream_with_context, current_app
+from flask import Response, current_app, request, stream_with_context
 from flask_restful import reqparse
 from sqlalchemy import and_
 from werkzeug.exceptions import InternalServerError, NotFound

@@ -1,12 +1,8 @@
-import json
-import pickle
-from json import JSONDecodeError
 
-from sqlalchemy import func
-from sqlalchemy.dialects.postgresql import JSONB, UUID, ARRAY
+from sqlalchemy.dialects.postgresql import JSONB, UUID
 
 from extensions.ext_database import db
-from models.account import Account
+
 # from models.model import App, UploadFile
 
 

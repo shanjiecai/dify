@@ -2,8 +2,9 @@
 
 
 import json
-from mylogger import logger
+
 from controllers.app_api.openai_base_request import generate_response
+from mylogger import logger
 
 # system_prompt = """You are an expert of making plans, your task is to give a plan for the entire week based on a
 # given goal or knowledge point, the plan should be as detailed as possible, please return it in json format in {{

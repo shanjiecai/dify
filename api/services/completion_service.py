@@ -1,10 +1,8 @@
 import json
-import logging
 import time
 from collections.abc import Generator
 from typing import Any, Optional, Union
 
-from redis.client import PubSub
 from sqlalchemy import and_
 
 from core.application_manager import ApplicationManager
@@ -23,7 +21,6 @@ from models.model import Account, App, AppModelConfig, Conversation, EndUser, Me
 from services.app_model_config_service import AppModelConfigService
 from services.errors.app import MoreLikeThisDisabledError
 from services.errors.app_model_config import AppModelConfigBrokenError
-from services.errors.completion import CompletionStoppedError
 from services.errors.conversation import ConversationCompletedError, ConversationNotExistsError
 from services.errors.message import MessageNotExistsError
 

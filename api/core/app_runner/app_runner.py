@@ -23,7 +23,7 @@ from core.model_runtime.entities.model_entities import ModelPropertyKey
 from core.model_runtime.errors.invoke import InvokeBadRequestError
 from core.model_runtime.model_providers.__base.large_language_model import LargeLanguageModel
 from core.prompt.prompt_transform import PromptTransform
-from models.model import App, Message, MessageAnnotation, Conversation
+from models.model import App, Conversation, Message, MessageAnnotation
 
 
 class AppRunner:
