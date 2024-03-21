@@ -244,14 +244,20 @@ class ConversationPlan(AppApiResource):
     def post(self, app_model: App):
         parser = reqparse.RequestParser()
         parser.add_argument('conversation_id', type=str, required=True, location='json')
-        parser.add_argument('plan', type=dict, required=False, location='json')
+        parser.add_argument('plan', type=str, required=False, location='json')
         parser.add_argument('plan_detail_number', type=int, required=False, location='json', default=1)
         parser.add_argument('outer_history', type=str, required=False, location='json', default='')
+        parser.add_argument('use_cache', type=bool, required=False, location='json', default=True)
         args = parser.parse_args()
         conversation_id = args['conversation_id']
         plan = args['plan']
         plan_detail_number = int(args['plan_detail_number'])
         plan_detail_list = []
+        if args['use_cache']:
+            conversation_plan_detail = ConversationPlanDetail.query.filter_by(conversation_id=conversation_id).first()
+            if conversation_plan_detail:
+                return {"result": "success", "plan_detail_list": conversation_plan_detail.plan_detail_list,
+                        "plan": conversation_plan_detail.plan}, 200
         for _ in range(plan_detail_number):
             plan_detail, plan, history_str = ConversationService.generate_plan(conversation_id, plan=plan,
                                                                                              outer_history_str=args[

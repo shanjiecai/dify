@@ -184,12 +184,25 @@ class GenerateTaskPipeline:
                     # self._task_state.llm_result.message.content = self._task_state.llm_result.message.content[:-17]
                     # 问题提问结束，删除conversation plan_question
                     conversation: Conversation = db.session.query(Conversation).filter(Conversation.id == self._conversation.id).first()
-                    # ConversationService.generate_plan(self._conversation.id, plan=self._conversation.plan_question_invoke_plan)
+                    ConversationService.generate_plan(self._conversation.id, plan=self._conversation.plan_question_invoke_plan)
                     if conversation:
+                        plan_detail_list = []
+                        for _ in range(1):
+                            plan_detail, plan, history_str = ConversationService.generate_plan(conversation.id,
+                                                                                               plan=conversation.plan_question_invoke_plan)
+                            plan_detail_list.append(plan_detail)
+                        logger.info(f"generate_plan_from_conversation response: {plan_detail_list}")
                         # conversation.plan_question_invoke_plan = None
                         conversation.plan_question_invoke_user = None
                         conversation.plan_question_invoke_user_id = None
                         conversation.plan_question_invoke_time = None
+                        conversation_plan_detail = ConversationPlanDetail(
+                            conversation_id=self._conversation.id,
+                            plan=plan,
+                            plan_detail_list=plan_detail_list,
+                            plan_conversation_history=history_str
+                        )
+                        db.session.add(conversation_plan_detail)
                         db.session.commit()
 
                 self._save_message(self._task_state.llm_result)
@@ -299,9 +312,8 @@ class GenerateTaskPipeline:
                     conversation: Conversation = db.session.query(Conversation).filter(Conversation.id == self._conversation.id).first()
                     if conversation:
                         plan_detail_list = []
-                        for _ in range(2):
+                        for _ in range(1):
                             plan_detail, plan, history_str = ConversationService.generate_plan(conversation.id, plan=conversation.plan_question_invoke_plan)
-
                             plan_detail_list.append(plan_detail)
                         logger.info(f"generate_plan_from_conversation response: {plan_detail_list}")
                         # conversation.plan_question_invoke_plan = None
