@@ -63,6 +63,12 @@ def judge_plan(prompt: str):
 
 if __name__ == "__main__":
     # prompt = "I feel like I've gained weight recently, and I want to lose weight."
-    prompt = "Anyone here"
+    # prompt = "Anyone here"
+    prompt = """
+    a:我最近好胖想减肥
+    b:dddd
+    c:rrrrr
+    b:fffff
+    """
     response = judge_plan(prompt)
     print(response)

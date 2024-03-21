@@ -8,6 +8,7 @@ from controllers.app_api.plan.generate_plan_from_conversation import (
     generate_plan_from_conversation,
     generate_plan_introduction,
 )
+from controllers.app_api.plan.judge_plan import judge_plan
 from core.generator.llm_generator import LLMGenerator
 from extensions.ext_database import db
 from libs.infinite_scroll_pagination import InfiniteScrollPagination
@@ -147,9 +148,10 @@ class ConversationService:
             # if not conversation.plan_question_invoke_plan and not plan:
             #     return None
             plan = plan if plan else conversation.plan_question_invoke_plan
+
             messages = db.session.query(Message).filter(
                 Message.conversation_id == conversation.id,
-            ).order_by(Message.created_at.desc()).limit(50).all()
+            ).order_by(Message.created_at.desc()).limit(80).all()
             messages = list(reversed(messages))
             for message in messages:
                 if messages.index(message) + 1 < len(messages):
@@ -167,8 +169,12 @@ class ConversationService:
                         history_str += "Assistant: " + message.answer + "\n"
                     else:
                         history_str += message.assistant_name + ": " + message.answer + "\n"
+            if not plan:
+                plan = judge_plan(history_str)
             plan_detail = generate_plan_from_conversation(history_str, plan)
         else:
+            if not plan:
+                plan = judge_plan(history_str)
             plan_detail = generate_plan_from_conversation(outer_history_str, plan)
 
         introduction = generate_plan_introduction(json.dumps(plan_detail))

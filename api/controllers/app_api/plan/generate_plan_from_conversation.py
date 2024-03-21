@@ -9,9 +9,9 @@ from mylogger import logger
 # system_prompt = """You are an expert of making plans, your task is to give a plan for the entire week based on a
 # given goal or knowledge point, the plan should be as detailed as possible, please return it in json format in {{
 # "day1":["plan1", "plan2", ....] , "day2":["plan1", plan2", ...] , ...}} goal or knowledge point： {user_goal}"""
-system_prompt = """Provide a detailed weekly plan based on a given goal or knowledge point in JSON format. The plan
-should outline specific tasks and activities for each day of the week. Ensure that the plan is comprehensive and
-covers all relevant aspects related to the specified goal or knowledge point: {user_goal}.
+system_prompt = """Provide a detailed weekly plan based on a given goal or knowledge point and conversation history 
+in JSON format. The plan should outline specific tasks and activities for each day of the week. Ensure that the plan 
+is comprehensive and covers all relevant aspects related to the specified goal or knowledge point: {user_goal}.
 
 Please structure the plan in the following JSON format: {{ "day1": ["plan1", "plan2", ...], "day2": ["plan1", "plan2",
 ...], ... }} Where "plan1", "plan2", etc. represent the detailed activities or tasks for each day. The plan should be
@@ -36,7 +36,7 @@ detailed enough to provide actionable guidance for the entire week."""
 # specific. Do not forget to use the user's goal or knowledge point in the plan."""
 
 
-def generate_plan_from_conversation(history_str: str, plan: str):
+def generate_plan_from_conversation(history_str: str, plan: str=""):
     messages = [
         {
             "role": "system",
