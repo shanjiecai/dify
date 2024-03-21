@@ -49,7 +49,7 @@ def generate_plan_from_conversation(history_str: str, plan: str=""):
             "content": history_str
         })
     logger.info(f"generate_plan_from_conversation messages: {messages}")
-    response = generate_response(prompt=plan, history_messages=messages, json_format=True, max_tokens=1024,
+    response = generate_response(prompt=plan, history_messages=messages, json_format=True, max_tokens=2048,
                                  model="gpt-4-turbo-preview", stream=True, temperature=1.0)
     # stream response
     content = ""

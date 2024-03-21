@@ -217,7 +217,7 @@ def get_app_list():
 def get_conversation_plan_detail(conversation_id):
     import requests
 
-    url = f"http://127.0.0.1:5001/backend-api/v1/conversations/plan/detail/{conversation_id}"
+    url = f"{url_base}/backend-api/v1/conversations/plan/detail/{conversation_id}"
 
     payload = {}
     headers = {
@@ -226,7 +226,7 @@ def get_conversation_plan_detail(conversation_id):
 
     response = requests.request("GET", url, headers=headers, data=payload)
 
-    print(response.text)
+    # print(response.text)
     return response.json()
 
 

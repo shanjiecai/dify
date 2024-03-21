@@ -181,12 +181,12 @@ class GenerateTaskPipeline:
                 # 去掉末尾的<finish_question>
                 if self._task_state.llm_result.message.content.endswith('<finish_question>'):
                     logger.info(f"remove conversation {self._conversation.id} <finish_question> from {self._task_state.llm_result.message.content}")
-                    self._task_state.llm_result.message.content = self._task_state.llm_result.message.content[:-17]
+                    # self._task_state.llm_result.message.content = self._task_state.llm_result.message.content[:-17]
                     # 问题提问结束，删除conversation plan_question
                     conversation: Conversation = db.session.query(Conversation).filter(Conversation.id == self._conversation.id).first()
-                    ConversationService.generate_plan(self._conversation.id, plan=self._conversation.plan_question_invoke_plan)
+                    # ConversationService.generate_plan(self._conversation.id, plan=self._conversation.plan_question_invoke_plan)
                     if conversation:
-                        conversation.plan_question_invoke_plan = None
+                        # conversation.plan_question_invoke_plan = None
                         conversation.plan_question_invoke_user = None
                         conversation.plan_question_invoke_user_id = None
                         conversation.plan_question_invoke_time = None
