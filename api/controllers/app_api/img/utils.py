@@ -2,7 +2,6 @@ import os
 import random
 import time
 from base64 import b64decode
-from typing import Union
 
 import requests
 from flask import Flask

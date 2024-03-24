@@ -1,5 +1,6 @@
 import datetime
 import threading
+from concurrent.futures import ThreadPoolExecutor
 
 from flask import current_app, request
 from flask_restful import marshal_with, reqparse
@@ -27,7 +28,6 @@ from models.dataset import DatasetUpdateRealTime
 from models.model import App, AppModelConfig, Conversation, ConversationPlanDetail, Message
 from mylogger import logger
 from services.conversation_service import ConversationService
-from concurrent.futures import ThreadPoolExecutor, as_completed
 
 
 class ConversationApi(AppApiResource):

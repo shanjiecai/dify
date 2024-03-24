@@ -1,4 +1,5 @@
 from zhipuai import ZhipuAI
+
 client = ZhipuAI(api_key="") # 请填写您自己的APIKey
 
 response = client.images.generations(

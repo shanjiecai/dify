@@ -1,6 +1,5 @@
 import json
 import os
-from typing import List
 
 import numpy as np
 from openai.types.chat import ChatCompletion, ChatCompletionChunk
@@ -108,7 +107,7 @@ def compare_similarity(prompt, tag_list=None):
     # 同文件夹下tag_cache.json文件存在
     tag_cache_path = os.path.join(os.path.dirname(__file__), "tag_cache.json")
     if os.path.exists(tag_cache_path):
-        with open(tag_cache_path, "r") as f:
+        with open(tag_cache_path) as f:
             tag_cache = json.load(f)
         for tag in tag_list:
             if tag in tag_cache:
