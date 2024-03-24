@@ -4,6 +4,7 @@ from typing import Optional, Union
 
 from flask import Flask
 
+from controllers.app_api.openai_base_request import compare_similarity
 from controllers.app_api.plan.generate_plan_from_conversation import (
     generate_plan_from_conversation,
     generate_plan_introduction,
@@ -143,6 +144,7 @@ class ConversationService:
     @classmethod
     def generate_plan(cls, conversation_id: str, plan: str = None, outer_history_str: str = None):
         history_str = ""
+        plan_detail_dict = {}
         if not outer_history_str:
             conversation = cls.get_conversation(conversation_id=conversation_id)
             # if not conversation.plan_question_invoke_plan and not plan:
@@ -177,9 +179,22 @@ class ConversationService:
                 plan = judge_plan(history_str)
             plan_detail = generate_plan_from_conversation(outer_history_str, plan)
 
+        goals = []
+        day = 1
+        for k, v in plan_detail.items():
+            goals.append({
+                "day": day,
+                "title": k,
+                "detail": v
+            })
+            day += 1
+        days = len(goals)
+        plan_detail_dict["goals"] = goals
+        plan_detail_dict["days"] = days
+        plan_detail_dict["tags"] = compare_similarity(plan)
         introduction = generate_plan_introduction(json.dumps(plan_detail))
-        plan_detail["introduction"] = introduction
-        return plan_detail, plan, history_str if not outer_history_str else outer_history_str
+        plan_detail_dict["description"] = introduction
+        return plan_detail_dict, plan, history_str if not outer_history_str else outer_history_str
 
     @classmethod
     def generate_plan_and_notice_app(cls, flask_app: Flask,  conversation_id: str, plan: str = None):

@@ -139,6 +139,11 @@ def upload_file(file_path: str, file_name: str):
 
     response = requests.request("POST", url, headers=headers, data=payload, files=files)
     # print(response.text)
+    """{
+        "data": {
+            "uuid": "e5b53831-fa5f-477c-bf7c-2e42d9ff67ff"
+        }
+    }"""
     return response.json()
 
 

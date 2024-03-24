@@ -10,6 +10,7 @@ import services
 from controllers.app_api import api
 from controllers.app_api.app import create_or_update_end_user_for_user_id
 from controllers.app_api.app.error import NotChatAppError
+from controllers.app_api.img.utils import generate_img_pipeline
 from controllers.app_api.plan.pipeline import plan_question_background
 from controllers.app_api.wraps import AppApiResource
 
@@ -26,6 +27,7 @@ from models.dataset import DatasetUpdateRealTime
 from models.model import App, AppModelConfig, Conversation, ConversationPlanDetail, Message
 from mylogger import logger
 from services.conversation_service import ConversationService
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 
 class ConversationApi(AppApiResource):
@@ -246,6 +248,7 @@ class ConversationPlan(AppApiResource):
         parser.add_argument('conversation_id', type=str, required=True, location='json')
         parser.add_argument('plan', type=str, required=False, location='json')
         parser.add_argument('plan_detail_number', type=int, required=False, location='json', default=1)
+        # parser.add_argument('image_number', type=int, required=False, location='json', default=1)
         parser.add_argument('outer_history', type=str, required=False, location='json', default='')
         parser.add_argument('use_cache', type=bool, required=False, location='json', default=True)
         args = parser.parse_args()
@@ -257,22 +260,33 @@ class ConversationPlan(AppApiResource):
             conversation_plan_detail = ConversationPlanDetail.query.filter_by(conversation_id=conversation_id).first()
             if conversation_plan_detail:
                 return {"result": "success", "plan_detail_list": conversation_plan_detail.plan_detail_list,
+                        "image_list": conversation_plan_detail.image_list,
                         "plan": conversation_plan_detail.plan}, 200
+
+        # future_plan_list = []
+        conversation = Conversation.query.filter_by(id=conversation_id, ).first()
+        plan = plan if plan else conversation.plan_question_invoke_plan
+        pool = ThreadPoolExecutor()
+        future_image = pool.submit(generate_img_pipeline, plan, model="dalle3")
+
         for _ in range(plan_detail_number):
             plan_detail, plan, history_str = ConversationService.generate_plan(conversation_id, plan=plan,
-                                                                                             outer_history_str=args[
-                                                                                                 'outer_history']
-                                                                                             )
+                                                                               outer_history_str=args['outer_history']
+                                                                               )
             plan_detail_list.append(plan_detail)
+        image_list, img_perfect_prompt_list = future_image.result()
+        pool.shutdown()
         conversation_plan_detail = ConversationPlanDetail(
             conversation_id=conversation_id,
             plan=plan,
             plan_detail_list=plan_detail_list,
-            plan_conversation_history=history_str
+            plan_conversation_history=history_str,
+            image_list=image_list,
+            img_perfect_prompt_list=img_perfect_prompt_list
         )
         db.session.add(conversation_plan_detail)
         db.session.commit()
-        return {"result": "success", "plan_detail_list": plan_detail_list, "plan": plan}, 200
+        return {"result": "success", "plan_detail_list": plan_detail_list, "plan": plan, "image_list": image_list}, 200
 
 
 class ConversationPlanDetailApi(AppApiResource):
@@ -284,8 +298,6 @@ class ConversationPlanDetailApi(AppApiResource):
                 "plan": conversation_plan_detail.plan}, 200
 
 
-
-
 # api.add_resource(ConversationRenameApi, '/conversations/<uuid:c_id>/name', endpoint='conversation_name')
 api.add_resource(ConversationApi, '/conversations')
 # api.add_resource(ConversationApi, '/conversations/<uuid:c_id>', endpoint='conversation')
@@ -293,7 +305,8 @@ api.add_resource(ConversationAddMessage, '/conversations/add_message', endpoint=
 api.add_resource(ConversationUpdateDataset, '/conversations/update_knowledge', endpoint='conversation_update_knowledge')
 
 api.add_resource(ConversationDetailApi, '/conversations/plan/<uuid:conversation_id>', endpoint='conversation_detail')
-api.add_resource(ConversationPlanDetailApi, '/conversations/plan/detail/<conversation_id>', endpoint='conversation_plan_detail')
+api.add_resource(ConversationPlanDetailApi, '/conversations/plan/detail/<conversation_id>',
+                 endpoint='conversation_plan_detail')
 
 api.add_resource(ConversationPlan, '/conversations/plan', endpoint='conversation_plan')
 

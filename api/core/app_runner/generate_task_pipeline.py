@@ -2,10 +2,12 @@ import json
 import logging
 import time
 from collections.abc import Generator
+from concurrent.futures import ThreadPoolExecutor
 from typing import Optional, Union, cast
 
 from pydantic import BaseModel
 
+from controllers.app_api.img.utils import generate_img_pipeline
 from core.app_runner.moderation_handler import ModerationRule, OutputModerationHandler
 from core.application_queue_manager import ApplicationQueueManager, PublishFrom
 from core.entities.application_entities import ApplicationGenerateEntity, InvokeFrom
@@ -187,10 +189,17 @@ class GenerateTaskPipeline:
                     ConversationService.generate_plan(self._conversation.id, plan=self._conversation.plan_question_invoke_plan)
                     if conversation:
                         plan_detail_list = []
-                        for _ in range(1):
-                            plan_detail, plan, history_str = ConversationService.generate_plan(conversation.id,
-                                                                                               plan=conversation.plan_question_invoke_plan)
-                            plan_detail_list.append(plan_detail)
+                        pool = ThreadPoolExecutor()
+                        future_image = pool.submit(generate_img_pipeline, conversation.plan_question_invoke_plan, model="dalle3")
+
+                        # for _ in range(1):
+                        plan_detail, plan, history_str = ConversationService.generate_plan(conversation.id,
+                                                                                           plan=conversation.plan_question_invoke_plan)
+                        plan_detail_list.append(plan_detail)
+                        # image_list, img_perfect_prompt_list = generate_img_pipeline(
+                        #     conversation.plan_question_invoke_plan, model="dalle3")
+                        image_list, img_perfect_prompt_list = future_image.result()
+                        pool.shutdown()
                         logger.info(f"generate_plan_from_conversation response: {plan_detail_list}")
                         # conversation.plan_question_invoke_plan = None
                         conversation.plan_question_invoke_user = None
@@ -200,7 +209,9 @@ class GenerateTaskPipeline:
                             conversation_id=self._conversation.id,
                             plan=plan,
                             plan_detail_list=plan_detail_list,
-                            plan_conversation_history=history_str
+                            plan_conversation_history=history_str,
+                            image_list=image_list,
+                            img_perfect_prompt_list=img_perfect_prompt_list
                         )
                         db.session.add(conversation_plan_detail)
                         db.session.commit()
@@ -312,10 +323,12 @@ class GenerateTaskPipeline:
                     conversation: Conversation = db.session.query(Conversation).filter(Conversation.id == self._conversation.id).first()
                     if conversation:
                         plan_detail_list = []
-                        for _ in range(1):
-                            plan_detail, plan, history_str = ConversationService.generate_plan(conversation.id, plan=conversation.plan_question_invoke_plan)
-                            plan_detail_list.append(plan_detail)
+                        # for _ in range(1):
+                        plan_detail, plan, history_str = ConversationService.generate_plan(conversation.id, plan=conversation.plan_question_invoke_plan)
+                        plan_detail_list.append(plan_detail)
                         logger.info(f"generate_plan_from_conversation response: {plan_detail_list}")
+                        image_list, img_perfect_prompt_list = generate_img_pipeline(
+                            conversation.plan_question_invoke_plan, model="dalle3")
                         # conversation.plan_question_invoke_plan = None
                         conversation.plan_question_invoke_user = None
                         conversation.plan_question_invoke_user_id = None
@@ -324,7 +337,9 @@ class GenerateTaskPipeline:
                             conversation_id=self._conversation.id,
                             plan=plan,
                             plan_detail_list=plan_detail_list,
-                            plan_conversation_history=history_str
+                            plan_conversation_history=history_str,
+                            image_list=image_list,
+                            img_perfect_prompt_list=img_perfect_prompt_list
                         )
                         db.session.add(conversation_plan_detail)
                         db.session.commit()

@@ -54,7 +54,7 @@ def judge_plan(prompt: str):
         "role": "user",
         "content": prompt
     })
-
+    logger.info(f"judge_plan messages: {messages}")
     response = generate_response(prompt, system_template, history_messages=messages)
     content = response.choices[0].message.content
     logger.info(f"judge_plan response: {content}")
