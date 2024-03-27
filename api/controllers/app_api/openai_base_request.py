@@ -125,7 +125,7 @@ def compare_similarity(prompt, tag_list=None):
     # 返回所有相似度超过0.2的，如果没有返回最大
     similar_tag = [tag_list[i] for i in range(len(tag_list)) if similarities[i] > 0.2]
     if not similar_tag:
-        similar_tag = tag_list[similarities.index(max(similarities))]
+        similar_tag = [tag_list[similarities.index(max(similarities))]]
     return similar_tag
 
 
