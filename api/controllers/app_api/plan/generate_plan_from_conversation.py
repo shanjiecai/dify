@@ -13,13 +13,13 @@ system_prompt = """Provide a detailed weekly plan based on a given goal or knowl
 in JSON format. The plan should outline specific tasks and activities for each day of the week. Ensure that the plan 
 is comprehensive and covers all relevant aspects related to the specified goal or knowledge point: {user_goal}.
 
-Please structure the plan in the following JSON format: {{ "day1": ["plan1", "plan2", ...], "day2": ["plan1", "plan2",
-...], ... }} Where "plan1", "plan2", etc. represent the detailed activities or tasks for each day. The plan should be
-designed to effectively achieve the specified goal or cover the outlined knowledge point. Ensure that the tasks are
-clearly defined and provide a cohesive progression towards the desired outcome.
-
 Please note that the plan should be flexible enough to accommodate various goals or knowledge points and should be
-detailed enough to provide actionable guidance for the entire week."""
+detailed enough to provide actionable guidance for the entire week.
+
+The plan should be designed to effectively achieve the specified goal or cover the outlined knowledge point. Ensure 
+that the tasks are clearly defined and provide a cohesive progression towards the desired outcome.Please structure 
+the plan in the following JSON format: {{ "day1": ["plan1", "plan2", ...], "day2": ["plan1", "plan2", ...], 
+... }} Where "plan1", "plan2", etc. represent the detailed activities or tasks for each day."""
 
 # system_prompt = """Hello, AI Planning Pro! Your task is to create a detailed weekly plan based on a given goal or
 # knowledge point: {user_goal} . The plan should be returned in JSON format with the following structure:
