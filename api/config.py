@@ -22,6 +22,7 @@ DEFAULTS = {
     'SERVICE_API_URL': 'https://api.dify.ai',
     'APP_WEB_URL': 'https://udify.app',
     'FILES_URL': '',
+    'S3_ADDRESS_STYLE': 'auto',
     'STORAGE_TYPE': 'local',
     'STORAGE_LOCAL_PATH': 'storage',
     'CHECK_UPDATE_URL': 'https://updates.dify.ai',
@@ -64,6 +65,7 @@ DEFAULTS = {
     "NEWS_API_KEY": "",
     "FEISHU_ALERT_URL": "",
     "APP_ENDPOINT": "",
+    'TOOL_ICON_CACHE_MAX_AGE': 3600,
 }
 
 
@@ -97,7 +99,7 @@ class Config:
         # ------------------------
         # General Configurations.
         # ------------------------
-        self.CURRENT_VERSION = "0.5.10"
+        self.CURRENT_VERSION = "0.5.11"
         self.COMMIT_SHA = get_env('COMMIT_SHA')
         self.EDITION = "SELF_HOSTED"
         self.DEPLOY_ENV = get_env('DEPLOY_ENV')
@@ -187,6 +189,7 @@ class Config:
         self.S3_ACCESS_KEY = get_env('S3_ACCESS_KEY')
         self.S3_SECRET_KEY = get_env('S3_SECRET_KEY')
         self.S3_REGION = get_env('S3_REGION')
+        self.S3_ADDRESS_STYLE = get_env('S3_ADDRESS_STYLE')
         self.AZURE_BLOB_ACCOUNT_NAME = get_env('AZURE_BLOB_ACCOUNT_NAME')
         self.AZURE_BLOB_ACCOUNT_KEY = get_env('AZURE_BLOB_ACCOUNT_KEY')
         self.AZURE_BLOB_CONTAINER_NAME = get_env('AZURE_BLOB_CONTAINER_NAME')
@@ -319,6 +322,7 @@ class Config:
         self.BATCH_UPLOAD_LIMIT = get_env('BATCH_UPLOAD_LIMIT')
 
         self.API_COMPRESSION_ENABLED = get_bool_env('API_COMPRESSION_ENABLED')
+        self.TOOL_ICON_CACHE_MAX_AGE = get_env('TOOL_ICON_CACHE_MAX_AGE')
 
 
 class CloudEditionConfig(Config):

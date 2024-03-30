@@ -231,7 +231,7 @@ services:
 
   # Frontend web application.
   web:
-    image: langgenius/dify-web:0.5.10
+    image: langgenius/dify-web:0.5.11
     restart: always
     environment:
       EDITION: SELF_HOSTED
@@ -336,8 +336,10 @@ services:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf
       - ./nginx/proxy.conf:/etc/nginx/proxy.conf
       - ./nginx/conf.d:/etc/nginx/conf.d
+      #- ./nginx/ssl:/etc/ssl
     depends_on:
       - api
       - web
     ports:
       - "80:80"
+      #- "443:443"
