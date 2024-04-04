@@ -182,6 +182,8 @@ class ConversationService:
         goals = []
         day = 1
         for k, v in plan_detail.items():
+            if not isinstance(v, list):
+                continue
             goals.append({
                 "day": day,
                 "title": k,

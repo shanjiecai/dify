@@ -61,6 +61,14 @@ def generate_plan_from_conversation(history_str: str, plan: str=""):
     # content = response.choices[0].message.content
     logger.info(f"generate_plan_from_conversation response: {content}")
     plan = json.loads(content)
+    # json结构不一定遵循规范，需要处理
+    """{
+      "week_plan": {
+        "day1": ["""
+    # 例如这种需要取week_plan的value
+    # 如果结构体plan只有一个key且value不是list，取value
+    if len(plan) == 1 and not isinstance(list(plan.values())[0], list):
+        plan = list(plan.values())[0]
     return plan
 
 
