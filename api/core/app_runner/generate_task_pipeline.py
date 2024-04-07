@@ -216,6 +216,7 @@ class GenerateTaskPipeline:
                         db.session.add(conversation_plan_detail)
                         db.session.commit()
 
+                logger.info(f"[invoke_llm_result]: {self._task_state.llm_result}")
                 self._save_message(self._task_state.llm_result)
 
                 response = {
@@ -344,6 +345,7 @@ class GenerateTaskPipeline:
                         db.session.add(conversation_plan_detail)
                         db.session.commit()
                 # Save message
+                logger.info(f"[invoke_llm_result]: {self._task_state.llm_result}")
                 self._save_message(self._task_state.llm_result)
 
                 response = {
