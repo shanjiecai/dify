@@ -57,16 +57,17 @@ logger.add(
 
 from cmreslogging.handlers import CMRESHandler
 
-es_handler = CMRESHandler(hosts=[{'host': 'es', 'port': 9200}],
-                          # 可以配置对应的认证权限
-                          auth_type=CMRESHandler.AuthType.NO_AUTH,
-                          es_index_name='log',  # 不需要提前创建Index
-                          # 一个月分一个 Index,默认为按照每天分Index,示例:test-2020.12.02
-                          index_name_frequency=CMRESHandler.IndexNameFrequency.MONTHLY,
-                          # 额外增加环境标识
-                          es_additional_fields={'environment': os.environ.get("ENV", "dev")}
-                          )
-logger.add(es_handler)
+if os.environ.get("MODE", "api") == "api":
+    es_handler = CMRESHandler(hosts=[{'host': os.environ.get("es_host", "127.0.0.1"), 'port': 9200}],
+                              # 可以配置对应的认证权限
+                              auth_type=CMRESHandler.AuthType.NO_AUTH,
+                              es_index_name='log',  # 不需要提前创建Index
+                              # 一个月分一个 Index,默认为按照每天分Index,示例:test-2020.12.02
+                              index_name_frequency=CMRESHandler.IndexNameFrequency.MONTHLY,
+                              # 额外增加环境标识
+                              es_additional_fields={'environment': os.environ.get("ENV", "dev")}
+                              )
+    logger.add(es_handler)
 
 # logger.add(
 #     sys.stdout,
