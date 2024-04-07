@@ -202,6 +202,7 @@ class ChatActiveApi(AppApiResource):
             parser.add_argument('inputs', type=dict, required=False, location='json', default={})
             parser.add_argument('query', type=str, required=False, location='json', default='')
             parser.add_argument('outer_memory', type=list, required=False, default=None, location='json')
+            parser.add_argument('user', type=str, location='json', required=False, default="")
             # validate
             outer_memory = parser.parse_args()['outer_memory']
             if outer_memory is not None:
