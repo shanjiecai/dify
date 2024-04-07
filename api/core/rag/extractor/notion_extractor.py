@@ -1,5 +1,4 @@
 import json
-import logging
 from typing import Any, Optional
 
 import requests
@@ -12,7 +11,6 @@ from models.dataset import Document as DocumentModel
 from models.source import DataSourceBinding
 
 # logger = logging.getLogger(__name__)
-from mylogger import logger
 
 BLOCK_CHILD_URL_TMPL = "https://api.notion.com/v1/blocks/{block_id}/children"
 DATABASE_URL_TMPL = "https://api.notion.com/v1/databases/{database_id}/query"

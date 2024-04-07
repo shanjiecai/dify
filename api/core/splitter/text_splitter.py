@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import copy
-import logging
 import re
 from abc import ABC, abstractmethod
 from collections.abc import Callable, Collection, Iterable, Sequence, Set

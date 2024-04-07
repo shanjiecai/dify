@@ -1,4 +1,3 @@
-import logging
 import mimetypes
 import os
 from typing import Optional, cast
@@ -12,6 +11,9 @@ from core.model_runtime.model_providers import model_provider_factory
 from core.model_runtime.model_providers.__base.large_language_model import LargeLanguageModel
 from core.provider_manager import ProviderManager
 from models.provider import ProviderType
+
+# logger = logging.getLogger(__name__)
+from mylogger import logger
 from services.entities.model_provider_entities import (
     CustomConfigurationResponse,
     CustomConfigurationStatus,
@@ -23,9 +25,6 @@ from services.entities.model_provider_entities import (
     SimpleProviderEntityResponse,
     SystemConfigurationResponse,
 )
-
-# logger = logging.getLogger(__name__)
-from mylogger import logger
 
 
 class ModelProviderService:

@@ -1,4 +1,3 @@
-import logging
 from typing import Any
 
 from core.tools.entities.common_entities import I18nObject

@@ -1,7 +1,6 @@
 import base64
 import hashlib
 import hmac
-import logging
 import os
 import time
 from collections.abc import Generator
@@ -18,7 +17,6 @@ from models.model import MessageFile
 from models.tools import ToolFile
 
 # logger = logging.getLogger(__name__)
-from mylogger import logger
 
 
 class ToolFileManager:

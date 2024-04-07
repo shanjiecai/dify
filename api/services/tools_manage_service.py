@@ -1,5 +1,4 @@
 import json
-import logging
 
 from flask import current_app
 from httpx import get
@@ -23,10 +22,10 @@ from core.tools.utils.encoder import serialize_base_model_array, serialize_base_
 from core.tools.utils.parser import ApiBasedToolSchemaParser
 from extensions.ext_database import db
 from models.tools import ApiToolProvider, BuiltinToolProvider
-from services.model_provider_service import ModelProviderService
 
 # logger = logging.getLogger(__name__)
 from mylogger import logger
+from services.model_provider_service import ModelProviderService
 
 
 class ToolManageService:

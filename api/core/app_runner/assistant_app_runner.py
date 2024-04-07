@@ -1,4 +1,3 @@
-import logging
 from typing import cast
 
 from core.app_runner.app_runner import AppRunner
@@ -18,7 +17,6 @@ from models.model import App, Conversation, Message, MessageAgentThought
 from models.tools import ToolConversationVariables
 
 # logger = logging.getLogger(__name__)
-from mylogger import logger
 
 class AssistantApplicationRunner(AppRunner):
     """
