@@ -65,6 +65,7 @@ DEFAULTS = {
     "NEWS_API_KEY": "",
     "FEISHU_ALERT_URL": "",
     "APP_ENDPOINT": "",
+    "ES_HOST": "es",
     'TOOL_ICON_CACHE_MAX_AGE': 3600,
     'KEYWORD_DATA_SOURCE_TYPE': 'database',
 }
@@ -314,6 +315,7 @@ class Config:
         self.NEWS_API_KEY = get_env('NEWS_API_KEY')
         self.FEISHU_ALERT_URL = get_env('FEISHU_ALERT_URL')
         self.APP_ENDPOINT = get_env('APP_ENDPOINT')
+        self.ES_HOST = get_env('ES_HOST')
 
         self.ETL_TYPE = get_env('ETL_TYPE')
         self.UNSTRUCTURED_API_URL = get_env('UNSTRUCTURED_API_URL')

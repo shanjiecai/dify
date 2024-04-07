@@ -58,7 +58,7 @@ logger.add(
 from cmreslogging.handlers import CMRESHandler
 
 if os.environ.get("MODE", "api") == "api":
-    es_handler = CMRESHandler(hosts=[{'host': os.environ.get("es_host", "127.0.0.1"), 'port': 9200}],
+    es_handler = CMRESHandler(hosts=[{'host': os.environ.get("ES_HOST", "127.0.0.1"), 'port': 9200}],
                               # 可以配置对应的认证权限
                               auth_type=CMRESHandler.AuthType.NO_AUTH,
                               es_index_name='log',  # 不需要提前创建Index
