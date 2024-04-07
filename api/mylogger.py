@@ -2,11 +2,10 @@
 # import colorlog
 import json
 import os
-import sys
 import traceback
 import uuid
-import flask
 
+import flask
 from loguru import logger
 
 
@@ -57,6 +56,7 @@ logger.add(
 )
 
 from cmreslogging.handlers import CMRESHandler
+
 es_handler = CMRESHandler(hosts=[{'host': 'es', 'port': 9200}],
                           # 可以配置对应的认证权限
                           auth_type=CMRESHandler.AuthType.NO_AUTH,
