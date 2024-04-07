@@ -16,7 +16,6 @@ from core.model_runtime.model_providers.__base.speech2text_model import Speech2T
 from core.model_runtime.model_providers.__base.text_embedding_model import TextEmbeddingModel
 from core.model_runtime.model_providers.__base.tts_model import TTSModel
 from core.provider_manager import ProviderManager
-from mylogger import logger
 
 
 class ModelInstance:
