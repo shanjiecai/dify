@@ -5,7 +5,8 @@ from core.model_runtime.entities.model_entities import ModelType
 from core.model_runtime.entities.provider_entities import ProviderConfig, ProviderEntity, SimpleProviderEntity
 from core.model_runtime.model_providers.model_provider_factory import ModelProviderExtension, ModelProviderFactory
 
-logger = logging.getLogger(__name__)
+# logger = logging.getLogger(__name__)
+from mylogger import logger
 
 
 def test_get_providers():

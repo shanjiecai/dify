@@ -10,7 +10,8 @@ from core.application_queue_manager import PublishFrom
 from core.moderation.base import ModerationAction, ModerationOutputsResult
 from core.moderation.factory import ModerationFactory
 
-logger = logging.getLogger(__name__)
+# logger = logging.getLogger(__name__)
+from mylogger import logger
 
 
 class ModerationRule(BaseModel):

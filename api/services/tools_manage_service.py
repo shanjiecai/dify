@@ -25,7 +25,8 @@ from extensions.ext_database import db
 from models.tools import ApiToolProvider, BuiltinToolProvider
 from services.model_provider_service import ModelProviderService
 
-logger = logging.getLogger(__name__)
+# logger = logging.getLogger(__name__)
+from mylogger import logger
 
 
 class ToolManageService:

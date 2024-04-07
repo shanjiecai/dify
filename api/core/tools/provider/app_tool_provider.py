@@ -9,7 +9,9 @@ from extensions.ext_database import db
 from models.model import App, AppModelConfig
 from models.tools import PublishedAppTool
 
-logger = logging.getLogger(__name__)
+# logger = logging.getLogger(__name__)
+from mylogger import logger
+
 
 class AppBasedToolProviderEntity(ToolProviderController):
     @property

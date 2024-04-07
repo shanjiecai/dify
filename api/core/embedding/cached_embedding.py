@@ -14,7 +14,8 @@ from extensions.ext_redis import redis_client
 from libs import helper
 from models.dataset import Embedding
 
-logger = logging.getLogger(__name__)
+# logger = logging.getLogger(__name__)
+from mylogger import logger
 
 
 class CacheEmbedding(Embeddings):

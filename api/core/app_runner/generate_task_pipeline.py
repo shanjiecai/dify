@@ -45,7 +45,8 @@ from models.model import Conversation, ConversationPlanDetail, Message, MessageA
 from services.annotation_service import AppAnnotationService
 from services.conversation_service import ConversationService
 
-logger = logging.getLogger(__name__)
+# logger = logging.getLogger(__name__)
+from mylogger import logger
 
 
 class TaskState(BaseModel):

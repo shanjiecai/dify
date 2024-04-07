@@ -18,7 +18,8 @@ from typing import (
 
 from core.rag.models.document import BaseDocumentTransformer, Document
 
-logger = logging.getLogger(__name__)
+# logger = logging.getLogger(__name__)
+from mylogger import logger
 
 TS = TypeVar("TS", bound="TextSplitter")
 

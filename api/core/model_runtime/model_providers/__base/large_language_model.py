@@ -25,7 +25,8 @@ from core.model_runtime.entities.model_entities import (
 )
 from core.model_runtime.model_providers.__base.ai_model import AIModel
 
-logger = logging.getLogger(__name__)
+# logger = logging.getLogger(__name__)
+from mylogger import logger
 
 
 class LargeLanguageModel(AIModel):

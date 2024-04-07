@@ -24,7 +24,8 @@ from services.entities.model_provider_entities import (
     SystemConfigurationResponse,
 )
 
-logger = logging.getLogger(__name__)
+# logger = logging.getLogger(__name__)
+from mylogger import logger
 
 
 class ModelProviderService:

@@ -44,7 +44,8 @@ from extensions.ext_database import db
 from models.account import Account
 from models.model import App, Conversation, EndUser, Message, MessageFile
 
-logger = logging.getLogger(__name__)
+# logger = logging.getLogger(__name__)
+from mylogger import logger
 
 
 class ApplicationManager:

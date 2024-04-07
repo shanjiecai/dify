@@ -8,7 +8,9 @@ from core.model_runtime.entities.llm_entities import LLMResult, LLMResultChunk
 from core.model_runtime.entities.message_entities import PromptMessage, PromptMessageTool
 from core.model_runtime.model_providers.__base.ai_model import AIModel
 
-logger = logging.getLogger(__name__)
+# logger = logging.getLogger(__name__)
+from mylogger import logger
+
 
 class LoggingCallback(Callback):
     def on_before_invoke(self, llm_instance: AIModel, model: str, credentials: dict,

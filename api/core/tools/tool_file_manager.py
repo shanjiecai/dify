@@ -17,7 +17,9 @@ from extensions.ext_storage import storage
 from models.model import MessageFile
 from models.tools import ToolFile
 
-logger = logging.getLogger(__name__)
+# logger = logging.getLogger(__name__)
+from mylogger import logger
+
 
 class ToolFileManager:
     @staticmethod

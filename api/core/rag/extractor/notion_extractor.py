@@ -11,7 +11,8 @@ from extensions.ext_database import db
 from models.dataset import Document as DocumentModel
 from models.source import DataSourceBinding
 
-logger = logging.getLogger(__name__)
+# logger = logging.getLogger(__name__)
+from mylogger import logger
 
 BLOCK_CHILD_URL_TMPL = "https://api.notion.com/v1/blocks/{block_id}/children"
 DATABASE_URL_TMPL = "https://api.notion.com/v1/databases/{database_id}/query"
