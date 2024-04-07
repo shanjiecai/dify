@@ -3,6 +3,7 @@ import json
 import logging
 import threading
 import time
+import traceback
 from collections.abc import Generator
 from typing import Union
 
@@ -154,6 +155,7 @@ class ChatApi(AppApiResource):
         # if end_user is None and args['user'] is not None:
         end_user = create_or_update_end_user_for_user_id(app_model, args['user'])
         try:
+            # raise InvokeError("test")
             logger.info(f"{app_model.name} {args['conversation_id']} {args['query']} {args['user']}")
             response = CompletionService.completion(
                 app_model=app_model,
@@ -182,6 +184,39 @@ class ChatApi(AppApiResource):
             raise ProviderModelCurrentlyNotSupportError()
         except InvokeError as e:
             send_feishu_bot(str(e))
+            try:
+                from services.account_service import AccountService
+                logger.info("使用备用模型回复")
+                # 新建db.session
+                db.session.rollback()
+                """{"provider": "zhipuai", "name": "chatglm_turbo", "mode": "chat", "completion_params": {"temperature": 0.95, "top_p": 0.7, "stop": []}}"""
+                args["model_config"] = { "model":{
+                    "provider": "zhipuai",
+                    "name": "glm-3-turbo",
+                    "mode": "chat",
+                    "completion_params": {
+                        "temperature": 0.95,
+                        "top_p": 0.7,
+                        "stop": []
+                    }
+                }
+                }
+                user = AccountService.load_user("1c795cbf-0924-4f01-aec5-1b5abef50bca")
+                response = CompletionService.completion(
+                    app_model=app_model,
+                    user=user,
+                    args=args,
+                    invoke_from=InvokeFrom.APP_API,
+                    streaming=streaming,
+                    outer_memory=outer_memory,
+                    assistant_name=app_model.name,
+                    user_name=args['user'],
+                    is_model_config_override=True,
+                )
+                return compact_response(response)
+            except Exception as _e:
+                logger.info(f"使用备用模型回复失败: {str(traceback.format_exc())}")
+
             raise CompletionRequestError(e.description)
         except ValueError as e:
             send_feishu_bot(str(e))
@@ -298,20 +333,56 @@ class ChatActiveApi(AppApiResource):
                 #     assistant_name=app_model.name,
                 #     user_name=""
                 # )
-                response = CompletionService.completion(
-                    app_model=app_model,
-                    user=end_user,
-                    args=args,
-                    invoke_from=InvokeFrom.APP_API,
-                    streaming=streaming,
-                    outer_memory=outer_memory,
-                    assistant_name=app_model.name,
-                    user_name=""
-                )
-                logger.info(f"get response in {time.time() - b}")
-                response["result"] = True
-                logger.info(f"response: {response}")
-                return Response(response=json.dumps(response), status=200, mimetype='application/json')
+                try:
+                    response = CompletionService.completion(
+                        app_model=app_model,
+                        user=end_user,
+                        args=args,
+                        invoke_from=InvokeFrom.APP_API,
+                        streaming=streaming,
+                        outer_memory=outer_memory,
+                        assistant_name=app_model.name,
+                        user_name=""
+                    )
+                    logger.info(f"get response in {time.time() - b}")
+                    response["result"] = True
+                    logger.info(f"response: {response}")
+                    return Response(response=json.dumps(response), status=200, mimetype='application/json')
+                except InvokeError as e:
+                    send_feishu_bot(str(e))
+                    logger.info("使用备用模型回复")
+                    try:
+                        from services.account_service import AccountService
+                        logger.info("使用备用模型回复")
+                        # 新建db.session
+                        db.session.rollback()
+                        """{"provider": "zhipuai", "name": "chatglm_turbo", "mode": "chat", "completion_params": {"temperature": 0.95, "top_p": 0.7, "stop": []}}"""
+                        args["model_config"] = {"model": {
+                            "provider": "zhipuai",
+                            "name": "glm-3-turbo",
+                            "mode": "chat",
+                            "completion_params": {
+                                "temperature": 0.95,
+                                "top_p": 0.7,
+                                "stop": []
+                            }
+                        }
+                        }
+                        user = AccountService.load_user("1c795cbf-0924-4f01-aec5-1b5abef50bca")
+                        response = CompletionService.completion(
+                            app_model=app_model,
+                            user=user,
+                            args=args,
+                            invoke_from=InvokeFrom.APP_API,
+                            streaming=streaming,
+                            outer_memory=outer_memory,
+                            assistant_name=app_model.name,
+                            user_name=args['user'],
+                            is_model_config_override=True,
+                        )
+                        return compact_response(response)
+                    except Exception as _e:
+                        logger.info(f"使用备用模型回复失败: {str(traceback.format_exc())}")
 
             logger.info(judge_result)
             logger.info(time.time() - b)
