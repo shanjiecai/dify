@@ -259,8 +259,8 @@ services:
     #server.rewriteBasePath: true
     environment:
       - ELASTICSEARCH_HOSTS=http://es:9200
-#      - SERVER_BASEPATH=/kibana
-#      - SERVER_REWRITEBASEPATH=true
+      - SERVER_BASEPATH=/kibana
+      - SERVER_REWRITEBASEPATH=true
     ports:
       - "5601:5601"
     depends_on:
