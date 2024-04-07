@@ -82,3 +82,5 @@ py2neo
 azure-storage-blob==12.9.0
 azure-identity==1.15.0
 lxml==5.1.0
+elasticsearch==7.17.9
+CMRESHandler
