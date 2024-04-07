@@ -234,6 +234,7 @@ services:
     environment:
       - discovery.type=single-node
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - "xpack.security.enabled=false"
     volumes:
       - ./volumes/es/data:/usr/share/elasticsearch/data
     ports:
@@ -248,8 +249,17 @@ services:
   kibana:
     image: docker.elastic.co/kibana/kibana:7.15.1
     restart: always
+#    server.basePath: "/els"
+    #
+    ## Specifies whether Kibana should rewrite requests that are prefixed with
+    ## `server.basePath` or require that they are rewritten by your reverse proxy.
+    ## This setting was effectively always `false` before Kibana 6.3 and will
+    ## default to `true` starting in Kibana 7.0.
+    #server.rewriteBasePath: true
     environment:
       - ELASTICSEARCH_HOSTS=http://es:9200
+      - SERVER_BASEPATH=/kibana
+      - SERVER_REWRITEBASEPATH=true
     ports:
       - "5601:5601"
     depends_on:
