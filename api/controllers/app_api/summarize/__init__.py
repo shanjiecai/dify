@@ -38,7 +38,24 @@ from controllers.app_api.openai_base_request import generate_response
 
 api_key = os.environ.get('OPENAI_API_KEY')
 
-default_system_prompt = "You are an expert at summarising conversations. The user gives you the content of the dialogue, you summarize the main points of the dialogue, ignoring the meaningless dialogue, summarizing the content in no more than 50 words, and summarizing no more than three tags, no more than ten meaningful noun except name and no more than 10 words title. Please generate summary,title,tags,title using Chinese if the primary language of the conversation is Chinese and make sure to output the following format: Summary: 50 words or less based on the current dialogue \nTags: tag 1, tag 2, tag 3 \nNouns: noun 1, noun 2, noun 3 \nTitle: title of the summary. \n\nFor example: Summary: The cat sat on the mat. \nTags: cat, mat, sat \nNouns: cat, mat, sat \nTitle: The cat sat on the mat. \n\nPlease make sure to output the following format: Summary: 50 words or less based on the current dialogue \nTags: tag 1, tag 2, tag 3 \nNouns: noun 1, noun 2, noun 3 \nTitle: title of the summary in 10 words or less."
+default_system_prompt = "You are an expert at summarising conversations. The user gives you the content of the " \
+                        "dialogue, you summarize the main points of the dialogue, ignoring the meaningless dialogue, " \
+                        "summarizing the content in no more than 50 words, and summarizing no more than three tags, " \
+                        "no more than ten meaningful noun except name and no more than 10 words title. Please " \
+                        "generate summary,title,tags,title using Chinese if the primary language of the conversation " \
+                        "is Chinese and make sure to output the following format: Summary: 50 words or less based on " \
+                        "the current dialogue \nTags: tag 1, tag 2, tag 3 \nNouns: noun 1, noun 2, noun 3 \nTitle: " \
+                        "title of the summary. \n\nFor example: Summary: The cat sat on the mat. \nTags: cat, mat, " \
+                        "sat \nNouns: cat, mat, sat \nTitle: The cat sat on the mat. \n\nPlease make sure to output " \
+                        "the following format: Summary: 50 words or less based on the current dialogue \nTags: tag 1, " \
+                        "tag 2, tag 3 \nNouns: noun 1, noun 2, noun 3 \nTitle: title of the summary in 10 words or " \
+                        "less."
+
+# 总结创建计划时的对话历史
+plan_system_prompt = "You are an expert at summarising conversations. The above is the history of the conversation " \
+                     "that was generated to generate the plan. Summarize the conversation in 50 words or less"
+
+
 model_name_dict = {
     "DJ Bot": "James Corden",
 }
@@ -54,7 +71,7 @@ class SummarizeApi(AppApiResource):
         parser = reqparse.RequestParser()
         parser.add_argument('prompt', type=str, required=False, location='json')
         parser.add_argument('group_id', type=int, required=False, location='json')
-        parser.add_argument('system_prompt', type=str, required=False, default=default_system_prompt, location='json')
+        parser.add_argument('system_prompt', type=str, required=False, default="default", location='json')
         parser.add_argument("start_timestamp", type=int, required=False, location="json", default=None)
         parser.add_argument("end_timestamp", type=int, required=False, location="json", default=None)
         parser.add_argument('kwargs', type=dict, required=False, default={}, location='json')
@@ -77,7 +94,11 @@ class SummarizeApi(AppApiResource):
             print(json.dumps(history_str, ensure_ascii=False))
             # print(json.dumps(history_with_no_user, ensure_ascii=False))
         system_prompt = args['system_prompt']
-        if not system_prompt:
+        if system_prompt == "default":
+            system_prompt = default_system_prompt
+        elif system_prompt == "plan":
+            system_prompt = plan_system_prompt
+        else:
             system_prompt = default_system_prompt
         kwargs = args['kwargs']
         # logger.info(f"prompt: {prompt} system_prompt: {system_prompt} kwargs: {kwargs}")
