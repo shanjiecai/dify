@@ -71,7 +71,7 @@ class SummarizeApi(AppApiResource):
         parser = reqparse.RequestParser()
         parser.add_argument('prompt', type=str, required=False, location='json')
         parser.add_argument('group_id', type=int, required=False, location='json')
-        parser.add_argument('system_prompt', type=str, required=False, default="default", location='json')
+        parser.add_argument('type', type=str, required=False, default="default", location='json')
         parser.add_argument("start_timestamp", type=int, required=False, location="json", default=None)
         parser.add_argument("end_timestamp", type=int, required=False, location="json", default=None)
         parser.add_argument('kwargs', type=dict, required=False, default={}, location='json')
@@ -93,10 +93,10 @@ class SummarizeApi(AppApiResource):
                     history_with_no_user += f"{message['chat_text']}\n\n"
             print(json.dumps(history_str, ensure_ascii=False))
             # print(json.dumps(history_with_no_user, ensure_ascii=False))
-        system_prompt = args['system_prompt']
-        if system_prompt == "default":
+        type = args['type']
+        if type == "default":
             system_prompt = default_system_prompt
-        elif system_prompt == "plan":
+        elif type == "plan":
             system_prompt = plan_system_prompt
         else:
             system_prompt = default_system_prompt
