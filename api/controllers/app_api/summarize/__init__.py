@@ -121,7 +121,7 @@ class SummarizeApi(AppApiResource):
                 summary = response.choices[0].message.content.split("Tags:")[0].strip().split("Summary:")[1].strip()
             except:
                 summary = ""
-            if args['system_prompt'] == "plan":
+            if args['type'] == "plan":
                 return {"result": response.choices[0].message.content, "completion_tokens":
                         response.usage.completion_tokens,
                         "prompt_tokens": response.usage.prompt_tokens,
