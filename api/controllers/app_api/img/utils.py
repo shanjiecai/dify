@@ -43,6 +43,7 @@ def generate_img_pipeline(plan, model="dalle3", conversation: Conversation = Non
         # 取出所有v
         perfect_prompt_list = [v for k, v in perfect_prompt.items()]
         prompt = random.choice(perfect_prompt_list)
+        logger.info(prompt)
         if model == "dalle3":
             from controllers.app_api.img.dalle3 import dalle3_invoke
             img_list = dalle3_invoke(prompt, **kwargs)

@@ -67,8 +67,8 @@ def generate_dalle_query_variations_gpt(original_prompt, n_variations=1) -> dict
             {
                 "role": "system",
                 "content": "You are a helpful assistant that can generate creative variations of prompts for image "
-                           "generation using stable difussion. Rembmer to not violate any content poliy restrictions. "
-                           "Dont generate harmful, bad content",
+                           "generation using stable diffusion. Remember to not violate any content policy "
+                           "restrictions. Dont generate harmful, bad content",
             },
             {"role": "assistant", "content": f"{template}"},
         ],
