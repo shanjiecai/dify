@@ -40,14 +40,14 @@ def summarize_text_recursive(name, text, max_length=80):
 
 
 def summarize_text(name, text, max_length=80):
-    if len(text) > 5000:
-        text = text[:5000] + '...'
+    if len(text) > 40000:
+        text = text[:40000] + '...'
     text = f'''{text}\nBased on the above content, summarize this person’s personality characteristics as briefly as possible in {max_length} words or less:\n{name} '''
     messages = [{
         "role": "user",
         "content": text
     }]
-    response = client.chat.completions.create(model="gpt-4-1106-preview",
+    response = client.chat.completions.create(model="gpt-4-turbo-preview",
                                               messages=messages,
                                               # temperature=0.3,
                                               max_tokens=max_length + 50,
@@ -68,14 +68,14 @@ def summarize_text(name, text, max_length=80):
 
 # 总结说话风格
 def summarize_style(name, text, max_length=8):
-    if len(text) > 4000:
-        text = text[:4000] + '...'
+    if len(text) > 8000:
+        text = text[:8000] + '...'
     text = f'''{text}\nBased on the above content, summarize this person’s speaking style as briefly as possible in {max_length} words or less:\n{name} '''
     messages = [{
         "role": "user",
         "content": text
     }]
-    response = client.chat.completions.create(model="gpt-4-1106-preview",
+    response = client.chat.completions.create(model="gpt-4-turbo-preview",
                                               messages=messages,
                                               # temperature=0.3,
                                               max_tokens=max_length + 50,
@@ -116,14 +116,18 @@ def process_text(text, summary=""):
 
 
 if __name__ == '__main__':
-    path = "/Users/jiecai/PycharmProjects/dify/api/auto_process/5"
+    path = "/Users/jiecai/PycharmProjects/dify/api/auto_process/jack-sparrow"
     file_list = os.listdir(path)
     for file in file_list:
+        # 不是txt文件过滤
+        if not file.endswith('.txt'):
+            continue
         file_path = os.path.join(path, file)
         text = open(file_path, 'r', encoding="gb18030", errors='ignore').read()
         name = file_path.split('/')[-1].split('.')[0]
         # print("*************")
         print(name)
+        print(len(text))
         print(summarize_text(name, text))
         # print("*************")
         print(summarize_style(name, text))

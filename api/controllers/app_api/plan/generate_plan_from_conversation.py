@@ -9,17 +9,28 @@ from mylogger import logger
 # system_prompt = """You are an expert of making plans, your task is to give a plan for the entire week based on a
 # given goal or knowledge point, the plan should be as detailed as possible, please return it in json format in {{
 # "day1":["plan1", "plan2", ....] , "day2":["plan1", plan2", ...] , ...}} goal or knowledge point： {user_goal}"""
-system_prompt = """Provide a detailed weekly plan based on a given goal or knowledge point and conversation history 
-in JSON format. The plan should outline specific tasks and activities for each day of the week. Ensure that the plan 
-is comprehensive and covers all relevant aspects related to the specified goal or knowledge point: {user_goal}.
 
-Please note that the plan should be flexible enough to accommodate various goals or knowledge points and should be
-detailed enough to provide actionable guidance for the entire week.
 
-The plan should be designed to effectively achieve the specified goal or cover the outlined knowledge point. Ensure 
-that the tasks are clearly defined and provide a cohesive progression towards the desired outcome.Please structure 
-the plan in the following JSON format: {{ "day1": ["plan1", "plan2", ...], "day2": ["plan1", "plan2", ...], 
-... }} Where "plan1", "plan2", etc. represent the detailed activities or tasks for each day."""
+
+# system_prompt = """Provide a detailed weekly plan based on a given goal or knowledge point and conversation history
+# in JSON format. The plan should outline specific tasks and activities for each day of the week. Ensure that the plan
+# is comprehensive and covers all relevant aspects related to the specified goal or knowledge point: {user_goal}.
+#
+# Please note that the plan should be flexible enough to accommodate various goals or knowledge points and should be
+# detailed enough to provide actionable guidance for the entire week.
+#
+# The plan should be designed to effectively achieve the specified goal or cover the outlined knowledge point. Ensure
+# that the tasks are clearly defined and provide a cohesive progression towards the desired outcome.Please structure
+# the plan in the following JSON format: {{ "day1": ["plan1", "plan2", ...], "day2": ["plan1", "plan2", ...],
+# ... }} Where "plan1", "plan2", etc. represent the detailed activities or tasks for each day."""
+
+system_prompt = """Please provide a detailed weekly plan in JSON format, tailored to a specific goal or knowledge 
+point: {user_goal}. The plan should include specific, quantifiable tasks and activities for each day of the week, 
+ensuring a clear pathway toward achieving the goal or thoroughly understanding the knowledge point. The plan should 
+be comprehensive, covering all relevant aspects and offering actionable steps. Each task should be designed with 
+measurable outcomes to track progress and effectiveness. The JSON structure should follow the format: {{ "day1": [
+"task1 - metric", "task2 - metric", ...], "day2": ["task1 - metric", "task2 - metric", ...], ... }}, where each task 
+is paired with a quantifiable metric to assess progress."""
 
 # system_prompt = """Hello, AI Planning Pro! Your task is to create a detailed weekly plan based on a given goal or
 # knowledge point: {user_goal} . The plan should be returned in JSON format with the following structure:
@@ -50,7 +61,7 @@ def generate_plan_from_conversation(history_str: str, plan: str=""):
         })
     logger.info(f"generate_plan_from_conversation messages: {messages}")
     response = generate_response(prompt=plan, history_messages=messages, json_format=True, max_tokens=2048,
-                                 model="gpt-4-turbo-preview", stream=True, temperature=1.0)
+                                 model="gpt-4-turbo-preview", stream=True, temperature=0.8)
     # stream response
     content = ""
     for item in response:
