@@ -3,6 +3,7 @@ import traceback
 from typing import Optional, Union
 
 from flask import Flask
+from sqlalchemy import or_
 
 from controllers.app_api.openai_base_request import compare_similarity
 from controllers.app_api.plan.generate_plan_from_conversation import (
@@ -10,7 +11,10 @@ from controllers.app_api.plan.generate_plan_from_conversation import (
     generate_plan_introduction,
 )
 from controllers.app_api.plan.judge_plan import judge_plan
-from core.generator.llm_generator import LLMGenerator
+from core.app.entities.app_invoke_entities import InvokeFrom
+from core.llm_generator.llm_generator import LLMGenerator
+
+# from core.generator.llm_generator import LLMGenerator
 from extensions.ext_database import db
 from libs.infinite_scroll_pagination import InfiniteScrollPagination
 from models.account import Account
@@ -24,8 +28,9 @@ class ConversationService:
     @classmethod
     def pagination_by_last_id(cls, app_model: App, user: Optional[Union[Account, EndUser]],
                               last_id: Optional[str], limit: int,
-                              include_ids: Optional[list] = None, exclude_ids: Optional[list] = None,
-                              exclude_debug_conversation: bool = False) -> InfiniteScrollPagination:
+                              invoke_from: InvokeFrom,
+                              include_ids: Optional[list] = None,
+                              exclude_ids: Optional[list] = None) -> InfiniteScrollPagination:
         if not user:
             return InfiniteScrollPagination(data=[], limit=limit, has_more=False)
 
@@ -35,6 +40,7 @@ class ConversationService:
             Conversation.from_source == ('api' if isinstance(user, EndUser) else 'console'),
             Conversation.from_end_user_id == (user.id if isinstance(user, EndUser) else None),
             Conversation.from_account_id == (user.id if isinstance(user, Account) else None),
+            or_(Conversation.invoke_from.is_(None), Conversation.invoke_from == invoke_from.value)
         )
 
         if include_ids is not None:
@@ -42,9 +48,6 @@ class ConversationService:
 
         if exclude_ids is not None:
             base_query = base_query.filter(~Conversation.id.in_(exclude_ids))
-
-        if exclude_debug_conversation:
-            base_query = base_query.filter(Conversation.override_model_configs == None)
 
         if last_id:
             last_conversation = base_query.filter(

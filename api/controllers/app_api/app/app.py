@@ -2,7 +2,7 @@ import json
 
 from flask_restful import fields, marshal_with, reqparse, abort
 
-from constants.model_template import model_templates
+# from constants.model_template import model_templates
 from controllers.app_api import api
 from controllers.app_api.wraps import AppApiResource
 from controllers.console.app.error import ProviderNotInitializeError

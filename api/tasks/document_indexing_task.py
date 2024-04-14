@@ -65,7 +65,7 @@ def document_indexing_task(dataset_id: str, document_ids: list):
 
         if document:
             document.indexing_status = 'parsing'
-            document.processing_started_at = datetime.datetime.utcnow()
+            document.processing_started_at = datetime.datetime.now(datetime.timezone.utc).replace(tzinfo=None)
             documents.append(document)
             db.session.add(document)
     db.session.commit()

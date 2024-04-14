@@ -17,7 +17,9 @@ from sqlalchemy import and_
 from controllers.app_api.app.search_event import download_from_url, get_topic
 from controllers.app_api.app.utils import *
 from controllers.service_api.app import create_or_update_end_user_for_user_id
-from core.entities.application_entities import InvokeFrom
+from core.app.entities.app_invoke_entities import InvokeFrom
+
+# from core.entities.application_entities import InvokeFrom
 from core.judge_llm_active import judge_llm_active
 
 # from core.completion import Completion
@@ -25,7 +27,7 @@ from extensions.ext_database import db
 from extensions.ext_redis import redis_client
 from models.model import App, Conversation
 from mylogger import logger
-from services.completion_service import CompletionService
+from services.app_generate_service import AppGenerateService
 
 api_key = os.environ.get('OPENAI_API_KEY')
 # print(api_key)
@@ -66,15 +68,24 @@ def model_chat(conversation_id: str, outer_memory: list=None, is_force=False, qu
         logger.info(f"主动发起聊天：{app_model.name} {conversation_id}")
         # logger.info(f"{outer_memory[:-min(2, len(outer_memory))]}")
         logger.info(f"主动发起聊天历史：{outer_memory}")
-        response = CompletionService.completion(
+        # response = CompletionService.completion(
+        #     app_model=app_model,
+        #     user=end_user,
+        #     args=args,
+        #     invoke_from=InvokeFrom.APP_API,
+        #     streaming=False,
+        #     # outer_memory=outer_memory,
+        #     assistant_name=app_model.name,
+        #     user_name=user_name
+        # )
+        response = AppGenerateService.generate(
             app_model=app_model,
             user=end_user,
             args=args,
-            invoke_from=InvokeFrom.APP_API,
+            invoke_from=InvokeFrom.SERVICE_API,
             streaming=False,
-            # outer_memory=outer_memory,
+            user_name=args['user'],
             assistant_name=app_model.name,
-            user_name=user_name
         )
         return response
     else:

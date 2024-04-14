@@ -16,6 +16,7 @@ from core.model_runtime.model_providers.__base.speech2text_model import Speech2T
 from core.model_runtime.model_providers.__base.text_embedding_model import TextEmbeddingModel
 from core.model_runtime.model_providers.__base.tts_model import TTSModel
 from core.provider_manager import ProviderManager
+from mylogger import logger
 
 
 class ModelInstance:
@@ -24,11 +25,11 @@ class ModelInstance:
     """
 
     def __init__(self, provider_model_bundle: ProviderModelBundle, model: str) -> None:
-        self._provider_model_bundle = provider_model_bundle
+        self.provider_model_bundle = provider_model_bundle
         self.model = model
         self.provider = provider_model_bundle.configuration.provider.provider
         self.credentials = self._fetch_credentials_from_bundle(provider_model_bundle, model)
-        self.model_type_instance = self._provider_model_bundle.model_type_instance
+        self.model_type_instance = self.provider_model_bundle.model_type_instance
 
     def _fetch_credentials_from_bundle(self, provider_model_bundle: ProviderModelBundle, model: str) -> dict:
         """
@@ -67,7 +68,7 @@ class ModelInstance:
             raise Exception("Model type instance is not LargeLanguageModel")
 
         self.model_type_instance = cast(LargeLanguageModel, self.model_type_instance)
-        # logger.info(f"[invoke_llm_prompt]: {prompt_messages}")
+        logger.info(f"[invoke_llm_prompt]: {prompt_messages}")
         return self.model_type_instance.invoke(
             model=self.model,
             credentials=self.credentials,

@@ -1,20 +1,11 @@
-import datetime
-import json
 import logging
-import threading
-from collections.abc import Generator
-from typing import Union
 
 import flask_login
-from flask import Response, current_app, stream_with_context
 from flask_restful import Resource, reqparse
-from sqlalchemy import and_
 from werkzeug.exceptions import InternalServerError, NotFound
 
 import services
-from controllers.app_api.plan.pipeline import plan_question_background
 from controllers.console import api
-from controllers.console.app import _get_app
 from controllers.console.app.error import (
     AppUnavailableError,
     CompletionRequestError,
@@ -23,17 +14,20 @@ from controllers.console.app.error import (
     ProviderNotInitializeError,
     ProviderQuotaExceededError,
 )
+from controllers.console.app.wraps import get_app_model
 from controllers.console.setup import setup_required
 from controllers.console.wraps import account_initialization_required
-from core.application_queue_manager import ApplicationQueueManager
-from core.entities.application_entities import InvokeFrom
+from core.app.apps.base_app_queue_manager import AppQueueManager
+from core.app.entities.app_invoke_entities import InvokeFrom
 from core.errors.error import ModelCurrentlyNotSupportError, ProviderTokenNotInitError, QuotaExceededError
 from core.model_runtime.errors.invoke import InvokeError
-from extensions.ext_database import db
+from libs import helper
 from libs.helper import uuid_value
 from libs.login import login_required
-from models.model import Conversation
-from services.completion_service import CompletionService
+from models.model import AppMode
+from services.app_generate_service import AppGenerateService
+
+# from services.completion_service import CompletionService
 
 
 # define completion message api for user
@@ -42,12 +36,8 @@ class CompletionMessageApi(Resource):
     @setup_required
     @login_required
     @account_initialization_required
-    def post(self, app_id):
-        app_id = str(app_id)
-
-        # get app info
-        app_model = _get_app(app_id, 'completion')
-
+    @get_app_model(mode=AppMode.COMPLETION)
+    def post(self, app_model):
         parser = reqparse.RequestParser()
         parser.add_argument('inputs', type=dict, required=True, location='json')
         parser.add_argument('query', type=str, location='json', default='')
@@ -63,16 +53,15 @@ class CompletionMessageApi(Resource):
         account = flask_login.current_user
 
         try:
-            response = CompletionService.completion(
+            response = AppGenerateService.generate(
                 app_model=app_model,
                 user=account,
                 args=args,
                 invoke_from=InvokeFrom.DEBUGGER,
-                streaming=streaming,
-                is_model_config_override=True
+                streaming=streaming
             )
 
-            return compact_response(response)
+            return helper.compact_generate_response(response)
         except services.errors.conversation.ConversationNotExistsError:
             raise NotFound("Conversation Not Exists.")
         except services.errors.conversation.ConversationCompletedError:
@@ -99,15 +88,11 @@ class CompletionMessageStopApi(Resource):
     @setup_required
     @login_required
     @account_initialization_required
-    def post(self, app_id, task_id):
-        app_id = str(app_id)
-
-        # get app info
-        _get_app(app_id, 'completion')
-
+    @get_app_model(mode=AppMode.COMPLETION)
+    def post(self, app_model, task_id):
         account = flask_login.current_user
 
-        ApplicationQueueManager.set_stop_flag(task_id, InvokeFrom.DEBUGGER, account.id)
+        AppQueueManager.set_stop_flag(task_id, InvokeFrom.DEBUGGER, account.id)
 
         return {'result': 'success'}, 200
 
@@ -116,12 +101,8 @@ class ChatMessageApi(Resource):
     @setup_required
     @login_required
     @account_initialization_required
-    def post(self, app_id):
-        app_id = str(app_id)
-
-        # get app info
-        app_model = _get_app(app_id, 'chat')
-
+    @get_app_model(mode=[AppMode.CHAT, AppMode.AGENT_CHAT])
+    def post(self, app_model):
         parser = reqparse.RequestParser()
         parser.add_argument('inputs', type=dict, required=True, location='json')
         parser.add_argument('query', type=str, required=True, location='json')
@@ -137,21 +118,21 @@ class ChatMessageApi(Resource):
 
         account = flask_login.current_user
 
-        if args["query"] and args["conversation_id"]:
-            conversation_filter = [
-                Conversation.id == args['conversation_id'],
-                # Conversation.app_id == app_model.id,
-                Conversation.status == 'normal'
-            ]
-            conversation = db.session.query(Conversation).filter(and_(*conversation_filter)).first()
-            if conversation and (not conversation.plan_question_invoke_plan or conversation.plan_question_invoke_time < datetime.datetime.utcnow() - datetime.timedelta(
-                    hours=8)):
-                # 另起线程执行plan_question
-                threading.Thread(target=plan_question_background,
-                                 args=(current_app._get_current_object(), args["query"], conversation,
-                                       "test", None)).start()
+        # if args["query"] and args["conversation_id"]:
+        #     conversation_filter = [
+        #         Conversation.id == args['conversation_id'],
+        #         # Conversation.app_id == app_model.id,
+        #         Conversation.status == 'normal'
+        #     ]
+        #     conversation = db.session.query(Conversation).filter(and_(*conversation_filter)).first()
+        #     if conversation and (not conversation.plan_question_invoke_plan or conversation.plan_question_invoke_time < datetime.datetime.utcnow() - datetime.timedelta(
+        #             hours=8)):
+        #         # 另起线程执行plan_question
+        #         threading.Thread(target=plan_question_background,
+        #                          args=(current_app._get_current_object(), args["query"], conversation,
+        #                                "test", None)).start()
         try:
-            response = CompletionService.completion(
+            response = AppGenerateService.generate(
                 app_model=app_model,
                 user=account,
                 args=args,
@@ -162,7 +143,7 @@ class ChatMessageApi(Resource):
                 user_name=None
             )
 
-            return compact_response(response)
+            return helper.compact_generate_response(response)
         except services.errors.conversation.ConversationNotExistsError:
             raise NotFound("Conversation Not Exists.")
         except services.errors.conversation.ConversationCompletedError:
@@ -185,30 +166,15 @@ class ChatMessageApi(Resource):
             raise InternalServerError()
 
 
-def compact_response(response: Union[dict, Generator]) -> Response:
-    if isinstance(response, dict):
-        return Response(response=json.dumps(response), status=200, mimetype='application/json')
-    else:
-        def generate() -> Generator:
-            yield from response
-
-        return Response(stream_with_context(generate()), status=200,
-                        mimetype='text/event-stream')
-
-
 class ChatMessageStopApi(Resource):
     @setup_required
     @login_required
     @account_initialization_required
-    def post(self, app_id, task_id):
-        app_id = str(app_id)
-
-        # get app info
-        _get_app(app_id, 'chat')
-
+    @get_app_model(mode=[AppMode.CHAT, AppMode.AGENT_CHAT, AppMode.ADVANCED_CHAT])
+    def post(self, app_model, task_id):
         account = flask_login.current_user
 
-        ApplicationQueueManager.set_stop_flag(task_id, InvokeFrom.DEBUGGER, account.id)
+        AppQueueManager.set_stop_flag(task_id, InvokeFrom.DEBUGGER, account.id)
 
         return {'result': 'success'}, 200
 

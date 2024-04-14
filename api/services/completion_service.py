@@ -5,9 +5,10 @@ from typing import Any, Optional, Union
 
 from sqlalchemy import and_
 
-from core.application_manager import ApplicationManager
-from core.entities.application_entities import InvokeFrom
+from core.app.app_config.entities import InvokeFrom
 
+# from core.application_manager import ApplicationManager
+# from core.entities.application_entities import InvokeFrom
 # from core.completion import Completion
 # from core.conversation_message_task import PubHandler, ConversationTaskStoppedException, \
 #     ConversationTaskInterruptException

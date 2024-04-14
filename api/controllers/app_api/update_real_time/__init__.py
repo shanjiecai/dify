@@ -26,7 +26,7 @@ import requests
 from core.judge_llm_active import judge_llm_active
 from services.account_service import AccountService
 from services.app_model_service import AppModelService
-from services.completion_service import CompletionService
+# from services.completion_service import CompletionService
 from controllers.app_api.app.utils import *
 from controllers.app_api.app.search_event import get_topic, download_from_url
 from extensions.ext_redis import redis_client
