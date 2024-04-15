@@ -151,19 +151,19 @@ class ChatApi(AppApiResource):
             raise ValueError("conversation_id , query and outer_memory cannot be None all")
 
         streaming = args['response_mode'] == 'streaming'
-        # if args["conversation_id"]:
-        #     conversation_filter = [
-        #         Conversation.id == args['conversation_id'],
-        #         # Conversation.app_id == app_model.id,
-        #         Conversation.status == 'normal'
-        #     ]
-        #     conversation = db.session.query(Conversation).filter(and_(*conversation_filter)).first()
-        #     if conversation and (not conversation.plan_question_invoke_user or conversation.plan_question_invoke_time < datetime.datetime.utcnow() - datetime.timedelta(
-        #             hours=8)):
-        #         # 另起线程执行plan_question
-        #         threading.Thread(target=plan_question_background,
-        #                          args=(current_app._get_current_object(), args["query"], conversation,
-        #                                args["user"], None)).start()
+        if args["conversation_id"]:
+            conversation_filter = [
+                Conversation.id == args['conversation_id'],
+                # Conversation.app_id == app_model.id,
+                Conversation.status == 'normal'
+            ]
+            conversation = db.session.query(Conversation).filter(and_(*conversation_filter)).first()
+            if conversation and (not conversation.plan_question_invoke_user or conversation.plan_question_invoke_time < datetime.datetime.utcnow() - datetime.timedelta(
+                    hours=8)):
+                # 另起线程执行plan_question
+                threading.Thread(target=plan_question_background,
+                                 args=(current_app._get_current_object(), args["query"], conversation,
+                                       args["user"], None)).start()
 
         # if end_user is None and args['user'] is not None:
         end_user = create_or_update_end_user_for_user_id(app_model, args['user'])
@@ -393,6 +393,20 @@ class ChatActiveApi(AppApiResource):
                     #     assistant_name=app_model.name,
                     #     user_name=""
                     # )
+                    if args["conversation_id"]:
+                        conversation_filter = [
+                            Conversation.id == args['conversation_id'],
+                            # Conversation.app_id == app_model.id,
+                            Conversation.status == 'normal'
+                        ]
+                        conversation = db.session.query(Conversation).filter(and_(*conversation_filter)).first()
+                        if conversation and (
+                                not conversation.plan_question_invoke_user or conversation.plan_question_invoke_time < datetime.datetime.utcnow() - datetime.timedelta(
+                                hours=8)):
+                            # 另起线程执行plan_question
+                            threading.Thread(target=plan_question_background,
+                                             args=(current_app._get_current_object(), args["query"], conversation,
+                                                   args["user"], None)).start()
                     response = AppGenerateService.generate(
                         app_model=app_model,
                         user=end_user,

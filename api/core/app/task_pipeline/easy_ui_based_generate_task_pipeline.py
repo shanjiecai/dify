@@ -4,6 +4,7 @@ import time
 from collections.abc import Generator
 from typing import Optional, Union, cast
 
+from controllers.app_api.img.utils import generate_img_pipeline
 from core.app.apps.base_app_queue_manager import AppQueueManager, PublishFrom
 from core.app.entities.app_invoke_entities import (
     AgentChatAppGenerateEntity,
@@ -48,7 +49,8 @@ from core.prompt.utils.prompt_template_parser import PromptTemplateParser
 from events.message_event import message_was_created
 from extensions.ext_database import db
 from models.account import Account
-from models.model import AppMode, Conversation, EndUser, Message, MessageAgentThought
+from models.model import AppMode, Conversation, ConversationPlanDetail, EndUser, Message, MessageAgentThought
+from services.conversation_service import ConversationService
 
 logger = logging.getLogger(__name__)
 
@@ -192,6 +194,7 @@ class EasyUIBasedGenerateTaskPipeline(BasedGenerateTaskPipeline, MessageCycleMan
         Process stream response.
         :return:
         """
+        answer_all = ""
         for message in self._queue_manager.listen():
             event = message.event
 
@@ -202,6 +205,7 @@ class EasyUIBasedGenerateTaskPipeline(BasedGenerateTaskPipeline, MessageCycleMan
             elif isinstance(event, QueueStopEvent | QueueMessageEndEvent):
                 if isinstance(event, QueueMessageEndEvent):
                     self._task_state.llm_result = event.llm_result
+                    answer_all += event.llm_result.message.content
                 else:
                     self._handle_stop(event)
 
@@ -215,6 +219,37 @@ class EasyUIBasedGenerateTaskPipeline(BasedGenerateTaskPipeline, MessageCycleMan
 
                 # Save message
                 self._save_message()
+                # 去掉末尾的<finish_question>
+                if answer_all.endswith('<finish_question>'):
+                    logger.info(
+                        f"remove conversation {self._conversation.id} <finish_question> from {self._task_state.llm_result.message.content}")
+                    # self._task_state.llm_result.message.content = self._task_state.llm_result.message.content[:-17]
+                    # 问题提问结束，删除conversation plan_question
+                    conversation: Conversation = db.session.query(Conversation).filter(
+                        Conversation.id == self._conversation.id).first()
+                    if conversation:
+                        plan_detail_list = []
+                        # for _ in range(1):
+                        plan_detail, plan, history_str = ConversationService.generate_plan(conversation.id,
+                                                                                           plan=conversation.plan_question_invoke_plan)
+                        plan_detail_list.append(plan_detail)
+                        logger.info(f"generate_plan_from_conversation response: {plan_detail_list}")
+                        image_list, img_perfect_prompt_list = generate_img_pipeline(
+                            conversation.plan_question_invoke_plan, model="dalle3")
+                        # conversation.plan_question_invoke_plan = None
+                        conversation.plan_question_invoke_user = None
+                        conversation.plan_question_invoke_user_id = None
+                        conversation.plan_question_invoke_time = None
+                        conversation_plan_detail = ConversationPlanDetail(
+                            conversation_id=self._conversation.id,
+                            plan=plan,
+                            plan_detail_list=plan_detail_list,
+                            plan_conversation_history=history_str,
+                            image_list=image_list,
+                            img_perfect_prompt_list=img_perfect_prompt_list
+                        )
+                        db.session.add(conversation_plan_detail)
+                        db.session.commit()
 
                 yield self._message_end_to_stream_response()
             elif isinstance(event, QueueRetrieverResourcesEvent):
@@ -250,6 +285,7 @@ class EasyUIBasedGenerateTaskPipeline(BasedGenerateTaskPipeline, MessageCycleMan
                 else:
                     yield self._agent_message_to_stream_response(delta_text, self._message.id)
             elif isinstance(event, QueueMessageReplaceEvent):
+                answer_all += event.text
                 yield self._message_replace_to_stream_response(answer=event.text)
             elif isinstance(event, QueuePingEvent):
                 yield self._ping_stream_response()

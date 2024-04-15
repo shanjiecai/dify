@@ -156,7 +156,7 @@ class ConversationService:
 
             messages = db.session.query(Message).filter(
                 Message.conversation_id == conversation.id,
-            ).order_by(Message.created_at.desc()).limit(80).all()
+            ).order_by(Message.created_at.desc()).limit(10).all()
             messages = list(reversed(messages))
             for message in messages:
                 if messages.index(message) + 1 < len(messages):

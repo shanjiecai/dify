@@ -11,11 +11,13 @@ from core.model_runtime.entities.message_entities import (
     TextPromptMessageContent,
     UserPromptMessage,
 )
+from core.prompt.const import plan_question_template
 from core.prompt.entities.advanced_prompt_entities import ChatModelMessage, CompletionModelPromptTemplate, MemoryConfig
 from core.prompt.prompt_transform import PromptTransform
 from core.prompt.simple_prompt_transform import ModelMode
 from core.prompt.utils.prompt_template_parser import PromptTemplateParser
 from models.model import Conversation
+from mylogger import logger
 
 
 class AdvancedPromptTransform(PromptTransform):
@@ -63,6 +65,7 @@ class AdvancedPromptTransform(PromptTransform):
                 model_config=model_config,
                 user_name=user_name,
                 assistant_name=assistant_name,
+                conversation=conversation,
             )
 
         return prompt_messages
@@ -129,6 +132,7 @@ class AdvancedPromptTransform(PromptTransform):
                                         model_config: ModelConfigWithCredentialsEntity,
                                         assistant_name: Optional[str] = None,
                                         user_name: Optional[str] = None,
+                                        conversation: Conversation = None,
                                         ) -> list[PromptMessage]:
         """
         Get chat model prompt messages.
@@ -155,7 +159,24 @@ class AdvancedPromptTransform(PromptTransform):
                 else:
                     prompt_messages.append(UserPromptMessage(content=prompt))
             elif prompt_item.role == PromptMessageRole.SYSTEM and prompt:
-                prompt_messages.append(SystemPromptMessage(content=prompt))
+                if conversation and conversation.plan_question:
+                    def remove_character_info(text):
+                        start_phrase = "character information:"
+                        end_phrase = "Don’t be verbose or too formal or polite when speaking."
+                        start_index = text.find(start_phrase)
+                        end_index = text.find(end_phrase)
+                        if start_index == -1 or end_index == -1:
+                            return text  # 如果没找到起始或结束短语，返回原文本
+                        # 删除指定部分
+                        return text[:start_index] + text[end_index + len(end_phrase):]
+
+                    # 去掉人设信息，prompt中 character information:和Don’t be verbose or too formal or polite when speaking之间的内容
+                    prompt = remove_character_info(prompt)
+                    questions = "\n".join(conversation.plan_question)
+                    plan_question_prompt = plan_question_template.format(questions=questions)
+                    logger.info(f"plan_question_prompt: {plan_question_prompt}")
+                    prompt += plan_question_prompt
+                    prompt_messages.append(SystemPromptMessage(content=prompt))
             elif prompt_item.role == PromptMessageRole.ASSISTANT:
                 if assistant_name:
                     prompt_messages.append(AssistantPromptMessage(content=prompt, name=assistant_name))
