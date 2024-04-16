@@ -4,6 +4,8 @@ import os
 import numpy as np
 from openai.types.chat import ChatCompletion, ChatCompletionChunk
 
+from core.prompt_const import generate_dalle_query_template
+
 api_key = os.environ.get('OPENAI_API_KEY')
 from openai import OpenAI, Stream
 
@@ -53,11 +55,7 @@ def generate_response(prompt=None, system_prompt=None, history_messages=None, mo
 
 def generate_dalle_query_variations_gpt(original_prompt, n_variations=1) -> dict[str, str]:
     print("Enriching prompt")
-    template = f"""Generate {n_variations} prompts from this original prompt: {original_prompt}. This will be used to 
-    query a genai image generation model. Generate prompt variations to generate multiple images with the same 
-    concept simple prompt. Try to be as descriptive as possible. Remember to split each variation with a '\n' new 
-    line character to be easily parsable. Output in a json format that can be parsed easily, each prompt should be a 
-    key value pair."""
+    template = generate_dalle_query_template.format(original_prompt=original_prompt, n_variations=n_variations)
     # generate variations of the prompt using the OpenAI API GPT 4
     response = client.chat.completions.create(
         model="gpt-3.5-turbo",
@@ -133,7 +131,7 @@ if __name__ == "__main__":
     # prompt = "What is the meaning of life?"
     # response = generate_response("", prompt)
     # print(response)
-    # print(generate_dalle_query_variations_gpt("python programming"))
+    print(generate_dalle_query_variations_gpt("python programming"))
     prompt = """A futuristic robot typing on a keyboard with Python code projected in holographic displays around it, 
     symbolizing the automation achieved through Python programming."""
     # from controllers.app_api.img.dalle2 import dalle2_invoke

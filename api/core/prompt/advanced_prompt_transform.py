@@ -11,11 +11,11 @@ from core.model_runtime.entities.message_entities import (
     TextPromptMessageContent,
     UserPromptMessage,
 )
-from core.prompt.const import plan_question_template
 from core.prompt.entities.advanced_prompt_entities import ChatModelMessage, CompletionModelPromptTemplate, MemoryConfig
 from core.prompt.prompt_transform import PromptTransform
 from core.prompt.simple_prompt_transform import ModelMode
 from core.prompt.utils.prompt_template_parser import PromptTemplateParser
+from core.prompt_const import plan_question_template
 from models.model import Conversation
 from mylogger import logger
 

@@ -17,6 +17,7 @@ from controllers.service_api.app.error import AppUnavailableError, ProviderNotIn
     ConversationCompletedError, CompletionRequestError, ProviderQuotaExceededError, \
     ProviderModelCurrentlyNotSupportError
 from controllers.app_api.wraps import AppApiResource
+from core.prompt_const import conversation_summary_system_prompt, plan_summary_system_prompt
 # from core.conversation_message_task import PubHandler
 # from core.completion import Completion
 # from core.judge_llm_active import judge_llm_active
@@ -37,23 +38,6 @@ from controllers.app_api.openai_base_request import generate_response
 
 
 api_key = os.environ.get('OPENAI_API_KEY')
-
-default_system_prompt = "You are an expert at summarising conversations. The user gives you the content of the " \
-                        "dialogue, you summarize the main points of the dialogue, ignoring the meaningless dialogue, " \
-                        "summarizing the content in no more than 50 words, and summarizing no more than three tags, " \
-                        "no more than ten meaningful noun except name and no more than 10 words title. Please " \
-                        "generate summary,title,tags,title using Chinese if the primary language of the conversation " \
-                        "is Chinese and make sure to output the following format: Summary: 50 words or less based on " \
-                        "the current dialogue \nTags: tag 1, tag 2, tag 3 \nNouns: noun 1, noun 2, noun 3 \nTitle: " \
-                        "title of the summary. \n\nFor example: Summary: The cat sat on the mat. \nTags: cat, mat, " \
-                        "sat \nNouns: cat, mat, sat \nTitle: The cat sat on the mat. \n\nPlease make sure to output " \
-                        "the following format: Summary: 50 words or less based on the current dialogue \nTags: tag 1, " \
-                        "tag 2, tag 3 \nNouns: noun 1, noun 2, noun 3 \nTitle: title of the summary in 10 words or " \
-                        "less."
-
-# 总结创建计划时的对话历史
-plan_system_prompt = "You are an expert at summarising conversations. The above is the history of the conversation " \
-                     "that was generated to generate the plan. Summarize the conversation in 50 words or less"
 
 
 model_name_dict = {
@@ -95,11 +79,11 @@ class SummarizeApi(AppApiResource):
             # print(json.dumps(history_with_no_user, ensure_ascii=False))
         type = args['type']
         if type == "default":
-            system_prompt = default_system_prompt
+            system_prompt = conversation_summary_system_prompt
         elif type == "plan":
-            system_prompt = plan_system_prompt
+            system_prompt = plan_summary_system_prompt
         else:
-            system_prompt = default_system_prompt
+            system_prompt = conversation_summary_system_prompt
         kwargs = args['kwargs']
         # logger.info(f"prompt: {prompt} system_prompt: {system_prompt} kwargs: {kwargs}")
         try:
