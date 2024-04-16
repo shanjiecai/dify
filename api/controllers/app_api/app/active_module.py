@@ -84,7 +84,7 @@ def model_chat(conversation_id: str, outer_memory: list=None, is_force=False, qu
             args=args,
             invoke_from=InvokeFrom.SERVICE_API,
             streaming=False,
-            user_name=args['user'],
+            user_name=user_name,
             assistant_name=app_model.name,
         )
         return response
