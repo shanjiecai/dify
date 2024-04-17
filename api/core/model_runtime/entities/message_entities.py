@@ -88,6 +88,14 @@ class PromptMessage(ABC, BaseModel):
     content: Optional[str | list[PromptMessageContent]] = None
     name: Optional[str] = None
 
+    def is_empty(self) -> bool:
+        """
+        Check if prompt message is empty.
+
+        :return: True if prompt message is empty, False otherwise
+        """
+        return not self.content
+
 
 class UserPromptMessage(PromptMessage):
     """
@@ -120,6 +128,16 @@ class AssistantPromptMessage(PromptMessage):
     tool_calls: list[ToolCall] = []
     name: Optional[str] = None
 
+    def is_empty(self) -> bool:
+        """
+        Check if prompt message is empty.
+
+        :return: True if prompt message is empty, False otherwise
+        """
+        if not super().is_empty() and not self.tool_calls:
+            return False
+
+        return True
 
 class SystemPromptMessage(PromptMessage):
     """
@@ -134,3 +152,14 @@ class ToolPromptMessage(PromptMessage):
     """
     role: PromptMessageRole = PromptMessageRole.TOOL
     tool_call_id: str
+
+    def is_empty(self) -> bool:
+        """
+        Check if prompt message is empty.
+
+        :return: True if prompt message is empty, False otherwise
+        """
+        if not super().is_empty() and not self.tool_call_id:
+            return False
+
+        return True

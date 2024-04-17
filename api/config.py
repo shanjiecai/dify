@@ -69,8 +69,8 @@ DEFAULTS = {
     "FEISHU_ALERT_URL": "",
     "APP_ENDPOINT": "",
     "ES_HOST": "es",
-    'CODE_EXECUTION_ENDPOINT': '',
-    'CODE_EXECUTION_API_KEY': '',
+    'CODE_EXECUTION_ENDPOINT': 'http://sandbox:8194',
+    'CODE_EXECUTION_API_KEY': 'dify-sandbox',
     'TOOL_ICON_CACHE_MAX_AGE': 3600,
     'MILVUS_DATABASE': 'default',
     'KEYWORD_DATA_SOURCE_TYPE': 'database',
@@ -107,7 +107,7 @@ class Config:
         # ------------------------
         # General Configurations.
         # ------------------------
-        self.CURRENT_VERSION = "0.6.2"
+        self.CURRENT_VERSION = "0.6.3"
         self.COMMIT_SHA = get_env('COMMIT_SHA')
         self.EDITION = "SELF_HOSTED"
         self.DEPLOY_ENV = get_env('DEPLOY_ENV')
@@ -206,7 +206,7 @@ class Config:
 
         # ------------------------
         # Vector Store Configurations.
-        # Currently, only support: qdrant, milvus, zilliz, weaviate
+        # Currently, only support: qdrant, milvus, zilliz, weaviate, relyt
         # ------------------------
         self.VECTOR_STORE = get_env('VECTOR_STORE')
         self.KEYWORD_STORE = get_env('KEYWORD_STORE')
@@ -238,6 +238,13 @@ class Config:
             'APP_API_CORS_ALLOW_ORIGINS', '*')
 
         # mail settings
+        # relyt settings
+        self.RELYT_HOST = get_env('RELYT_HOST')
+        self.RELYT_PORT = get_env('RELYT_PORT')
+        self.RELYT_USER = get_env('RELYT_USER')
+        self.RELYT_PASSWORD = get_env('RELYT_PASSWORD')
+        self.RELYT_DATABASE = get_env('RELYT_DATABASE')
+
         # ------------------------
         # Mail Configurations.
         # ------------------------
