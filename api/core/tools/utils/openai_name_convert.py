@@ -8,7 +8,7 @@ def correct_name_field(input_string):
 
 if __name__ == "__main__":
     # Test the function with various inputs
-    test_inputs = ["John Doe", "User 123!", "name@domain.com"]
+    test_inputs = ["John Doe", "User 123!", "name@domain.com", "Jimmy·God"]
     corrected_names = [correct_name_field(name) for name in test_inputs]
 
     print(corrected_names)

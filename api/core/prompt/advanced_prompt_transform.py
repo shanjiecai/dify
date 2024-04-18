@@ -16,6 +16,7 @@ from core.prompt.prompt_transform import PromptTransform
 from core.prompt.simple_prompt_transform import ModelMode
 from core.prompt.utils.prompt_template_parser import PromptTemplateParser
 from core.prompt_const import plan_question_template
+from core.tools.utils.openai_name_convert import correct_name_field
 from models.model import Conversation
 from mylogger import logger
 
@@ -155,7 +156,7 @@ class AdvancedPromptTransform(PromptTransform):
 
             if prompt_item.role == PromptMessageRole.USER:
                 if user_name:
-                    prompt_messages.append(UserPromptMessage(content=prompt, name=user_name))
+                    prompt_messages.append(UserPromptMessage(content=prompt, name=correct_name_field(user_name)))
                 else:
                     prompt_messages.append(UserPromptMessage(content=prompt))
             elif prompt_item.role == PromptMessageRole.SYSTEM and prompt:
@@ -179,7 +180,7 @@ class AdvancedPromptTransform(PromptTransform):
                     prompt_messages.append(SystemPromptMessage(content=prompt))
             elif prompt_item.role == PromptMessageRole.ASSISTANT:
                 if assistant_name:
-                    prompt_messages.append(AssistantPromptMessage(content=prompt, name=assistant_name))
+                    prompt_messages.append(AssistantPromptMessage(content=prompt, name=correct_name_field(assistant_name)))
                 else:
                     prompt_messages.append(AssistantPromptMessage(content=prompt))
 
@@ -194,7 +195,7 @@ class AdvancedPromptTransform(PromptTransform):
                 prompt_messages.append(UserPromptMessage(content=prompt_message_contents))
             else:
                 if user_name:
-                    prompt_messages.append(UserPromptMessage(content=query, name=user_name))
+                    prompt_messages.append(UserPromptMessage(content=query, name=correct_name_field(user_name)))
                 else:
                     prompt_messages.append(UserPromptMessage(content=query))
         elif files:
@@ -222,7 +223,7 @@ class AdvancedPromptTransform(PromptTransform):
                 prompt_messages.append(UserPromptMessage(content=prompt_message_contents))
         elif query:
             if user_name:
-                prompt_messages.append(UserPromptMessage(content=query, name=user_name))
+                prompt_messages.append(UserPromptMessage(content=query, name=correct_name_field(user_name)))
             else:
                 prompt_messages.append(UserPromptMessage(content=query))
 
