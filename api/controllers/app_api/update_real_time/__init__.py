@@ -1,41 +1,37 @@
 import datetime
+import json
+import os
+import random
+import threading
+import time
 import traceback
 import uuid
-import os
 
-from sqlalchemy import and_
-from typing import List
-import json
-
+import requests
 from flask import Flask, current_app
 from flask.ctx import AppContext
+from sqlalchemy import and_
 
+from controllers.app_api.app.search_event import download_from_url, get_topic
+
+# from services.completion_service import CompletionService
+from controllers.app_api.app.utils import *
 from controllers.service_api.app import create_or_update_end_user_for_user_id
 from controllers.service_api.app.error import ProviderNotInitializeError
 from core.errors.error import ProviderTokenNotInitError
-from extensions.ext_database import db
-from models.dataset import Dataset
-from models.model import Conversation, App, AppModelConfig, UploadFile
-from mylogger import logger
-
-import threading
-import time
-import random
-import requests
-
 from core.judge_llm_active import judge_llm_active
+from extensions.ext_database import db
+from extensions.ext_redis import redis_client
+from models.dataset import Dataset
+from models.model import App, AppModelConfig, Conversation, UploadFile
+from mylogger import logger
 from services.account_service import AccountService
 from services.app_model_service import AppModelService
-# from services.completion_service import CompletionService
-from controllers.app_api.app.utils import *
-from controllers.app_api.app.search_event import get_topic, download_from_url
-from extensions.ext_redis import redis_client
 from services.conversation_service import ConversationService
 from services.dataset_service import DocumentService
 from services.dataset_update_real_time_service import DatasetUpdateRealTimeService
 from services.file_service import FileService
 from services.message_service import MessageService
-from extensions.ext_database import db
 
 api_key = os.environ.get('OPENAI_API_KEY')
 

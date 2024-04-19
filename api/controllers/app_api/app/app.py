@@ -1,12 +1,12 @@
 import json
 
-from flask_restful import fields, marshal_with, reqparse, abort
+from flask_restful import abort, fields, marshal_with, reqparse
 
 # from constants.model_template import model_templates
 from controllers.app_api import api
 from controllers.app_api.wraps import AppApiResource
 from controllers.console.app.error import ProviderNotInitializeError
-from core.errors.error import ProviderTokenNotInitError, LLMBadRequestError
+from core.errors.error import LLMBadRequestError, ProviderTokenNotInitError
 from core.model_manager import ModelManager
 from core.model_runtime.entities.model_entities import ModelType
 from core.provider_manager import ProviderManager

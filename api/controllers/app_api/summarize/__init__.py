@@ -1,41 +1,48 @@
-import os
 import json
 import logging
+import os
 import time
-from typing import Union, Generator
+import traceback
+from collections.abc import Generator
+from typing import Union
 
-from flask import stream_with_context, Response
+from flask import Response, stream_with_context
 from flask_restful import reqparse
 from sqlalchemy import and_
-from werkzeug.exceptions import NotFound, InternalServerError
+from werkzeug.exceptions import InternalServerError, NotFound
 
 import services
 from controllers.app_api import api
-from controllers.app_api.app.utils import send_feishu_bot, get_recent_history, get_recent_history_within_timestamp
-# from controllers.service_api.app import create_or_update_end_user_for_user_id
-from controllers.service_api.app.error import AppUnavailableError, ProviderNotInitializeError, NotChatAppError, \
-    ConversationCompletedError, CompletionRequestError, ProviderQuotaExceededError, \
-    ProviderModelCurrentlyNotSupportError
+from controllers.app_api.app.utils import get_recent_history, get_recent_history_within_timestamp, send_feishu_bot
+
+# import spacy
+# nlp = spacy.load("en_core_web_sm")
+from controllers.app_api.openai_base_request import generate_response
 from controllers.app_api.wraps import AppApiResource
+
+# from controllers.service_api.app import create_or_update_end_user_for_user_id
+from controllers.service_api.app.error import (
+    AppUnavailableError,
+    CompletionRequestError,
+    ConversationCompletedError,
+    NotChatAppError,
+    ProviderModelCurrentlyNotSupportError,
+    ProviderNotInitializeError,
+    ProviderQuotaExceededError,
+)
 from core.prompt_const import conversation_summary_system_prompt, plan_summary_system_prompt
+
 # from core.conversation_message_task import PubHandler
 # from core.completion import Completion
 # from core.judge_llm_active import judge_llm_active
 # from core.model_providers.error import LLMBadRequestError, LLMAuthorizationError, LLMAPIUnavailableError, LLMAPIConnectionError, \
 #     LLMRateLimitError, ProviderTokenNotInitError, QuotaExceededError, ModelCurrentlyNotSupportError
 from extensions.ext_database import db
-from libs.helper import uuid_value
-from services.completion_service import CompletionService
-from models.model import ApiToken, App, Conversation, AppModelConfig
-from mylogger import logger
-
 from extensions.ext_redis import redis_client
-from controllers.app_api import api
-import traceback
-# import spacy
-# nlp = spacy.load("en_core_web_sm")
-from controllers.app_api.openai_base_request import generate_response
-
+from libs.helper import uuid_value
+from models.model import ApiToken, App, AppModelConfig, Conversation
+from mylogger import logger
+from services.completion_service import CompletionService
 
 api_key = os.environ.get('OPENAI_API_KEY')
 

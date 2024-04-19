@@ -1,11 +1,12 @@
-# -*- coding: utf-8 -*-
-import requests
 import os
+
+import requests
 from openai import OpenAI
 
 client = OpenAI()
 import tiktoken
-from auto_process.dataset import get_file_list, create_dataset, upload_file
+
+from auto_process.dataset import create_dataset, get_file_list, upload_file
 
 encode_model = tiktoken.get_encoding("cl100k_base")
 
@@ -123,7 +124,7 @@ if __name__ == '__main__':
         if not file.endswith('.txt'):
             continue
         file_path = os.path.join(path, file)
-        text = open(file_path, 'r', encoding="gb18030", errors='ignore').read()
+        text = open(file_path, encoding="gb18030", errors='ignore').read()
         name = file_path.split('/')[-1].split('.')[0]
         # print("*************")
         print(name)
