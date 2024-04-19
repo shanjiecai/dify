@@ -109,7 +109,7 @@ class MessageBasedAppGenerator(BaseAppGenerator):
             -> AppModelConfig:
         if conversation:
             app_model_config = db.session.query(AppModelConfig).filter(
-                AppModelConfig.id == conversation.app_model_config_id,
+                # AppModelConfig.id == conversation.app_model_config_id, # 与conversation不绑定
                 AppModelConfig.app_id == app_model.id
             ).first()
 
