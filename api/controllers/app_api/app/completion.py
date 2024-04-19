@@ -197,7 +197,8 @@ class ChatApi(AppApiResource):
         except services.errors.conversation.ConversationCompletedError:
             raise ConversationCompletedError()
         except services.errors.app_model_config.AppModelConfigBrokenError:
-            logging.exception("App model config broken.")
+            # logging.exception("App model config broken.")
+            logging.info(f"{traceback.format_exc(limit=5)}")
             raise AppUnavailableError()
         except ProviderTokenNotInitError as ex:
             raise ProviderNotInitializeError(ex.description)
@@ -257,7 +258,8 @@ class ChatApi(AppApiResource):
             raise e
         except Exception as e:
             send_feishu_bot(str(e))
-            logging.exception("internal server error.")
+            # logging.exception("internal server error.")
+            logging.info(f"{traceback.format_exc(limit=5)}")
             raise InternalServerError()
 
 
