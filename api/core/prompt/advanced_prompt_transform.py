@@ -177,7 +177,7 @@ class AdvancedPromptTransform(PromptTransform):
                     plan_question_prompt = plan_question_template.format(questions=questions)
                     logger.info(f"plan_question_prompt: {plan_question_prompt}")
                     prompt += plan_question_prompt
-                    prompt_messages.append(SystemPromptMessage(content=prompt))
+                prompt_messages.append(SystemPromptMessage(content=prompt))
             elif prompt_item.role == PromptMessageRole.ASSISTANT:
                 if assistant_name:
                     prompt_messages.append(AssistantPromptMessage(content=prompt, name=correct_name_field(assistant_name)))

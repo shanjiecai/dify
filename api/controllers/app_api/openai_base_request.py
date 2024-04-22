@@ -5,6 +5,7 @@ import numpy as np
 from openai.types.chat import ChatCompletion, ChatCompletionChunk
 
 from core.prompt_const import generate_dalle_query_template
+from mylogger import logger
 
 api_key = os.environ.get('OPENAI_API_KEY')
 from openai import OpenAI, Stream
@@ -37,6 +38,7 @@ def generate_response(prompt=None, system_prompt=None, history_messages=None, mo
     if system_prompt:
         messages.insert(0, {"role": "system", "content": system_prompt})
     # print(messages)
+    logger.debug(f"Prompt: {messages}")
     response = client.chat.completions.create(model=model,
                                               max_tokens=kwargs.get('max_tokens', 100),
                                               temperature=kwargs.get('temperature', 0.7),
