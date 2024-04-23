@@ -289,15 +289,15 @@ class ChatActiveApi(AppApiResource):
                 Conversation.status == 'normal'
             ]
             conversation = db.session.query(Conversation).filter(and_(*conversation_filter)).first()
-            if not conversation:
-                raise NotFound("Conversation Not Exists.")
-
-            if (not conversation.plan_question_invoke_user or conversation.plan_question_invoke_time < datetime.datetime.utcnow() - datetime.timedelta(
-                    hours=8)):
-                # 另起线程执行plan_question
-                threading.Thread(target=plan_question_background,
-                                 args=(current_app._get_current_object(), args["query"], conversation,
-                                       args["user"], None)).start()
+            # if not conversation:
+            #     raise NotFound("Conversation Not Exists.")
+            #
+            # if (not conversation.plan_question_invoke_user or conversation.plan_question_invoke_time < datetime.datetime.utcnow() - datetime.timedelta(
+            #         hours=8)):
+            #     # 另起线程执行plan_question
+            #     threading.Thread(target=plan_question_background,
+            #                      args=(current_app._get_current_object(), args["query"], conversation,
+            #                            args["user"], None)).start()
 
             app_model_config = db.session.query(AppModelConfig).filter(AppModelConfig.id==conversation.app_model_config_id
                                                                        ).first()
@@ -396,12 +396,12 @@ class ChatActiveApi(AppApiResource):
                     #     user_name=""
                     # )
                     if args["conversation_id"]:
-                        conversation_filter = [
-                            Conversation.id == args['conversation_id'],
-                            # Conversation.app_id == app_model.id,
-                            Conversation.status == 'normal'
-                        ]
-                        conversation = db.session.query(Conversation).filter(and_(*conversation_filter)).first()
+                        # conversation_filter = [
+                        #     Conversation.id == args['conversation_id'],
+                        #     # Conversation.app_id == app_model.id,
+                        #     Conversation.status == 'normal'
+                        # ]
+                        # conversation = db.session.query(Conversation).filter(and_(*conversation_filter)).first()
                         if conversation and (
                                 not conversation.plan_question_invoke_user or conversation.plan_question_invoke_time < datetime.datetime.utcnow() - datetime.timedelta(
                                 hours=8)):

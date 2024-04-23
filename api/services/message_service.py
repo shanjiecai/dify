@@ -281,10 +281,16 @@ class MessageService:
             )
         else:
             if not conversation.override_model_configs:
-                app_model_config = db.session.query(AppModelConfig).filter(
-                    # AppModelConfig.id == conversation.app_model_config_id,
-                    AppModelConfig.app_id == app_model.id
-                ).first()
+                # app_model_config = db.session.query(AppModelConfig).filter(
+                #     # AppModelConfig.id == conversation.app_model_config_id,
+                #     AppModelConfig.app_id == app_model.id
+                # ).first()
+                app_model_config = (
+                    db.session.query(AppModelConfig)
+                    .filter(AppModelConfig.app_id == app_model.id)
+                    .order_by(AppModelConfig.created_at.desc())
+                    .first()
+                )
             else:
                 conversation_override_model_configs = json.loads(conversation.override_model_configs)
                 app_model_config = AppModelConfig(

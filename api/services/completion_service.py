@@ -90,11 +90,18 @@ class CompletionService:
 
             assistant_name = app_model.name if app_model else None
             if not conversation.override_model_configs:
-                app_model_config = db.session.query(AppModelConfig).filter(
-                    # AppModelConfig.id == conversation.app_model_config_id,
-                    AppModelConfig.id == app_model.app_model_config_id,
-                    AppModelConfig.app_id == app_model.id
-                ).first()
+                # app_model_config = db.session.query(AppModelConfig).filter(
+                #     # AppModelConfig.id == conversation.app_model_config_id,
+                #     AppModelConfig.id == app_model.app_model_config_id,
+                #     AppModelConfig.app_id == app_model.id
+                # ).first()
+                app_model_config = (
+                    db.session.query(AppModelConfig)
+                    .filter(AppModelConfig.app_id == app_model.id,
+                            AppModelConfig.id == app_model.app_model_config_id)
+                    .order_by(AppModelConfig.created_at.desc())
+                    .first()
+                )
 
                 # print(f"assistant_name: {assistant_name}")
                 if not app_model_config:

@@ -108,10 +108,16 @@ class MessageBasedAppGenerator(BaseAppGenerator):
                               conversation: Optional[Conversation] = None) \
             -> AppModelConfig:
         if conversation:
-            app_model_config = db.session.query(AppModelConfig).filter(
-                # AppModelConfig.id == conversation.app_model_config_id, # 与conversation不绑定
-                AppModelConfig.app_id == app_model.id
-            ).first()
+            # app_model_config = db.session.query(AppModelConfig).filter(
+            #     # AppModelConfig.id == conversation.app_model_config_id, # 与conversation不绑定
+            #     AppModelConfig.app_id == app_model.id
+            # ).first()
+            app_model_config = (
+                db.session.query(AppModelConfig)
+                .filter(AppModelConfig.app_id == app_model.id)
+                .order_by(AppModelConfig.created_at.desc())
+                .first()
+            )
 
             if not app_model_config:
                 raise AppModelConfigBrokenError()
