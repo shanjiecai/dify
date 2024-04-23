@@ -162,7 +162,7 @@ class AdvancedPromptTransform(PromptTransform):
             elif prompt_item.role == PromptMessageRole.SYSTEM and prompt:
                 if conversation and conversation.plan_question:
                     def remove_character_info(text):
-                        start_phrase = "character information:"
+                        start_phrase = "character information"
                         end_phrase = "Don’t be verbose or too formal or polite when speaking."
                         start_index = text.find(start_phrase)
                         end_index = text.find(end_phrase)

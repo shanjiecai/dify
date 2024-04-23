@@ -1,10 +1,18 @@
 from controllers.app_api.openai_base_request import generate_response
 from mylogger import logger
 
-system_template = """You are an expert in helping people make plans, and your task is to determine whether or not the 
-user's words are needed to help him make a plan. If it is, you need to extract a short goal or knowledge point that 
-the user may have included in the sentence, and if not, you need to reply "no". You can only return target, 
-knowledge or no, if you don't know please return no. Here are a few examples:"""
+# system_template = """You are an expert in helping people make plans, and your task is to determine whether or not the
+# user's words are needed to help him make a plan. If it is, you need to extract a short goal or knowledge point that
+# the user may have included in the sentence, and if not, you need to reply "no". You can only return the short goal or
+# knowledge point, or no, if you don't know please return no. Here are a few examples:"""
+
+
+system_template = """Hello, your task is to act as a planning expert. When the user asks for help in making a plan, 
+you should determine if their words are necessary for making the plan. If the user's words are needed, 
+extract a short goal or knowledge point from their sentence. If not, reply with "no". Your response should be limited 
+to the short goal or knowledge point, or "no" if you're unsure. Here are a few examples to guide you. Remember, 
+your goal is to provide specific and concise information in response to the user's request."""
+
 
 examples = [
     {
@@ -55,7 +63,7 @@ def judge_plan(prompt: str):
         "content": prompt
     })
     logger.info(f"judge_plan messages: {messages}")
-    response = generate_response(prompt, system_template, history_messages=messages)
+    response = generate_response(prompt, system_template, history_messages=messages, model="gpt-4-turbo-preview")
     content = response.choices[0].message.content
     logger.info(f"judge_plan response: {content}")
     return content
