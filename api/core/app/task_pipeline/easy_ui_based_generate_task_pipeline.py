@@ -228,10 +228,11 @@ class EasyUIBasedGenerateTaskPipeline(BasedGenerateTaskPipeline, MessageCycleMan
 
                 # Save message
                 self._save_message()
-                # 去掉末尾的<finish_question>
+                # 识别末尾的<finish_question>
                 if answer_all.endswith('<finish_question>'):
                     logger.info(
                         f"remove conversation {self._conversation.id} <finish_question> from {self._task_state.llm_result.message.content}")
+                    event.llm_result.message.content += "I have understood your problem, and I will send you a related plan later, hoping to help you."
                     # self._task_state.llm_result.message.content = self._task_state.llm_result.message.content[:-17]
                     # 问题提问结束，删除conversation plan_question
                     conversation: Conversation = db.session.query(Conversation).filter(

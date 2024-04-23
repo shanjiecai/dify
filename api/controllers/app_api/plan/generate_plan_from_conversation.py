@@ -66,7 +66,7 @@ def generate_plan_from_conversation(history_str: str, plan: str = ""):
     content = ""
     for item in response:
         if item.choices[0].delta.content:
-            print(item.choices[0].delta.content)
+            # print(item.choices[0].delta.content)
             content += item.choices[0].delta.content
 
     # content = response.choices[0].message.content
