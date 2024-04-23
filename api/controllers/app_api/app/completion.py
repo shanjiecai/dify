@@ -370,7 +370,7 @@ class ChatActiveApi(AppApiResource):
             if judge_result:
                 # 对当前conversation上锁，有一个机器人认为应该回话就锁住，避免多个机器人同时回话
                 if redis_client.get(conversation.id) is None:
-                    redis_client.setex(conversation.id, 40, 1)
+                    redis_client.setex(conversation.id, 10, 1)
                 else:
                     logger.info(f"conversation {conversation.id} is locked")
                     return Response(response=json.dumps({"result": False}), status=200, mimetype='application/json')
