@@ -11,14 +11,25 @@ class AppModelService:
     @classmethod
     def get_app_model_config_list(cls) -> list[App]:
         app_list = db.session.query(App).filter(App.name != "test").all()
+        # 按照时间倒叙排序，如果有多个app_model_configs，取最新的一个
+        app_list = sorted(app_list, key=lambda x: x.created_at, reverse=True)
+        name_list = []
         # 获取app_model_configs下的model_id
         for app in app_list:
             if "test" in app.name:
                 app_list.remove(app)
                 continue
-            app_model_config = cls.get_app_model_config(app)
-            # print(f"{app.name} {app_model_config.model_id}")
-            app.model_id = app_model_config.model_id
+            # 去除重名
+            if app.name in name_list:
+                app_list.remove(app)
+                continue
+            try:
+                app_model_config = cls.get_app_model_config(app)
+                # print(f"{app.name} {app_model_config.model_id}")
+                app.model_id = app_model_config.model_id
+            except:
+                app.model_id = None
+            name_list.append(app.name)
         return app_list
 
     @classmethod

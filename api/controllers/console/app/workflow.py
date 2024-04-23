@@ -1,11 +1,15 @@
+import datetime
 import json
 import logging
+import threading
 
-from flask import abort, request
+from flask import abort, current_app, request
 from flask_restful import Resource, marshal_with, reqparse
+from sqlalchemy import and_
 from werkzeug.exceptions import InternalServerError, NotFound
 
 import services
+from controllers.app_api.plan.pipeline import plan_question_background
 from controllers.console import api
 from controllers.console.app.error import ConversationCompletedError, DraftWorkflowNotExist
 from controllers.console.app.wraps import get_app_model
@@ -13,12 +17,13 @@ from controllers.console.setup import setup_required
 from controllers.console.wraps import account_initialization_required
 from core.app.apps.base_app_queue_manager import AppQueueManager
 from core.app.entities.app_invoke_entities import InvokeFrom
+from extensions.ext_database import db
 from fields.workflow_fields import workflow_fields
 from fields.workflow_run_fields import workflow_run_node_execution_fields
 from libs import helper
 from libs.helper import TimestampField, uuid_value
 from libs.login import current_user, login_required
-from models.model import App, AppMode
+from models.model import App, AppMode, Conversation
 from services.app_generate_service import AppGenerateService
 from services.workflow_service import WorkflowService
 
@@ -109,6 +114,20 @@ class AdvancedChatDraftWorkflowRunApi(Resource):
         args = parser.parse_args()
 
         try:
+            if args["conversation_id"]:
+                conversation_filter = [
+                    Conversation.id == args['conversation_id'],
+                    # Conversation.app_id == app_model.id,
+                    Conversation.status == 'normal'
+                ]
+                conversation = db.session.query(Conversation).filter(and_(*conversation_filter)).first()
+                if conversation and (
+                        not conversation.plan_question_invoke_user or conversation.plan_question_invoke_time < datetime.datetime.utcnow() - datetime.timedelta(
+                        hours=8)):
+                    # 另起线程执行plan_question
+                    threading.Thread(target=plan_question_background,
+                                     args=(current_app._get_current_object(), args["query"], conversation,
+                                           "user", None)).start()
             response = AppGenerateService.generate(
                 app_model=app_model,
                 user=current_user,
