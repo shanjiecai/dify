@@ -7,6 +7,8 @@ from flask_restful import Api, http_status_message
 from werkzeug.datastructures import Headers
 from werkzeug.exceptions import HTTPException
 
+from mylogger import logger
+
 
 class ExternalApi(Api):
 
@@ -40,6 +42,7 @@ class ExternalApi(Api):
         elif isinstance(e, ValueError):
             status_code = 400
             print(traceback.format_exc())
+            logger.info(traceback.format_exc())
             default_data = {
                 'code': 'invalid_param',
                 'message': str(e),
