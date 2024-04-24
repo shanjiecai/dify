@@ -61,7 +61,7 @@ def generate_dalle_query_variations_gpt(original_prompt, n_variations=1) -> dict
     # generate variations of the prompt using the OpenAI API GPT 4
     response = client.chat.completions.create(
         model="gpt-3.5-turbo",
-        max_tokens=200,
+        max_tokens=250,
         temperature=1.0,
         messages=[
             {

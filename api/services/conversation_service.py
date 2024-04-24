@@ -1,11 +1,12 @@
 import json
 import traceback
+from concurrent.futures import ThreadPoolExecutor
 from typing import Optional, Union
 
 from flask import Flask
 from sqlalchemy import or_
 
-from controllers.app_api.openai_base_request import compare_similarity
+from controllers.app_api.openai_base_request import compare_similarity, generate_response
 from controllers.app_api.plan.generate_plan_from_conversation import (
     generate_plan_from_conversation,
     generate_plan_introduction,
@@ -13,6 +14,7 @@ from controllers.app_api.plan.generate_plan_from_conversation import (
 from controllers.app_api.plan.judge_plan import judge_plan
 from core.app.entities.app_invoke_entities import InvokeFrom
 from core.llm_generator.llm_generator import LLMGenerator
+from core.prompt_const import plan_summary_system_prompt
 
 # from core.generator.llm_generator import LLMGenerator
 from extensions.ext_database import db
@@ -197,8 +199,18 @@ class ConversationService:
         plan_detail_dict["goals"] = goals
         plan_detail_dict["days"] = days
         plan_detail_dict["tags"] = compare_similarity(plan)
-        introduction = generate_plan_introduction(json.dumps(plan_detail))
-        plan_detail_dict["description"] = introduction
+
+        with ThreadPoolExecutor(max_workers=2) as executor:
+            summary_system_prompt = plan_summary_system_prompt
+            summary_response = executor.submit(generate_response, history_str,summary_system_prompt)
+            introduction_response = executor.submit(generate_plan_introduction, json.dumps(plan_detail))
+            chat_summary = summary_response.result().choices[0].message.content
+            introduction = introduction_response.result()
+            plan_detail_dict["chat_summary"] = chat_summary
+            plan_detail_dict["description"] = introduction
+        # print(plan_detail_dict)
+        # introduction = generate_plan_introduction(json.dumps(plan_detail))
+        # plan_detail_dict["description"] = introduction
         return plan_detail_dict, plan, history_str if not outer_history_str else outer_history_str
 
     @classmethod

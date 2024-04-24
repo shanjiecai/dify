@@ -30,8 +30,12 @@ conversation_summary_system_prompt = "You are an expert at summarising conversat
                         "less."
 
 # 总结创建计划时的对话历史
-plan_summary_system_prompt = "You are an expert at summarising conversations. The above is the history of the conversation " \
-                     "that was generated to generate the plan. Summarize the conversation in 50 words or less"
+# plan_summary_system_prompt = "You are an expert at summarising conversations. The above is the history of the conversation " \
+#                      "that was generated to generate the plan. Summarize the conversation and the reason of generating this plan in 30 words or less"
+
+plan_summary_system_prompt = "Summarize the conversation and the reason for generating this plan in 30 words or less. " \
+                              "Your summary should capture the key points discussed and the purpose of creating this " \
+                              "plan succinctly."
 
 generate_dalle_query_template = """Generate {n_variations} prompts from this original prompt: {original_prompt}. This will be used to 
     query a genai image generation model. Generate prompt variations to generate multiple images with the same 
