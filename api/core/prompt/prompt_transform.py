@@ -517,15 +517,20 @@ class PromptTransform:
                                model_config: ModelConfigWithCredentialsEntity,
                                assistant_name: Optional[str] = None,
                                user_name: Optional[str] = None,
+                               message_limit: Optional[int] = None
                                ) -> list[PromptMessage]:
         rest_tokens = self._calculate_rest_token(prompt_messages, model_config)
-        histories = self._get_history_messages_list_from_memory(memory, memory_config, rest_tokens)
+        histories = self._get_history_messages_list_from_memory(memory, memory_config, rest_tokens,
+                                                                assistant_name=assistant_name,
+                                                                user_name=user_name,
+                                                                message_limit=message_limit,
+                                                                )
         prompt_messages.extend(histories)
-        if memory:
-            rest_tokens = self._calculate_rest_token(prompt_messages, model_config)
-            histories = self._get_history_messages_list_from_memory(memory, memory_config, rest_tokens,
-                                                                    assistant_name, user_name)
-            prompt_messages.extend(histories)
+        # if memory:
+        #     rest_tokens = self._calculate_rest_token(prompt_messages, model_config)
+        #     histories = self._get_history_messages_list_from_memory(memory, memory_config, rest_tokens,
+        #                                                             assistant_name, user_name)
+        #     prompt_messages.extend(histories)
 
         return prompt_messages
 
@@ -559,6 +564,7 @@ class PromptTransform:
     def _get_history_messages_from_memory(self, memory: TokenBufferMemory,
                                           memory_config: MemoryConfig,
                                           max_token_limit: int,
+                                          message_limit: int = None,
                                           human_prefix: Optional[str] = None,
                                           ai_prefix: Optional[str] = None) -> str:
         """Get memory messages."""
@@ -575,6 +581,9 @@ class PromptTransform:
         if memory_config.window.enabled and memory_config.window.size is not None and memory_config.window.size > 0:
             kwargs['message_limit'] = memory_config.window.size
 
+        if message_limit:
+            kwargs['message_limit'] = message_limit
+
         return memory.get_history_prompt_text(
             **kwargs
         )
@@ -583,16 +592,15 @@ class PromptTransform:
                                                memory_config: MemoryConfig,
                                                max_token_limit: int,
                                                assistant_name: Optional[str] = None,
-                                               user_name: Optional[str] = None
+                                               user_name: Optional[str] = None,
+                                               message_limit: Optional[int] = None
                                                ) -> list[PromptMessage]:
+        if not message_limit:
+            message_limit = memory_config.window.size if (memory_config.window.enabled and memory_config.window.size is not None and memory_config.window.size > 0) else 10
         """Get memory messages."""
         return memory.get_history_prompt_messages(
             max_token_limit=max_token_limit,
-            message_limit=memory_config.window.size
-            if (memory_config.window.enabled
-               and memory_config.window.size is not None
-               and memory_config.window.size > 0)
-            else 10,
+            message_limit=message_limit,
             assistant_name=assistant_name,
             user_name=user_name
         )
