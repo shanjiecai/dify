@@ -223,7 +223,7 @@ class ToolManager:
         return parameter_value
 
     @classmethod
-    def get_agent_tool_runtime(cls, tenant_id: str, agent_tool: AgentToolEntity) -> Tool:
+    def get_agent_tool_runtime(cls, tenant_id: str, app_id: str, agent_tool: AgentToolEntity) -> Tool:
         """
             get the agent tool runtime
         """
@@ -246,6 +246,7 @@ class ToolManager:
             tool_runtime=tool_entity,
             provider_name=agent_tool.provider_id,
             provider_type=agent_tool.provider_type,
+            identity_id=f'AGENT.{app_id}'
         )
         runtime_parameters = encryption_manager.decrypt_tool_parameters(runtime_parameters)
 
@@ -253,7 +254,7 @@ class ToolManager:
         return tool_entity
 
     @classmethod
-    def get_workflow_tool_runtime(cls, tenant_id: str, workflow_tool: ToolEntity):
+    def get_workflow_tool_runtime(cls, tenant_id: str, app_id: str, node_id: str, workflow_tool: ToolEntity):
         """
             get the workflow tool runtime
         """
@@ -278,6 +279,7 @@ class ToolManager:
             tool_runtime=tool_entity,
             provider_name=workflow_tool.provider_id,
             provider_type=workflow_tool.provider_type,
+            identity_id=f'WORKFLOW.{app_id}.{node_id}'
         )
 
         if runtime_parameters:

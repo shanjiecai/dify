@@ -149,7 +149,7 @@ class App(db.Model):
             return []
         agent_mode = app_model_config.agent_mode_dict
         tools = agent_mode.get('tools', [])
-        
+
         provider_ids = []
 
         for tool in tools:
@@ -185,6 +185,20 @@ class App(db.Model):
                     deleted_tools.append(tool['tool_name'])
 
         return deleted_tools
+
+    @property
+    def tags(self):
+        tags = db.session.query(Tag).join(
+            TagBinding,
+            Tag.id == TagBinding.tag_id
+        ).filter(
+            TagBinding.target_id == self.id,
+            TagBinding.tenant_id == self.tenant_id,
+            Tag.tenant_id == self.tenant_id,
+            Tag.type == 'app'
+        ).all()
+
+        return tags if tags else []
 
 
 class AppModelConfig(db.Model):
@@ -293,7 +307,8 @@ class AppModelConfig(db.Model):
 
     @property
     def agent_mode_dict(self) -> dict:
-        return json.loads(self.agent_mode) if self.agent_mode else {"enabled": False, "strategy": None, "tools": [], "prompt": None}
+        return json.loads(self.agent_mode) if self.agent_mode else {"enabled": False, "strategy": None, "tools": [],
+                                                                    "prompt": None}
 
     @property
     def chat_prompt_config_dict(self) -> dict:
@@ -462,6 +477,7 @@ class InstalledApp(db.Model):
     def tenant(self):
         tenant = db.session.query(Tenant).filter(Tenant.id == self.tenant_id).first()
         return tenant
+
 
 
 class Conversation(db.Model):
@@ -1216,7 +1232,7 @@ class MessageAgentThought(db.Model):
             return json.loads(self.message_files)
         else:
             return []
-        
+
     @property
     def tools(self) -> list[str]:
         return self.tool.split(";") if self.tool else []
@@ -1290,6 +1306,7 @@ class MessageAgentThought(db.Model):
                     tool: self.observation for tool in tools
                 }
 
+
 class DatasetRetrieverResource(db.Model):
     __tablename__ = 'dataset_retriever_resources'
     __table_args__ = (
@@ -1315,3 +1332,37 @@ class DatasetRetrieverResource(db.Model):
     retriever_from = db.Column(db.Text, nullable=False)
     created_by = db.Column(UUID, nullable=False)
     created_at = db.Column(db.DateTime, nullable=False, server_default=db.func.current_timestamp())
+
+
+class Tag(db.Model):
+    __tablename__ = 'tags'
+    __table_args__ = (
+        db.PrimaryKeyConstraint('id', name='tag_pkey'),
+        db.Index('tag_type_idx', 'type'),
+        db.Index('tag_name_idx', 'name'),
+    )
+
+    TAG_TYPE_LIST = ['knowledge', 'app']
+
+    id = db.Column(UUID, server_default=db.text('uuid_generate_v4()'))
+    tenant_id = db.Column(UUID, nullable=True)
+    type = db.Column(db.String(16), nullable=False)
+    name = db.Column(db.String(255), nullable=False)
+    created_by = db.Column(UUID, nullable=False)
+    created_at = db.Column(db.DateTime, nullable=False, server_default=db.text('CURRENT_TIMESTAMP(0)'))
+
+
+class TagBinding(db.Model):
+    __tablename__ = 'tag_bindings'
+    __table_args__ = (
+        db.PrimaryKeyConstraint('id', name='tag_binding_pkey'),
+        db.Index('tag_bind_target_id_idx', 'target_id'),
+        db.Index('tag_bind_tag_id_idx', 'tag_id'),
+    )
+
+    id = db.Column(UUID, server_default=db.text('uuid_generate_v4()'))
+    tenant_id = db.Column(UUID, nullable=True)
+    tag_id = db.Column(UUID, nullable=True)
+    target_id = db.Column(UUID, nullable=True)
+    created_by = db.Column(UUID, nullable=False)
+    created_at = db.Column(db.DateTime, nullable=False, server_default=db.text('CURRENT_TIMESTAMP(0)'))

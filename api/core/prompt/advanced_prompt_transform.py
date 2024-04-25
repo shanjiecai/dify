@@ -40,6 +40,8 @@ class AdvancedPromptTransform(PromptTransform):
                    user_name: Optional[str] = None,
                    conversation: Conversation = None,
                    ) -> list[PromptMessage]:
+        inputs = {key: str(value) for key, value in inputs.items()}
+
         prompt_messages = []
 
         model_mode = ModelMode.value_of(model_config.mode)
