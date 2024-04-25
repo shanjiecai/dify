@@ -131,8 +131,9 @@ class ChatMessageApi(Resource):
                 Conversation.status == 'normal'
             ]
             conversation = db.session.query(Conversation).filter(and_(*conversation_filter)).first()
-            if conversation and (not conversation.plan_question_invoke_plan or conversation.plan_question_invoke_time < datetime.datetime.utcnow() - datetime.timedelta(
-                    hours=8)):
+            if conversation and (
+                    not conversation.plan_question_invoke_user or not conversation.plan_question_invoke_time or conversation.plan_question_invoke_time < datetime.datetime.utcnow() - datetime.timedelta(
+                hours=8)):
                 # 另起线程执行plan_question
                 threading.Thread(target=plan_question_background,
                                  args=(current_app._get_current_object(), args["query"], conversation,

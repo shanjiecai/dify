@@ -228,6 +228,7 @@ class EasyUIBasedGenerateTaskPipeline(BasedGenerateTaskPipeline, MessageCycleMan
 
                 # Save message
                 self._save_message()
+                yield self._message_end_to_stream_response()
                 # 识别末尾的<finish_question>
                 if answer_all.endswith('<finish_question>'):
                     logger.info(
@@ -258,10 +259,9 @@ class EasyUIBasedGenerateTaskPipeline(BasedGenerateTaskPipeline, MessageCycleMan
                             image_list=image_list,
                             img_perfect_prompt_list=img_perfect_prompt_list
                         )
+                        time.sleep(20)
                         db.session.add(conversation_plan_detail)
                         db.session.commit()
-
-                yield self._message_end_to_stream_response()
             elif isinstance(event, QueueRetrieverResourcesEvent):
                 self._handle_retriever_resources(event)
             elif isinstance(event, QueueAnnotationReplyEvent):

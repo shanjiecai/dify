@@ -11,15 +11,28 @@ from mylogger import logger
 # "day1":["plan1", "plan2", ....] , "day2":["plan1", plan2", ...] , ...}} goal or knowledge point： {user_goal}"""
 
 
-system_prompt = """Provide a detailed weekly plan based on a given goal or knowledge point and conversation history
-in JSON format. The plan should outline specific tasks and activities for each day of the week. Ensure that the plan
-is comprehensive and covers all relevant aspects related to the specified goal or knowledge point: {user_goal}.
+# system_prompt = """Provide a detailed weekly plan based on a given goal or knowledge point and conversation history
+# in JSON format. The plan should outline specific tasks and activities for each day of the week. Ensure that the plan
+# is comprehensive and covers all relevant aspects related to the specified goal or knowledge point: {user_goal}.
+#
+# Please note that the plan should be flexible enough to accommodate various goals or knowledge points and should be
+# detailed enough to provide actionable guidance for the entire week.
+#
+# The plan should be designed to effectively achieve the specified goal or cover the outlined knowledge point. Ensure
+# that the tasks are clearly defined and provide a cohesive progression towards the desired outcome.Please structure
+# the plan in the following JSON format: {{ "day1": ["plan1", "plan2", ...], "day2": ["plan1", "plan2", ...],
+# ... }} Where "plan1", "plan2", etc. represent the detailed activities or tasks for each day."""
 
-Please note that the plan should be flexible enough to accommodate various goals or knowledge points and should be
-detailed enough to provide actionable guidance for the entire week.
 
-The plan should be designed to effectively achieve the specified goal or cover the outlined knowledge point. Ensure
-that the tasks are clearly defined and provide a cohesive progression towards the desired outcome.Please structure
+system_prompt = """Create a detailed weekly plan based on the given goal or knowledge point and the conversation 
+history. The plan should outline specific tasks and activities for each day of the week in JSON format. Ensure that 
+the plan is comprehensive and covers all relevant aspects related to the specified goal or knowledge point: {user_goal}.
+
+Include specific, quantifiable tasks and activities for each day of the week, which should be designed with 
+measurable outcomes to track progress and effectiveness as much as possible, ensuring a clear pathway toward 
+achieving the goal or thoroughly understanding the knowledge point
+
+The tasks should be clearly defined and provide a cohesive progression towards the desired outcome. Please structure
 the plan in the following JSON format: {{ "day1": ["plan1", "plan2", ...], "day2": ["plan1", "plan2", ...],
 ... }} Where "plan1", "plan2", etc. represent the detailed activities or tasks for each day."""
 
