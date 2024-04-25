@@ -41,7 +41,6 @@ from core.memory.token_buffer_memory import TokenBufferMemory
 from core.model_manager import ModelInstance
 from core.model_runtime.errors.invoke import InvokeError
 from extensions.ext_database import db
-from extensions.ext_redis import redis_client
 from libs.helper import uuid_value
 from models.model import App, AppModelConfig, Conversation
 from mylogger import logger
@@ -369,21 +368,13 @@ class ChatActiveApi(AppApiResource):
             end_user = create_or_update_end_user_for_user_id(app_model, "")
             if judge_result:
                 # 对当前conversation上锁，有一个机器人认为应该回话就锁住，避免多个机器人同时回话
-                if redis_client.get(conversation.id) is None:
-                    redis_client.setex(conversation.id, 10, 1)
-                else:
-                    logger.info(f"conversation {conversation.id} is locked")
-                    return Response(response=json.dumps({"result": False}), status=200, mimetype='application/json')
-                # response = CompletionService.completion(
-                #     app_model=app_model,
-                #     user=end_user,
-                #     args=args,
-                #     from_source='api',
-                #     streaming=False,
-                #     outer_memory=None,
-                #     assistant_name=app_model.name,
-                #     user_name=""
-                # )
+                # 暂时关掉锁
+                # if redis_client.get(conversation.id) is None:
+                #     redis_client.setex(conversation.id, 10, 1)
+                # else:
+                #     logger.info(f"conversation {conversation.id} is locked")
+                #     return Response(response=json.dumps({"result": False}), status=200, mimetype='application/json')
+
                 try:
                     # response = CompletionService.completion(
                     #     app_model=app_model,
