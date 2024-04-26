@@ -4,6 +4,7 @@
 import json
 
 from controllers.app_api.openai_base_request import generate_response
+from core.prompt_const import generate_plan_detail_system_prompt
 from mylogger import logger
 
 # system_prompt = """You are an expert of making plans, your task is to give a plan for the entire week based on a
@@ -24,17 +25,17 @@ from mylogger import logger
 # ... }} Where "plan1", "plan2", etc. represent the detailed activities or tasks for each day."""
 
 
-system_prompt = """Create a detailed weekly plan based on the given goal or knowledge point and the conversation 
-history. The plan should outline specific tasks and activities for each day of the week in JSON format. Ensure that 
-the plan is comprehensive and covers all relevant aspects related to the specified goal or knowledge point: {user_goal}.
-
-Include specific, quantifiable tasks and activities for each day of the week, which should be designed with 
-measurable outcomes to track progress and effectiveness as much as possible, ensuring a clear pathway toward 
-achieving the goal or thoroughly understanding the knowledge point
-
-The tasks should be clearly defined and provide a cohesive progression towards the desired outcome. Please structure
-the plan in the following JSON format: {{ "day1": ["plan1", "plan2", ...], "day2": ["plan1", "plan2", ...],
-... }} Where "plan1", "plan2", etc. represent the detailed activities or tasks for each day."""
+# system_prompt = """Create a detailed weekly plan based on the given goal or knowledge point and the conversation
+# history. The plan should outline specific tasks and activities for each day of the week in JSON format. Ensure that
+# the plan is comprehensive and covers all relevant aspects related to the specified goal or knowledge point: {user_goal}.
+#
+# Include specific, quantifiable tasks and activities for each day of the week, which should be designed with
+# measurable outcomes to track progress and effectiveness as much as possible, ensuring a clear pathway toward
+# achieving the goal or thoroughly understanding the knowledge point
+#
+# The tasks should be clearly defined and provide a cohesive progression towards the desired outcome. Please structure
+# the plan in the following JSON format: {{ "day1": ["plan1", "plan2", ...], "day2": ["plan1", "plan2", ...],
+# ... }} Where "plan1", "plan2", etc. represent the detailed activities or tasks for each day."""
 
 
 # system_prompt = """Please provide a detailed weekly plan in JSON format, tailored to a specific goal or knowledge
@@ -64,7 +65,7 @@ def generate_plan_from_conversation(history_str: str, plan: str = ""):
     messages = [
         {
             "role": "system",
-            "content": system_prompt.format(user_goal=plan)
+            "content": generate_plan_detail_system_prompt.format(user_goal=plan)
         },
     ]
     if history_str:
@@ -73,7 +74,7 @@ def generate_plan_from_conversation(history_str: str, plan: str = ""):
             "content": history_str
         })
     logger.info(f"generate_plan_from_conversation messages: {messages}")
-    response = generate_response(prompt=plan, history_messages=messages, json_format=True, max_tokens=2048,
+    response = generate_response(prompt=plan, system_prompt=None, history_messages=messages, json_format=True, max_tokens=2048,
                                  model="gpt-4-turbo-preview", stream=True, temperature=1.0)
     # stream response
     content = ""

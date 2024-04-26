@@ -35,7 +35,7 @@ def generate_response(prompt=None, system_prompt=None, history_messages=None, mo
         ]
     if history_messages:
         messages.extend(history_messages)
-    if system_prompt:
+    if system_prompt and (not messages or messages[0].get("role", "") != "system"):
         messages.insert(0, {"role": "system", "content": system_prompt})
     # print(messages)
     logger.debug(f"Prompt: {messages}")

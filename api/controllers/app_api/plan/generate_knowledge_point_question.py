@@ -2,62 +2,64 @@ import json
 
 # 基于提供的知识点提出几个用于针对这个知识点生成计划的问题
 from controllers.app_api.openai_base_request import generate_response
+from core.prompt_const import generate_plan_question_examples, generate_plan_question_system_prompt
 from mylogger import logger
 
-system_prompt = """You are an expert at generating plans based on knowledge points. Your task is to generate a few 
-questions based on the knowledge points provided. I want you to ask questions to determine how much this person knows 
-about this knowledge point, and then help him develop a plan. Questions can be about Study habits, sub-knowledge 
-points of knowledge points, solutions to related questions, etc. Questions should be as specific and detailed as 
-possible,no more than five. Please return it in json format. The format is as follows: { "questions": ["Do you know the formulas of 
-trigonometric functions?", "Do you know what properties trigonometric functions have?"] } Here are some examples:"""
+# system_prompt = """You are an expert at generating plans based on knowledge points. Your task is to generate a few
+# questions based on the knowledge points provided. I want you to ask questions to determine how much this person knows
+# about this knowledge point, and then help him develop a plan. Questions can be about Study habits, sub-knowledge
+# points of knowledge points, solutions to related questions, etc. Questions should be as specific and detailed as
+# possible,no more than five. Please return it in json format. The format is as follows: { "questions": ["Do you know the formulas of
+# trigonometric functions?", "Do you know what properties trigonometric functions have?"] } Here are some examples:"""
+#
+# examples = [
+#     {
+#         "input": "lose weight",
+#         "output": {
+#             "questions": [
+# "How much do you understand about the caloric deficit concept?",
+# "What are your current eating habits, and do you know which changes might benefit your weight loss goals?",
+# "Do you have a regular exercise routine, and what types of activities do you include?",
+# "Are you familiar with the role of macronutrients (proteins, fats, carbohydrates) in weight management?",
+# "Do you understand the importance of sleep and stress management in achieving weight loss?"
+# ]
+#         }
+#     },
+# {
+# "input": "improve English speaking skills",
+# "output": {
+# "questions": [
+# "How often do you practice speaking English, and in what contexts?",
+# "Do you actively listen to native English speakers through media such as movies, podcasts, or YouTube channels?",
+# "Have you tried using language exchange platforms or speaking clubs to enhance your speaking skills?",
+# "How familiar are you with the phonetic alphabet, and do you practice pronunciation regularly?",
+# "What specific areas of speaking do you struggle with the most, such as fluency, vocabulary, or confidence?",
+# ]
+# }
+# },
+# {
+# "input": "Python programming",
+# "output": {
+# "questions": [
+# "How would you rate your current level of proficiency in Python?",
+# "Can you write basic programs in Python, including loops and conditionals?",
+# "Are you familiar with Python's standard library and its most commonly used modules?",
+# "Have you worked on any projects or tasks that required you to apply Python programming practically?",
+# "Do you understand object-oriented programming concepts in Python, such as classes and inheritance?",
+# ]
+# }
+# }
+# ]
 
-examples = [
-    {
-        "input": "lose weight",
-        "output": {
-            "questions": [
-"How much do you understand about the caloric deficit concept?",
-"What are your current eating habits, and do you know which changes might benefit your weight loss goals?",
-"Do you have a regular exercise routine, and what types of activities do you include?",
-"Are you familiar with the role of macronutrients (proteins, fats, carbohydrates) in weight management?",
-"Do you understand the importance of sleep and stress management in achieving weight loss?"
-]
-        }
-    },
-{
-"input": "improve English speaking skills",
-"output": {
-"questions": [
-"How often do you practice speaking English, and in what contexts?",
-"Do you actively listen to native English speakers through media such as movies, podcasts, or YouTube channels?",
-"Have you tried using language exchange platforms or speaking clubs to enhance your speaking skills?",
-"How familiar are you with the phonetic alphabet, and do you practice pronunciation regularly?",
-"What specific areas of speaking do you struggle with the most, such as fluency, vocabulary, or confidence?",
-]
-}
-},
-{
-"input": "Python programming",
-"output": {
-"questions": [
-"How would you rate your current level of proficiency in Python?",
-"Can you write basic programs in Python, including loops and conditionals?",
-"Are you familiar with Python's standard library and its most commonly used modules?",
-"Have you worked on any projects or tasks that required you to apply Python programming practically?",
-"Do you understand object-oriented programming concepts in Python, such as classes and inheritance?",
-]
-}
-}
-]
 
 def generate_knowledge_point_question(prompt: str):
     messages = [
         {
             "role": "system",
-            "content": system_prompt
+            "content": generate_plan_question_system_prompt
         },
     ]
-    for example in examples:
+    for example in generate_plan_question_examples:
         messages.append({
             "role": "user",
             "content": example["input"]
@@ -71,7 +73,7 @@ def generate_knowledge_point_question(prompt: str):
         "content": prompt
     })
 
-    response = generate_response(prompt, system_prompt, history_messages=messages, json_format=True, max_tokens=512,
+    response = generate_response(prompt, system_prompt=None, history_messages=messages, json_format=True, max_tokens=512,
                                  model="gpt-4-turbo-preview")
     content = response.choices[0].message.content
     logger.info(f"generate_knowledge_point_question response: {content}")

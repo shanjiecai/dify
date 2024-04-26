@@ -16,6 +16,104 @@ end of your current response. Here are the questions between <questions></questi
 Remember to add the <finish_question> tag after asking the last question.
 """
 
+
+# 判断是否包含知识点
+judge_plan_system_prompt = """Hello, your task is to act as a planning expert. When the user asks for help in making a plan, 
+you should determine if their words are necessary for making the plan. If the user's words are needed, 
+extract a short goal or knowledge point from their sentence. If not, reply with "no". Your response should be limited 
+to the short goal or knowledge point, or "no" if you're unsure. Here are a few examples to guide you. Remember, 
+your goal is to provide specific and concise information in response to the user's request."""
+
+
+judge_plan_examples = [
+    {
+        "input": "I need to improve my coding skills to get a better job.",
+        "output": "improve coding skills",
+    },
+    {
+        "input": "I like cats more than dogs.",
+        "output": "no",
+    },
+    {
+        "input": "I think trigonometric functions are difficult",
+        "output": "trigonometric functions",
+    },
+    {
+        "input": "I like cats more than dogs.",
+        "output": "no",
+    },
+    {
+        "input": "I'm planning to run a marathon, so I need a training schedule.",
+        "output": "marathon",
+    },
+    {
+        "input": "I think the new movie was overrated.",
+        "output": "no",
+    }
+]
+
+
+# 生成问题列表
+generate_plan_question_system_prompt = """You are an expert at generating plans based on knowledge points. Your task is to generate a few 
+questions based on the knowledge points provided. I want you to ask questions to determine how much this person knows 
+about this knowledge point, and then help him develop a plan. Questions can be about Study habits, sub-knowledge 
+points of knowledge points, solutions to related questions, etc. Questions should be as specific and detailed as 
+possible,no more than five. Please return it in json format. The format is as follows: { "questions": ["Do you know the formulas of 
+trigonometric functions?", "Do you know what properties trigonometric functions have?"] } Here are some examples:"""
+
+generate_plan_question_examples = [
+    {
+        "input": "lose weight",
+        "output": {
+            "questions": [
+"How much do you understand about the caloric deficit concept?",
+"What are your current eating habits, and do you know which changes might benefit your weight loss goals?",
+"Do you have a regular exercise routine, and what types of activities do you include?",
+"Are you familiar with the role of macronutrients (proteins, fats, carbohydrates) in weight management?",
+"Do you understand the importance of sleep and stress management in achieving weight loss?"
+]
+        }
+    },
+{
+"input": "improve English speaking skills",
+"output": {
+"questions": [
+"How often do you practice speaking English, and in what contexts?",
+"Do you actively listen to native English speakers through media such as movies, podcasts, or YouTube channels?",
+"Have you tried using language exchange platforms or speaking clubs to enhance your speaking skills?",
+"How familiar are you with the phonetic alphabet, and do you practice pronunciation regularly?",
+"What specific areas of speaking do you struggle with the most, such as fluency, vocabulary, or confidence?",
+]
+}
+},
+{
+"input": "Python programming",
+"output": {
+"questions": [
+"How would you rate your current level of proficiency in Python?",
+"Can you write basic programs in Python, including loops and conditionals?",
+"Are you familiar with Python's standard library and its most commonly used modules?",
+"Have you worked on any projects or tasks that required you to apply Python programming practically?",
+"Do you understand object-oriented programming concepts in Python, such as classes and inheritance?",
+]
+}
+}
+]
+
+
+generate_plan_detail_system_prompt = """Create a detailed weekly plan based on the given goal or knowledge point and the conversation 
+history. The plan should outline specific tasks and activities for each day of the week in JSON format. Ensure that 
+the plan is comprehensive and covers all relevant aspects related to the specified goal or knowledge point: {user_goal}.
+
+Include specific, quantifiable tasks and activities for each day of the week, which should be designed with 
+measurable outcomes to track progress and effectiveness as much as possible, ensuring a clear pathway toward 
+achieving the goal or thoroughly understanding the knowledge point
+
+The tasks should be clearly defined and provide a cohesive progression towards the desired outcome. Please structure
+the plan in the following JSON format: {{ "day1": ["plan1", "plan2", ...], "day2": ["plan1", "plan2", ...],
+... }} Where "plan1", "plan2", etc. represent the detailed activities or tasks for each day."""
+
+
 conversation_summary_system_prompt = "You are an expert at summarising conversations. The user gives you the content of the " \
                         "dialogue, you summarize the main points of the dialogue, ignoring the meaningless dialogue, " \
                         "summarizing the content in no more than 50 words, and summarizing no more than three tags, " \
