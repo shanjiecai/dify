@@ -246,7 +246,7 @@ class EasyUIBasedGenerateTaskPipeline(BasedGenerateTaskPipeline, MessageCycleMan
                         plan_detail_list.append(plan_detail)
                         logger.info(f"generate_plan_from_conversation response: {plan_detail_list}")
                         image_list, img_perfect_prompt_list = generate_img_pipeline(
-                            conversation.plan_question_invoke_plan, model="dalle3")
+                            conversation.plan_question_invoke_plan, model="search_engine")
                         # conversation.plan_question_invoke_plan = None
                         conversation.plan_question_invoke_user = None
                         conversation.plan_question_invoke_user_id = None

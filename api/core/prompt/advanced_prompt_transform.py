@@ -187,7 +187,7 @@ class AdvancedPromptTransform(PromptTransform):
                     prompt_messages.append(AssistantPromptMessage(content=prompt))
 
         if memory and memory_config:
-            if conversation.plan_question:
+            if conversation and conversation.plan_question:
                 # 历史只取十轮
                 prompt_messages = self._append_chat_histories(memory, memory_config, prompt_messages, model_config,
                                                               message_limit=10)

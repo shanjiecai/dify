@@ -202,7 +202,7 @@ class ConversationService:
 
         with ThreadPoolExecutor(max_workers=2) as executor:
             summary_system_prompt = plan_summary_system_prompt
-            summary_response = executor.submit(generate_response, history_str,summary_system_prompt)
+            summary_response = executor.submit(generate_response, history_str, summary_system_prompt)
             introduction_response = executor.submit(generate_plan_introduction, json.dumps(plan_detail))
             chat_summary = summary_response.result().choices[0].message.content
             introduction = introduction_response.result()

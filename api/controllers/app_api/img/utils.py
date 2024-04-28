@@ -38,6 +38,21 @@ def save_base64_img(base64_str, filepath):
 def generate_img_pipeline(plan, model="dalle3", conversation: Conversation = None, main_app: Flask = None, **kwargs):
     def main():
         begin = time.time()
+        if model == "search_engine":
+            from controllers.app_api.img.search_engine import search_engine_invoke
+            dst_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "static", "images")
+            img_list = search_engine_invoke(plan, dst_dir=dst_dir)
+            images = []
+            if img_list:
+                for image_name in img_list:
+                    dst = os.path.join(os.path.dirname(os.path.abspath(__file__)), "static", "images", image_name)
+                    res = upload_file(dst, image_name)
+                    logger.info(f"上传图片：{res}")
+                    images.append({
+                        "uuid": res["data"]["uuid"],
+                    })
+            logger.info(f"生成图片pipeline耗时：{time.time() - begin}")
+            return images, []
         perfect_prompt = generate_dalle_query_variations_gpt(plan)
         logger.info(f"生成图片pipeline耗时：{time.time() - begin}")
         # 取出所有v
@@ -88,4 +103,5 @@ def generate_img_pipeline(plan, model="dalle3", conversation: Conversation = Non
 
 if __name__ == '__main__':
     # test
-    print(generate_img_pipeline("python programming", model="dalle2"))
+    # print(generate_img_pipeline("python programming", model="search_engine"))
+    print(generate_img_pipeline("lose weight", model="search_engine"))

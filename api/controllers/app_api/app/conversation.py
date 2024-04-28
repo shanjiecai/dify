@@ -267,7 +267,7 @@ class ConversationPlan(AppApiResource):
         conversation = Conversation.query.filter_by(id=conversation_id, ).first()
         plan = plan if plan else conversation.plan_question_invoke_plan
         pool = ThreadPoolExecutor()
-        future_image = pool.submit(generate_img_pipeline, plan, model="dalle3")
+        future_image = pool.submit(generate_img_pipeline, plan, model="search_engine")
 
         for _ in range(plan_detail_number):
             plan_detail, plan, history_str = ConversationService.generate_plan(conversation_id, plan=plan,
