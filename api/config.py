@@ -5,6 +5,7 @@ import dotenv
 dotenv.load_dotenv()
 
 DEFAULTS = {
+    'EDITION': 'SELF_HOSTED',
     'DB_USERNAME': 'postgres',
     'DB_PASSWORD': '',
     'DB_HOST': 'localhost',
@@ -36,6 +37,7 @@ DEFAULTS = {
     'WEAVIATE_GRPC_ENABLED': 'True',
     'WEAVIATE_BATCH_SIZE': 100,
     'QDRANT_CLIENT_TIMEOUT': 20,
+    'QDRANT_GRPC_ENABLED': 'False',
     'CELERY_BACKEND': 'database',
     'LOG_LEVEL': 'INFO',
     'LOG_FILE': '',
@@ -112,9 +114,9 @@ class Config:
         # ------------------------
         # General Configurations.
         # ------------------------
-        self.CURRENT_VERSION = "0.6.4"
+        self.CURRENT_VERSION = "0.6.5"
         self.COMMIT_SHA = get_env('COMMIT_SHA')
-        self.EDITION = "SELF_HOSTED"
+        self.EDITION = get_env('EDITION')
         self.DEPLOY_ENV = get_env('DEPLOY_ENV')
         self.TESTING = False
         self.LOG_LEVEL = get_env('LOG_LEVEL')
@@ -216,6 +218,12 @@ class Config:
         self.AZURE_BLOB_ACCOUNT_KEY = get_env('AZURE_BLOB_ACCOUNT_KEY')
         self.AZURE_BLOB_CONTAINER_NAME = get_env('AZURE_BLOB_CONTAINER_NAME')
         self.AZURE_BLOB_ACCOUNT_URL = get_env('AZURE_BLOB_ACCOUNT_URL')
+        self.ALIYUN_OSS_BUCKET_NAME=get_env('ALIYUN_OSS_BUCKET_NAME')
+        self.ALIYUN_OSS_ACCESS_KEY=get_env('ALIYUN_OSS_ACCESS_KEY')
+        self.ALIYUN_OSS_SECRET_KEY=get_env('ALIYUN_OSS_SECRET_KEY')
+        self.ALIYUN_OSS_ENDPOINT=get_env('ALIYUN_OSS_ENDPOINT')
+        self.GOOGLE_STORAGE_BUCKET_NAME = get_env('GOOGLE_STORAGE_BUCKET_NAME')
+        self.GOOGLE_STORAGE_SERVICE_ACCOUNT_JSON_BASE64 = get_env('GOOGLE_STORAGE_SERVICE_ACCOUNT_JSON_BASE64')
 
         # ------------------------
         # Vector Store Configurations.
@@ -227,6 +235,8 @@ class Config:
         self.QDRANT_URL = get_env('QDRANT_URL')
         self.QDRANT_API_KEY = get_env('QDRANT_API_KEY')
         self.QDRANT_CLIENT_TIMEOUT = get_env('QDRANT_CLIENT_TIMEOUT')
+        self.QDRANT_GRPC_ENABLED = get_env('QDRANT_GRPC_ENABLED')
+        self.QDRANT_GRPC_PORT = get_env('QDRANT_GRPC_PORT')
 
         # milvus / zilliz setting
         self.MILVUS_HOST = get_env('MILVUS_HOST')
@@ -274,7 +284,7 @@ class Config:
 
 
         # ------------------------
-        # Workpace Configurations.
+        # Workspace Configurations.
         # ------------------------
         self.INVITE_EXPIRY_HOURS = int(get_env('INVITE_EXPIRY_HOURS'))
 
@@ -313,6 +323,12 @@ class Config:
         # ------------------------
         # Platform Configurations.
         # ------------------------
+        self.GITHUB_CLIENT_ID = get_env('GITHUB_CLIENT_ID')
+        self.GITHUB_CLIENT_SECRET = get_env('GITHUB_CLIENT_SECRET')
+        self.GOOGLE_CLIENT_ID = get_env('GOOGLE_CLIENT_ID')
+        self.GOOGLE_CLIENT_SECRET = get_env('GOOGLE_CLIENT_SECRET')
+        self.OAUTH_REDIRECT_PATH = get_env('OAUTH_REDIRECT_PATH')
+
         self.HOSTED_OPENAI_API_KEY = get_env('HOSTED_OPENAI_API_KEY')
         self.HOSTED_OPENAI_API_BASE = get_env('HOSTED_OPENAI_API_BASE')
         self.HOSTED_OPENAI_API_ORGANIZATION = get_env('HOSTED_OPENAI_API_ORGANIZATION')
@@ -364,17 +380,3 @@ class Config:
 
         self.KEYWORD_DATA_SOURCE_TYPE = get_env('KEYWORD_DATA_SOURCE_TYPE')
         self.ENTERPRISE_ENABLED = get_bool_env('ENTERPRISE_ENABLED')
-
-
-class CloudEditionConfig(Config):
-
-    def __init__(self):
-        super().__init__()
-
-        self.EDITION = "CLOUD"
-
-        self.GITHUB_CLIENT_ID = get_env('GITHUB_CLIENT_ID')
-        self.GITHUB_CLIENT_SECRET = get_env('GITHUB_CLIENT_SECRET')
-        self.GOOGLE_CLIENT_ID = get_env('GOOGLE_CLIENT_ID')
-        self.GOOGLE_CLIENT_SECRET = get_env('GOOGLE_CLIENT_SECRET')
-        self.OAUTH_REDIRECT_PATH = get_env('OAUTH_REDIRECT_PATH')
