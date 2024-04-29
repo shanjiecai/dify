@@ -1,4 +1,5 @@
 import logging
+import traceback
 
 from flask_login import current_user
 from flask_restful import Resource, reqparse
@@ -118,6 +119,7 @@ class ModelProviderModelApi(Resource):
                 credentials=args['credentials']
             )
         except CredentialsValidateFailedError as ex:
+            print(traceback.format_exc())
             raise ValueError(str(ex))
 
         return {'result': 'success'}, 200

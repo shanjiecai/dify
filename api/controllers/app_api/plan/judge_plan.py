@@ -64,7 +64,7 @@ def judge_plan(prompt: str):
         "content": prompt
     })
     logger.info(f"judge_plan messages: {messages}")
-    response = generate_response(prompt, system_prompt=None, history_messages=messages, model="gpt-4-turbo-preview")
+    response = generate_response(prompt=None, system_prompt=None, history_messages=messages, model="gpt-4-turbo-preview")
     content = response.choices[0].message.content
     logger.info(f"judge_plan response: {content}")
     return content

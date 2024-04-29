@@ -73,7 +73,7 @@ def generate_knowledge_point_question(prompt: str):
         "content": prompt
     })
 
-    response = generate_response(prompt, system_prompt=None, history_messages=messages, json_format=True, max_tokens=512,
+    response = generate_response(prompt=None, system_prompt=None, history_messages=messages, json_format=True, max_tokens=512,
                                  model="gpt-4-turbo-preview")
     content = response.choices[0].message.content
     logger.info(f"generate_knowledge_point_question response: {content}")

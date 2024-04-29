@@ -56,6 +56,7 @@ class AppQueueManager:
         while True:
             try:
                 message = self._q.get(timeout=1)
+                # print(message)
                 if message is None:
                     if message_all:
                         logger.info(f"[invoke_llm_result]: {message_all}")
