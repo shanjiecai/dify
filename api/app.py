@@ -250,7 +250,17 @@ app.config['SWAGGER'] = {
 }
 from flasgger import Swagger
 
-swag = Swagger(app)
+swag = Swagger(app, config={
+    "specs_route": "/backend-api/docs",
+    "specs": [
+        {
+            "endpoint": '/backend-api/apispec_1',
+            "route": '/backend-api/apispec_1.json',
+            "rule_filter": lambda rule: True,  # all in
+            "model_filter": lambda tag: True,  # all in
+        }
+    ]
+}, merge=True)
 celery = app.extensions["celery"]
 config = app.config
 
