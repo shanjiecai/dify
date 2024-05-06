@@ -259,7 +259,8 @@ swag = Swagger(app, config={
             "rule_filter": lambda rule: True,  # all in
             "model_filter": lambda tag: True,  # all in
         }
-    ]
+    ],
+    "static_url_path": "/backend-api/flasgger_static",
 }, merge=True)
 celery = app.extensions["celery"]
 config = app.config
