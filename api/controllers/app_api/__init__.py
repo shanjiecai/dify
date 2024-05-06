@@ -7,4 +7,5 @@ api = ExternalApi(bp)
 
 from .app import app, completion, conversation, message
 from .copywriter import *
+from .img import *
 from .summarize import *

@@ -35,7 +35,7 @@ def save_base64_img(base64_str, filepath):
         return None
 
 
-def generate_img_pipeline(plan, model="dalle3", conversation: Conversation = None, main_app: Flask = None, **kwargs):
+def generate_plan_img_pipeline(plan, model="dalle3", conversation: Conversation = None, main_app: Flask = None, **kwargs):
     def main():
         begin = time.time()
         if model == "search_engine":
@@ -101,7 +101,71 @@ def generate_img_pipeline(plan, model="dalle3", conversation: Conversation = Non
     return images, perfect_prompt_list
 
 
+def generate_img_pipeline(query, model="dalle3", main_app: Flask = None, **kwargs):
+    def main():
+        begin = time.time()
+        if model == "search_engine":
+            from controllers.app_api.img.search_engine import search_engine_invoke
+            dst_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "static", "images")
+            img_list = search_engine_invoke(query, dst_dir=dst_dir)
+            images = []
+            if img_list:
+                for image_name in img_list:
+                    dst = os.path.join(os.path.dirname(os.path.abspath(__file__)), "static", "images", image_name)
+                    res = upload_file(dst, image_name)
+                    logger.info(f"上传图片：{res}")
+                    images.append({
+                        "uuid": res["data"]["uuid"],
+                    })
+
+            logger.info(f"生成图片pipeline耗时：{time.time() - begin}")
+            return images
+
+        elif model == "dalle3":
+            from controllers.app_api.img.dalle3 import dalle3_invoke
+            img_list = dalle3_invoke(query, **kwargs)
+        elif model == "cogview3":
+            from controllers.app_api.img.cogview3 import cogview3_invoke
+            img_list = cogview3_invoke(query, **kwargs)
+
+        elif model == "dalle2":
+            from controllers.app_api.img.dalle2 import dalle2_invoke
+            img_list = dalle2_invoke(query, **kwargs)
+        else:
+            return None
+        logger.info(f"生成图片pipeline耗时：{time.time() - begin}")
+        images = []
+        if img_list:
+            for img in img_list:
+                image_name = f"{time.time()}.png"
+                dst = os.path.join(os.path.dirname(os.path.abspath(__file__)), "static", "images", image_name)
+                # download_img_form_url(img, dst)
+                save_base64_img(img, dst)
+                logger.info(f"下载图片耗时：{time.time() - begin}")
+                res = upload_file(dst, image_name)
+                logger.info(f"上传图片：{res}")
+                """{
+                    "data": {
+                        "uuid": "e5b53831-fa5f-477c-bf7c-2e42d9ff67ff"
+                    }
+                }"""
+                images.append({
+                    "uuid": res["data"]["uuid"],
+                    # "img": img
+                })
+        logger.info(f"生成图片pipeline耗时：{time.time() - begin}")
+        return images
+
+    if main_app:
+        with main_app.app_context():
+            images = main()
+    else:
+        images = main()
+    return images
+
+
 if __name__ == '__main__':
     # test
-    # print(generate_img_pipeline("python programming", model="search_engine"))
+    # print(generate_plan_img_pipeline("python programming", model="search_engine"))
+    # print(generate_plan_img_pipeline("lose weight", model="search_engine"))
     print(generate_img_pipeline("lose weight", model="search_engine"))

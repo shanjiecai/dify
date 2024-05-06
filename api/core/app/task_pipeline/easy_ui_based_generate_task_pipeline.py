@@ -4,7 +4,7 @@ import time
 from collections.abc import Generator
 from typing import Optional, Union, cast
 
-from controllers.app_api.img.utils import generate_img_pipeline
+from controllers.app_api.img.utils import generate_plan_img_pipeline
 from core.app.apps.base_app_queue_manager import AppQueueManager, PublishFrom
 from core.app.entities.app_invoke_entities import (
     AgentChatAppGenerateEntity,
@@ -245,7 +245,7 @@ class EasyUIBasedGenerateTaskPipeline(BasedGenerateTaskPipeline, MessageCycleMan
                                                                                            plan=conversation.plan_question_invoke_plan)
                         plan_detail_list.append(plan_detail)
                         logger.info(f"generate_plan_from_conversation response: {plan_detail_list}")
-                        image_list, img_perfect_prompt_list = generate_img_pipeline(
+                        image_list, img_perfect_prompt_list = generate_plan_img_pipeline(
                             conversation.plan_question_invoke_plan, model="search_engine")
                         # conversation.plan_question_invoke_plan = None
                         conversation.plan_question_invoke_user = None

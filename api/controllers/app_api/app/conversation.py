@@ -11,7 +11,7 @@ import services
 from controllers.app_api import api
 from controllers.app_api.app import create_or_update_end_user_for_user_id
 from controllers.app_api.app.error import NotChatAppError
-from controllers.app_api.img.utils import generate_img_pipeline
+from controllers.app_api.img.utils import generate_plan_img_pipeline
 from controllers.app_api.plan.pipeline import plan_question_background
 from controllers.app_api.wraps import AppApiResource
 
@@ -267,7 +267,7 @@ class ConversationPlan(AppApiResource):
         conversation = Conversation.query.filter_by(id=conversation_id, ).first()
         plan = plan if plan else conversation.plan_question_invoke_plan
         pool = ThreadPoolExecutor()
-        future_image = pool.submit(generate_img_pipeline, plan, model="search_engine")
+        future_image = pool.submit(generate_plan_img_pipeline, plan, model="search_engine")
 
         for _ in range(plan_detail_number):
             plan_detail, plan, history_str = ConversationService.generate_plan(conversation_id, plan=plan,

@@ -230,8 +230,6 @@ def register_blueprints(app):
          expose_headers=['X-Version', 'X-Env']
          )
     app.register_blueprint(app_api_bp)
-    # 列出所有的路由
-    print(app.url_map)
 
     CORS(files_bp,
          allow_headers=['Content-Type'],
@@ -241,9 +239,18 @@ def register_blueprints(app):
 
     app.register_blueprint(inner_api_bp)
 
+    # 列出所有的路由
+    print(app.url_map)
+
 
 # create app
 app = create_app()
+app.config['SWAGGER'] = {
+    'title': 'role model api',
+}
+from flasgger import Swagger
+
+swag = Swagger(app)
 celery = app.extensions["celery"]
 config = app.config
 
