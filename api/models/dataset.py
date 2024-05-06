@@ -542,9 +542,9 @@ class DatasetUpdateRealTime(db.Model):
         db.Index('dataset_update_real_time_dataset_id_idx', 'dataset_id'),
     )
 
-    id = db.Column(UUID, primary_key=True, server_default=db.text('uuid_generate_v4()'))
-    dataset_id = db.Column(UUID, nullable=False)
-    conversation_id = db.Column(UUID, nullable=True)
+    id = db.Column(StringUUID, primary_key=True, server_default=db.text('uuid_generate_v4()'))
+    dataset_id = db.Column(StringUUID, nullable=False)
+    conversation_id = db.Column(StringUUID, nullable=True)
     group_id = db.Column(db.String(40), nullable=True)
     created_at = db.Column(db.DateTime, nullable=False, server_default=db.func.current_timestamp())
     last_updated_at = db.Column(db.DateTime, nullable=False, server_default=db.func.current_timestamp())
