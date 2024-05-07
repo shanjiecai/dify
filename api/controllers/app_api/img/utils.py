@@ -35,7 +35,8 @@ def save_base64_img(base64_str, filepath):
         return None
 
 
-def generate_plan_img_pipeline(plan, model="dalle3", conversation: Conversation = None, main_app: Flask = None, **kwargs):
+def generate_plan_img_pipeline(plan, model="dalle3", conversation: Conversation = None, main_app: Flask = None,
+                               **kwargs):
     def main():
         begin = time.time()
         if model == "search_engine":
@@ -93,6 +94,7 @@ def generate_plan_img_pipeline(plan, model="dalle3", conversation: Conversation 
                 })
         logger.info(f"生成图片pipeline耗时：{time.time() - begin}")
         return images, perfect_prompt_list
+
     if main_app:
         with main_app.app_context():
             images, perfect_prompt_list = main()
@@ -101,13 +103,26 @@ def generate_plan_img_pipeline(plan, model="dalle3", conversation: Conversation 
     return images, perfect_prompt_list
 
 
-def generate_img_pipeline(query, model="dalle3", main_app: Flask = None, **kwargs):
+# shape可选：square, vertical, horizontal
+# size a*b 例如：1024*1024
+def generate_img_pipeline(query, model="dalle3", shape: str = None, size: str=None, main_app: Flask = None, **kwargs):
+    if shape and shape not in ["square", "vertical", "horizontal"]:
+        shape = None
+    if size:
+        size = size.split("*")
+        if len(size) != 2:
+            size = None
+        else:
+            try:
+                size = [int(size[0]), int(size[1])]
+            except:
+                size = None
     def main():
         begin = time.time()
         if model == "search_engine":
             from controllers.app_api.img.search_engine import search_engine_invoke
             dst_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "static", "images")
-            img_list = search_engine_invoke(query, dst_dir=dst_dir)
+            img_list = search_engine_invoke(query, shape=shape, size=size, dst_dir=dst_dir)
             images = []
             if img_list:
                 for image_name in img_list:
@@ -123,7 +138,7 @@ def generate_img_pipeline(query, model="dalle3", main_app: Flask = None, **kwarg
 
         elif model == "dalle3":
             from controllers.app_api.img.dalle3 import dalle3_invoke
-            img_list = dalle3_invoke(query, **kwargs)
+            img_list = dalle3_invoke(query, size=shape, **kwargs)
         elif model == "cogview3":
             from controllers.app_api.img.cogview3 import cogview3_invoke
             img_list = cogview3_invoke(query, **kwargs)

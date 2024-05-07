@@ -46,6 +46,9 @@ class ImgApi(AppApiResource):
                 model:
                   type: string
                   description: dalle3 or search_engine
+                shape:
+                  type: string
+                  description: shape: square, vertical, horizontal
         responses:
           200:
             description: img
@@ -64,10 +67,12 @@ class ImgApi(AppApiResource):
         parser = reqparse.RequestParser()
         parser.add_argument('prompt', type=str, required=True, help='img prompt')
         parser.add_argument('model', type=str, default='search_engine', required=False, help='dalle3 or search_engine')
+        parser.add_argument("shape", type=str, default=None, required=False, help="shape: square, vertical, horizontal")
         args = parser.parse_args()
         prompt = args.get('prompt')
         model = args.get('model')
-        images = generate_img_pipeline(prompt, model=model)
+        shape = args.get('shape')
+        images = generate_img_pipeline(prompt, model=model, shape=shape)
         return {'images': images}, 200
 
 

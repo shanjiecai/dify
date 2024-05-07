@@ -285,7 +285,7 @@ class MyBaiduFeeder(Feeder):
         self.logger.debug(f"put url to url_queue: {url}")
 
 
-def search_engine_invoke(keyword, dst_dir="./", max_num=1) -> list[str]:
+def search_engine_invoke(keyword, shape=None, size=None, dst_dir="./", max_num=1) -> list[str]:
     # Initialize Bing crawler
     bing_crawler = BingImageCrawler(storage={'root_dir': dst_dir},
                                     downloader_cls=MyImageDownloader,
@@ -295,11 +295,23 @@ def search_engine_invoke(keyword, dst_dir="./", max_num=1) -> list[str]:
                                     )
 
     try:
-        # Try crawling with Baidu
+        # Try crawling with Bing
+        # layout_choice = ["square", "wide", "tall"]
+        if shape:
+            if shape=="square":
+                layout = "square"
+            elif shape=="vertical":
+                layout = "tall"
+            elif shape=="horizontal":
+                layout = "wide"
+            else:
+                layout = "tall"
+        else:
+            layout = "tall"
         begin = time.time()
         bing_filters = dict(
             # license='commercial,modify',
-            layout='tall',
+            layout=layout,
             type='photo',
         )
         bing_crawler.crawl(keyword=keyword, max_num=max_num, overwrite=True,
