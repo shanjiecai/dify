@@ -3,9 +3,10 @@
 
 import json
 
-from controllers.app_api.openai_base_request import generate_response
+# from controllers.app_api.openai_base_request import generate_response
 from core.prompt_const import generate_plan_detail_system_prompt
 from mylogger import logger
+from services.openai_base_request_service import generate_response
 
 # system_prompt = """You are an expert of making plans, your task is to give a plan for the entire week based on a
 # given goal or knowledge point, the plan should be as detailed as possible, please return it in json format in {{

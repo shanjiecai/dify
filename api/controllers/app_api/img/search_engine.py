@@ -13,7 +13,10 @@ class MyImageDownloader(ImageDownloader):
     #     super(MyImageDownloader).__init__(*args, **kwargs)
     #     # self.filename_prefix = kwargs.get('filename_prefix', '')
     #     # self.filename = kwargs.get('filename', '')
-    filenames = []
+    def __init__(self, thread_num, signal, session, storage):
+        super().__init__(thread_num, signal, session, storage)
+        self.fetched_num = 0
+        self.filenames = []
 
     def get_filename(self, task, default_ext="jpg"):
         url_path = urlparse(task['file_url'])[2]
@@ -87,6 +90,7 @@ class MyImageDownloader(ImageDownloader):
                 self.storage.write(filename, response.content)
                 task["success"] = True
                 task["filename"] = filename
+                print(f"download {file_url} success")
                 break
             finally:
                 retry -= 1
@@ -323,19 +327,19 @@ def search_engine_invoke(keyword, shape=None, size=None, dst_dir="./", max_num=1
     except Exception as e:
         # print("Error occurred with Bing:", e)
         # print("Retrying with Baidu...")
-        logger.info("Error occurred with Baidu:", e)
+        logger.info(f"Error occurred with Bing: {e}")
         # Initialize Baidu crawler
         baidu_crawler = BaiduImageCrawler(storage={'root_dir': dst_dir},
                                           downloader_cls=MyImageDownloader,
                                           feeder_cls=MyBaiduFeeder,
-                                          downloader_threads=4,
+                                          downloader_threads=2,
                                           parser_threads=2,
                                           )
 
         try:
             # Try crawling with Bing
             baidu_filter = dict(
-                type='photo',
+                type='static'
             )
             baidu_crawler.crawl(keyword=keyword, max_num=max_num, overwrite=True,
                                 filters=baidu_filter
@@ -344,7 +348,7 @@ def search_engine_invoke(keyword, shape=None, size=None, dst_dir="./", max_num=1
         except Exception as e:
             # print("Error occurred with Baidu:", e)
             # print("Both Bing and Baidu failed to fetch images.")
-            logger.info("Error occurred with Baidu:", e)
+            logger.info(f"Error occurred with Baidu: {e}")
 
 
 if __name__ == '__main__':

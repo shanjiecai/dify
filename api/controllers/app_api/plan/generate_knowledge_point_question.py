@@ -1,9 +1,10 @@
 import json
 
 # 基于提供的知识点提出几个用于针对这个知识点生成计划的问题
-from controllers.app_api.openai_base_request import generate_response
+# from controllers.app_api.openai_base_request import generate_response
 from core.prompt_const import generate_plan_question_examples, generate_plan_question_system_prompt
 from mylogger import logger
+from services.openai_base_request_service import generate_response
 
 # system_prompt = """You are an expert at generating plans based on knowledge points. Your task is to generate a few
 # questions based on the knowledge points provided. I want you to ask questions to determine how much this person knows

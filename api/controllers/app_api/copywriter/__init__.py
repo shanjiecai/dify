@@ -17,7 +17,7 @@ from controllers.app_api.app.utils import get_recent_history, get_recent_history
 
 # import spacy
 # nlp = spacy.load("en_core_web_sm")
-from controllers.app_api.openai_base_request import generate_response
+# from controllers.app_api.openai_base_request import generate_response
 from controllers.app_api.wraps import AppApiResource
 
 # from controllers.service_api.app import create_or_update_end_user_for_user_id
@@ -48,6 +48,7 @@ from libs.helper import uuid_value
 from models.model import ApiToken, App, AppModelConfig, Conversation
 from mylogger import logger
 from services.completion_service import CompletionService
+from services.openai_base_request_service import generate_response
 
 api_key = os.environ.get('OPENAI_API_KEY')
 

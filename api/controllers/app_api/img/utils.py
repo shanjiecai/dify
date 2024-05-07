@@ -7,9 +7,9 @@ import requests
 from flask import Flask
 
 from controllers.app_api.app.utils import upload_file
-from controllers.app_api.openai_base_request import generate_dalle_query_variations_gpt
 from models.model import Conversation
 from mylogger import logger
+from services.openai_base_request_service import generate_dalle_query_variations_gpt
 
 
 def download_img_form_url(url, filepath):
@@ -125,6 +125,7 @@ def generate_img_pipeline(query, model="dalle3", shape: str = None, size: str=No
             img_list = search_engine_invoke(query, shape=shape, size=size, dst_dir=dst_dir)
             images = []
             if img_list:
+                # print(img_list)
                 for image_name in img_list:
                     dst = os.path.join(os.path.dirname(os.path.abspath(__file__)), "static", "images", image_name)
                     res = upload_file(dst, image_name)

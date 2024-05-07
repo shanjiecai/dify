@@ -6,7 +6,7 @@ from typing import Optional, Union
 from flask import Flask
 from sqlalchemy import or_
 
-from controllers.app_api.openai_base_request import compare_similarity, generate_response
+# from controllers.app_api.openai_base_request import compare_similarity, generate_response
 from controllers.app_api.plan.generate_plan_from_conversation import (
     generate_plan_from_conversation,
     generate_plan_introduction,
@@ -24,6 +24,7 @@ from models.model import App, Conversation, ConversationPlanDetail, EndUser, Mes
 from mylogger import logger
 from services.errors.conversation import ConversationNotExistsError, LastConversationNotExistsError
 from services.errors.message import MessageNotExistsError
+from services.openai_base_request_service import compare_similarity, generate_response
 
 
 class ConversationService:

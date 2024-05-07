@@ -15,7 +15,8 @@ import services
 from controllers.app_api import api
 from controllers.app_api.app.utils import get_recent_history, get_recent_history_within_timestamp, send_feishu_bot
 from controllers.app_api.img.utils import generate_img_pipeline
-from controllers.app_api.openai_base_request import generate_response
+
+# from controllers.app_api.openai_base_request import generate_response
 from controllers.app_api.wraps import AppApiResource
 from models.model import ApiToken, App, AppModelConfig, Conversation
 from mylogger import logger
@@ -48,7 +49,7 @@ class ImgApi(AppApiResource):
                   description: dalle3 or search_engine
                 shape:
                   type: string
-                  description: shape: square, vertical, horizontal
+                  description: square, vertical, horizontal
         responses:
           200:
             description: img

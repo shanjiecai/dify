@@ -9,4 +9,5 @@ from .app import app, completion, conversation, message
 from .copywriter import *
 from .img import *
 from .quote import *
+from .role_model_customize import knowledge_level, persona_matrix
 from .summarize import *

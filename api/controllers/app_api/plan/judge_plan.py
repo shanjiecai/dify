@@ -1,6 +1,7 @@
-from controllers.app_api.openai_base_request import generate_response
+# from controllers.app_api.openai_base_request import generate_response
 from core.prompt_const import judge_plan_examples, judge_plan_system_prompt
 from mylogger import logger
+from services.openai_base_request_service import generate_response
 
 # system_template = """You are an expert in helping people make plans, and your task is to determine whether or not the
 # user's words are needed to help him make a plan. If it is, you need to extract a short goal or knowledge point that
