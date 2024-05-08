@@ -8,6 +8,7 @@ from collections.abc import Generator
 from typing import Union
 
 from flask import Response, current_app, request, stream_with_context
+from flask.ctx import AppContext
 from flask_restful import reqparse
 from sqlalchemy import and_
 from werkzeug.exceptions import InternalServerError, NotFound
@@ -25,6 +26,7 @@ from controllers.app_api.app.error import (
     ProviderQuotaExceededError,
 )
 from controllers.app_api.app.utils import send_feishu_bot, split_and_get_interval
+from controllers.app_api.img.utils import generate_plan_img_pipeline
 from controllers.app_api.plan.pipeline import plan_question_background
 from controllers.app_api.wraps import AppApiResource
 from core.app.app_config.easy_ui_based_app.model_config.converter import ModelConfigConverter
@@ -42,9 +44,10 @@ from core.model_manager import ModelInstance
 from core.model_runtime.errors.invoke import InvokeError
 from extensions.ext_database import db
 from libs.helper import uuid_value
-from models.model import App, AppModelConfig, Conversation
+from models.model import App, AppMode, AppModelConfig, Conversation, ConversationPlanDetail
 from mylogger import logger
 from services.app_generate_service import AppGenerateService
+from services.conversation_service import ConversationService
 
 # from services.completion_service import CompletionService
 
@@ -119,6 +122,38 @@ class ChatStopApi(AppApiResource):
         return {'result': 'success'}, 200
 
 
+def _plan_finish_question(conversation: Conversation, main_context: AppContext):
+    """
+    Plan finish question
+    :param conversation: conversation
+    :return:
+    """
+    with main_context:
+        plan_detail_list = []
+        plan_detail, plan, history_str = ConversationService.generate_plan(conversation.id,
+                                                                          plan=conversation.plan_question_invoke_plan)
+        plan_detail_list.append(plan_detail)
+        logger.info(f"generate_plan_from_conversation response: {plan_detail_list}")
+        image_list, img_perfect_prompt_list = generate_plan_img_pipeline(
+            conversation.plan_question_invoke_plan, model="search_engine")
+        # 暂时不去掉plan_question_invoke_plan
+        # conversation.plan_question_invoke_plan = None
+        conversation.plan_question_invoke_user = None
+        conversation.plan_question_invoke_user_id = None
+        conversation.plan_question_invoke_time = None
+        conversation_plan_detail = ConversationPlanDetail(
+            conversation_id=conversation.id,
+            plan=plan,
+            plan_detail_list=plan_detail_list,
+            plan_conversation_history=history_str,
+            image_list=image_list,
+            img_perfect_prompt_list=img_perfect_prompt_list
+        )
+        time.sleep(1)
+        db.session.add(conversation_plan_detail)
+        db.session.commit()
+
+
 class ChatApi(AppApiResource):
     def post(self, app_model):
         # if app_model.mode != 'chat':
@@ -189,7 +224,12 @@ class ChatApi(AppApiResource):
                 user_name=args['user'],
                 assistant_name=app_model.name,
             )
-
+            if isinstance(response, dict) and response.get("answer", '').endswith(
+                    '<finish_question>') and args["conversation_id"] and app_model.mode == AppMode.CHAT.value:
+                logger.info(
+                    f"remove conversation {conversation.id} <finish_question> from {response.get('answer')}")
+                threading.Thread(target=_plan_finish_question,
+                                 args=(conversation, current_app._get_current_object().app_context())).start()
             return compact_response(response)
         except services.errors.conversation.ConversationNotExistsError:
             raise NotFound("Conversation Not Exists.")
@@ -247,6 +287,12 @@ class ChatApi(AppApiResource):
                     assistant_name=app_model.name,
                     is_model_config_override=True,
                 )
+                if isinstance(response, dict) and response.get("answer", '').endswith(
+                        '<finish_question>') and args["conversation_id"] and app_model.mode == AppMode.CHAT.value:
+                    logger.info(
+                        f"remove conversation {conversation.id} <finish_question> from {response.get('answer')}")
+                    threading.Thread(target=_plan_finish_question,
+                                     args=(conversation, current_app._get_current_object().app_context())).start()
                 return compact_response(response)
             except Exception as _e:
                 logger.info(f"使用备用模型回复失败: {str(traceback.format_exc())}")
@@ -403,6 +449,11 @@ class ChatActiveApi(AppApiResource):
                     logger.info(f"get response in {time.time() - b}")
                     response["result"] = True
                     logger.info(f"response: {response}")
+                    if isinstance(response, dict) and response.get("answer", '').endswith('<finish_question>') and conversation and app_model.mode == AppMode.ADVANCED_CHAT.value:
+                        logger.info(
+                            f"remove conversation {conversation.id} <finish_question> from {response.get('answer')}")
+                        threading.Thread(target=_plan_finish_question,
+                                     args=(conversation, current_app._get_current_object().app_context())).start()
                     return Response(response=json.dumps(response), status=200, mimetype='application/json')
                 except InvokeError as e:
                     send_feishu_bot(str(e))
