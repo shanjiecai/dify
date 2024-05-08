@@ -171,7 +171,7 @@ class ChatApi(AppApiResource):
         #     {"role": "A", "message": "hello"},
         #     {"role": "B", "message": "hi"}
         # ]
-
+        mode = app_model.mode
         parser.add_argument('outer_memory', type=list, required=False, default=None, location='json')
         # validate
         outer_memory = parser.parse_args()['outer_memory']
@@ -225,7 +225,7 @@ class ChatApi(AppApiResource):
                 assistant_name=app_model.name,
             )
             if isinstance(response, dict) and response.get("answer", '').endswith(
-                    '<finish_question>') and args["conversation_id"] and app_model.mode == AppMode.CHAT.value:
+                    '<finish_question>') and args["conversation_id"] and mode == AppMode.CHAT.value:
                 logger.info(
                     f"remove conversation {conversation.id} <finish_question> from {response.get('answer')}")
                 threading.Thread(target=_plan_finish_question,
@@ -288,7 +288,7 @@ class ChatApi(AppApiResource):
                     is_model_config_override=True,
                 )
                 if isinstance(response, dict) and response.get("answer", '').endswith(
-                        '<finish_question>') and args["conversation_id"] and app_model.mode == AppMode.CHAT.value:
+                        '<finish_question>') and args["conversation_id"] and mode == AppMode.CHAT.value:
                     logger.info(
                         f"remove conversation {conversation.id} <finish_question> from {response.get('answer')}")
                     threading.Thread(target=_plan_finish_question,
@@ -325,6 +325,7 @@ class ChatActiveApi(AppApiResource):
                 for item in outer_memory:
                     if 'role' not in item or 'message' not in item:
                         raise ValueError("outer_memory should be a list of dict with keys 'role' and 'message'")
+            mode = app_model.mode
             args = parser.parse_args()
             streaming = args.get('response_mode', 'blocking') == 'streaming'
 
@@ -449,7 +450,7 @@ class ChatActiveApi(AppApiResource):
                     logger.info(f"get response in {time.time() - b}")
                     response["result"] = True
                     logger.info(f"response: {response}")
-                    if isinstance(response, dict) and response.get("answer", '').endswith('<finish_question>') and conversation and app_model.mode == AppMode.ADVANCED_CHAT.value:
+                    if isinstance(response, dict) and mode == AppMode.CHAT.value and response.get("answer", '').endswith('<finish_question>') and conversation:
                         logger.info(
                             f"remove conversation {conversation.id} <finish_question> from {response.get('answer')}")
                         threading.Thread(target=_plan_finish_question,
