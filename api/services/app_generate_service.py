@@ -67,7 +67,9 @@ class AppGenerateService:
                 user=user,
                 args=args,
                 invoke_from=invoke_from,
-                stream=streaming
+                stream=streaming,
+                user_name=user_name,
+                assistant_name=assistant_name,
             )
         elif app_model.mode == AppMode.WORKFLOW.value:
             workflow = cls._get_workflow(app_model, invoke_from)
@@ -77,7 +79,9 @@ class AppGenerateService:
                 user=user,
                 args=args,
                 invoke_from=invoke_from,
-                stream=streaming
+                stream=streaming,
+                user_name=user_name,
+                assistant_name=assistant_name,
             )
         else:
             raise ValueError(f'Invalid app mode {app_model.mode}')

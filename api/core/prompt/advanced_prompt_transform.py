@@ -165,7 +165,7 @@ class AdvancedPromptTransform(PromptTransform):
                 else:
                     prompt_messages.append(UserPromptMessage(content=prompt))
             elif prompt_item.role == PromptMessageRole.SYSTEM and prompt:
-                if conversation and conversation.plan_question:
+                if conversation and conversation.plan_question and conversation.plan_question_invoke_user:
                     def remove_character_info(text):
                         start_phrase = "character information"
                         end_phrase = "Don’t be verbose or too formal or polite when speaking."
@@ -180,7 +180,7 @@ class AdvancedPromptTransform(PromptTransform):
                     prompt = remove_character_info(prompt)
                     questions = "\n".join(conversation.plan_question)
                     plan_question_prompt = plan_question_template.format(questions=questions)
-                    logger.info(f"plan_question_prompt: {plan_question_prompt}")
+                    logger.debug(f"plan_question_prompt: {plan_question_prompt}")
                     prompt += plan_question_prompt
                 prompt_messages.append(SystemPromptMessage(content=prompt))
             elif prompt_item.role == PromptMessageRole.ASSISTANT:

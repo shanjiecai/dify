@@ -3,7 +3,7 @@ import json
 import requests
 import streamlit as st
 
-url_base = "http://13.56.164.188"
+url_base = "http://127.0.0.1:5001"
 dj_app_id = "a756e5d2-c735-4f68-8db0-1de49333501c"
 
 st.title("role model group chat")
@@ -32,6 +32,8 @@ if "role_model_id_list" not in st.session_state:
     st.session_state.role_name_list = []
 if "user" not in st.session_state:
     st.session_state.user = None
+if "need_dj" not in st.session_state:
+    st.session_state.need_dj = False
 
 
 app_id_list, app_name_list = get_app_list()
@@ -39,9 +41,11 @@ app_id_list, app_name_list = get_app_list()
 # if len(st.session_state.role_model_id_list) == 0:
     # print(app_name_list)
 app_names_select = st.multiselect("Select role models", app_name_list)
+need_dj = st.checkbox("need dj")
+
 print(app_names_select)
-if not st.session_state.role_name_list:
-    st.session_state.role_name_list = ["James Corden"]
+if need_dj:
+    st.session_state.role_name_list.append("James Corden")
     st.session_state.role_model_id_list.append(dj_app_id)
 
 if st.button("choose role models"):

@@ -109,7 +109,10 @@ class AdvancedChatAppRunner(AppRunner):
                 SystemVariable.CONVERSATION_ID: conversation.id,
                 SystemVariable.USER_ID: user_id
             },
-            callbacks=workflow_callbacks
+            callbacks=workflow_callbacks,
+            user_name=application_generate_entity.user_name,
+            assistant_name=application_generate_entity.assistant_name,
+            conversation=conversation
         )
 
     def get_workflow(self, app_model: App, workflow_id: str) -> Optional[Workflow]:

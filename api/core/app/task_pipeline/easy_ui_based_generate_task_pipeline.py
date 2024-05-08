@@ -259,7 +259,7 @@ class EasyUIBasedGenerateTaskPipeline(BasedGenerateTaskPipeline, MessageCycleMan
                             image_list=image_list,
                             img_perfect_prompt_list=img_perfect_prompt_list
                         )
-                        time.sleep(20)
+                        time.sleep(1)
                         db.session.add(conversation_plan_detail)
                         db.session.commit()
             elif isinstance(event, QueueRetrieverResourcesEvent):

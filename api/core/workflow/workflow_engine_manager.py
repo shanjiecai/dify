@@ -25,6 +25,7 @@ from core.workflow.nodes.template_transform.template_transform_node import Templ
 from core.workflow.nodes.tool.tool_node import ToolNode
 from core.workflow.nodes.variable_assigner.variable_assigner_node import VariableAssignerNode
 from extensions.ext_database import db
+from models.model import Conversation
 from models.workflow import (
     Workflow,
     WorkflowNodeExecutionStatus,
@@ -83,7 +84,11 @@ class WorkflowEngineManager:
                      user_from: UserFrom,
                      user_inputs: dict,
                      system_inputs: Optional[dict] = None,
-                     callbacks: list[BaseWorkflowCallback] = None) -> None:
+                     callbacks: list[BaseWorkflowCallback] = None,
+                     assistant_name: Optional[str] = None,
+                     user_name: Optional[str] = None,
+                     conversation: Conversation = None
+                     ) -> None:
         """
         Run workflow
         :param workflow: Workflow instance
@@ -92,6 +97,9 @@ class WorkflowEngineManager:
         :param user_inputs: user variables inputs
         :param system_inputs: system inputs, like: query, files
         :param callbacks: workflow callbacks
+        :param assistant_name: assistant name
+        :param user_name: user name
+        :param conversation: conversation
         :return:
         """
         # fetch workflow graph
@@ -161,7 +169,10 @@ class WorkflowEngineManager:
                     workflow_run_state=workflow_run_state,
                     node=next_node,
                     predecessor_node=predecessor_node,
-                    callbacks=callbacks
+                    callbacks=callbacks,
+                    conversation=conversation,
+                    assistant_name=assistant_name,
+                    user_name=user_name,
                 )
 
                 if next_node.node_type in [NodeType.END]:
@@ -421,7 +432,11 @@ class WorkflowEngineManager:
     def _run_workflow_node(self, workflow_run_state: WorkflowRunState,
                            node: BaseNode,
                            predecessor_node: Optional[BaseNode] = None,
-                           callbacks: list[BaseWorkflowCallback] = None) -> None:
+                           callbacks: list[BaseWorkflowCallback] = None,
+                           assistant_name: Optional[str] = None,
+                           user_name: Optional[str] = None,
+                           conversation: Conversation = None,
+                           ) -> None:
         if callbacks:
             for callback in callbacks:
                 callback.on_workflow_node_execute_started(
@@ -444,9 +459,17 @@ class WorkflowEngineManager:
 
         try:
             # run node, result must have inputs, process_data, outputs, execution_metadata
-            node_run_result = node.run(
-                variable_pool=workflow_run_state.variable_pool
-            )
+            if node.node_type == NodeType.LLM:
+                node_run_result = node.run(
+                    variable_pool=workflow_run_state.variable_pool,
+                    assistant_name=assistant_name,
+                    user_name=user_name,
+                    conversation=conversation
+                )
+            else:
+                node_run_result = node.run(
+                    variable_pool=workflow_run_state.variable_pool
+                )
         except GenerateTaskStoppedException as e:
             node_run_result = NodeRunResult(
                 status=WorkflowNodeExecutionStatus.FAILED,

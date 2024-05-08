@@ -221,7 +221,8 @@ class MessageBasedAppGenerator(BaseAppGenerator):
                 invoke_from=application_generate_entity.invoke_from.value,
                 from_source=from_source,
                 from_end_user_id=end_user_id,
-                from_account_id=account_id
+                from_account_id=account_id,
+                assistant_name=application_generate_entity.assistant_name,
             )
             db.session.add(message)
             db.session.commit()
@@ -234,6 +235,8 @@ class MessageBasedAppGenerator(BaseAppGenerator):
             )
             # update assistant_name
             message.assistant_name = application_generate_entity.assistant_name
+            db.session.add(message)
+            db.session.commit()
         db.session.refresh(message)
 
         for file in application_generate_entity.files:

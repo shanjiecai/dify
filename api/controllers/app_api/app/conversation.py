@@ -160,7 +160,7 @@ class ConversationAddMessage(AppApiResource):
         db.session.commit()
         # 如果没有或生成时间超过8小时，就生成plan_question
         if not conversation.plan_question_invoke_plan or not conversation.plan_question_invoke_time or conversation.plan_question_invoke_time < datetime.datetime.utcnow() - datetime.timedelta(
-                hours=8):
+                hours=8) and app_model.id != "a756e5d2-c735-4f68-8db0-1de49333501c":
             # 另起线程执行plan_question
             threading.Thread(target=plan_question_background,
                              args=(current_app._get_current_object(), message, conversation,

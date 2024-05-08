@@ -158,7 +158,7 @@ class ChatApi(AppApiResource):
             ]
             conversation = db.session.query(Conversation).filter(and_(*conversation_filter)).first()
             if conversation and (not conversation.plan_question_invoke_user or conversation.plan_question_invoke_time < datetime.datetime.utcnow() - datetime.timedelta(
-                    hours=8)):
+                    hours=8)) and app_model.id != "a756e5d2-c735-4f68-8db0-1de49333501c" and args["query"]:
                 # 另起线程执行plan_question
                 threading.Thread(target=plan_question_background,
                                  args=(current_app._get_current_object(), args["query"], conversation,
@@ -288,15 +288,6 @@ class ChatActiveApi(AppApiResource):
                 Conversation.status == 'normal'
             ]
             conversation = db.session.query(Conversation).filter(and_(*conversation_filter)).first()
-            # if not conversation:
-            #     raise NotFound("Conversation Not Exists.")
-            #
-            # if (not conversation.plan_question_invoke_user or conversation.plan_question_invoke_time < datetime.datetime.utcnow() - datetime.timedelta(
-            #         hours=8)):
-            #     # 另起线程执行plan_question
-            #     threading.Thread(target=plan_question_background,
-            #                      args=(current_app._get_current_object(), args["query"], conversation,
-            #                            args["user"], None)).start()
 
             app_model_config = db.session.query(AppModelConfig).filter(AppModelConfig.id==conversation.app_model_config_id
                                                                        ).first()
@@ -365,6 +356,7 @@ class ChatActiveApi(AppApiResource):
             else:
                 judge_result = judge_llm_active(memory.model_instance.credentials["openai_api_key"], histories,
                                                                                 app_model.name)
+            # judge_result = True
             end_user = create_or_update_end_user_for_user_id(app_model, "")
             if judge_result:
                 # 对当前conversation上锁，有一个机器人认为应该回话就锁住，避免多个机器人同时回话
@@ -386,6 +378,7 @@ class ChatActiveApi(AppApiResource):
                     #     assistant_name=app_model.name,
                     #     user_name=""
                     # )
+                    # logger.info(app_model.id != "a756e5d2-c735-4f68-8db0-1de49333501c")
                     if args["conversation_id"]:
                         # conversation_filter = [
                         #     Conversation.id == args['conversation_id'],
@@ -393,9 +386,7 @@ class ChatActiveApi(AppApiResource):
                         #     Conversation.status == 'normal'
                         # ]
                         # conversation = db.session.query(Conversation).filter(and_(*conversation_filter)).first()
-                        if conversation and (
-                                not conversation.plan_question_invoke_user or not conversation.plan_question_invoke_time or conversation.plan_question_invoke_time < datetime.datetime.utcnow() - datetime.timedelta(
-                                hours=8)):
+                        if conversation and (not conversation.plan_question_invoke_user or not conversation.plan_question_invoke_time or conversation.plan_question_invoke_time < datetime.datetime.utcnow() - datetime.timedelta(hours=8)) and app_model.id != "a756e5d2-c735-4f68-8db0-1de49333501c" and args["query"]:
                             # 另起线程执行plan_question
                             threading.Thread(target=plan_question_background,
                                              args=(current_app._get_current_object(), args["query"], conversation,

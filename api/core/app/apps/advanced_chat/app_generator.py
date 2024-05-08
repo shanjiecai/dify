@@ -34,7 +34,10 @@ class AdvancedChatAppGenerator(MessageBasedAppGenerator):
                  user: Union[Account, EndUser],
                  args: dict,
                  invoke_from: InvokeFrom,
-                 stream: bool = True) \
+                 stream: bool = True,
+                 user_name: str = None,
+                 assistant_name: str = None,
+                 ) \
             -> Union[dict, Generator[dict, None, None]]:
         """
         Generate App response.
@@ -45,13 +48,17 @@ class AdvancedChatAppGenerator(MessageBasedAppGenerator):
         :param args: request args
         :param invoke_from: invoke from source
         :param stream: is stream
+        :param user_name: user name
+        :param assistant_name: assistant name
         """
-        if not args.get('query'):
-            raise ValueError('query is required')
+        # if not args.get('query'):
+        #     raise ValueError('query is required')
+        # if not args.get('query'):
+        #     raise ValueError('query is required')
 
         query = args['query']
-        if not isinstance(query, str):
-            raise ValueError('query must be a string')
+        # if not isinstance(query, str):
+        #     raise ValueError('query must be a string')
 
         query = query.replace('\x00', '')
         inputs = args['inputs']
@@ -83,7 +90,20 @@ class AdvancedChatAppGenerator(MessageBasedAppGenerator):
             app_model=app_model,
             workflow=workflow
         )
+        is_new_message = True
+        if conversation:
+            if not query:
+                # 选取最后一条message的query作为query
+                message = db.session.query(Message).filter(
+                    Message.conversation_id == conversation.id,
+                ).order_by(Message.created_at.desc()).first()
+                if not message.answer:
+                    is_new_message = False
+                    query = message.query if message else ''
+                    user_name = message.role if message else ''
 
+        if not assistant_name and app_model.name:
+            assistant_name = app_model.name
         # init application generate entity
         application_generate_entity = AdvancedChatAppGenerateEntity(
             task_id=str(uuid.uuid4()),
@@ -95,7 +115,10 @@ class AdvancedChatAppGenerator(MessageBasedAppGenerator):
             user_id=user.id,
             stream=stream,
             invoke_from=invoke_from,
-            extras=extras
+            extras=extras,
+            is_new_message=is_new_message,
+            user_name=user_name,
+            assistant_name=assistant_name
         )
 
         is_first_conversation = False

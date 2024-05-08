@@ -1,6 +1,11 @@
+import threading
+import time
 from collections.abc import Generator
 from typing import Optional, cast
 
+from flask.ctx import AppContext
+
+from controllers.app_api.img.utils import generate_plan_img_pipeline
 from core.app.entities.app_invoke_entities import ModelConfigWithCredentialsEntity
 from core.app.entities.queue_entities import QueueRetrieverResourcesEvent
 from core.entities.model_entities import ModelStatus
@@ -24,22 +29,58 @@ from core.workflow.nodes.base_node import BaseNode
 from core.workflow.nodes.llm.entities import LLMNodeData, ModelConfig
 from core.workflow.utils.variable_template_parser import VariableTemplateParser
 from extensions.ext_database import db
-from models.model import Conversation
+from models.model import Conversation, ConversationPlanDetail
 from models.provider import Provider, ProviderType
 from models.workflow import WorkflowNodeExecutionStatus
 from mylogger import logger
+from services.conversation_service import ConversationService
+
+
+def _plan_finish_question(conversation: Conversation, main_context: AppContext):
+    """
+    Plan finish question
+    :param conversation: conversation
+    :return:
+    """
+    with main_context:
+        plan_detail_list = []
+        plan_detail, plan, history_str = ConversationService.generate_plan(conversation.id,
+                                                                          plan=conversation.plan_question_invoke_plan)
+        plan_detail_list.append(plan_detail)
+        logger.info(f"generate_plan_from_conversation response: {plan_detail_list}")
+        image_list, img_perfect_prompt_list = generate_plan_img_pipeline(
+            conversation.plan_question_invoke_plan, model="search_engine")
+        # 暂时不去掉plan_question_invoke_plan
+        # conversation.plan_question_invoke_plan = None
+        conversation.plan_question_invoke_user = None
+        conversation.plan_question_invoke_user_id = None
+        conversation.plan_question_invoke_time = None
+        conversation_plan_detail = ConversationPlanDetail(
+            conversation_id=conversation.id,
+            plan=plan,
+            plan_detail_list=plan_detail_list,
+            plan_conversation_history=history_str,
+            image_list=image_list,
+            img_perfect_prompt_list=img_perfect_prompt_list
+        )
+        time.sleep(1)
+        db.session.add(conversation_plan_detail)
+        db.session.commit()
 
 
 class LLMNode(BaseNode):
     _node_data_cls = LLMNodeData
     node_type = NodeType.LLM
+    _conversation: Conversation = None
 
-    def _run(self, variable_pool: VariablePool) -> NodeRunResult:
+    def _run(self, variable_pool: VariablePool, **kwargs) -> NodeRunResult:
         """
         Run node
         :param variable_pool: variable pool
         :return:
         """
+        if kwargs.get("conversation"):
+            self._conversation = kwargs.get("conversation")
         node_data = self.node_data
         node_data = cast(self._node_data_cls, node_data)
 
@@ -80,7 +121,10 @@ class LLMNode(BaseNode):
                 files=files,
                 context=context,
                 memory=memory,
-                model_config=model_config
+                model_config=model_config,
+                user_name=kwargs.get("user_name", None),
+                assistant_name=kwargs.get("assistant_name"),
+                conversation=kwargs.get("conversation"),
             )
 
             process_data = {
@@ -152,6 +196,18 @@ class LLMNode(BaseNode):
             invoke_result=invoke_result
         )
         logger.info(f"[workflow_invoke_llm_result]: {text}")
+        # 识别末尾的<finish_question>
+        if text.endswith('<finish_question>'):
+            logger.info(
+                f"remove conversation {self._conversation.id} <finish_question> from {text}")
+
+            # 问题提问结束，删除conversation plan_question
+            conversation: Conversation = db.session.query(Conversation).filter(
+                Conversation.id == self._conversation.id).first()
+            if conversation:
+                # threading后台运行
+                from flask import current_app
+                threading.Thread(target=_plan_finish_question, args=(conversation, current_app._get_current_object().app_context())).start()
 
         # deduct quota
         self.deduct_llm_quota(tenant_id=self.tenant_id, model_instance=model_instance, usage=usage)
@@ -408,7 +464,7 @@ class LLMNode(BaseNode):
 
         # get conversation
         conversation = db.session.query(Conversation).filter(
-            Conversation.app_id == self.app_id,
+            # Conversation.app_id == self.app_id,
             Conversation.id == conversation_id
         ).first()
 
@@ -429,7 +485,11 @@ class LLMNode(BaseNode):
                                files: list[FileVar],
                                context: Optional[str],
                                memory: Optional[TokenBufferMemory],
-                               model_config: ModelConfigWithCredentialsEntity) \
+                               model_config: ModelConfigWithCredentialsEntity,
+                               assistant_name: Optional[str] = None,
+                               user_name: Optional[str] = None,
+                               conversation: Conversation = None,
+                               )\
             -> tuple[list[PromptMessage], Optional[list[str]]]:
         """
         Fetch prompt messages
@@ -441,6 +501,9 @@ class LLMNode(BaseNode):
         :param context: context
         :param memory: memory
         :param model_config: model config
+        :param assistant_name: assistant name
+        :param user_name: user name
+        :param conversation: conversation
         :return:
         """
         prompt_transform = AdvancedPromptTransform(with_variable_tmpl=True)
@@ -454,6 +517,9 @@ class LLMNode(BaseNode):
             memory=memory,
             model_config=model_config,
             query_prompt_template=query_prompt_template,
+            conversation=conversation,
+            assistant_name=assistant_name,
+            user_name=user_name,
         )
         stop = model_config.stop
 

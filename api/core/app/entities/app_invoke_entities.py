@@ -133,6 +133,8 @@ class AdvancedChatAppGenerateEntity(AppGenerateEntity):
     conversation_id: Optional[str] = None
     query: Optional[str] = None
     is_new_message: bool = True
+    user_name: Optional[str] = None
+    assistant_name: Optional[str] = None
 
 
 class WorkflowAppGenerateEntity(AppGenerateEntity):
@@ -141,3 +143,6 @@ class WorkflowAppGenerateEntity(AppGenerateEntity):
     """
     # app config
     app_config: WorkflowUIBasedAppConfig
+    is_new_message: bool = True
+    user_name: Optional[str] = None
+    assistant_name: Optional[str] = None

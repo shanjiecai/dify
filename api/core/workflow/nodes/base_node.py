@@ -65,7 +65,7 @@ class BaseNode(ABC):
         self.callbacks = callbacks or []
 
     @abstractmethod
-    def _run(self, variable_pool: VariablePool) -> NodeRunResult:
+    def _run(self, variable_pool: VariablePool, **kwargs) -> NodeRunResult:
         """
         Run node
         :param variable_pool: variable pool
@@ -73,14 +73,15 @@ class BaseNode(ABC):
         """
         raise NotImplementedError
 
-    def run(self, variable_pool: VariablePool) -> NodeRunResult:
+    def run(self, variable_pool: VariablePool, **kwargs) -> NodeRunResult:
         """
         Run node entry
         :param variable_pool: variable pool
         :return:
         """
         result = self._run(
-            variable_pool=variable_pool
+            variable_pool=variable_pool,
+            **kwargs
         )
 
         self.node_run_result = result

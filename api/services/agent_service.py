@@ -18,7 +18,7 @@ class AgentService:
         """
         conversation: Conversation = db.session.query(Conversation).filter(
             Conversation.id == conversation_id,
-            Conversation.app_id == app_model.id,
+            # Conversation.app_id == app_model.id,
         ).first()
 
         if not conversation:
