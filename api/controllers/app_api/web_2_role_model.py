@@ -3,8 +3,8 @@ import json
 import requests
 import streamlit as st
 
-# url_base = "http://127.0.0.1:5001"
-url_base = "http://54.193.59.10"
+url_base = "http://127.0.0.1:5001"
+# url_base = "http://54.193.59.10"
 dj_app_id = "a756e5d2-c735-4f68-8db0-1de49333501c"
 
 st.title("role model group chat")

@@ -133,14 +133,16 @@ def _plan_finish_question(conversation: Conversation, main_context: AppContext):
         plan_detail, plan, history_str = ConversationService.generate_plan(conversation.id,
                                                                           plan=conversation.plan_question_invoke_plan)
         plan_detail_list.append(plan_detail)
-        logger.info(f"generate_plan_from_conversation response: {plan_detail_list}")
+        logger.info(f"generate_final_plan_from_conversation response: {plan_detail_list}")
         image_list, img_perfect_prompt_list = generate_plan_img_pipeline(
             conversation.plan_question_invoke_plan, model="search_engine")
         # 暂时不去掉plan_question_invoke_plan
         # conversation.plan_question_invoke_plan = None
+        # logger.info(conversation.id)
         conversation.plan_question_invoke_user = None
         conversation.plan_question_invoke_user_id = None
         conversation.plan_question_invoke_time = None
+        # logger.info(conversation.__dict__)
         conversation_plan_detail = ConversationPlanDetail(
             conversation_id=conversation.id,
             plan=plan,
@@ -151,8 +153,9 @@ def _plan_finish_question(conversation: Conversation, main_context: AppContext):
         )
         time.sleep(1)
         db.session.add(conversation_plan_detail)
+        db.session.add(conversation)
         db.session.commit()
-        db.session.refresh(conversation)
+        logger.info(f"plan finish commit {conversation.id} {plan}")
 
 
 class ChatApi(AppApiResource):
