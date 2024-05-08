@@ -262,6 +262,7 @@ class EasyUIBasedGenerateTaskPipeline(BasedGenerateTaskPipeline, MessageCycleMan
                         time.sleep(1)
                         db.session.add(conversation_plan_detail)
                         db.session.commit()
+                        db.session.refresh(conversation)
             elif isinstance(event, QueueRetrieverResourcesEvent):
                 self._handle_retriever_resources(event)
             elif isinstance(event, QueueAnnotationReplyEvent):

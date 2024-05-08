@@ -66,6 +66,7 @@ def _plan_finish_question(conversation: Conversation, main_context: AppContext):
         time.sleep(1)
         db.session.add(conversation_plan_detail)
         db.session.commit()
+        db.session.refresh(conversation)
 
 
 class LLMNode(BaseNode):
