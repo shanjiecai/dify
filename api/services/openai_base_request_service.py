@@ -41,14 +41,14 @@ def generate_response(prompt=None, system_prompt=None, history_messages=None, mo
     logger.debug(f"Prompt: {messages}")
     response = client.chat.completions.create(model=model,
                                               max_tokens=kwargs.get('max_tokens', 100),
-                                              temperature=kwargs.get('temperature', 0.7),
+                                              temperature=kwargs.get('temperature', None),
                                               presence_penalty=kwargs.get('presence_penalty', 0),
                                               frequency_penalty=kwargs.get('frequency_penalty', 0),
                                               top_p=kwargs.get('top_p', 1),
                                               stop=kwargs.get('stop', None),
                                               messages=messages,
                                               stream=kwargs.get('stream', False),
-                                              response_format={"type": "json_object"} if json_format else {"type": "text"},
+                                              response_format={"type": "json_object"} if json_format else None,
                                               timeout=kwargs.get('timeout', 120),
                                               )
 
