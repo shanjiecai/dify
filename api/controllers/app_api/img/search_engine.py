@@ -352,4 +352,4 @@ def search_engine_invoke(keyword, shape=None, size=None, dst_dir="./", max_num=1
 
 
 if __name__ == '__main__':
-    print(search_engine_invoke("dog", max_num=1))
+    print(search_engine_invoke("python programming", max_num=1))
