@@ -1,0 +1,11 @@
+identity: # Basic information of the tool provider
+  author: test # Author
+  name: rolemodel # Name, unique, no duplication with other providers
+  label: # Label for frontend display
+    en_US: RoleModelPersona # English label
+    zh_Hans: RoleModelPersona # Chinese label
+  description: # Description for frontend display
+    en_US: RoleModelPersona # English description
+    zh_Hans: RoleModelPersona # Chinese description
+  icon: icon.svg # Icon, needs to be placed in the _assets folder of the current module
+credentials_for_provider:

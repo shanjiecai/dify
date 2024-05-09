@@ -34,6 +34,44 @@ class ConversationApi(AppApiResource):
 
     @marshal_with(conversation_infinite_scroll_pagination_fields)
     def get(self, app_model):
+        """
+        获取会话列表
+        ---
+        tags:
+            - conversation
+        parameters:
+            - in: query
+              name: last_id
+              type: string
+              required: false
+              description: 上次获取的最后一个会话的id
+            - in: query
+              name: limit
+              type: integer
+              required: false
+              description: 本次获取的会话数量
+            - in: query
+              name: user
+              type: string
+              required: false
+              description: 用户id
+        responses:
+            200:
+                description: 会话列表
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                limit:
+                                    type: integer
+                                has_more:
+                                    type: boolean
+                                data:
+                                    type: array
+                                    items:
+                                        $ref: '#/components/schemas/SimpleConversation'
+        """
         if app_model.mode != 'chat':
             raise NotChatAppError()
 
@@ -52,6 +90,36 @@ class ConversationApi(AppApiResource):
             raise NotFound("Last Conversation Not Exists.")
 
     def post(self, app_model: App):
+        """
+        创建会话
+        ---
+        tags:
+            - conversation
+        parameters:
+            - in: body
+              name: body
+              required: true
+              schema:
+                type: object
+                properties:
+                  app_id:
+                    type: string
+                    description: app id
+                    required: true
+        responses:
+            200:
+                description: 创建会话成功
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                result:
+                                    type: string
+                                    default: success
+                                conversation_id:
+                                    type: string
+        """
 
         app_model_config = app_model.app_model_config.copy()
         model_dict = app_model_config.model_dict
@@ -104,6 +172,51 @@ class ConversationNotFoundError(BaseHTTPException):
 class ConversationAddMessage(AppApiResource):
     # 将message添加到conversation中
     def post(self, app_model: App):
+        """
+        添加消息到会话
+        ---
+        tags:
+            - conversation
+        parameters:
+            - in: body
+              name: body
+              required: true
+              schema:
+                type: object
+                properties:
+                  conversation_id:
+                    type: string
+                    description: 会话id
+                    required: true
+                  message:
+                    type: string
+                    description: 消息内容
+                    required: true
+                  user:
+                    type: string
+                    description: 用户角色
+                    required: true
+                  user_id:
+                    type: string
+                    description: 用户id
+                    required: false
+                  mood:
+                    type: string
+                    description: 用户情绪
+                    required: false
+        responses:
+            200:
+                description: 添加消息成功
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                result:
+                                    type: string
+                                    default: success
+
+        """
         app_model_config = AppModelConfig.query.filter_by(app_id=app_model.id).first()
         model_dict = app_model_config.model_dict
         parser = reqparse.RequestParser()
@@ -244,6 +357,63 @@ class ConversationUpdateDataset(AppApiResource):
 
 class ConversationPlan(AppApiResource):
     def post(self, app_model: App):
+        """
+        生成计划
+        ---
+        tags:
+            - conversation
+        parameters:
+            - in: body
+              name: body
+              required: true
+              schema:
+                type: object
+                properties:
+                  conversation_id:
+                    type: string
+                    description: 会话id
+                    required: true
+                  plan:
+                    type: string
+                    description: 计划
+                    required: false
+                  plan_detail_number:
+                    type: integer
+                    description: 计划详情数量
+                    required: false
+                    default: 1
+                  outer_history:
+                    type: string
+                    description: 外部历史
+                    required: false
+                    default: ''
+                  use_cache:
+                    type: boolean
+                    description: 是否使用缓存
+                    required: false
+                    default: true
+        responses:
+            200:
+                description: 生成计划成功
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                result:
+                                    type: string
+                                    default: success
+                                plan_detail_list:
+                                    type: array
+                                    items:
+                                        type: object
+                                plan:
+                                    type: string
+                                image_list:
+                                    type: array
+                                    items:
+                                        type: string
+        """
         parser = reqparse.RequestParser()
         parser.add_argument('conversation_id', type=str, required=True, location='json')
         parser.add_argument('plan', type=str, required=False, location='json')

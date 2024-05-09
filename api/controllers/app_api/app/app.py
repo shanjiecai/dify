@@ -30,8 +30,27 @@ class AppListApi(AppApiResource):
 
     @marshal_with(parameters_fields)
     def get(self):
-        """Retrieve app models list."""
-        parser = reqparse.RequestParser()
+        """
+        Get app list
+        ---
+        tags:
+          - app
+        responses:
+            200:
+                description: Get app list
+                schema:
+                id: AppList
+                properties:
+                    name:
+                    type: string
+                    id:
+                    type: string
+                    default: 1
+                    model:
+                    type: string
+                    default: gpt-4-turbo-preview
+        """
+        # parser = reqparse.RequestParser()
         # parser.add_argument('page', type=int_range(1), default=1, location='args')
         # parser.add_argument('size', type=int_range(1, 100), default=10, location='args')
         # args = parser.parse_args()

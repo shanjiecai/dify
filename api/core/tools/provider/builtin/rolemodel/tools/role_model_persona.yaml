@@ -1,0 +1,37 @@
+# POST
+# 输入
+#
+# "modelStudentId":"75dd0a11-66eb-e57b-c6d5-ad20efdd6a65"
+#
+# 输出
+#
+# "portraitDesignPromptFusion": "这是一个人设",
+# "knowledge": "这是知识边界",
+identity:
+  name: role_model_persona
+  author: test
+  label:
+    en_US: RoleModelPersona
+    zh_Hans: 模范生人设自定义接口
+    pt_BR: RoleModelPersona
+  icon: icon.svg
+description:
+  human:
+    en_US: A tool for get role model persona by role model id.
+    zh_Hans: 模范生人设自定义接口
+    pt_BR: A tool for get role model persona by role model id.
+  llm: A tool for get role model persona by role model id. Input should be a role model id.
+parameters:
+  - name: modelStudentId
+    type: string
+    required: true
+    label:
+      en_US: Role Model Id
+      zh_Hans: 模范生id
+      pt_BR: Role Model Id
+    human_description:
+      en_US: Role Model Id
+      zh_Hans: 模范生id
+      pt_BR: Role Model Id
+    llm_description: Role Model Id
+    form: llm

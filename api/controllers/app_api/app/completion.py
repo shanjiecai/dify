@@ -49,8 +49,6 @@ from mylogger import logger
 from services.app_generate_service import AppGenerateService
 from services.conversation_service import ConversationService
 
-# from services.completion_service import CompletionService
-
 
 class CompletionApi(AppApiResource):
     def post(self, app_model:App, end_user):
@@ -158,10 +156,133 @@ def _plan_finish_question(conversation: Conversation, main_context: AppContext):
         logger.info(f"plan finish commit {conversation.id} {plan}")
 
 
+"""
+response
+{
+    "event": "message",
+    "task_id": "dc579871-cb30-43f9-a2cf-dfc2cac7a73c",
+    "id": "c1e833a7-99d0-41cc-abb7-fa05456577d7",
+    "message_id": "c1e833a7-99d0-41cc-abb7-fa05456577d7",
+    "conversation_id": "6348267e-ee2a-4373-9702-e03e6f65d3d6",
+    "mode": "chat",
+    "answer": "Oh, hang on, we're stuck in a bit of a time loop here, aren't we? But you know, it's always good to reminisce about the good old days, especially when they involve singing at the top of your lungs with the people you love most. Keeps you grounded, doesn't it? Plus, it's a great reminder of where you've come from and the simple joys that shape us. So, Jack, got any cherished memories of your own you'd like to belt out?",
+    "metadata": {
+        "usage": {
+            "prompt_tokens": 861,
+            "prompt_unit_price": "0.01",
+            "prompt_price_unit": "0.001",
+            "prompt_price": "0.0086100",
+            "completion_tokens": 103,
+            "completion_unit_price": "0.03",
+            "completion_price_unit": "0.001",
+            "completion_price": "0.0030900",
+            "total_tokens": 964,
+            "total_price": "0.0117000",
+            "currency": "USD",
+            "latency": 5.549383770907298
+        }
+    },
+    "created_at": 1715264236,
+    "sentence_list": [
+        "Oh, hang on, we're stuck in a bit of a time loop here, aren't we?",
+        "But you know, it's always good to reminisce about the good old days, especially when they involve singing at the top of your lungs with the people you love most.",
+        "Keeps you grounded, doesn't it?",
+        "Plus, it's a great reminder of where you've come from and the simple joys that shape us.",
+        "So, Jack, got any cherished memories of your own you'd like to belt out?"
+    ],
+    "interval_list": [
+        23.0,
+        4.4,
+        12.6,
+        10.3
+    ]
+}
+"""
 class ChatApi(AppApiResource):
     def post(self, app_model):
-        # if app_model.mode != 'chat':
-        #     raise NotChatAppError()
+        """
+        Chat API
+        ---
+        tags:
+            - chat
+        parameters:
+            - in: body
+              name: body
+              required: true
+              schema:
+                type: object
+                properties:
+                    query:
+                        type: string
+                        description: The query for the chat model
+                        required: false
+                    user:
+                        type: string
+                        description: The user for the chat model
+                        required: false
+                    response_mode:
+                        type: string
+                        description: The response mode for the chat model, blocking or streaming
+                        default: blocking
+                        required: false
+                    conversation_id:
+                        type: string
+                        description: The conversation id for the chat model
+                        required: false
+                    outer_memory:
+                        type: array
+                        description: The outer memory for the chat model, deprecated
+                        required: false
+                    inputs:
+                        type: object
+                        description: The inputs for the chat model, deprecated
+                        required: false
+                    app_id:
+                        type: string
+                        description: The app id for the chat model
+                        required: true
+        responses:
+            200:
+                description: The response from the chat model
+                schema:
+                    type: object
+                    properties:
+                        event:
+                            type: string
+                            description: The event type
+                        task_id:
+                            type: string
+                            description: The task id
+                        id:
+                            type: string
+                            description: The id
+                        message_id:
+                            type: string
+                            description: The message id
+                        conversation_id:
+                            type: string
+                            description: The conversation id
+                        mode:
+                            type: string
+                            description: The mode
+                        answer:
+                            type: string
+                            description: The answer
+                        metadata:
+                            type: object
+                            description: The metadata
+                        created_at:
+                            type: integer
+                            description: The created at
+                        sentence_list:
+                            type: array
+                            description: The sentence list
+                        interval_list:
+                            type: array
+                            description: The interval list
+
+
+        """
 
         parser = reqparse.RequestParser()
         parser.add_argument('inputs', type=dict, required=False, location='json', default={})
@@ -316,6 +437,44 @@ class ChatActiveApi(AppApiResource):
     try:
         # 主动询问机器人根据当前群聊历史是否应该回话
         def post(self, app_model):
+            """
+            Chat Active API
+            ---
+            tags:
+                - chat
+            parameters:
+                - in: body
+                  name: body
+                  required: true
+                  schema:
+                    type: object
+                    properties:
+                        conversation_id:
+                            type: string
+                            description: The conversation id for the chat model
+                            required: true
+                        query:
+                            type: string
+                            description: The query for the chat model
+                            required: false
+                        user:
+                            type: string
+                            description: The user for the chat model
+                            required: false
+                        response_mode:
+                            type: string
+                            description: The response mode for the chat model, blocking or streaming
+                            default: blocking
+                            required: false
+                        outer_memory:
+                            type: array
+                            description: The outer memory for the chat model, deprecated
+                            required: false
+                        app_id:
+                            type: string
+                            description: The app id for the chat model
+                            required: true
+            """
             b = time.time()
             parser = reqparse.RequestParser()
             parser.add_argument('conversation_id', type=uuid_value, location='json')
