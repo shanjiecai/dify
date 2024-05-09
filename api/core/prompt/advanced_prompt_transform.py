@@ -1,3 +1,4 @@
+import datetime
 from typing import Optional, Union
 
 from core.app.entities.app_invoke_entities import ModelConfigWithCredentialsEntity
@@ -16,7 +17,7 @@ from core.prompt.prompt_transform import PromptTransform
 from core.prompt.simple_prompt_transform import ModelMode
 from core.prompt.utils.prompt_template_parser import PromptTemplateParser
 from core.prompt_const import plan_question_template
-from core.tools.utils.openai_name_convert import correct_name_field
+from core.utils.openai_name_convert import correct_name_field
 from models.model import Conversation
 from mylogger import logger
 
@@ -25,6 +26,7 @@ class AdvancedPromptTransform(PromptTransform):
     """
     Advanced Prompt Transform for Workflow LLM Node.
     """
+
     def __init__(self, with_variable_tmpl: bool = False) -> None:
         self.with_variable_tmpl = with_variable_tmpl
 
@@ -165,7 +167,9 @@ class AdvancedPromptTransform(PromptTransform):
                 else:
                     prompt_messages.append(UserPromptMessage(content=prompt))
             elif prompt_item.role == PromptMessageRole.SYSTEM and prompt:
-                if conversation and conversation.plan_question and conversation.plan_question_invoke_user:
+                if (conversation and conversation.plan_question and conversation.plan_question_invoke_user and
+                        conversation.plan_question_invoke_time < datetime.datetime.utcnow() - datetime.timedelta(
+                            hours=16)):
                     def remove_character_info(text):
                         start_phrase = "character information"
                         end_phrase = "Don’t be verbose or too formal or polite when speaking."
@@ -185,7 +189,8 @@ class AdvancedPromptTransform(PromptTransform):
                 prompt_messages.append(SystemPromptMessage(content=prompt))
             elif prompt_item.role == PromptMessageRole.ASSISTANT:
                 if assistant_name:
-                    prompt_messages.append(AssistantPromptMessage(content=prompt, name=correct_name_field(assistant_name)))
+                    prompt_messages.append(
+                        AssistantPromptMessage(content=prompt, name=correct_name_field(assistant_name)))
                 else:
                     prompt_messages.append(AssistantPromptMessage(content=prompt))
 

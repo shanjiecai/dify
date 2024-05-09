@@ -13,7 +13,7 @@ from core.model_runtime.entities.message_entities import (
 )
 from core.model_runtime.entities.model_entities import ModelType
 from core.model_runtime.model_providers import model_provider_factory
-from core.tools.utils.openai_name_convert import correct_name_field
+from core.utils.openai_name_convert import correct_name_field
 from extensions.ext_database import db
 from models.model import AppMode, Conversation, Message
 

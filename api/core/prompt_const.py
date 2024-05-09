@@ -58,8 +58,7 @@ generate_plan_question_system_prompt = """You are an expert at generating plans 
 questions based on the knowledge points provided. I want you to ask questions to determine how much this person knows 
 about this knowledge point, and then help him develop a plan. Questions can be about Study habits, sub-knowledge 
 points of knowledge points, solutions to related questions, etc. Questions should be as specific and detailed as 
-possible,no more than five. Please return it in json format. The format is as follows: { "questions": ["Do you know the formulas of 
-trigonometric functions?", "Do you know what properties trigonometric functions have?"] } Here are some examples:"""
+possible,no more than five. Please return it in json format. The format is as follows: { "questions": ["Do you know the formulas of trigonometric functions?", "Do you know what properties trigonometric functions have?"] } Here are some examples:"""
 
 generate_plan_question_examples = [
     {
@@ -133,11 +132,12 @@ plan_summary_system_prompt = "Summarize the conversation and the reason for gene
                               "Your summary should capture the key points discussed and the purpose of creating this " \
                               "plan succinctly."
 
-generate_dalle_query_template = """Generate {n_variations} prompts from this original prompt: {original_prompt}. This will be used to 
-    query a genai image generation model. Generate prompt variations to generate multiple images with the same 
-    concept simple prompt. Try to be as descriptive as possible. Remember to split each variation with a '\n' new 
-    line character to be easily parsable. Output in a json format that can be parsed easily, each prompt should be a 
-    key value pair."""
+generate_dalle_query_template = ("Generate {n_variations} prompts from this original prompt: {original_prompt}. This "
+                                 "will be used to query a genai image generation model. Generate prompt variations to "
+                                 "generate multiple images with the same concept simple prompt. Try to be as "
+                                 "descriptive as possible. Remember to split each variation with a '\n' new line "
+                                 "character to be easily parsable. Output in a json format that can be parsed easily, "
+                                 "each prompt should be a key value pair.")
 
 
 copywriter_system_prompt = """You are a highly skilled copywriter with a strong background in persuasive writing,
