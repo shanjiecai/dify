@@ -228,7 +228,7 @@ class ChatApi(AppApiResource):
                 user_name=args['user'],
                 assistant_name=app_model.name,
             )
-            if isinstance(response, dict) and response.get("answer", '').endswith(
+            if isinstance(response, dict) and response.get("answer", '').__contains__(
                     '<finish_question>') and args["conversation_id"] and mode == AppMode.CHAT.value:
                 logger.info(
                     f"remove conversation {conversation.id} <finish_question> from {response.get('answer')}")
@@ -455,7 +455,7 @@ class ChatActiveApi(AppApiResource):
                     logger.info(f"get response in {time.time() - b}")
                     response["result"] = True
                     logger.info(f"response: {response}")
-                    if isinstance(response, dict) and mode == AppMode.CHAT.value and response.get("answer", '').endswith('<finish_question>') and conversation:
+                    if isinstance(response, dict) and mode == AppMode.CHAT.value and response.get("answer", '').__contains__('<finish_question>') and conversation:
                         logger.info(
                             f"remove conversation {conversation.id} <finish_question> from {response.get('answer')}")
                         threading.Thread(target=_plan_finish_question,

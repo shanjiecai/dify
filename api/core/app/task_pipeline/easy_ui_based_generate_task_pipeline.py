@@ -230,7 +230,7 @@ class EasyUIBasedGenerateTaskPipeline(BasedGenerateTaskPipeline, MessageCycleMan
                 self._save_message()
                 yield self._message_end_to_stream_response()
                 # 识别末尾的<finish_question>
-                if answer_all.endswith('<finish_question>'):
+                if answer_all.__contains__('<finish_question>'):
                     logger.info(
                         f"remove conversation {self._conversation.id} <finish_question> from {self._task_state.llm_result.message.content}")
                     event.llm_result.message.content += "I have understood your problem, and I will send you a related plan later, hoping to help you."

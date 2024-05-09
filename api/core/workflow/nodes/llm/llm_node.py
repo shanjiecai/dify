@@ -198,7 +198,7 @@ class LLMNode(BaseNode):
         )
         logger.info(f"[workflow_invoke_llm_result]: {text}")
         # 识别末尾的<finish_question>
-        if text.endswith('<finish_question>'):
+        if text.__contains__('<finish_question>'):
             logger.info(
                 f"remove conversation {self._conversation.id} <finish_question> from {text}")
 
