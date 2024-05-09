@@ -168,7 +168,7 @@ class AdvancedPromptTransform(PromptTransform):
                     prompt_messages.append(UserPromptMessage(content=prompt))
             elif prompt_item.role == PromptMessageRole.SYSTEM and prompt:
                 if (conversation and conversation.plan_question and conversation.plan_question_invoke_user and
-                        conversation.plan_question_invoke_time < datetime.datetime.utcnow() - datetime.timedelta(
+                        conversation.plan_question_invoke_time > datetime.datetime.utcnow() - datetime.timedelta(
                             hours=16)):
                     def remove_character_info(text):
                         start_phrase = "character information"
