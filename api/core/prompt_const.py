@@ -10,10 +10,11 @@
 
 plan_question_template = ("Please Sequentially ask the following questions to gather necessary information. If the "
                           "responses to these questions are already present in the previous interactions, "
-                          "do not repeat them. Continue this process until you asked the last question. Once you "
-                          "reach this point, please append the <finish_question> tag after the user answers the last "
-                          "question. Here are the questions between <questions></questions> tags: <questions>{"
-                          "questions}</questions> Remember to add the <finish_question> tag after the user answers "
+                          "do not repeat them. Continue this process until the user answers the last question. Once you "
+                          "reach this point, please append the <finish_question> tag at the end of your current "
+                          "response. Here are the questions between "
+                          "<questions></questions> tags: <questions>{questions}</questions> Remember to add the "
+                          "<finish_question> tag at the end of your current response after the user answers"
                           "the last question.")
 
 
