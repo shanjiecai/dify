@@ -105,4 +105,4 @@ class KnowledgeLevelApi(AppApiResource):
     #     return {'result': 'success'}
 
 
-api.add_resource(KnowledgeLevelApi, '/knowledge_level')
+api.add_resource(KnowledgeLevelApi, '/role_model_customize/knowledge_level')

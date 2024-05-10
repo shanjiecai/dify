@@ -1,9 +1,8 @@
-
 from flask_restful import reqparse
 
 from controllers.app_api import AppApiResource, api
 from models.model import App
-from services.role_model_customize_service import post_persona_matrix
+from services.role_model_customize_service import get_role_model_customize_list, post_persona_matrix
 
 """
 序号	参数名称	参数说明	类型	备注
@@ -60,4 +59,74 @@ class PersonaMatrixApi(AppApiResource):
         return {'result': 'success', 'personaMatrix': result}
 
 
-api.add_resource(PersonaMatrixApi, '/persona_matrix')
+"""
+curl -X GET -H "Content-Type: application/json" -d '{"category":"RoleModel","page": 1,"pageSize":10}' http://172.31.18.163:8000/RoleModel/v1   参数  category： 类型   page： 页数（页数从1开始）pageSize：数量
+"""
+
+
+class RoleModelCustomizelist(AppApiResource):
+    def get(self):
+        """
+        role_model_customize_list api
+        ---
+        tags:
+          - role_model_customize_list
+        # parameters:
+        #     - in: body
+        #       name: body
+        #       required: true
+        #       schema:
+        #         type: object
+        #         id: role_model_customize_list
+        #         properties:
+        #           category:
+        #             type: string
+        #             description: category
+        #           page:
+        #             type: integer
+        #             description: page
+        #           pageSize:
+        #             type: integer
+        #             description: pageSize
+
+        responses:
+            200:
+                description: role_model_customize_list
+                schema:
+                id: role_model_customize_list
+                properties:
+                    result:
+                    type: string
+                    default: success
+                    roleModelList:
+                    type: array
+                    items:
+                        type: object
+                        properties:
+                            modelStudentId:
+                            type: string
+                            人格:
+                            type: string
+                            价值观:
+                            type: string
+                            智能:
+                            type: string
+                            领导风格:
+                            type: string
+                            知识边界:
+                            type: string
+        """
+        parser = reqparse.RequestParser()
+        parser.add_argument('category', type=str, required=True)
+        parser.add_argument('page', type=int, required=True)
+        parser.add_argument('pageSize', type=int, required=True)
+        args = parser.parse_args()
+        category = args.get('category')
+        page = args.get('page')
+        page_size = args.get('pageSize')
+        result = get_role_model_customize_list(category, page, page_size)
+        return {'result': 'success', 'roleModelList': result}
+
+
+api.add_resource(PersonaMatrixApi, '/role_model_customize/persona_matrix')
+api.add_resource(RoleModelCustomizelist, '/role_model_customize/list')
