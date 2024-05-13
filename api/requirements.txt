@@ -94,3 +94,4 @@ firecrawl-py==0.0.5
 icrawler
 oss2==2.15.0
 flasgger==0.9.7b2
+pgvector==0.2.5
