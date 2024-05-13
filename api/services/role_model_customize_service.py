@@ -3,7 +3,7 @@ import os
 import requests
 
 role_model_customize_service_url = os.getenv("ROLE_MODEL_CUSTOMIZE_SERVICE_URL",
-                                             "http://role_model_customize_service:5000")
+                                             "http://13.56.82.62:8000")
 
 
 def post_persona_matrix(model_student_id: str, portrait_design: list[str]):

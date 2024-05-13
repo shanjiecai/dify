@@ -117,9 +117,9 @@ class RoleModelCustomizelist(AppApiResource):
                             type: string
         """
         parser = reqparse.RequestParser()
-        parser.add_argument('category', type=str, required=True)
-        parser.add_argument('page', type=int, required=True)
-        parser.add_argument('pageSize', type=int, required=True)
+        parser.add_argument('category', type=str, required=False, default='RoleModel')
+        parser.add_argument('page', type=int, required=False, default=1)
+        parser.add_argument('pageSize', type=int, required=False, default=20)
         args = parser.parse_args()
         category = args.get('category')
         page = args.get('page')

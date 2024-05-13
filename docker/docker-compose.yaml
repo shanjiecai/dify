@@ -4,8 +4,6 @@ services:
   api:
     image: dify-api:dev_new
     restart: always
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
     environment:
       # The environment of the application, supported values are `development`, `testing`, `staging`, `production`.
       ENV: production
@@ -17,7 +15,7 @@ services:
       LOG_LEVEL: INFO
       # A secret key that is used for securely signing the session cookie and encrypting sensitive information on the database. You can generate a strong key using `openssl rand -base64 42`.
       SECRET_KEY: sk-9f73s3ljTXVcMT3Blb3ljTqtsKiGHXVcMT3BlbkFJLK7U
-      ROLE_MODEL_PERSONA_URL: http://host.docker.internal:8004/chat/v1
+      ROLE_MODEL_CUSTOMIZE_SERVICE_URL: http://13.56.82.62:8000
       # The base URL of console application web frontend, refers to the Console base URL of WEB service if console domain is
       # different from api or web app domain.
       # example: http://cloud.dify.ai

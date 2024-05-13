@@ -7,8 +7,9 @@ import requests
 from core.prompt_const import role_model_customize_system_prompt
 from core.tools.entities.tool_entities import ToolInvokeMessage
 from core.tools.tool.builtin_tool import BuiltinTool
+from mylogger import logger
 
-role_model_persona_url = os.environ.get('ROLE_MODEL_PERSONA_URL', 'http://127.0.0.1:8004/chat/v1')
+role_model_customize_service_url = os.environ.get('ROLE_MODEL_CUSTOMIZE_SERVICE_URL', 'http://13.56.82.62:8000')
 
 
 class RoleModelPersonaTool(BuiltinTool):
@@ -16,17 +17,17 @@ class RoleModelPersonaTool(BuiltinTool):
         """
             invoke tools
         """
-        print(tool_parameters["modelStudentId"])
+        logger.debug(tool_parameters["modelStudentId"])
         # return [self.create_text_message('RoleModelPersonaTool invoked'), self.create_text_message('RoleModelPersonaTool invoked')]
 
         payload = json.dumps({
-            "modelStudentId": "75dd0a11-66eb-e57b-c6d5-ad20efdd6a65"
+            "modelStudentId": tool_parameters["modelStudentId"]
         })
         headers = {
             'Content-Type': 'application/json'
         }
 
-        response = requests.request("POST", role_model_persona_url, headers=headers, data=payload)
+        response = requests.request("POST", f"{role_model_customize_service_url}/chat/v1", headers=headers, data=payload)
         response = response.json()
         portraitDesignPromptFusion = response.get("portraitDesignPromptFusion", "")
         knowledge = response.get("knowledge", "")

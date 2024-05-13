@@ -82,7 +82,7 @@ DEFAULTS = {
     'KEYWORD_DATA_SOURCE_TYPE': 'database',
     'INNER_API': 'False',
     'ENTERPRISE_ENABLED': 'False',
-    'ROLE_MODEL_PERSONA_URL': 'http://host.docker.internal:8004/chat/v1'
+    'ROLE_MODEL_CUSTOMIZE_SERVICE_URL': 'http://13.56.82.62:8000'
 }
 
 
@@ -391,4 +391,4 @@ class Config:
 
         self.KEYWORD_DATA_SOURCE_TYPE = get_env('KEYWORD_DATA_SOURCE_TYPE')
         self.ENTERPRISE_ENABLED = get_bool_env('ENTERPRISE_ENABLED')
-        self.ROLE_MODEL_PERSONA_URL = get_env('ROLE_MODEL_PERSONA_URL')
+        self.ROLE_MODEL_CUSTOMIZE_SERVICE_URL = get_env('ROLE_MODEL_CUSTOMIZE_SERVICE_URL')
