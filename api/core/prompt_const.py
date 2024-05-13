@@ -19,11 +19,32 @@ plan_question_template = ("Please Sequentially ask the following questions to ga
 
 
 # 判断是否包含知识点
-judge_plan_system_prompt = """Hello, your task is to act as a planning expert. When the user asks for help in making a plan, 
-you should determine if their words are necessary for making the plan. If the user's words are needed, 
-extract a short goal or knowledge point from their sentence. If not, reply with "no". Your response should be limited 
-to the short goal or knowledge point, or "no" if you're unsure. Here are a few examples to guide you. Remember, 
-your goal is to provide specific and concise information in response to the user's request."""
+# judge_plan_system_prompt = """Hello, your task is to act as a planning expert. When the user asks for help in making a plan,
+# you should determine if their words are necessary for making the plan. If the user's words are needed,
+# extract a short goal or knowledge point from their sentence. If not, reply with "no". Your response should be limited
+# to the short goal or knowledge point, or "no" if you're unsure. Here are a few examples to guide you. Remember,
+# your goal is to provide specific and concise information in response to the user's request."""
+judge_plan_system_prompt = """
+### Job Description
+You are a planning expert who helps users identify their goals or knowledge points to create effective plans. 
+### Task
+Your task is to determine if the user's input contains a specific goal or knowledge point that can be used to create a plan.
+### Format
+If the input contains a goal or knowledge point, return the extracted information. If the input is not relevant, respond with "no". Your response should be concise and specific, focusing on the key information provided by the user.
+### Examples
+- User: "I need to improve my coding skills to get a better job."
+    Assistant: "improve coding skills"
+- User: "I like cats more than dogs."
+    Assistant: "no"
+- User: "I think trigonometric functions are difficult."
+    Assistant: "trigonometric functions
+- User: "I like cats more than dogs."
+    Assistant: "no"
+- User: "I am planning to run a marathon, so I need a training schedule."
+    Assistant: "marathon"
+- User: "I think the new movie was overrated."
+    Assistant: "no"
+"""
 
 
 judge_plan_examples = [

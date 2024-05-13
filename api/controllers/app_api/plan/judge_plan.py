@@ -1,5 +1,5 @@
 # from controllers.app_api.openai_base_request import generate_response
-from core.prompt_const import judge_plan_examples, judge_plan_system_prompt
+from core.prompt_const import judge_plan_system_prompt
 from mylogger import logger
 from services.openai_base_request_service import generate_response
 
@@ -45,25 +45,22 @@ from services.openai_base_request_service import generate_response
 
 
 def judge_plan(prompt: str):
-    messages = [
-        {
-            "role": "system",
-            "content": judge_plan_system_prompt
-        },
-    ]
-    for example in judge_plan_examples:
-        messages.append({
-            "role": "user",
-            "content": example["input"]
-        })
-        messages.append({
-            "role": "assistant",
-            "content": example["output"]
-        })
-    messages.append({
+    messages = [{
+        "role": "system",
+        "content": judge_plan_system_prompt
+    }, {
         "role": "user",
         "content": prompt
-    })
+    }]
+    # for example in judge_plan_examples:
+    #     messages.append({
+    #         "role": "user",
+    #         "content": example["input"]
+    #     })
+    #     messages.append({
+    #         "role": "assistant",
+    #         "content": example["output"]
+    #     })
     logger.info(f"judge_plan messages: {messages}")
     response = generate_response(prompt=None, system_prompt=None, history_messages=messages, model="gpt-4-turbo-preview")
     content = response.choices[0].message.content
@@ -74,11 +71,15 @@ def judge_plan(prompt: str):
 if __name__ == "__main__":
     # prompt = "I feel like I've gained weight recently, and I want to lose weight."
     # prompt = "Anyone here"
-    prompt = """
-    a:我最近好胖想减肥
-    b:dddd
-    c:rrrrr
-    b:fffff
-    """
+    # prompt = """
+    # a:我最近好胖想减肥
+    # b:dddd
+    # c:rrrrr
+    # b:fffff
+    # """
+    # prompt = "I don't understand trigonometric functions"
+    # prompt = "I feel like I've gained weight recently and want to lose weight."
+    # prompt = "I feel like I've gained weight recently and want to lose weight."
+    prompt = "I want to learn k8s recently."
     response = judge_plan(prompt)
     print(response)
