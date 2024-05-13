@@ -80,6 +80,7 @@ if __name__ == "__main__":
     # prompt = "I don't understand trigonometric functions"
     # prompt = "I feel like I've gained weight recently and want to lose weight."
     # prompt = "I feel like I've gained weight recently and want to lose weight."
-    prompt = "I want to learn k8s recently."
+    prompt = "I want to learn k8s recently, give me a week plan"
+    # prompt = "you are silly"
     response = judge_plan(prompt)
     print(response)

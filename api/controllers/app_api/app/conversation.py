@@ -421,13 +421,16 @@ class ConversationPlan(AppApiResource):
         # parser.add_argument('image_number', type=int, required=False, location='json', default=1)
         parser.add_argument('outer_history', type=str, required=False, location='json', default='')
         parser.add_argument('use_cache', type=bool, required=False, location='json', default=True)
+        parser.add_argument('use_cache_only', type=bool, required=False, location='json', default=False)
         args = parser.parse_args()
         conversation_id = args['conversation_id']
         plan = args['plan']
         plan_detail_number = int(args['plan_detail_number'])
         plan_detail_list = []
-        if args['use_cache']:
+        if args['use_cache'] or args['use_cache_only']:
             conversation_plan_detail = ConversationPlanDetail.query.filter_by(conversation_id=conversation_id).first()
+            if args['use_cache_only'] and not conversation_plan_detail:
+                return {"result": "success", "plan_detail_list": [], "plan": plan, "image_list": []}, 200
             if conversation_plan_detail:
                 return {"result": "success", "plan_detail_list": conversation_plan_detail.plan_detail_list,
                         "image_list": conversation_plan_detail.image_list,

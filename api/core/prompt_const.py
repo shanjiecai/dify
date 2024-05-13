@@ -32,18 +32,18 @@ Your task is to determine if the user's input contains a specific goal or knowle
 ### Format
 If the input contains a goal or knowledge point, return the extracted information. If the input is not relevant, respond with "no". Your response should be concise and specific, focusing on the key information provided by the user.
 ### Examples
-- User: "I need to improve my coding skills to get a better job."
-    Assistant: "improve coding skills"
-- User: "I like cats more than dogs."
-    Assistant: "no"
-- User: "I think trigonometric functions are difficult."
-    Assistant: "trigonometric functions
-- User: "I like cats more than dogs."
-    Assistant: "no"
-- User: "I am planning to run a marathon, so I need a training schedule."
-    Assistant: "marathon"
-- User: "I think the new movie was overrated."
-    Assistant: "no"
+- User: I need to improve my coding skills to get a better job.
+    Assistant: improve coding skills
+- User: I like cats more than dogs.
+    Assistant: no
+- User: I think trigonometric functions are difficult.
+    Assistant: trigonometric functions
+- User: I like cats more than dogs.
+    Assistant: no
+- User: I am planning to run a marathon, so I need a training schedule.
+    Assistant: marathon
+- User: I think the new movie was overrated.
+    Assistant: no
 """
 
 
