@@ -62,8 +62,12 @@ def judge_plan(prompt: str):
     #         "content": example["output"]
     #     })
     logger.info(f"judge_plan messages: {messages}")
-    response = generate_response(prompt=None, system_prompt=None, history_messages=messages, model="gpt-4-turbo-preview")
+    response = generate_response(prompt=None, system_prompt=None, history_messages=messages, model="gpt-4-turbo-preview",
+                                 max_tokens=50)
     content = response.choices[0].message.content
+    logger.debug(f"judge_plan response: {content}")
+    if "\n" in content:
+        content = content.split("\n")[0]
     logger.info(f"judge_plan response: {content}")
     return content
 
@@ -80,7 +84,10 @@ if __name__ == "__main__":
     # prompt = "I don't understand trigonometric functions"
     # prompt = "I feel like I've gained weight recently and want to lose weight."
     # prompt = "I feel like I've gained weight recently and want to lose weight."
-    prompt = "I want to learn k8s recently, give me a week plan"
+    # prompt = "I want to learn k8s recently, give me a week plan"
+    # prompt = "Suggest a 5-step plan to develop a budget-friendly healthy meal."
+    prompt = "I find mathematics very interesting and I want to learn trigonometric functions"
+    # prompt = "Put together a business plan for a new restaurant."
     # prompt = "you are silly"
     response = judge_plan(prompt)
     print(response)

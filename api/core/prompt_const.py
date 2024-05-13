@@ -26,53 +26,63 @@ plan_question_template = ("Please Sequentially ask the following questions to ga
 # your goal is to provide specific and concise information in response to the user's request."""
 judge_plan_system_prompt = """
 ### Job Description
-You are a planning expert who helps users identify their goals or knowledge points to create effective plans. 
+You are a planning expert who helps users identify their specific and quantifiable goals or knowledge points to create effective plans in an app
 ### Task
 Your task is to determine if the user's input contains a specific goal or knowledge point that can be used to create a plan.
 ### Format
-If the input contains a goal or knowledge point, return the extracted information. If the input is not relevant, respond with "no". Your response should be concise and specific, focusing on the key information provided by the user.
+If the input contains a goal or knowledge point, return the extracted goals or knowledge points and thoughts on the user's needs. If the input is not relevant, respond with "no". Your response should be concise and specific, focusing on the key information provided by the user.
 ### Examples
-- User: I need to improve my coding skills to get a better job.
-    Assistant: improve coding skills
-- User: I like cats more than dogs.
-    Assistant: no
-- User: I think trigonometric functions are difficult.
-    Assistant: trigonometric functions
-- User: I like cats more than dogs.
-    Assistant: no
-- User: I am planning to run a marathon, so I need a training schedule.
-    Assistant: marathon
-- User: I think the new movie was overrated.
-    Assistant: no
+User: {{ "input": "I need to improve my coding skills to get a better job." }}
+Assistant: improve coding skills\nthoughts: The user wants to improve their coding skills to enhance their job prospects.
+User: {{ "input": "I like cats more than dogs." }}
+Assistant: no\nthoughts: The user expresses a preference for cats over dogs and does not require a plan.
+User: {{ "input": "I think trigonometric functions are difficult" }}
+Assistant: trigonometric functions\nthoughts: The user finds trigonometric functions challenging.
+User: {{ "input": "Generate a unique travel plan for a weekend trip." }}
+Assistant: no\nthoughts: The user requests a unique travel plan for a weekend trip, which is not specific enough for a plan.
+User: {{ "input": "I'm planning to run a marathon, so I need a training schedule." }}
+Assistant: marathon\nthoughts: The user intends to run a marathon and requires a training schedule.
+User: {{ "input": "I think the new movie was overrated." }}
+Assistant: no\nthoughts: The user shares an opinion about a movie and does not need a plan.
+User: {{ "input": "Can you help me make a boulder training plan for me to climb better" }}
+Assistant: boulder training plan to climb better\nthoughts: The user requests assistance in creating a boulder training plan to improve climbing skills.
+User: {{ "input": "Create a protection plan to safeguard a user's sensitive data" }}
+Assistant: no\nthoughts: The user seeks information on creating a protection plan for sensitive data and this plan can't be created in an app.
+User: {{ "input": "I want to learn a new language, but I'm not sure where to start."}}
+Assistant: new language learning\nthoughts: The user expresses an interest in learning a new language and seeks guidance on how to begin the learning process.
+User: {{ "input": "How much should someone plan to spend on their wedding?" }}
+Assistant: no\nthoughts: The user inquires about wedding expenses and does not require a specific plan.
+User: {{ "input": "Develop a game plan to reduce waste" }}
+Assistant: no\nthoughts: The user requests a game plan to reduce waste, which is not specific enough for a plan.
 """
 
 
-judge_plan_examples = [
-    {
-        "input": "I need to improve my coding skills to get a better job.",
-        "output": "improve coding skills",
-    },
-    {
-        "input": "I like cats more than dogs.",
-        "output": "no",
-    },
-    {
-        "input": "I think trigonometric functions are difficult",
-        "output": "trigonometric functions",
-    },
-    {
-        "input": "I like cats more than dogs.",
-        "output": "no",
-    },
-    {
-        "input": "I'm planning to run a marathon, so I need a training schedule.",
-        "output": "marathon",
-    },
-    {
-        "input": "I think the new movie was overrated.",
-        "output": "no",
-    }
-]
+# judge_plan_examples = [
+#     {
+#         "input": "I need to improve my coding skills to get a better job.",
+#         "output": "improve coding skills",
+#     },
+#     {
+#         "input": "I like cats more than dogs.",
+#         "output": "no",
+#     },
+#     {
+#         "input": "I think trigonometric functions are difficult",
+#         "output": "trigonometric functions",
+#     },
+#     {
+#         "input": "I like cats more than dogs.",
+#         "output": "no",
+#     },
+#     {
+#         "input": "I'm planning to run a marathon, so I need a training schedule.",
+#         "output": "marathon",
+#     },
+#     {
+#         "input": "I think the new movie was overrated.",
+#         "output": "no",
+#     }
+# ]
 
 
 # 生成问题列表
