@@ -52,6 +52,8 @@ def _plan_finish_question(conversation: Conversation, main_context: AppContext):
             conversation.plan_question_invoke_plan, model="search_engine")
         # 暂时不去掉plan_question_invoke_plan
         # conversation.plan_question_invoke_plan = None
+        conversation = db.session.query(Conversation).filter(
+            Conversation.id == conversation.id).first()
         conversation.plan_question_invoke_user = None
         conversation.plan_question_invoke_user_id = None
         conversation.plan_question_invoke_time = None

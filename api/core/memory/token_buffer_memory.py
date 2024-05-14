@@ -96,6 +96,8 @@ class TokenBufferMemory:
 
                     prompt_messages.append(UserPromptMessage(content=prompt_message_contents))
             else:
+                if not message.query:
+                    continue
                 if not message.role or message.role == "Human":
                     if user_name:
                         prompt_messages.append(UserPromptMessage(content=message.query, name=correct_name_field(user_name)))
@@ -105,12 +107,15 @@ class TokenBufferMemory:
                     prompt_messages.append(UserPromptMessage(content=message.query, name=correct_name_field(message.role)))
 
             # prompt_messages.append(AssistantPromptMessage(content=message.answer))
-            if message.assistant_name:
-                prompt_messages.append(UserPromptMessage(content=message.answer, name=correct_name_field(message.assistant_name)))
-            elif assistant_name:
-                prompt_messages.append(AssistantPromptMessage(content=message.answer, name=correct_name_field(assistant_name)))
+            if not message.answer:
+                continue
             else:
-                prompt_messages.append(AssistantPromptMessage(content=message.answer))
+                if message.assistant_name:
+                    prompt_messages.append(UserPromptMessage(content=message.answer, name=correct_name_field(message.assistant_name)))
+                elif assistant_name:
+                    prompt_messages.append(AssistantPromptMessage(content=message.answer, name=correct_name_field(assistant_name)))
+                else:
+                    prompt_messages.append(AssistantPromptMessage(content=message.answer))
 
         if not prompt_messages:
             return []
