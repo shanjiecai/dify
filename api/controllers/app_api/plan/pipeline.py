@@ -21,19 +21,22 @@ def generate_plan_question_pipeline(query, conversation: Conversation, user: str
     else:
         # query neo4j
         # pass
+        _conversation: Conversation = db.session.query(Conversation).filter(
+            Conversation.id == conversation.id).first()
         if PlanQuestionService.get(judge_res):
             plan_question = PlanQuestionService.get(judge_res)
             questions = plan_question.questions
 
             # logger.info(f"{plan_question.plan} {plan_question.questions}")
-            db.session.add(plan_question)
-            db.session.commit()
+            # db.session.add(plan_question)
+            # db.session.commit()
 
             _conversation = db.session.query(Conversation).filter(Conversation.id == conversation.id).first()
             _conversation.plan_question_invoke_plan = plan_question.plan
             _conversation.plan_question_invoke_user = user
             _conversation.plan_question_invoke_user_id = user_id
             _conversation.plan_question_invoke_time = datetime.datetime.utcnow()
+            db.session.add(_conversation)
             db.session.commit()
         else:
             questions = generate_knowledge_point_question(judge_res)
@@ -43,15 +46,17 @@ def generate_plan_question_pipeline(query, conversation: Conversation, user: str
                 questions=questions,
                 created_at=datetime.datetime.utcnow(),
             )
-            db.session.add(plan_question)
-            db.session.commit()
-            _conversation = db.session.query(Conversation).filter(Conversation.id == conversation.id).first()
+            # db.session.add(plan_question)
+            # db.session.commit()
+            # _conversation = db.session.query(Conversation).filter(Conversation.id == conversation.id).first()
             _conversation.plan_question_invoke_plan = judge_res
             _conversation.plan_question_invoke_user = user
             _conversation.plan_question_invoke_user_id = user_id
             _conversation.plan_question_invoke_time = datetime.datetime.utcnow()
+            db.session.add(plan_question)
+            db.session.add(_conversation)
             db.session.commit()
-        logger.info(f"add plan_question_invoke_plan: {judge_res} to conversation {conversation.id} ")
+        logger.info(f"add plan_question_invoke_plan: {judge_res} to conversation {_conversation.id} ")
 
         return questions
 
