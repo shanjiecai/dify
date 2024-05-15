@@ -235,7 +235,7 @@ class ChatApi(AppApiResource):
                         required: false
                     inputs:
                         type: object
-                        description: The inputs for the chat model, deprecated
+                        description: The inputs for the chat model
                         required: false
                     app_id:
                         type: string
