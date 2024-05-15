@@ -11,7 +11,9 @@ import services
 from controllers.app_api import api
 from controllers.app_api.app import create_or_update_end_user_for_user_id
 from controllers.app_api.app.error import NotChatAppError
+from controllers.app_api.app.intent_enum import Intent
 from controllers.app_api.img.utils import generate_plan_img_pipeline
+from controllers.app_api.plan.judge_plan import judge_force_plan, judge_plan
 from controllers.app_api.plan.pipeline import plan_question_background
 from controllers.app_api.wraps import AppApiResource
 
@@ -239,7 +241,6 @@ class ConversationAddMessage(AppApiResource):
         conversation = Conversation.query.filter_by(id=conversation_id).first()
         if conversation is None:
             raise ConversationNotFoundError()
-        logger.info(f"add {user}:{message} to conversation {conversation_id} ")
         # message_id = str(uuid.uuid4())
         message_class = Message(
             app_id=app_model.id,
@@ -269,17 +270,29 @@ class ConversationAddMessage(AppApiResource):
             mood=mood,
         )
 
+        intent = Intent.NONE
+        metadata = {}
+        judge_force_plan_res = judge_force_plan(message)
+        if judge_force_plan_res == "yes":
+            intent = Intent.JUDGE_FORCE_PLAN
+        else:
+            # 如果没有或生成时间超过8小时，就生成plan_question
+            if not conversation.plan_question_invoke_user or not conversation.plan_question_invoke_time or not conversation.plan_question_invoke_time or conversation.plan_question_invoke_time < datetime.datetime.utcnow() - datetime.timedelta(
+                    hours=8) and app_model.id != "a756e5d2-c735-4f68-8db0-1de49333501c":
+                # 另起线程执行plan_question
+                judge_plan_res = judge_plan(message)
+                if not judge_plan_res.startswith('no'):
+                    metadata = {"judge_plan_res": judge_plan_res}
+                    threading.Thread(target=plan_question_background,
+                                     args=(current_app._get_current_object(), message, conversation,
+                                           user, user_id, judge_plan_res)).start()
+        if intent != Intent.NONE:
+            logger.info(f"add {user}:{message} to conversation {conversation_id} with intent {intent.value} ")
+        else:
+            logger.info(f"add {user}:{message} to conversation {conversation_id} ")
         db.session.add(message_class)
         db.session.commit()
-        # 如果没有或生成时间超过8小时，就生成plan_question
-        if not conversation.plan_question_invoke_user or not conversation.plan_question_invoke_time or not conversation.plan_question_invoke_time or conversation.plan_question_invoke_time < datetime.datetime.utcnow() - datetime.timedelta(
-                hours=8) and app_model.id != "a756e5d2-c735-4f68-8db0-1de49333501c":
-            # 另起线程执行plan_question
-            threading.Thread(target=plan_question_background,
-                             args=(current_app._get_current_object(), message, conversation,
-                                   user, user_id)).start()
-
-        return {"result": "success"}, 200
+        return {"result": "success", "intent": intent.value, "metadata": metadata}, 200
 
 
 class ConversationDetailApi(AppApiResource):

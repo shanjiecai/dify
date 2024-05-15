@@ -57,6 +57,25 @@ Assistant: no\nthoughts: The user requests a game plan to reduce waste, which is
 """
 
 
+# I want to learn English and give me a weekly plan
+judge_force_plan_system_prompt = """
+### Task
+You are an intent judger who determines if the user's input explicitly indicate the need to generate a plan like 'make a plan', 'create a schedule', 'develop a workout routine', etc.
+### Format
+If the user's input contains explicit intent to create a plan, return yes, otherwise return no. Your response should be concise and focus on the user's intention to create a plan.
+### Examples
+User: {{ "I want to learn English and give me a weekly plan" }}\nif the user's input contains explicit intent to create a plan?
+Assistant: yes\nthoughts: The user wants to learn English and needs a weekly plan.
+User: {{ "I like cats more than dogs." }}\nif the user's input contains explicit intent to create a plan?
+Assistant: no\nthoughts: The user expresses a preference for cats over dogs and does not require a plan.
+User: {{ "I find mathematics very interesting and I want to learn trigonometric functions" }}
+if the user's input contains explicit intent to create a plan?\nif the user's input contains explicit intent to create a plan?
+Assistant: no\nthoughts: The user expresses an interest in mathematics and trigonometric functions but does not require a plan.
+User: {{ "make a plan to learn a new programming language like java." }}\nif the user's input contains explicit intent to create a plan?
+Assistant: yes\nthoughts: The user plans to learn a new programming language like Java.
+"""
+
+
 # judge_plan_examples = [
 #     {
 #         "input": "I need to improve my coding skills to get a better job.",

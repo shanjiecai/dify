@@ -182,5 +182,6 @@ if __name__ == '__main__':
     # print(get_recent_history_within_timestamp(312, 1705709751592, 1706049943669))
     # s = "James Corden: Alright folks, let's make this chat pop like bubble wrap.let's hhhhhhhhhhhhhhhhhhhhhhhhhhhhhh! What's tickling your fancy these days? What's that one thing you can't get enough of? Let's hear it, I'm all ears! 🎤😄"
     # print(split_and_get_interval(s))
-    print(get_recent_history_all_with_last_id(316, 17999))
+    # print(get_recent_history_all_with_last_id(316, 17999))
+    print(send_chat_message(316, "test", "txt"))
     pass

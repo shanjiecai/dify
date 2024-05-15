@@ -12,9 +12,10 @@ from mylogger import logger
 from services.plan_question_service import PlanQuestionService
 
 
-def generate_plan_question_pipeline(query, conversation: Conversation, user: str, user_id: str):
-    # 根据用户问题判断是否需要生成计划
-    judge_res = judge_plan(query)
+def generate_plan_question_pipeline(query, conversation: Conversation, user: str, user_id: str, judge_res: str = None):
+    # # 根据用户问题判断是否需要生成计划
+    if not judge_res:
+        judge_res = judge_plan(query)
     if judge_res == 'no' or judge_res.startswith('no'):
         return None
     else:
@@ -65,12 +66,11 @@ def plan_question_background(flask_app: Flask, query: str, conversation: Convers
 
 if __name__ == '__main__':
     import sys
+
     sys.path.append('/Users/jiecai/PycharmProjects/dify/api')
     from app import create_app
+
     app = create_app()
     with app.app_context():
         query = "I need to improve my coding skills to get a better job."
         print(generate_plan_question_pipeline(query))
-
-
-
