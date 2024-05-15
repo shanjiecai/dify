@@ -282,13 +282,15 @@ class ConversationAddMessage(AppApiResource):
                 # 另起线程执行plan_question
                 judge_plan_res = judge_plan(message)
                 if not judge_plan_res.startswith('no'):
+                    intent = Intent.JUDGE_PLAN
                     metadata = {"judge_plan_res": judge_plan_res}
+                    logger.info(f"add {user}:{message} to conversation {conversation_id} with intent {intent.value} metadata {metadata}")
                     threading.Thread(target=plan_question_background,
                                      args=(current_app._get_current_object(), message, conversation,
                                            user, user_id, judge_plan_res)).start()
-        if intent != Intent.NONE:
+        if intent == Intent.JUDGE_FORCE_PLAN:
             logger.info(f"add {user}:{message} to conversation {conversation_id} with intent {intent.value} ")
-        else:
+        elif intent == Intent.NONE:
             logger.info(f"add {user}:{message} to conversation {conversation_id} ")
         db.session.add(message_class)
         db.session.commit()

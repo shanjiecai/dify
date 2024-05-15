@@ -56,9 +56,9 @@ def generate_plan_question_pipeline(query, conversation: Conversation, user: str
         return questions
 
 
-def plan_question_background(flask_app: Flask, query: str, conversation: Conversation, user: str, user_id: str):
+def plan_question_background(flask_app: Flask, query: str, conversation: Conversation, user: str, user_id: str, judge_plan_res: str = None):
     with flask_app.app_context():
-        questions = generate_plan_question_pipeline(query, conversation, user, user_id)
+        questions = generate_plan_question_pipeline(query, conversation, user, user_id, judge_plan_res)
         if questions is None:
             return
         logger.info(f"plan_question_background: {query} {questions}")
