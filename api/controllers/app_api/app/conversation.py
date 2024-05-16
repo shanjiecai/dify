@@ -390,23 +390,23 @@ class ConversationPlan(AppApiResource):
                     required: true
                   plan:
                     type: string
-                    description: 计划
+                    description: 计划内容
                     required: false
                   plan_detail_number:
                     type: integer
-                    description: 计划详情数量
+                    description: 计划详情数量，默认1
                     required: false
                     default: 1
-                  outer_history:
-                    type: string
-                    description: 外部历史
-                    required: false
-                    default: ''
                   use_cache:
                     type: boolean
                     description: 是否使用缓存
                     required: false
                     default: true
+                  use_cache_only:
+                    type: boolean
+                    description: 是否只使用缓存
+                    required: false
+                    default: false
         responses:
             200:
                 description: 生成计划成功
@@ -434,9 +434,9 @@ class ConversationPlan(AppApiResource):
         parser.add_argument('plan', type=str, required=False, location='json')
         parser.add_argument('plan_detail_number', type=int, required=False, location='json', default=1)
         # parser.add_argument('image_number', type=int, required=False, location='json', default=1)
-        parser.add_argument('outer_history', type=str, required=False, location='json', default='')
         parser.add_argument('use_cache', type=bool, required=False, location='json', default=True)
         parser.add_argument('use_cache_only', type=bool, required=False, location='json', default=False)
+        parser.add_argument('outer_history', type=str, required=False, location='json', default='')
         args = parser.parse_args()
         conversation_id = args['conversation_id']
         plan = args['plan']
