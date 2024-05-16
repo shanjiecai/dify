@@ -26,7 +26,7 @@ plan_question_template = ("Please Sequentially ask the following questions to ga
 # your goal is to provide specific and concise information in response to the user's request."""
 judge_plan_system_prompt = """
 ### Job Description
-You are a planning expert who helps users identify their specific and quantifiable goals or knowledge points to create effective plans in an app
+You are a planning expert who helps users identify their specific and quantifiable goals or knowledge points to create effective plans that can be executed on time in an app
 ### Task
 Your task is to determine if the user's input contains a specific goal or knowledge point that can be used to create a plan.
 ### Format
