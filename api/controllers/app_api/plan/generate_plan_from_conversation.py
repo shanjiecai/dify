@@ -76,7 +76,7 @@ def generate_plan_from_conversation(history_str: str, plan: str = ""):
         })
     logger.info(f"generate_plan_from_conversation messages: {messages}")
     response = generate_response(prompt=None, system_prompt=None, history_messages=messages, json_format=True, max_tokens=1536,
-                                 model="gpt-4-turbo-preview", stream=True, temperature=1.0)
+                                 model="gpt-4-turbo", stream=True, temperature=1.0)
     # stream response
     content = ""
     for item in response:

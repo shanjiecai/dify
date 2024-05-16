@@ -48,7 +48,7 @@ class AppListApi(AppApiResource):
                     default: 1
                     model:
                     type: string
-                    default: gpt-4-turbo-preview
+                    default: gpt-4-turbo
         """
         # parser = reqparse.RequestParser()
         # parser.add_argument('page', type=int_range(1), default=1, location='args')

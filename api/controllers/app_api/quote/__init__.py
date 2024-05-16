@@ -140,7 +140,7 @@ class QuotaApi(AppApiResource):
                 None,
                 quote_generator_system_prompt,
                 history_messages=history_messages,
-                model="gpt-4-turbo-preview",
+                model="gpt-4-turbo",
                 temperature=0.9,
                 **kwargs
             )

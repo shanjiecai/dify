@@ -106,8 +106,10 @@ if __name__ == "__main__":
     # prompt = "I want to learn k8s recently, give me a week plan"
     # prompt = "Suggest a 5-step plan to develop a budget-friendly healthy meal."
     # prompt = "I find mathematics very interesting and I want to learn trigonometric functions"
-    prompt = "I want to make a plan to lose weight"
+    # prompt = "I want to make a plan to lose weight"
+    prompt = "You are such a nice person.Can you help me make a one week plan for math?"
     # prompt = "Put together a business plan for a new restaurant."
     # prompt = "you are silly"
-    response = judge_plan(prompt)
+    # response = judge_plan(prompt)
+    response = judge_force_plan(prompt)
     print(response)

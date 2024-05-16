@@ -21,7 +21,7 @@ def summarize_text_recursive(name, text, max_length=80):
         "role": "user",
         "content": text
     }]
-    response = client.chat.completions.create(model="gpt-4-1106-preview",
+    response = client.chat.completions.create(model="gpt-4-turbo",
                                               messages=messages,
                                               # temperature=0.3,
                                               max_tokens=max_length + 50,
@@ -48,7 +48,7 @@ def summarize_text(name, text, max_length=80):
         "role": "user",
         "content": text
     }]
-    response = client.chat.completions.create(model="gpt-4-turbo-preview",
+    response = client.chat.completions.create(model="gpt-4-turbo",
                                               messages=messages,
                                               # temperature=0.3,
                                               max_tokens=max_length + 50,
@@ -76,7 +76,7 @@ def summarize_style(name, text, max_length=8):
         "role": "user",
         "content": text
     }]
-    response = client.chat.completions.create(model="gpt-4-turbo-preview",
+    response = client.chat.completions.create(model="gpt-4-turbo",
                                               messages=messages,
                                               # temperature=0.3,
                                               max_tokens=max_length + 50,
