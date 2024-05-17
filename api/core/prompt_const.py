@@ -162,9 +162,21 @@ generate_plan_question_examples = [
 #
 # The tasks should be clearly defined and provide a cohesive progression towards the desired outcome. Please structure the plan in the following JSON format: {{ "day1": ["plan1", "plan2", ...], "day2": ["plan1", "plan2", ...],... }} Where "plan1", "plan2", etc. represent the detailed activities or tasks for each day."""
 
-generate_plan_detail_system_prompt = """You are an expert at making plans and your task is to create a detailed weekly plan based on the given goal or knowledge point and the conversation history. The plan should outline specific tasks and activities for each day of the week in JSON format. Ensure that the plan is comprehensive and covers all relevant aspects related to the specified goal or knowledge point: {user_goal}.
-Notice the plan should include specific, quantifiable tasks and activities for each day of the week, which should be designed with measurable outcomes to track progress and effectiveness as much as possible, ensuring a clear pathway toward achieving the goal or thoroughly understanding the knowledge point
-The tasks should be clearly defined and provide a cohesive progression towards the desired outcome. Please structure the plan in the following JSON format: {{ "day1": ["plan1", "plan2", ...], "day2": ["plan1", "plan2", ...],... }} Where "plan1", "plan2", etc. represent the detailed activities or tasks for each day."""
+
+# generate_plan_detail_system_prompt = """You are an expert at making plans and your task is to create a detailed weekly plan based on the given goal or knowledge point and the conversation history. The plan should outline specific tasks and activities for each day of the week in JSON format.
+# Ensure that the plan is comprehensive and covers all relevant aspects related to the specified goal or knowledge point: {user_goal}.
+# Notice the plan should include specific, quantifiable tasks and activities for each day of the week, which should be designed with measurable outcomes to track progress and effectiveness as much as possible, ensuring a clear pathway toward achieving the goal or thoroughly understanding the knowledge point.The tasks should be clearly defined and provide a cohesive progression towards the desired outcome.
+# Please structure the plan in the following JSON format: {{ "day1": ["plan1", "plan2", ...], "day2": ["plan1", "plan2", ...],... }} Where "plan1", "plan2", etc. represent the detailed activities or tasks for each day."""
+
+
+generate_plan_detail_system_prompt = """You are an expert at making plans and your task is to create a detailed weekly plan based on the given goal or knowledge point and the conversation history. The plan should outline specific tasks and activities for each day of the week in JSON format. 
+Ensure that the plan is comprehensive and covers all relevant aspects related to the specified goal or knowledge point.
+Notice the plan should include specific, quantifiable tasks and activities for each day of the week, which should be designed with measurable outcomes to track progress and effectiveness as much as possible, ensuring a clear pathway toward achieving the goal or thoroughly understanding the knowledge point.The tasks should be clearly defined and provide a cohesive progression towards the desired outcome. 
+
+Here are the specified goal or knowledge point between <user_goal></user_goal> tags: <user_goal>{user_goal}</user_goal>
+and the conversation history between <history></history> tags: <history>{history}</history>
+
+Please structure the plan in the following JSON format: {{ "day1": ["plan1", "plan2", ...], "day2": ["plan1", "plan2", ...],... }} Where "plan1", "plan2", etc. represent the detailed activities or tasks for each day."""
 
 
 conversation_summary_system_prompt = "You are an expert at summarising conversations. The user gives you the content of the " \
@@ -187,6 +199,10 @@ conversation_summary_system_prompt = "You are an expert at summarising conversat
 plan_summary_system_prompt = "Summarize the conversation and the reason for generating this plan in 30 words or less. " \
                               "Your summary should capture the key points discussed and the purpose of creating this " \
                               "plan succinctly."
+
+generate_plan_introduction_system_prompt = """You are an expert at summarising plan and write a brief introduction 
+for the plan. The user gives you the plan, you write a brief introduction in no more than 80 words of the plan."""
+
 
 generate_dalle_query_template = ("Generate {n_variations} prompts from this original prompt: {original_prompt}. This "
                                  "will be used to query a genai image generation model. Generate prompt variations to "

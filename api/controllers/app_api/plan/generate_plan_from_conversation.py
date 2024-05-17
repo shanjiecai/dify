@@ -1,10 +1,7 @@
-# 0d3536dc-c6f8-46e2-8888-d6283d3a19e9
-
-
 import json
 
 # from controllers.app_api.openai_base_request import generate_response
-from core.prompt_const import generate_plan_detail_system_prompt
+from core.prompt_const import generate_plan_detail_system_prompt, generate_plan_introduction_system_prompt
 from mylogger import logger
 from services.openai_base_request_service import generate_response
 
@@ -62,21 +59,22 @@ from services.openai_base_request_service import generate_response
 # specific. Do not forget to use the user's goal or knowledge point in the plan."""
 
 
-def generate_plan_from_conversation(history_str: str, plan: str = ""):
-    messages = [
-        {
-            "role": "system",
-            "content": generate_plan_detail_system_prompt.format(user_goal=plan)
-        },
-    ]
-    if history_str:
-        messages.append({
-            "role": "user",
-            "content": history_str
-        })
-    logger.info(f"generate_plan_from_conversation messages: {messages}")
-    response = generate_response(prompt=None, system_prompt=None, history_messages=messages, json_format=True, max_tokens=1536,
-                                 model="gpt-4-turbo", stream=True, temperature=1.0)
+def generate_plan_from_conversation(history_str: str = "", plan: str = ""):
+    # messages = [
+    #     {
+    #         "role": "system",
+    #         "content": generate_plan_detail_system_prompt.format(user_goal=plan)
+    #     },
+    # ]
+    # if history_str:
+    #     messages.append({
+    #         "role": "user",
+    #         "content": history_str
+    #     })
+    system_prompt = generate_plan_detail_system_prompt.format(user_goal=plan, history=history_str)
+    # logger.info(f"generate_plan_from_conversation messages: {system_prompt}")
+    response = generate_response(prompt=None, system_prompt=system_prompt, history_messages=None, json_format=True, max_tokens=1536,
+                                 model="gpt-4o", stream=True, temperature=0.7)
     # stream response
     content = ""
     for item in response:
@@ -98,10 +96,6 @@ def generate_plan_from_conversation(history_str: str, plan: str = ""):
     return plan
 
 
-generate_plan_introduction_system_prompt = """You are an expert at summarising plan and write a brief introduction 
-for the plan. The user gives you the plan, you write a brief introduction in no more than 80 words of the plan."""
-
-
 def generate_plan_introduction(plan: str):
     messages = [
         {
@@ -114,7 +108,7 @@ def generate_plan_introduction(plan: str):
         }
     ]
     logger.info(f"generate_plan_introduction messages: {messages}")
-    response = generate_response(prompt=None, history_messages=messages, max_tokens=150,
+    response = generate_response(prompt=None, history_messages=messages, max_tokens=200,
                                  model="gpt-3.5-turbo", stream=False)
 
     introduction = response.choices[0].message.content
@@ -123,4 +117,6 @@ def generate_plan_introduction(plan: str):
 
 
 if __name__ == "__main__":
+    plan = "learn IELTS"
+    print(generate_plan_from_conversation(plan=plan))
     pass

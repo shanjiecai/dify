@@ -25,8 +25,8 @@ client = OpenAI(api_key=api_key)
 
 def generate_response(prompt=None, system_prompt=None, history_messages=None, model="gpt-3.5-turbo", json_format=False,
                       **kwargs) -> ChatCompletion | Stream[ChatCompletionChunk]:
-    if not prompt and not history_messages:
-        raise ValueError("prompt and history_messages cannot be both empty.")
+    if not prompt and not history_messages and not system_prompt:
+        raise ValueError("prompt history_messages and system_prompt cannot be empty all.")
     if not prompt:
         messages = []
     else:
