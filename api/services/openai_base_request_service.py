@@ -83,6 +83,25 @@ def generate_dalle_query_variations_gpt(original_prompt, n_variations=1) -> dict
     return query_variations
 
 
+# 原始prompt转写，例如@Yyh 2707 hotmail(AI) Can you give me a plan for walking 15km in 10 days?转写为walking 15km in 10 days
+#
+def generate_optimized_prompt(original_prompt, n_variations=1) -> str:
+    response = client.chat.completions.create(
+        model="gpt-3.5-turbo",
+        max_tokens=250,
+        temperature=0.5,
+        messages=[
+            {
+                "role": "system",
+                "content": 'You are an expert in optimizing prompts for AI models. You should rewrite the prompt to make it more concise and clear.You should return the optimized prompt only and not any other information.',
+            },
+            {"role": "user", "content": f"{original_prompt}"},
+        ],
+    )
+    response = response.choices[0].message.content
+    return response
+
+
 def generate_embedding(prompt: str):
     response = client.embeddings.create(
         model="text-embedding-3-small",
@@ -133,9 +152,13 @@ if __name__ == "__main__":
     # prompt = "What is the meaning of life?"
     # response = generate_response("", prompt)
     # print(response)
-    print(generate_dalle_query_variations_gpt("python programming"))
-    prompt = """A futuristic robot typing on a keyboard with Python code projected in holographic displays around it, 
-    symbolizing the automation achieved through Python programming."""
+    # print(generate_dalle_query_variations_gpt("python programming"))
+    # prompt = """A futuristic robot typing on a keyboard with Python code projected in holographic displays around it,
+    # symbolizing the automation achieved through Python programming."""
+
+    print(generate_optimized_prompt("A futuristic robot typing on a keyboard with Python code projected in holographic displays around it, symbolizing the automation achieved through Python programming."))
+    # print(generate_optimized_prompt("@Yyh 2707 hotmail(AI) Can you give me a plan for walking 15km in 10 days?"))
+
     # from controllers.app_api.img.dalle2 import dalle2_invoke
     # print(dalle2_invoke(prompt))
     # print(generate_embedding(prompt))

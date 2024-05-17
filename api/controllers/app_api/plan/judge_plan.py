@@ -68,6 +68,8 @@ def judge_plan(prompt: str):
     # logger.debug(f"judge_plan response: {content}")
     if "\n" in content:
         content = content.split("\n")[0]
+    if "Assistant:" in content:
+        content = content.split("Assistant:")[1]
     logger.debug(f"judge_plan response: {content}")
     return content
 
@@ -87,6 +89,8 @@ def judge_force_plan(prompt: str):
     # logger.debug(f"judge_force_plan response: {content}")
     if "\n" in content:
         content = content.split("\n")[0]
+    if "Assistant:" in content:
+        content = content.split("Assistant:")[1]
     logger.debug(f"judge_force_plan response: {content}")
     return content
 
@@ -107,9 +111,11 @@ if __name__ == "__main__":
     # prompt = "Suggest a 5-step plan to develop a budget-friendly healthy meal."
     # prompt = "I find mathematics very interesting and I want to learn trigonometric functions"
     # prompt = "I want to make a plan to lose weight"
-    prompt = "You are such a nice person.Can you help me make a one week plan for math?"
+    # prompt = "You are such a nice person.Can you help me make a one week plan for math?"
+    # prompt = "@Yyh 2707 hotmail(AI) Can you give me a plan for walking 15km in 10 days?"
+    prompt = "learn football"
     # prompt = "Put together a business plan for a new restaurant."
     # prompt = "you are silly"
-    # response = judge_plan(prompt)
-    response = judge_force_plan(prompt)
+    response = judge_plan(prompt)
+    # response = judge_force_plan(prompt)
     print(response)

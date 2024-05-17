@@ -7,9 +7,10 @@ import requests
 from flask import Flask
 
 from controllers.app_api.app.utils import upload_file
+from controllers.app_api.plan.judge_plan import judge_plan
 from models.model import Conversation
 from mylogger import logger
-from services.openai_base_request_service import generate_dalle_query_variations_gpt
+from services.openai_base_request_service import generate_dalle_query_variations_gpt, generate_optimized_prompt
 
 
 def download_img_form_url(url, filepath):
@@ -35,14 +36,20 @@ def save_base64_img(base64_str, filepath):
         return None
 
 
-def generate_plan_img_pipeline(plan, model="dalle3", conversation: Conversation = None, main_app: Flask = None,
+def generate_plan_img_pipeline(plan, model="dalle3", conversation: Conversation = None, shape: str = None,
+                               main_app: Flask = None,
                                **kwargs):
+    if len(plan.split(" ")) > 8:
+        new_plan = judge_plan(plan)
+        if not new_plan.startswith("no"):
+            plan = new_plan
+
     def main():
         begin = time.time()
         if model == "search_engine":
             from controllers.app_api.img.search_engine import search_engine_invoke
             dst_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "static", "images")
-            img_list = search_engine_invoke(plan, dst_dir=dst_dir)
+            img_list = search_engine_invoke(plan, dst_dir=dst_dir, shape=shape)
             images = []
             if img_list:
                 for image_name in img_list:
@@ -105,7 +112,9 @@ def generate_plan_img_pipeline(plan, model="dalle3", conversation: Conversation 
 
 # shape可选：square, vertical, horizontal
 # size a*b 例如：1024*1024
-def generate_img_pipeline(query, model="dalle3", shape: str = None, size: str=None, main_app: Flask = None, **kwargs):
+def generate_img_pipeline(query, model="dalle3", shape: str = None, size: str = None, main_app: Flask = None, **kwargs):
+    if len(query.split(" ")) > 8:
+        query = generate_optimized_prompt(query)
     if shape and shape not in ["square", "vertical", "horizontal"]:
         shape = None
     if size:
@@ -117,6 +126,7 @@ def generate_img_pipeline(query, model="dalle3", shape: str = None, size: str=No
                 size = [int(size[0]), int(size[1])]
             except:
                 size = None
+
     def main():
         begin = time.time()
         if model == "search_engine":
@@ -184,4 +194,5 @@ if __name__ == '__main__':
     # test
     # print(generate_plan_img_pipeline("python programming", model="search_engine"))
     # print(generate_plan_img_pipeline("lose weight", model="search_engine"))
-    print(generate_img_pipeline("lose weight", model="search_engine"))
+    print(generate_plan_img_pipeline("@Yyh 2707 hotmail(AI) Can you give me a plan for walking 15km in 10 days?",
+                                     model="search_engine", shape="square"))

@@ -105,11 +105,16 @@ Assistant: yes\nthoughts: The user plans to learn a new programming language lik
 
 
 # 生成问题列表
-generate_plan_question_system_prompt = """You are an expert at generating plans based on knowledge points. Your task is to generate a few 
-questions based on the knowledge points provided. I want you to ask questions to determine how much this person knows 
-about this knowledge point, and then help him develop a plan. Questions can be about Study habits, sub-knowledge 
-points of knowledge points, solutions to related questions, etc. Questions should be as specific and detailed as 
-possible,no more than five. Please return it in json format. The format is as follows: { "questions": ["Do you know the formulas of trigonometric functions?", "Do you know what properties trigonometric functions have?"] } Here are some examples:"""
+generate_plan_question_system_prompt = ('You are an expert at generating plans based on knowledge points. Your task is '
+                                        'to generate a few questions based on the knowledge points provided. I want '
+                                        'you to ask questions to determine how much this person knows about this '
+                                        'knowledge point, and then help him develop a plan. Questions can be about '
+                                        'Study habits, sub-knowledge points of knowledge points, solutions to related '
+                                        'questions, etc. Questions should be as specific and detailed as possible,'
+                                        'no more than five. Please return it in json format. The format is as '
+                                        'follows: { "questions": ["Do you know the formulas of trigonometric '
+                                        'functions?", "Do you know what properties trigonometric functions have?"] } '
+                                        'Here are some examples:')
 
 generate_plan_question_examples = [
     {
