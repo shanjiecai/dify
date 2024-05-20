@@ -41,7 +41,7 @@ class CompletionService:
         # is streaming mode
         inputs = args['inputs']
         query = args['query']
-        files = args['files'] if 'files' in args and args['files'] else []
+        files = args['files'] if args.get('files') else []
         auto_generate_name = args['auto_generate_name'] \
             if 'auto_generate_name' in args else True
 
@@ -282,7 +282,7 @@ class CompletionService:
             if variable not in user_inputs or not user_inputs[variable]:
                 if input_type == "external_data_tool":
                     continue
-                if "required" in input_config and input_config["required"]:
+                if input_config.get("required"):
                     raise ValueError(f"{variable} is required in input form")
                 else:
                     filtered_inputs[variable] = input_config["default"] if "default" in input_config else ""

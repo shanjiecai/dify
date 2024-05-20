@@ -84,7 +84,8 @@ DEFAULTS = {
     'KEYWORD_DATA_SOURCE_TYPE': 'database',
     'INNER_API': 'False',
     'ENTERPRISE_ENABLED': 'False',
-    'ROLE_MODEL_CUSTOMIZE_SERVICE_URL': 'http://13.56.82.62:8000'
+    'ROLE_MODEL_CUSTOMIZE_SERVICE_URL': 'http://13.56.82.62:8000',
+    'INDEXING_MAX_SEGMENTATION_TOKENS_LENGTH': 1000,
 }
 
 
@@ -389,6 +390,7 @@ class Config:
 
         self.ETL_TYPE = get_env('ETL_TYPE')
         self.UNSTRUCTURED_API_URL = get_env('UNSTRUCTURED_API_URL')
+        self.UNSTRUCTURED_API_KEY = get_env('UNSTRUCTURED_API_KEY')
         self.BILLING_ENABLED = get_bool_env('BILLING_ENABLED')
         self.CAN_REPLACE_LOGO = get_bool_env('CAN_REPLACE_LOGO')
 
@@ -403,3 +405,8 @@ class Config:
         self.KEYWORD_DATA_SOURCE_TYPE = get_env('KEYWORD_DATA_SOURCE_TYPE')
         self.ENTERPRISE_ENABLED = get_bool_env('ENTERPRISE_ENABLED')
         self.ROLE_MODEL_CUSTOMIZE_SERVICE_URL = get_env('ROLE_MODEL_CUSTOMIZE_SERVICE_URL')
+
+        # ------------------------
+        # Indexing Configurations.
+        # ------------------------
+        self.INDEXING_MAX_SEGMENTATION_TOKENS_LENGTH = get_env('INDEXING_MAX_SEGMENTATION_TOKENS_LENGTH')
