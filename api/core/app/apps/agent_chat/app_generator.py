@@ -109,7 +109,7 @@ class AgentChatAppGenerator(MessageBasedAppGenerator):
             app_config=app_config,
             model_config=ModelConfigConverter.convert(app_config),
             conversation_id=conversation.id if conversation else None,
-            inputs=conversation.inputs if conversation else self._get_cleaned_inputs(inputs, app_config),
+            inputs=conversation.inputs if conversation.inputs else self._get_cleaned_inputs(inputs, app_config),
             query=query,
             files=file_objs,
             user_id=user.id,
