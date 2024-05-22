@@ -71,7 +71,7 @@ bs4~=0.0.1
 markdown~=3.5.1
 httpx[socks]~=0.24.1
 matplotlib~=3.8.2
-yfinance~=0.2.35
+yfinance~=0.2.40
 pydub~=0.25.1
 gmpy2~=2.1.5
 numexpr~=2.9.0
@@ -91,7 +91,7 @@ xlrd~=2.0.1
 pydantic~=1.10.0
 pgvecto-rs==0.1.4
 firecrawl-py==0.0.5
+oss2==2.18.5
 icrawler
-oss2==2.15.0
 flasgger==0.9.7b2
 pgvector==0.2.5
