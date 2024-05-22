@@ -186,11 +186,8 @@ conversation_summary_system_prompt = "You are an expert at summarising conversat
                         "generate summary,title,tags,title using Chinese if the primary language of the conversation " \
                         "is Chinese and make sure to output the following format: Summary: 50 words or less based on " \
                         "the current dialogue \nTags: tag 1, tag 2, tag 3 \nNouns: noun 1, noun 2, noun 3 \nTitle: " \
-                        "title of the summary. \n\nFor example: Summary: The cat sat on the mat. \nTags: cat, mat, " \
-                        "sat \nNouns: cat, mat, sat \nTitle: The cat sat on the mat. \n\nPlease make sure to output " \
-                        "the following format: Summary: 50 words or less based on the current dialogue \nTags: tag 1, " \
-                        "tag 2, tag 3 \nNouns: noun 1, noun 2, noun 3 \nTitle: title of the summary in 10 words or " \
-                        "less."
+                        "title of the summary in 10 words or less. \n\nFor example: Summary: The cat sat on the mat. \nTags: cat, mat, " \
+                        "sat \nNouns: cat, mat, sat \nTitle: The cat sat on the mat. \n"
 
 # 总结创建计划时的对话历史
 # plan_summary_system_prompt = "You are an expert at summarising conversations. The above is the history of the conversation " \

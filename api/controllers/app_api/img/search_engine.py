@@ -316,7 +316,7 @@ def search_engine_invoke(keyword, shape=None, size=None, dst_dir="./", max_num=1
         bing_filters = dict(
             # license='commercial,modify',
             layout=layout,
-            type='photo',
+            # type='photo',
         )
         bing_crawler.crawl(keyword=keyword, max_num=max_num, overwrite=True,
                            filters=bing_filters
@@ -352,4 +352,4 @@ def search_engine_invoke(keyword, shape=None, size=None, dst_dir="./", max_num=1
 
 
 if __name__ == '__main__':
-    print(search_engine_invoke("python programming", max_num=1))
+    print(search_engine_invoke("run", max_num=3))
