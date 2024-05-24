@@ -8,22 +8,12 @@
 # process until you are confident that all the questions have been addressed by the user. Once you reach this point,
 # please append the "<finish_question>" tag at the end of your current response. Here are the questions: {questions}"""
 
-plan_question_template = ("Please Sequentially ask the following questions to gather necessary information. If the "
-                          "responses to these questions are already present in the previous interactions, "
-                          "do not repeat them. Continue this process until the user answers the last question. Once you "
-                          "reach this point, please append the <finish_question> tag at the end of your current "
-                          "response. Here are the questions between "
-                          "<questions></questions> tags: <questions>{questions}</questions> Remember to add the "
-                          "<finish_question> tag at the end of your current response after the user answers"
-                          "the last question.")
+plan_question_template = """Please Sequentially ask the following questions to gather necessary information. If the responses to these questions are already present in the previous interactions, do not repeat them. Continue this process until the user answers the last question. Once you reach this point, please append the <finish_question> tag at the end of your current response. Here are the questions between <questions></questions> tags: 
+<questions>
+{questions}
+</questions>"""
 
 
-# 判断是否包含知识点
-# judge_plan_system_prompt = """Hello, your task is to act as a planning expert. When the user asks for help in making a plan,
-# you should determine if their words are necessary for making the plan. If the user's words are needed,
-# extract a short goal or knowledge point from their sentence. If not, reply with "no". Your response should be limited
-# to the short goal or knowledge point, or "no" if you're unsure. Here are a few examples to guide you. Remember,
-# your goal is to provide specific and concise information in response to the user's request."""
 judge_plan_system_prompt = """
 ### Job Description
 You are a planning expert who helps users identify their specific and quantifiable goals or knowledge points to create effective plans that can be executed on time in an app
@@ -266,5 +256,31 @@ When the user's question involves inquiring about your identity, please answer a
 {knowledge}
 ```
 """
+
+
+role_model_extract_knowledge_system_prompt = """
+# Role.
+You are an advanced knowledge concept matching expert and you need to give the knowledge concepts you need to master to solve this problem [{query}] and then find the synonyms and similar words for the knowledge concepts.
+## Steps
+### Step 1: Knowledge concept entity extraction
+- Extract the corresponding knowledge concept entity from the user's message.
+### Step 2: Knowledge Concept Synonym/Similarity Generation
+-Generate similar or similar conceptual entities based on the extracted conceptual entities.
+### Output: output the matching result
+- Output the name of the specific knowledge point of the user's message and the corresponding synonyms/similarities.
+Please output in the following format:
+{
+"Knowledge point name 1":"".
+"synonyms/similar words1":"".
+}
+{
+"Knowledge point name 2":"".
+"Synonyms/Similarities 2":"".
+....
+}
+"""
+
+
+
 
 
