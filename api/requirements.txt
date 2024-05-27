@@ -95,3 +95,4 @@ oss2==2.18.5
 icrawler
 flasgger==0.9.7b2
 pgvector==0.2.5
+google-cloud-aiplatform==1.49.0
