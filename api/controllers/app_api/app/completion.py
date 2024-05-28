@@ -327,7 +327,8 @@ class ChatApi(AppApiResource):
             if conversation and (
                     not conversation.plan_question_invoke_user or conversation.plan_question_invoke_time < datetime.datetime.utcnow() - datetime.timedelta(
                     hours=8)) and app_model.id not in ["a756e5d2-c735-4f68-8db0-1de49333501c",
-                                                       "19d2fd0b-6e1c-47f9-87ab-cc039b6d3881"] and args["query"]:
+                                                       "19d2fd0b-6e1c-47f9-87ab-cc039b6d3881",
+                                                       "4cb1eee5-72d9-4cd6-befc-e4e0d4fb6333"] and args["query"]:
                 # 另起线程执行plan_question
                 threading.Thread(target=plan_question_background,
                                  args=(current_app._get_current_object(), args["query"], conversation,
@@ -402,7 +403,6 @@ class ChatApi(AppApiResource):
                     streaming=streaming,
                     user_name=args['user'],
                     assistant_name=app_model.name,
-                    is_model_config_override=True,
                 )
                 if isinstance(response, dict) and response.get("answer", '').endswith(
                         '<finish_question>') and args["conversation_id"] and mode == AppMode.CHAT.value:
@@ -582,7 +582,8 @@ class ChatActiveApi(AppApiResource):
                         if conversation and (
                                 not conversation.plan_question_invoke_user or not conversation.plan_question_invoke_time or conversation.plan_question_invoke_time < datetime.datetime.utcnow() - datetime.timedelta(
                                 hours=8)) and app_model.id not in ["a756e5d2-c735-4f68-8db0-1de49333501c",
-                                                                   "19d2fd0b-6e1c-47f9-87ab-cc039b6d3881"] and args[
+                                                                   "19d2fd0b-6e1c-47f9-87ab-cc039b6d3881",
+                                                                   "4cb1eee5-72d9-4cd6-befc-e4e0d4fb6333"] and args[
                             "query"]:
                             # 另起线程执行plan_question
                             threading.Thread(target=plan_question_background,
