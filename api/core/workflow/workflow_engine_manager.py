@@ -1,5 +1,5 @@
-import logging
 import time
+import traceback
 from typing import Optional, cast
 
 from flask import current_app
@@ -57,7 +57,8 @@ node_classes = {
 
 WORKFLOW_CALL_MAX_DEPTH = 5
 
-logger = logging.getLogger(__name__)
+# logger = logging.getLogger(__name__)
+from mylogger import logger
 
 
 class WorkflowEngineManager:
@@ -161,13 +162,20 @@ class WorkflowEngineManager:
             workflow=workflow,
             workflow_run_state=workflow_run_state,
             callbacks=callbacks,
+            assistant_name=assistant_name,
+            user_name=user_name,
+            conversation=conversation
         )
 
     def _run_workflow(self, workflow: Workflow,
                      workflow_run_state: WorkflowRunState,
                      callbacks: list[BaseWorkflowCallback] = None,
                      start_at: Optional[str] = None,
-                     end_at: Optional[str] = None) -> None:
+                     end_at: Optional[str] = None,
+                     assistant_name: Optional[str] = None,
+                     user_name: Optional[str] = None,
+                     conversation: Conversation = None,
+                     ) -> None:
         """
         Run workflow
         :param workflow: Workflow instance
@@ -325,6 +333,7 @@ class WorkflowEngineManager:
                 predecessor_node = next_node
 
             if not has_entry_node:
+                logger.info("Workflow run failed: start node not found in workflow graph.")
                 self._workflow_run_failed(
                     error='Start node not found in workflow graph.',
                     callbacks=callbacks
@@ -333,6 +342,7 @@ class WorkflowEngineManager:
         except GenerateTaskStoppedException as e:
             return
         except Exception as e:
+            logger.info(f"Workflow run failed: {traceback.format_exc(limit=10)}")
             self._workflow_run_failed(
                 error=str(e),
                 callbacks=callbacks
