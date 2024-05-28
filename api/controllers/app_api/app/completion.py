@@ -649,7 +649,6 @@ class ChatActiveApi(AppApiResource):
                             streaming=streaming,
                             user_name=args['user'],
                             assistant_name=app_model.name,
-                            is_model_config_override=True,
                         )
                         return compact_response(response)
                     except Exception as _e:
