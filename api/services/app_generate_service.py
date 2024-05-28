@@ -19,10 +19,10 @@ class AppGenerateService:
                  args: Any,
                  invoke_from: InvokeFrom,
                  streaming: bool = True,
-                 is_model_config_override: bool = False,
                  outer_memory: Optional[list] = None,
                  assistant_name: str = None,
-                 user_name: str = None
+                 user_name: str = None,
+                 user_id: str = None,
                  ) -> Union[dict, Generator[dict, None, None]]:
         """
         App Content Generate
@@ -58,6 +58,7 @@ class AppGenerateService:
                 stream=streaming,
                 user_name=user_name,
                 assistant_name=assistant_name,
+                user_id=user_id,
             )
         elif app_model.mode == AppMode.ADVANCED_CHAT.value:
             workflow = cls._get_workflow(app_model, invoke_from)
@@ -70,6 +71,7 @@ class AppGenerateService:
                 stream=streaming,
                 user_name=user_name,
                 assistant_name=assistant_name,
+                user_id=user_id,
             )
         elif app_model.mode == AppMode.WORKFLOW.value:
             workflow = cls._get_workflow(app_model, invoke_from)
@@ -82,6 +84,7 @@ class AppGenerateService:
                 stream=streaming,
                 user_name=user_name,
                 assistant_name=assistant_name,
+                user_id=user_id,
             )
         else:
             raise ValueError(f'Invalid app mode {app_model.mode}')

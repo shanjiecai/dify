@@ -34,6 +34,7 @@ class ChatAppGenerator(MessageBasedAppGenerator):
                  stream: bool = True,
                  user_name: str = None,
                  assistant_name: str = None,
+                 user_id: str = None,
                  ) \
             -> Union[dict, Generator[dict, None, None]]:
         """
@@ -46,6 +47,7 @@ class ChatAppGenerator(MessageBasedAppGenerator):
         :param stream: is stream
         :param user_name: user name
         :param assistant_name: assistant name
+        :param user_id: user ID
         """
         # if not args.get('query'):
         #     raise ValueError('query is required')
@@ -127,7 +129,7 @@ class ChatAppGenerator(MessageBasedAppGenerator):
             app_config=app_config,
             model_config=ModelConfigConverter.convert(app_config),
             conversation_id=conversation.id if conversation else None,
-            inputs=conversation.inputs if conversation.inputs else self._get_cleaned_inputs(inputs, app_config),
+            inputs=conversation.inputs if conversation and conversation.inputs else self._get_cleaned_inputs(inputs, app_config),
             query=query,
             files=file_objs,
             user_id=user.id,
@@ -136,7 +138,8 @@ class ChatAppGenerator(MessageBasedAppGenerator):
             extras=extras,
             is_new_message=is_new_message,
             user_name=user_name,
-            assistant_name=assistant_name
+            assistant_name=assistant_name,
+            role_user_id=user_id
         )
 
         # init generate records

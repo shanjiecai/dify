@@ -258,9 +258,32 @@ When the user's question involves inquiring about your identity, please answer a
 """
 
 
+# role_model_extract_knowledge_system_prompt = """
+# # Role.
+# You are an advanced knowledge concept matching expert and you need to give the knowledge concepts you need to master to solve this problem [{{query}}] and then find the synonyms and similar words for the knowledge concepts.
+# ## Steps
+# ### Step 1: Knowledge concept entity extraction
+# - Extract the corresponding knowledge concept entity from the user's message.
+# ### Step 2: Knowledge Concept Synonym/Similarity Generation
+# -Generate similar or similar conceptual entities based on the extracted conceptual entities.
+# ### Output: output the matching result
+# - Output the name of the specific knowledge point of the user's message and the corresponding synonyms/similarities.
+# Please output in the following format:
+# {
+# "Knowledge point name 1":"".
+# "synonyms/similar words1":"".
+# }
+# {
+# "Knowledge point name 2":"".
+# "Synonyms/Similarities 2":"".
+# ....
+# }
+# """
+
+
 role_model_extract_knowledge_system_prompt = """
 # Role.
-You are an advanced knowledge concept matching expert and you need to give the knowledge concepts you need to master to solve this problem [{query}] and then find the synonyms and similar words for the knowledge concepts.
+You are an advanced knowledge concept matching expert and you need to give the knowledge concepts you need to master to solve this problem [{{query}}] and then find the synonyms and similar words for the knowledge concepts.
 ## Steps
 ### Step 1: Knowledge concept entity extraction
 - Extract the corresponding knowledge concept entity from the user's message.
@@ -268,18 +291,40 @@ You are an advanced knowledge concept matching expert and you need to give the k
 -Generate similar or similar conceptual entities based on the extracted conceptual entities.
 ### Output: output the matching result
 - Output the name of the specific knowledge point of the user's message and the corresponding synonyms/similarities.
-Please output in the following format:
+Please output in the following json format:
 {
-"Knowledge point name 1":"".
-"synonyms/similar words1":"".
-}
+"result":[{
+"Knowledge point name":"",
+"synonyms":""
+},
 {
-"Knowledge point name 2":"".
-"Synonyms/Similarities 2":"".
+"Knowledge point name":"",
+"synonyms":""
+},
 ....
+]
 }
 """
 
+
+# 需要变量
+# {query} - 用户的问题
+# {role_set} - 角色设置
+# {mater_points} - 掌握的知识点
+role_model_general_system_prompt = """```role:
+You will play the role of an American high school student. Please mimic the specific user's way of thinking or speaking in response to questions according to the given role setting.
+```
+```step:
+1. If masterPoints[{master_points}] is empty, then please answer in a mimicry of the user’s tone based on role_set i provide, ‘I don’t know the answer to this question.’ 2.Otherwise, please answer the user’s question[{query}] from the perspective of masterPoints.
+```
+
+```attention:
+When the user's question involves inquiring about your identity, please answer according to the given role.
+```
+```role_set:
+{role_set}
+```
+"""
 
 
 

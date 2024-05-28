@@ -193,6 +193,8 @@ class HttpExecutor:
             body_data = node_data.body.data or ''
             if body_data:
                 body_data, body_data_variable_selectors = self._format_template(body_data, variable_pool, is_valid_json)
+                # print(f"body_data: {body_data}")
+                # print(f"body_data_variable_selectors: {body_data_variable_selectors}")
 
             if node_data.body.type == 'json':
                 self.headers['Content-Type'] = 'application/json'
@@ -274,7 +276,16 @@ class HttpExecutor:
         if self.method in ('get', 'head', 'options'):
             response = getattr(ssrf_proxy, self.method)(**kwargs)
         elif self.method in ('post', 'put', 'delete', 'patch'):
+            # 考虑参数为其他类型的情况
+            body = json.loads(self.body)
+            for k, v in body.items():
+                if (v.startswith('[') and v.endswith(']')) or (v.startswith('{') and v.endswith('}')):
+                    import ast
+                    body[k] = ast.literal_eval(v)
+            self.body = json.dumps(body, ensure_ascii=False)
+            # print(f"self.body: {self.body}")
             response = getattr(ssrf_proxy, self.method)(data=self.body, files=self.files, **kwargs)
+            # print(f"response: {response.text}")
         else:
             raise ValueError(f'Invalid http method {self.method}')
         return response

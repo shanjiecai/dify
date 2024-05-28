@@ -106,6 +106,7 @@ class ChatAppGenerateEntity(EasyUIBasedAppGenerateEntity):
     is_new_message: bool = True
     user_name: Optional[str] = None
     assistant_name: Optional[str] = None
+    role_user_id: Optional[str] = None
 
 
 class CompletionAppGenerateEntity(EasyUIBasedAppGenerateEntity):
@@ -135,6 +136,7 @@ class AdvancedChatAppGenerateEntity(AppGenerateEntity):
     is_new_message: bool = True
     user_name: Optional[str] = None
     assistant_name: Optional[str] = None
+    role_user_id: Optional[str] = None
 
 
 class WorkflowAppGenerateEntity(AppGenerateEntity):
@@ -146,3 +148,4 @@ class WorkflowAppGenerateEntity(AppGenerateEntity):
     is_new_message: bool = True
     user_name: Optional[str] = None
     assistant_name: Optional[str] = None
+    role_user_id: Optional[str] = None

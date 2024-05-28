@@ -37,6 +37,7 @@ class WorkflowAppGenerator(BaseAppGenerator):
                  stream: bool = True,
                  user_name: str = None,
                  assistant_name: str = None,
+                 user_id: str = None,
                  ) \
             -> Union[dict, Generator[dict, None, None]]:
         """
@@ -50,6 +51,7 @@ class WorkflowAppGenerator(BaseAppGenerator):
         :param stream: is stream
         :param user_name: user name
         :param assistant_name: assistant name
+        :param user_id: user ID
         """
         inputs = args['inputs']
 
@@ -83,6 +85,7 @@ class WorkflowAppGenerator(BaseAppGenerator):
             invoke_from=invoke_from,
             user_name=user_name,
             assistant_name=assistant_name,
+            role_user_id=user_id,
         )
 
         # init queue manager

@@ -223,6 +223,8 @@ class MessageBasedAppGenerator(BaseAppGenerator):
                 from_end_user_id=end_user_id,
                 from_account_id=account_id,
                 assistant_name=application_generate_entity.assistant_name,
+                role=application_generate_entity.user_name,
+                role_id=application_generate_entity.role_user_id,
             )
             db.session.add(message)
             db.session.commit()
