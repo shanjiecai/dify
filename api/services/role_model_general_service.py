@@ -54,3 +54,28 @@ def role_model_general_list(category: str = "RoleModel", page: int = 1, page_siz
     }
     response = requests.request("GET", url, json=payload)
     return response.json()
+
+
+# modelStudentId	模范生编码	String
+# personality	人格	String
+# valueSystem	价值观	String
+# intelligence	多元智能	String
+# leadership	领导力	String
+# knowledge	知识边界	List
+
+def role_model_general_update_personality_knowledge(model_student_id: str, personality: str, value_system: str,
+                                                    intelligence: str, leadership: str, knowledge: list[str]):
+    url = f"{role_model_general_service_url}/updatePersonalityKnowledge/v1"
+    payload = {
+        "modelStudentId": model_student_id,
+        "personality": personality,
+        "valueSystem": value_system,
+        "intelligence": intelligence,
+        "leadership": leadership,
+        "knowledge": knowledge
+    }
+    headers = {
+        'Content-Type': 'application/json'
+    }
+    response = requests.request("POST", url, headers=headers, json=payload)
+    return response.json()
