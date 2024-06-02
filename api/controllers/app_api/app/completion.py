@@ -328,7 +328,8 @@ class ChatApi(AppApiResource):
                     not conversation.plan_question_invoke_user or conversation.plan_question_invoke_time < datetime.datetime.utcnow() - datetime.timedelta(
                     hours=8)) and app_model.id not in ["a756e5d2-c735-4f68-8db0-1de49333501c",
                                                        "19d2fd0b-6e1c-47f9-87ab-cc039b6d3881",
-                                                       "4cb1eee5-72d9-4cd6-befc-e4e0d4fb6333"] and args["query"]:
+                                                       "4cb1eee5-72d9-4cd6-befc-e4e0d4fb6333",
+                                                       "cee86a23-56ab-4b3d-a548-ca34191b23a1"] and args["query"]:
                 # 另起线程执行plan_question
                 threading.Thread(target=plan_question_background,
                                  args=(current_app._get_current_object(), args["query"], conversation,
@@ -583,7 +584,8 @@ class ChatActiveApi(AppApiResource):
                                 not conversation.plan_question_invoke_user or not conversation.plan_question_invoke_time or conversation.plan_question_invoke_time < datetime.datetime.utcnow() - datetime.timedelta(
                                 hours=8)) and app_model.id not in ["a756e5d2-c735-4f68-8db0-1de49333501c",
                                                                    "19d2fd0b-6e1c-47f9-87ab-cc039b6d3881",
-                                                                   "4cb1eee5-72d9-4cd6-befc-e4e0d4fb6333"] and args[
+                                                                   "4cb1eee5-72d9-4cd6-befc-e4e0d4fb6333",
+                                                                   "cee86a23-56ab-4b3d-a548-ca34191b23a1"] and args[
                             "query"]:
                             # 另起线程执行plan_question
                             threading.Thread(target=plan_question_background,
