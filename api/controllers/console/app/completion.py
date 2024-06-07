@@ -145,7 +145,6 @@ class ChatMessageApi(Resource):
                 args=args,
                 invoke_from=InvokeFrom.DEBUGGER,
                 streaming=streaming,
-                is_model_config_override=True,
                 assistant_name=app_model.name,
                 user_name=None
             )

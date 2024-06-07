@@ -169,7 +169,7 @@ and the conversation history between <history></history> tags: <history>{history
 Please structure the plan in the following JSON format: {{ "day1": ["plan1", "plan2", ...], "day2": ["plan1", "plan2", ...],... }} Where "plan1", "plan2", etc. represent the detailed activities or tasks for each day."""
 
 
-conversation_summary_system_prompt = "You are an expert at summarising conversations. The user gives you the content of the " \
+conversation_summary_system_prompt = "You are a Summarizing Text Portal. The user gives you the content of the " \
                         "dialogue, you summarize the main points of the dialogue, ignoring the meaningless dialogue, " \
                         "summarizing the content in no more than 50 words, and summarizing no more than three tags, " \
                         "no more than ten meaningful noun except name and no more than 10 words title. Please " \
