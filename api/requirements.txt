@@ -79,7 +79,6 @@ yarl~=1.9.4
 twilio~=9.0.4
 qrcode~=7.4.2
 py2neo
-azure-storage-blob==12.9.0
 azure-storage-blob==12.13.0
 azure-identity==1.15.0
 lxml==5.1.0

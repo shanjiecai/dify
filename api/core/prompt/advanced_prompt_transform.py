@@ -4,6 +4,7 @@ from typing import Optional, Union
 from core.app.entities.app_invoke_entities import ModelConfigWithCredentialsEntity
 from core.file.file_obj import FileVar
 from core.helper.code_executor.jinja2.jinja2_formatter import Jinja2Formatter
+from core.helper.openai_name_convert import correct_name_field
 from core.memory.token_buffer_memory import TokenBufferMemory
 from core.model_runtime.entities.message_entities import (
     AssistantPromptMessage,
@@ -18,7 +19,6 @@ from core.prompt.prompt_transform import PromptTransform
 from core.prompt.simple_prompt_transform import ModelMode
 from core.prompt.utils.prompt_template_parser import PromptTemplateParser
 from core.prompt_const import plan_question_template
-from core.utils.openai_name_convert import correct_name_field
 from models.model import Conversation
 from mylogger import logger
 

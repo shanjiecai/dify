@@ -2,6 +2,7 @@ from typing import Optional
 
 from core.app.app_config.features.file_upload.manager import FileUploadConfigManager
 from core.file.message_file_parser import MessageFileParser
+from core.helper.openai_name_convert import correct_name_field
 from core.model_manager import ModelInstance
 from core.model_runtime.entities.message_entities import (
     AssistantPromptMessage,
@@ -11,7 +12,6 @@ from core.model_runtime.entities.message_entities import (
     TextPromptMessageContent,
     UserPromptMessage,
 )
-from core.utils.openai_name_convert import correct_name_field
 from extensions.ext_database import db
 from models.model import AppMode, Conversation, Message
 
