@@ -596,13 +596,13 @@ class PromptTransform:
                                                message_limit: Optional[int] = None
                                                ) -> list[PromptMessage]:
         if not message_limit:
-            message_limit = memory_config.window.size if (memory_config.window.enabled and memory_config.window.size is not None and memory_config.window.size > 0) else 10
+            message_limit = memory_config.window.size if (memory_config.window.enabled and memory_config.window.size is not None and memory_config.window.size > 0) else None
         """Get memory messages."""
         return memory.get_history_prompt_messages(
             max_token_limit=max_token_limit,
             message_limit=message_limit,
             assistant_name=assistant_name,
-            user_name=user_name
+            user_name=user_name,
         )
         # prompt = self._format_prompt(prompt_template, prompt_inputs)
         #

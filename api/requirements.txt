@@ -73,7 +73,7 @@ yfinance~=0.2.40
 pydub~=0.25.1
 gmpy2~=2.1.5
 numexpr~=2.9.0
-duckduckgo-search==5.2.2
+duckduckgo-search~=6.1.5
 arxiv==2.1.0
 yarl~=1.9.4
 twilio~=9.0.4
@@ -94,5 +94,7 @@ oss2==2.18.5
 icrawler
 flasgger==0.9.7b2
 pgvector==0.2.5
+pymysql==1.1.1
+tidb-vector==0.0.9
 google-cloud-aiplatform==1.49.0
 vanna[postgres,mysql,clickhouse,duckdb]==0.5.5

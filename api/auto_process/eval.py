@@ -57,7 +57,7 @@ if __name__ == '__main__':
         query_list.append(q)
         ws.append([q, res])
         # writer.writerow([q, res, res1, res2, res3])
-            # f.write(q + "\t" + res1 + "\t" + res2 + "\t" + res3 + "\n")
+        # f.write(q + "\t" + res1 + "\t" + res2 + "\t" + res3 + "\n")
     wb.save("./data/test_Adarina_Daniels_1201.xlsx")
 
 
@@ -84,5 +84,5 @@ if __name__ == '__main__':
 
     # 整理成csv
 
-        # for i in range(len(Adarina_Daniels_res_list)):
-        #     f.write(query_list[i] + "\t" + Adarina_Daniels_res_list[i] + "\n")
+    # for i in range(len(Adarina_Daniels_res_list)):
+    #     f.write(query_list[i] + "\t" + Adarina_Daniels_res_list[i] + "\n")

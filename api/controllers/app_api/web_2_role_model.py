@@ -40,7 +40,7 @@ if "need_dj" not in st.session_state:
 app_id_list, app_name_list = get_app_list()
 
 # if len(st.session_state.role_model_id_list) == 0:
-    # print(app_name_list)
+# print(app_name_list)
 app_names_select = st.multiselect("Select role models", app_name_list)
 need_dj = st.checkbox("need dj")
 

@@ -22,7 +22,7 @@ def get_all_groups():
     group_id_list = []
     for i in response.json()['data']:
         # if i["dj_bot_id"]:
-            group_id_list.append(i["id"])
+        group_id_list.append(i["id"])
     return group_id_list
 
 

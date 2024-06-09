@@ -22,7 +22,7 @@ class TokenBufferMemory:
         self.model_instance = model_instance
 
     def get_history_prompt_messages(self, max_token_limit: int = 2000,
-                                    message_limit: int = 10,
+                                    message_limit: Optional[int] = None,
                                     assistant_name: Optional[str] = None,
                                     user_name: Optional[str] = None
                                     ) -> list[PromptMessage]:
@@ -43,10 +43,15 @@ class TokenBufferMemory:
         app_record = self.conversation.app
 
         # fetch limited messages, and return reversed
-        messages = db.session.query(Message).filter(
+        query = db.session.query(Message).filter(
             Message.conversation_id == self.conversation.id,
             # Message.answer != ''
-        ).order_by(Message.created_at.desc()).limit(message_limit).all()
+        ).order_by(Message.created_at.desc())
+
+        if message_limit and message_limit > 0:
+            messages = query.limit(message_limit).all()
+        else:
+            messages = query.all()
 
         messages = list(reversed(messages))
         message_file_parser = MessageFileParser(
@@ -136,7 +141,7 @@ class TokenBufferMemory:
     def get_history_prompt_text(self, human_prefix: str = "Human",
                                 ai_prefix: str = "Assistant",
                                 max_token_limit: int = 2000,
-                                message_limit: int = 10) -> str:
+                                message_limit: Optional[int] = None) -> str:
         """
         Get history prompt text.
         :param human_prefix: human prefix
