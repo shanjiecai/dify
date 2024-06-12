@@ -134,7 +134,7 @@ class CopywriterApi(AppApiResource):
             response = generate_response(
                 query,
                 copywriter_system_prompt,
-                # model="gpt-4-turbo",
+                model="gpt-4o",
                 **kwargs
             )
 
