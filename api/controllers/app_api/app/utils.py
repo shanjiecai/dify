@@ -10,6 +10,7 @@ from mylogger import logger
 try:
     # nlp = spacy.load("en_core_web_trf")
     nlp = spacy.load("en_core_web_md")
+    nlp.add_pipe("yake")
 except Exception as e:
     print(f"spacy load fail {e}")
     pass
@@ -175,6 +176,14 @@ def split_and_get_interval(text):
             interval_list.append(round(len(sentences[index+1]) / 7, 1))
     print(time.time() - begin)
     return sentence_list, interval_list
+
+
+def get_keyword_from_text(text):
+    doc = nlp(text)
+    keyword_list = []
+    for keyword, score in doc._.extract_keywords(n=3):
+        keyword_list.append(keyword)
+    return keyword_list
 
 
 if __name__ == '__main__':

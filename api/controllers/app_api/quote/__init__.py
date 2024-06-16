@@ -14,6 +14,7 @@ from werkzeug.exceptions import InternalServerError, NotFound
 import services
 from controllers.app_api import api
 from controllers.app_api.app.utils import get_recent_history, get_recent_history_within_timestamp, send_feishu_bot
+from controllers.app_api.quote.quotable_api import get_quotable_quote
 
 # import spacy
 # nlp = spacy.load("en_core_web_sm")
@@ -54,10 +55,11 @@ from services.openai_base_request_service import generate_response
 
 api_key = os.environ.get('OPENAI_API_KEY')
 
-
 model_name_dict = {
     "DJ Bot": "James Corden",
 }
+
+
 def model_name_transform(model_name: str):
     if model_name in model_name_dict:
         return model_name_dict[model_name]
@@ -104,6 +106,9 @@ class QuotaApi(AppApiResource):
                 prompt:
                   type: string
                   description: The prompt for the quote model
+                word_limit:
+                  type: integer
+                  description: The word limit for the quote model, default 30
                 kwargs:
                   type: object
                   required: false
@@ -126,9 +131,11 @@ class QuotaApi(AppApiResource):
 
         parser = reqparse.RequestParser()
         parser.add_argument('prompt', type=str, required=False, location='json')
+        parser.add_argument('word_limit', type=int, required=False, location='json')
         parser.add_argument('kwargs', type=dict, required=False, default={}, location='json')
         args = parser.parse_args()
         prompt = args['prompt']
+        n = args['word_limit']
         kwargs = args['kwargs']
 
         history_messages = [
@@ -136,6 +143,33 @@ class QuotaApi(AppApiResource):
             {"role": "user", "content": prompt}
         ]
         try:
+            try:
+                res_item = get_quotable_quote(prompt, word_limit=30 if not n else n)
+                """
+                    {
+                    "_id": "uSGo8Fn65z",
+                    "author": "Abraham Lincoln",
+                    "content": "How many legs does a dog have if you call his tail a leg? Four. Saying that a tail is a leg doesn't make it a leg.",
+                    "tags": [
+                        "Truth"
+                    ],
+                    "authorId": "8k75S1ntV9GW",
+                    "authorSlug": "abraham-lincoln",
+                    "length": 114,
+                    "dateAdded": "2022-03-12",
+                    "dateModified": "2023-04-14"
+                }
+                """
+                content = res_item['content']
+                author = res_item['author']
+                quote = f"{content} - {author}"
+                return {"result": "success", "quote": quote,
+                        "content": content.strip(), "author": author.strip()
+                        }, 200
+            except:
+                logger.info("quotable api error, use gpt-4o to generate quote")
+                pass
+
             response = generate_response(
                 None,
                 quote_generator_system_prompt,
@@ -144,8 +178,11 @@ class QuotaApi(AppApiResource):
                 temperature=0.9,
                 **kwargs
             )
-
+            quote = response.choices[0].message.content
+            # quote 按照最后一个-分割
+            content, author = quote.rsplit("-", 1)
             return {"result": "success", "quote": response.choices[0].message.content,
+                    "content": content.strip(), "author": author.strip()
                     }, 200
         except Exception as e:
             logger.info(f"internal server error: {traceback.format_exc()}")
@@ -155,6 +192,3 @@ class QuotaApi(AppApiResource):
 
 
 api.add_resource(QuotaApi, '/quote')
-
-
-
