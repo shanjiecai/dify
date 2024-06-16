@@ -58,7 +58,7 @@ class ChatAppRunner(AppRunner):
         # Not Include: memory, external data, dataset context
         self.get_pre_calculate_rest_tokens(
             app_record=app_record,
-            model_config=application_generate_entity.model_config,
+            model_config=application_generate_entity.model_conf,
             prompt_template_entity=app_config.prompt_template,
             inputs=inputs,
             files=files,
@@ -69,8 +69,8 @@ class ChatAppRunner(AppRunner):
         if application_generate_entity.conversation_id:
             # get memory of conversation (read-only)
             model_instance = ModelInstance(
-                provider_model_bundle=application_generate_entity.model_config.provider_model_bundle,
-                model=application_generate_entity.model_config.model
+                provider_model_bundle=application_generate_entity.model_conf.provider_model_bundle,
+                model=application_generate_entity.model_conf.model
             )
 
             memory = TokenBufferMemory(
@@ -83,7 +83,7 @@ class ChatAppRunner(AppRunner):
         #          memory(optional)
         prompt_messages, stop = self.organize_prompt_messages(
             app_record=app_record,
-            model_config=application_generate_entity.model_config,
+            model_config=application_generate_entity.model_conf,
             prompt_template_entity=app_config.prompt_template,
             inputs=inputs,
             files=files,
@@ -166,7 +166,7 @@ class ChatAppRunner(AppRunner):
                 app_id=app_record.id,
                 user_id=application_generate_entity.user_id,
                 tenant_id=app_record.tenant_id,
-                model_config=application_generate_entity.model_config,
+                model_config=application_generate_entity.model_conf,
                 config=app_config.dataset,
                 query=query,
                 invoke_from=application_generate_entity.invoke_from,
@@ -180,7 +180,7 @@ class ChatAppRunner(AppRunner):
         #          memory(optional), external data, dataset context(optional)
         prompt_messages, stop = self.organize_prompt_messages(
             app_record=app_record,
-            model_config=application_generate_entity.model_config,
+            model_config=application_generate_entity.model_conf,
             prompt_template_entity=app_config.prompt_template,
             inputs=inputs,
             files=files,
@@ -204,14 +204,14 @@ class ChatAppRunner(AppRunner):
 
         # Re-calculate the max tokens if sum(prompt_token +  max_tokens) over model token limit
         self.recalc_llm_max_tokens(
-            model_config=application_generate_entity.model_config,
+            model_config=application_generate_entity.model_conf,
             prompt_messages=prompt_messages
         )
 
         # Invoke model
         model_instance = ModelInstance(
-            provider_model_bundle=application_generate_entity.model_config.provider_model_bundle,
-            model=application_generate_entity.model_config.model
+            provider_model_bundle=application_generate_entity.model_conf.provider_model_bundle,
+            model=application_generate_entity.model_conf.model
         )
         # print(f"prompt_messages: {prompt_messages}")
         # logger.info(f"{app_orchestration_config.model_config.model} prompt_messages: {prompt_messages}")
@@ -220,7 +220,7 @@ class ChatAppRunner(AppRunner):
 
         invoke_result = model_instance.invoke_llm(
             prompt_messages=prompt_messages,
-            model_parameters=application_generate_entity.model_config.parameters,
+            model_parameters=application_generate_entity.model_conf.parameters,
             stop=stop,
             stream=application_generate_entity.stream,
             user=application_generate_entity.user_id,
