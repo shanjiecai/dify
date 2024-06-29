@@ -10,7 +10,7 @@ from mylogger import logger
 try:
     # nlp = spacy.load("en_core_web_trf")
     nlp = spacy.load("en_core_web_md")
-    nlp.add_pipe("yake")
+    # nlp.add_pipe("yake")
 except Exception as e:
     print(f"spacy load fail {e}")
     pass
@@ -149,7 +149,7 @@ def upload_file(file_path: str, file_name: str):
 
 
 feishu_alert_url = os.environ.get("FEISHU_ALERT_URL")
-print(feishu_alert_url)
+print(f"FEISHU_ALERT_URL: {feishu_alert_url}")
 
 
 def send_feishu_bot(message):

@@ -183,8 +183,11 @@ class AdvancedPromptTransform(PromptTransform):
                     prompt_messages.append(UserPromptMessage(content=prompt))
             elif prompt_item.role == PromptMessageRole.SYSTEM and prompt:
                 if (conversation and conversation.plan_question and conversation.plan_question_invoke_user and
-                        conversation.plan_question_invoke_time > datetime.datetime.utcnow() - datetime.timedelta(
-                            hours=16)):
+                    conversation.plan_question_invoke_time > datetime.datetime.utcnow() - datetime.timedelta(
+                            hours=16)) and conversation.app_id not in ["a756e5d2-c735-4f68-8db0-1de49333501c",
+                                                                       "19d2fd0b-6e1c-47f9-87ab-cc039b6d3881",
+                                                                       "4cb1eee5-72d9-4cd6-befc-e4e0d4fb6333",
+                                                                       "cee86a23-56ab-4b3d-a548-ca34191b23a1"]:
                     def remove_character_info(text):
                         start_phrase = "character information"
                         end_phrase = "Don’t be verbose or too formal or polite when speaking."
