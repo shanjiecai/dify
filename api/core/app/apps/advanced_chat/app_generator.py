@@ -104,6 +104,10 @@ class AdvancedChatAppGenerator(MessageBasedAppGenerator):
                     query = message.query if message else ''
                     user_name = message.role if message else ''
 
+        if invoke_from == InvokeFrom.DEBUGGER:
+            # always enable retriever resource in debugger mode
+            app_config.additional_features.show_retrieve_source = True
+
         if not assistant_name and app_model.name:
             assistant_name = app_model.name
         # init application generate entity
