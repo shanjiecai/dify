@@ -170,9 +170,10 @@ class HttpExecutor:
                 # print(f"body_data: {body_data}")
                 # print(f"body_data_variable_selectors: {body_data_variable_selectors}")
 
-            if node_data.body.type == 'json':
+            content_type_is_set = any(key.lower() == 'content-type' for key in self.headers)
+            if node_data.body.type == 'json' and not content_type_is_set:
                 self.headers['Content-Type'] = 'application/json'
-            elif node_data.body.type == 'x-www-form-urlencoded':
+            elif node_data.body.type == 'x-www-form-urlencoded' and not content_type_is_set:
                 self.headers['Content-Type'] = 'application/x-www-form-urlencoded'
 
             if node_data.body.type in ['form-data', 'x-www-form-urlencoded']:

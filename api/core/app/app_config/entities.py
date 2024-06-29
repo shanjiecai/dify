@@ -183,6 +183,14 @@ class TextToSpeechEntity(BaseModel):
     language: Optional[str] = None
 
 
+class TracingConfigEntity(BaseModel):
+    """
+    Tracing Config Entity.
+    """
+    enabled: bool
+    tracing_provider: str
+
+
 class FileExtraConfig(BaseModel):
     """
     File Upload Entity.
@@ -199,6 +207,8 @@ class AppAdditionalFeatures(BaseModel):
     more_like_this: bool = False
     speech_to_text: bool = False
     text_to_speech: Optional[TextToSpeechEntity] = None
+    trace_config: Optional[TracingConfigEntity] = None
+
 
 class InvokeFrom(Enum):
     """
@@ -209,6 +219,7 @@ class InvokeFrom(Enum):
     WEB_APP = 'web-app'
     EXPLORE = 'explore'
     DEBUGGER = 'debugger'
+
 
 class AppConfig(BaseModel):
     """
