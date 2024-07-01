@@ -14,6 +14,11 @@ server {
       include proxy.conf;
     }
 
+    location /backend-api {
+      proxy_pass http://api:5001;
+      include proxy.conf;
+    }
+
     location /v1 {
       proxy_pass http://api:5001;
       include proxy.conf;
@@ -21,6 +26,18 @@ server {
 
     location /files {
       proxy_pass http://api:5001;
+      include proxy.conf;
+    }
+
+    # es
+    #location /es {
+    #  proxy_pass http://es:9200;
+    #  include proxy.conf;
+    #}
+
+    # kibana
+    location /kibana {
+      proxy_pass http://kibana:5601;
       include proxy.conf;
     }
 
