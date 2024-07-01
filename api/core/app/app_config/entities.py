@@ -210,17 +210,6 @@ class AppAdditionalFeatures(BaseModel):
     trace_config: Optional[TracingConfigEntity] = None
 
 
-class InvokeFrom(Enum):
-    """
-    Invoke From.
-    """
-    SERVICE_API = 'service-api'
-    APP_API = 'app-api'
-    WEB_APP = 'web-app'
-    EXPLORE = 'explore'
-    DEBUGGER = 'debugger'
-
-
 class AppConfig(BaseModel):
     """
     Application Config Entity.

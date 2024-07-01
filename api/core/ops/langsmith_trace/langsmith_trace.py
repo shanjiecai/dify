@@ -102,7 +102,7 @@ class LangSmithDataTrace(BaseTraceInstance):
         workflow_nodes_executions = (
             db.session.query(WorkflowNodeExecution)
             .filter(WorkflowNodeExecution.workflow_run_id == trace_info.workflow_run_id)
-            .order_by(WorkflowNodeExecution.index.desc())
+            # .order_by(WorkflowNodeExecution.index.desc())
             .all()
         )
 

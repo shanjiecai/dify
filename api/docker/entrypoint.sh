@@ -9,7 +9,7 @@ fi
 
 if [[ "${MODE}" == "worker" ]]; then
   celery -A app.celery worker -P ${CELERY_WORKER_CLASS:-gevent} -c ${CELERY_WORKER_AMOUNT:-1} --loglevel INFO \
-    -Q ${CELERY_QUEUES:-dataset,generation,mail,ops_trace}
+    -Q ${CELERY_QUEUES:-dataset,generation,mail,ops_trace,app_deletion}
 elif [[ "${MODE}" == "beat" ]]; then
   celery -A app.celery beat --loglevel INFO
 else
@@ -25,6 +25,7 @@ else
       --timeout ${GUNICORN_TIMEOUT:-200} \
       --log-level debug \
       --log-file ./log/gunicorn.log \
+      --preload \
       app:app
   fi
 fi
