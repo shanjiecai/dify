@@ -125,7 +125,7 @@ class ConversationService:
     @classmethod
     def get_conversation(cls, app_model: Optional[App] = None,
                          conversation_id: str = None,
-                         # , user: Optional[Union[Account, EndUser]]
+                         user: Optional[Union[Account, EndUser]] = None
                          ):
         conversation = db.session.query(Conversation) \
             .filter(
