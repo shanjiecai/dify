@@ -169,15 +169,18 @@ and the conversation history between <history></history> tags: <history>{history
 Please structure the plan in the following JSON format: {{ "day1": ["plan1", "plan2", ...], "day2": ["plan1", "plan2", ...],... }} Where "plan1", "plan2", etc. represent the detailed activities or tasks for each day."""
 
 
-conversation_summary_system_prompt = "You are a Summarizing Text Portal. The user gives you the content of the " \
+conversation_summary_system_prompt = "You are an expert at summarising conversations. The user gives you the content of the " \
                         "dialogue, you summarize the main points of the dialogue, ignoring the meaningless dialogue, " \
                         "summarizing the content in no more than 50 words, and summarizing no more than three tags, " \
-                        "no more than ten meaningful noun except name and no more than 10 words title. Please " \
+                        "Extract no more than ten keywords from the conversation, and the keywords cannot be changed to uppercase or lowercase, singular or plural.no more than 10 words title. Please " \
                         "generate summary,title,tags,title using Chinese if the primary language of the conversation " \
                         "is Chinese and make sure to output the following format: Summary: 50 words or less based on " \
-                        "the current dialogue \nTags: tag 1, tag 2, tag 3 \nNouns: noun 1, noun 2, noun 3 \nTitle: " \
-                        "title of the summary in 10 words or less. \n\nFor example: Summary: The cat sat on the mat. \nTags: cat, mat, " \
-                        "sat \nNouns: cat, mat, sat \nTitle: The cat sat on the mat. \n"
+                        "the current dialogue \nTags: tag 1, tag 2, tag 3 \nKeywords: keywords 1,  keywords 2, keywords 3 \nTitle: " \
+                        "title of the summary. \n\nFor example: Summary: The cat sat on the mat. \nTags: cat, mat, " \
+                        "sat \nKeywords: cat, mat, sat \nTitle: The cat sat on the mat. \n\nPlease make sure to output " \
+                        "the following format: Summary: 50 words or less based on the current dialogue \nTags: tag 1, " \
+                        "tag 2, tag 3 \nNouns: noun 1, noun 2, noun 3 \nTitle: title of the summary in 10 words or " \
+                        "less."
 
 # 总结创建计划时的对话历史
 # plan_summary_system_prompt = "You are an expert at summarising conversations. The above is the history of the conversation " \

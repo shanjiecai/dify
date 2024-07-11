@@ -120,13 +120,14 @@ class SummarizeApi(AppApiResource):
                         "summary": summary}, 200
             else:
                 try:
-                    tags = response.choices[0].message.content.split("Tags:")[1].strip().split("Nouns:")[0].strip().split(",")
+                    print(response.choices[0].message.content)
+                    tags = response.choices[0].message.content.split("Tags:")[1].strip().split("Keywords:")[0].strip().split(",")
                     for i in range(len(tags)):
                         tags[i] = tags[i].strip()
                 except:
                     tags = []
                 try:
-                    nouns = response.choices[0].message.content.split("Nouns:")[1].strip().split("Title:")[0].strip().split(",")
+                    nouns = response.choices[0].message.content.split("Keywords:")[1].strip().split("Title:")[0].strip().split(",")
                     for i in range(len(nouns)):
                         nouns[i] = nouns[i].strip()
                 except:
