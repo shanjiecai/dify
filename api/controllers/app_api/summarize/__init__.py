@@ -113,7 +113,7 @@ class SummarizeApi(AppApiResource):
             )
             # 提取出summary和tags
             try:
-                summary = response.choices[0].message.content.split("Tags:")[0].strip().split("Summary:")[1].strip()
+                summary = response.choices[0].message.content.split("Title:")[0].strip().split("Summary:")[1].replace('\n\n-','').strip()
             except:
                 summary = ""
             if args['type'] == "plan":
@@ -124,7 +124,7 @@ class SummarizeApi(AppApiResource):
             else:
                 try:
                     print(response.choices[0].message.content)
-                    tags = response.choices[0].message.content.split("Tags:")[1].strip().split("Keywords:")[0].strip().split(",")
+                    tags = response.choices[0].message.content.split("Tags:")[1].strip().split("Keywords:")[0].replace("\n\n-", " ").strip().split(",")
                     for i in range(len(tags)):
                         tags[i] = tags[i].strip()
                 except:
@@ -136,7 +136,7 @@ class SummarizeApi(AppApiResource):
                 except:
                     nouns = []
                 try:
-                    title = response.choices[0].message.content.split("Title:")[1].strip()
+                    title = response.choices[0].message.content.split("Title:")[1].strip().split("Tags:")[0].replace("\n\n-", " ").strip().split(",")
                 except:
                     title = ""
                 for n in nouns:
