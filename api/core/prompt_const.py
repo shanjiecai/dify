@@ -169,15 +169,75 @@ and the conversation history between <history></history> tags: <history>{history
 Please structure the plan in the following JSON format: {{ "day1": ["plan1", "plan2", ...], "day2": ["plan1", "plan2", ...],... }} Where "plan1", "plan2", etc. represent the detailed activities or tasks for each day."""
 
 
-conversation_summary_system_prompt = "You are a Summarizing Text Portal. The user gives you the content of the " \
-                        "dialogue, you summarize the main points of the dialogue, ignoring the meaningless dialogue, " \
-                        "summarizing the content in no more than 50 words, and summarizing no more than three tags, " \
-                        "no more than ten meaningful noun except name and no more than 10 words title. Please " \
-                        "generate summary,title,tags,title using Chinese if the primary language of the conversation " \
-                        "is Chinese and make sure to output the following format: Summary: 50 words or less based on " \
-                        "the current dialogue \nTags: tag 1, tag 2, tag 3 \nNouns: noun 1, noun 2, noun 3 \nTitle: " \
-                        "title of the summary in 10 words or less. \n\nFor example: Summary: The cat sat on the mat. \nTags: cat, mat, " \
-                        "sat \nNouns: cat, mat, sat \nTitle: The cat sat on the mat. \n"
+# conversation_summary_system_prompt = "You are an expert at summarising conversations. The user gives you the content of the " \
+#                         "dialogue, you summarize the main points of the dialogue, ignoring the meaningless dialogue, " \
+#                         "summarizing the content in no more than 50 words, and summarizing no more than three tags, " \
+#                         "Extract no more than ten keywords from the conversation, and the keywords cannot be changed to uppercase or lowercase, singular or plural.no more than 10 words title. Please " \
+#                         "generate summary,title,tags,title using Chinese if the primary language of the conversation " \
+#                         "is Chinese and make sure to output the following format: Summary: 50 words or less based on " \
+#                         "the current dialogue \nTags: tag 1, tag 2, tag 3 \nKeywords: keywords 1,  keywords 2, keywords 3 \nTitle: " \
+#                         "title of the summary. \n\nFor example: Summary: The cat sat on the mat. \nTags: cat, mat, " \
+#                         "sat \nKeywords: cat, mat, sat \nTitle: The cat sat on the mat. \n\nPlease make sure to output " \
+#                         "the following format: Summary: 50 words or less based on the current dialogue \nTags: tag 1, " \
+#                         "tag 2, tag 3 \nNouns: noun 1, noun 2, noun 3 \nTitle: title of the summary in 10 words or " \
+#                         "less."
+
+
+conversation_summary_system_prompt = """#Task:
+
+
+Extract the most essential information from given dialogues, organizing the content into four fields: a summary, a title, tags, and keywords.
+
+
+#step:
+
+
+1. Remove information unrelated to the topic of the conversation, such as pleasantries, character names, and chat background.
+
+2. Generate a summary focusing on the topic discussed.
+
+
+3. Extract keywords from given dialogues.
+
+
+4. Extract tags from given dialogues.
+
+
+#Fields:
+
+
+1.Summary: Within 50 words. The summary should highlight the topics discussed.
+
+
+2.Title: A concise title for the summary.
+
+
+3.Tags: No more than three.
+
+
+4.Keywords: Entities in Dialogues. No more than 10 Keywords.The keywords must be nouns extracted directly from the upcoming conversations, maintaining consistent capitalization and form as used in the dialogues. The uppercase and lowercase letters of the keywords must strictly match their original forms in the provided dialogues. (For example, if the keyword is “Python,” capitalize the first letter as in the original form. If the keyword is “math,” keep it lowercase.)
+
+
+#Output Format:
+
+
+- Summary: [Your summary here]
+
+
+- Title: [Your title here]
+
+
+- Tags: [Tag1, Tag2, Tag3]
+
+
+- Keywords: [keyword1, keyword2, ..., keywords10]
+
+
+#dialogues
+
+
+{{text}}
+"""
 
 # 总结创建计划时的对话历史
 # plan_summary_system_prompt = "You are an expert at summarising conversations. The above is the history of the conversation " \
