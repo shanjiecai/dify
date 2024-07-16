@@ -2,7 +2,7 @@ x-shared-env: &shared-api-worker-env
   # The environment of the application, supported values are `development`, `testing`, `staging`, `production`.
   ENV: production
   # APP endpoint
-  APP_ENDPOINT: https://www.vvvapp.org
+  APP_ENDPOINT: ${APP_ENDPOINT}
   # Startup mode, 'api' starts the API server.
   MODE: api
   LOG_LEVEL: ${LOG_LEVEL:-INFO}
