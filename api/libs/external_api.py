@@ -7,6 +7,8 @@ from flask_restful import Api, http_status_message
 from werkzeug.datastructures import Headers
 from werkzeug.exceptions import HTTPException
 
+from core.errors.error import AppInvokeQuotaExceededError
+
 from mylogger import logger
 
 
@@ -45,6 +47,13 @@ class ExternalApi(Api):
             logger.info(traceback.format_exc())
             default_data = {
                 'code': 'invalid_param',
+                'message': str(e),
+                'status': status_code
+            }
+        elif isinstance(e, AppInvokeQuotaExceededError):
+            status_code = 429
+            default_data = {
+                'code': 'too_many_requests',
                 'message': str(e),
                 'status': status_code
             }

@@ -103,7 +103,6 @@ class WorkflowAppGenerator(BaseAppGenerator):
             application_generate_entity=application_generate_entity,
             invoke_from=invoke_from,
             stream=stream,
-            call_depth=call_depth,
         )
 
     def _generate(
@@ -113,7 +112,6 @@ class WorkflowAppGenerator(BaseAppGenerator):
         application_generate_entity: WorkflowAppGenerateEntity,
         invoke_from: InvokeFrom,
         stream: bool = True,
-        call_depth: int = 0
     ) -> Union[dict, Generator[dict, None, None]]:
         """
         Generate App response.
