@@ -8,7 +8,6 @@ from werkzeug.datastructures import Headers
 from werkzeug.exceptions import HTTPException
 
 from core.errors.error import AppInvokeQuotaExceededError
-
 from mylogger import logger
 
 
