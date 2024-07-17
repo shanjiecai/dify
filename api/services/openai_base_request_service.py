@@ -40,7 +40,7 @@ def generate_response(prompt=None, system_prompt=None, history_messages=None, mo
     # print(messages)
     logger.debug(f"Prompt: {messages}")
     response = client.chat.completions.create(model=model,
-                                              max_tokens=kwargs.get('max_tokens', 100),
+                                              max_tokens=kwargs.get('max_tokens', 3000),
                                               temperature=kwargs.get('temperature', None),
                                               presence_penalty=kwargs.get('presence_penalty', 0),
                                               frequency_penalty=kwargs.get('frequency_penalty', 0),

@@ -111,7 +111,9 @@ class ConversationService:
 
         # generate conversation name
         try:
-            name = LLMGenerator.generate_conversation_name(app_model.tenant_id, message.query)
+            name = LLMGenerator.generate_conversation_name(
+                app_model.tenant_id, message.query, conversation.id, app_model.id
+            )
             conversation.name = name
         except:
             pass
@@ -123,7 +125,7 @@ class ConversationService:
     @classmethod
     def get_conversation(cls, app_model: Optional[App] = None,
                          conversation_id: str = None,
-                         # , user: Optional[Union[Account, EndUser]]
+                         user: Optional[Union[Account, EndUser]] = None
                          ):
         conversation = db.session.query(Conversation) \
             .filter(

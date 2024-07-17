@@ -20,6 +20,7 @@ from core.app.entities.app_invoke_entities import InvokeFrom, WorkflowAppGenerat
 from core.app.entities.task_entities import WorkflowAppBlockingResponse, WorkflowAppStreamResponse
 from core.file.message_file_parser import MessageFileParser
 from core.model_runtime.errors.invoke import InvokeAuthorizationError, InvokeError
+from core.ops.ops_trace_manager import TraceQueueManager
 from extensions.ext_database import db
 from models.account import Account
 from models.model import App, EndUser
@@ -76,6 +77,9 @@ class WorkflowAppGenerator(BaseAppGenerator):
             workflow=workflow
         )
 
+        # get tracing instance
+        trace_manager = TraceQueueManager(app_model.id)
+
         # init application generate entity
         application_generate_entity = WorkflowAppGenerateEntity(
             task_id=str(uuid.uuid4()),
@@ -89,6 +93,7 @@ class WorkflowAppGenerator(BaseAppGenerator):
             user_name=user_name,
             assistant_name=assistant_name,
             role_user_id=user_id,
+            trace_manager=trace_manager
         )
 
         return self._generate(
@@ -98,17 +103,16 @@ class WorkflowAppGenerator(BaseAppGenerator):
             application_generate_entity=application_generate_entity,
             invoke_from=invoke_from,
             stream=stream,
-            call_depth=call_depth
         )
 
-    def _generate(self, app_model: App,
-                 workflow: Workflow,
-                 user: Union[Account, EndUser],
-                 application_generate_entity: WorkflowAppGenerateEntity,
-                 invoke_from: InvokeFrom,
-                 stream: bool = True,
-                 call_depth: int = 0) \
-            -> Union[dict, Generator[dict, None, None]]:
+    def _generate(
+        self, app_model: App,
+        workflow: Workflow,
+        user: Union[Account, EndUser],
+        application_generate_entity: WorkflowAppGenerateEntity,
+        invoke_from: InvokeFrom,
+        stream: bool = True,
+    ) -> Union[dict, Generator[dict, None, None]]:
         """
         Generate App response.
 
@@ -142,7 +146,7 @@ class WorkflowAppGenerator(BaseAppGenerator):
             workflow=workflow,
             queue_manager=queue_manager,
             user=user,
-            stream=stream
+            stream=stream,
         )
 
         return WorkflowAppGenerateResponseConverter.convert(

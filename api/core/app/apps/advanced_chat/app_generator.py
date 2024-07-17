@@ -20,6 +20,7 @@ from core.app.entities.app_invoke_entities import AdvancedChatAppGenerateEntity,
 from core.app.entities.task_entities import ChatbotAppBlockingResponse, ChatbotAppStreamResponse
 from core.file.message_file_parser import MessageFileParser
 from core.model_runtime.errors.invoke import InvokeAuthorizationError, InvokeError
+from core.ops.ops_trace_manager import TraceQueueManager
 from extensions.ext_database import db
 from models.account import Account
 from models.model import App, Conversation, EndUser, Message
@@ -66,7 +67,7 @@ class AdvancedChatAppGenerator(MessageBasedAppGenerator):
         inputs = args['inputs']
 
         extras = {
-            "auto_generate_conversation_name": args['auto_generate_name'] if 'auto_generate_name' in args else False
+            "auto_generate_conversation_name": args.get('auto_generate_name', False)
         }
 
         # get conversation
@@ -104,6 +105,13 @@ class AdvancedChatAppGenerator(MessageBasedAppGenerator):
                     query = message.query if message else ''
                     user_name = message.role if message else ''
 
+        # get tracing instance
+        trace_manager = TraceQueueManager(app_id=app_model.id)
+
+        if invoke_from == InvokeFrom.DEBUGGER:
+            # always enable retriever resource in debugger mode
+            app_config.additional_features.show_retrieve_source = True
+
         if not assistant_name and app_model.name:
             assistant_name = app_model.name
         # init application generate entity
@@ -122,6 +130,7 @@ class AdvancedChatAppGenerator(MessageBasedAppGenerator):
             user_name=user_name,
             assistant_name=assistant_name,
             role_user_id=user_id,
+            trace_manager=trace_manager,
         )
 
         return self._generate(

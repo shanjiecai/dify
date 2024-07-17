@@ -114,6 +114,10 @@ class VariableEntity(BaseModel):
     default: Optional[str] = None
     hint: Optional[str] = None
 
+    @property
+    def name(self) -> str:
+        return self.variable
+
 
 class ExternalDataVariableEntity(BaseModel):
     """
@@ -183,6 +187,14 @@ class TextToSpeechEntity(BaseModel):
     language: Optional[str] = None
 
 
+class TracingConfigEntity(BaseModel):
+    """
+    Tracing Config Entity.
+    """
+    enabled: bool
+    tracing_provider: str
+
+
 class FileExtraConfig(BaseModel):
     """
     File Upload Entity.
@@ -199,16 +211,8 @@ class AppAdditionalFeatures(BaseModel):
     more_like_this: bool = False
     speech_to_text: bool = False
     text_to_speech: Optional[TextToSpeechEntity] = None
+    trace_config: Optional[TracingConfigEntity] = None
 
-class InvokeFrom(Enum):
-    """
-    Invoke From.
-    """
-    SERVICE_API = 'service-api'
-    APP_API = 'app-api'
-    WEB_APP = 'web-app'
-    EXPLORE = 'explore'
-    DEBUGGER = 'debugger'
 
 class AppConfig(BaseModel):
     """

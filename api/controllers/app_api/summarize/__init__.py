@@ -42,7 +42,8 @@ from extensions.ext_redis import redis_client
 from libs.helper import uuid_value
 from models.model import ApiToken, App, AppModelConfig, Conversation
 from mylogger import logger
-from services.completion_service import CompletionService
+
+# from services.completion_service import CompletionService
 from services.openai_base_request_service import generate_response
 
 api_key = os.environ.get('OPENAI_API_KEY')
@@ -86,6 +87,7 @@ class SummarizeApi(AppApiResource):
             print(json.dumps(history_str, ensure_ascii=False))
             # print(json.dumps(history_with_no_user, ensure_ascii=False))
         type = args['type']
+        print(history_str)
         if type == "default":
             system_prompt = conversation_summary_system_prompt
         elif type == "plan":
@@ -101,8 +103,10 @@ class SummarizeApi(AppApiResource):
             query = prompt if not history_str else history_str
             if not query:
                 logger.info(f"query is empty args: {args}")
-                return {"result": "", "completion_tokens": [], "prompt_tokens": [], "summary": "", "tags": [], "nouns": [], "title": ""}, 200
-
+                return {"result": "", "completion_tokens": [], "prompt_tokens": [], "summary": "", "tags": [], "nouns": [], "title": ""}
+            if system_prompt == conversation_summary_system_prompt:
+                query = system_prompt.replace('{{text}}', query)
+                system_prompt = ''
             response = generate_response(
                 query,
                 system_prompt,
@@ -110,7 +114,7 @@ class SummarizeApi(AppApiResource):
             )
             # 提取出summary和tags
             try:
-                summary = response.choices[0].message.content.split("Tags:")[0].strip().split("Summary:")[1].strip()
+                summary = response.choices[0].message.content.split("Title:")[0].strip().split("Summary:")[1].replace('\n\n-','').strip()
             except:
                 summary = ""
             if args['type'] == "plan":
@@ -120,19 +124,20 @@ class SummarizeApi(AppApiResource):
                         "summary": summary}, 200
             else:
                 try:
-                    tags = response.choices[0].message.content.split("Tags:")[1].strip().split("Nouns:")[0].strip().split(",")
+                    print(response.choices[0].message.content)
+                    tags = response.choices[0].message.content.split("Tags:")[1].strip().split("Keywords:")[0].replace("\n\n-", " ").strip().split(",")
                     for i in range(len(tags)):
                         tags[i] = tags[i].strip()
                 except:
                     tags = []
                 try:
-                    nouns = response.choices[0].message.content.split("Nouns:")[1].strip().split("Title:")[0].strip().split(",")
+                    nouns = response.choices[0].message.content.split("Keywords:")[1].strip().split("Title:")[0].strip().split(",")
                     for i in range(len(nouns)):
                         nouns[i] = nouns[i].strip()
                 except:
                     nouns = []
                 try:
-                    title = response.choices[0].message.content.split("Title:")[1].strip()
+                    title = response.choices[0].message.content.split("Title:")[1].strip().split("Tags:")[0].replace("\n\n-", " ").strip().split(",")
                 except:
                     title = ""
                 for n in nouns:
@@ -144,7 +149,8 @@ class SummarizeApi(AppApiResource):
                         "prompt_tokens": response.usage.prompt_tokens,
                         "summary": summary, "tags": tags,
                         "nouns": nouns,
-                        "title": title
+                        "title": title,
+                        'history': history_str
                         }, 200
         except Exception as e:
             logger.info(f"internal server error: {traceback.format_exc()}")

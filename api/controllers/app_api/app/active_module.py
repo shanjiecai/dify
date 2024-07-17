@@ -225,6 +225,7 @@ def chat_thread(group_id: int, main_context: AppContext):
                                 # 发图片
                                 pass
                             res = model_chat(conversation_id, outer_memory=outer_memory, is_force=True, query=query, user_name="Human")
+                            time.sleep(20)
                             if res and res.get("answer", None):
                                 res_answer_new = ""
                                 for line in res.get("answer").split("\n"):

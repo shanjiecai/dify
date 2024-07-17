@@ -42,7 +42,7 @@ class CompletionService:
         inputs = args['inputs']
         query = args['query']
         files = args['files'] if args.get('files') else []
-        auto_generate_name = args['auto_generate_name'] \
+        auto_generate_name = args.get('auto_generate_name', True) \
             if 'auto_generate_name' in args else True
 
         # if app_model.mode != 'completion' and not query:
@@ -50,7 +50,7 @@ class CompletionService:
 
         query = query.replace('\x00', '')
 
-        conversation_id = args['conversation_id'] if 'conversation_id' in args else None
+        conversation_id = args.get('conversation_id', None) if 'conversation_id' in args else None
         is_new_message = True
         conversation = None
         if conversation_id:
@@ -285,7 +285,7 @@ class CompletionService:
                 if input_config.get("required"):
                     raise ValueError(f"{variable} is required in input form")
                 else:
-                    filtered_inputs[variable] = input_config["default"] if "default" in input_config else ""
+                    filtered_inputs[variable] = input_config.get("default", '') if "default" in input_config else ""
                     continue
 
             value = user_inputs[variable]
@@ -295,7 +295,7 @@ class CompletionService:
                     raise ValueError(f"{variable} in input form must be a string")
 
             if input_type == "select":
-                options = input_config["options"] if "options" in input_config else []
+                options = input_config.get("options", []) if "options" in input_config else []
                 if value not in options:
                     raise ValueError(f"{variable} in input form must be one of the following: {options}")
             else:

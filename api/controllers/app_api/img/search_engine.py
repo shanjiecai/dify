@@ -313,11 +313,11 @@ def search_engine_invoke(keyword, shape=None, size=None, dst_dir="./", max_num=1
         else:
             layout = "tall"
         begin = time.time()
-        bing_filters = dict(
-            # license='commercial,modify',
-            layout=layout,
-            # type='photo',
-        )
+        bing_filters = {
+            # 'license': 'commercial,modify',
+            'layout': layout,
+            # 'type': 'photo',
+        }
         bing_crawler.crawl(keyword=keyword, max_num=max_num, overwrite=True,
                            filters=bing_filters
                            )
@@ -338,9 +338,9 @@ def search_engine_invoke(keyword, shape=None, size=None, dst_dir="./", max_num=1
 
         try:
             # Try crawling with Bing
-            baidu_filter = dict(
-                type='static'
-            )
+            baidu_filter = {
+                'type': 'static'
+            }
             baidu_crawler.crawl(keyword=keyword, max_num=max_num, overwrite=True,
                                 filters=baidu_filter
                                 )

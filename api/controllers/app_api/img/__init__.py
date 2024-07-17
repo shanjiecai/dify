@@ -20,7 +20,8 @@ from controllers.app_api.img.utils import generate_img_pipeline
 from controllers.app_api.wraps import AppApiResource
 from models.model import ApiToken, App, AppModelConfig, Conversation
 from mylogger import logger
-from services.completion_service import CompletionService
+
+# from services.completion_service import CompletionService
 
 api_key = os.environ.get('OPENAI_API_KEY')
 
