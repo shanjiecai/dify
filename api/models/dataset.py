@@ -682,6 +682,22 @@ class DatasetUpdateRealTime(db.Model):
     last_update_message_id = db.Column(db.String(40), nullable=True)
 
 
+class DatasetUpdateRealTimeSocialAgent(db.Model):
+    __tablename__ = 'dataset_update_real_time_social_agent'
+    __table_args__ = (
+        db.PrimaryKeyConstraint('id', name='dataset_update_real_time_pkey'),
+        db.Index('dataset_update_real_time_dataset_id_idx', 'dataset_id'),
+    )
+
+    id = db.Column(StringUUID, primary_key=True, server_default=db.text('uuid_generate_v4()'))
+    dataset_id = db.Column(StringUUID, nullable=False)
+    app_id = db.Column(StringUUID, nullable=True)
+    created_at = db.Column(db.DateTime, nullable=False, server_default=db.func.current_timestamp())
+    last_updated_at = db.Column(db.DateTime, nullable=False, server_default=db.func.current_timestamp())
+    last_update_message_id = db.Column(StringUUID, nullable=True)
+    last_update_message_updated_at = db.Column(db.DateTime, nullable=True)
+
+
 class DatasetPermission(db.Model):
     __tablename__ = 'dataset_permissions'
     __table_args__ = (
