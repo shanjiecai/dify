@@ -702,7 +702,6 @@ class Message(db.Model):
     agent_based = db.Column(db.Boolean, nullable=False, server_default=db.text('false'))
     workflow_run_id = db.Column(StringUUID)
     mood = db.Column(db.String(255), nullable=True)
-    workflow_run_id = db.Column(UUID)
 
     @property
     def re_sign_file_url_answer(self) -> str:

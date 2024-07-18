@@ -49,7 +49,9 @@ class TokenBufferMemory:
             Message.query,
             Message.answer,
             Message.created_at,
-            Message.workflow_run_id
+            Message.workflow_run_id,
+            Message.role,
+            Message.assistant_name
         ).filter(
             Message.conversation_id == self.conversation.id,
             # Message.answer != ''
