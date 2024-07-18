@@ -1371,7 +1371,6 @@ class TagBinding(db.Model):
     created_by = db.Column(StringUUID, nullable=False)
     created_at = db.Column(db.DateTime, nullable=False, server_default=db.text('CURRENT_TIMESTAMP(0)'))
 
-
 class ModelPerson(db.Model):
     __tablename__ = 'model_person'
     __table_args__ = (
