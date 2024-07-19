@@ -1,14 +1,12 @@
-import datetime
-import threading
 
-from flask import current_app, request
+from flask import request
 from flask_restful import marshal_with, reqparse
 from flask_restful.inputs import int_range
 from werkzeug.exceptions import NotFound
 
 import services
-from controllers.social_agent_api import api
 from controllers.app_api.app import create_or_update_end_user_for_user_id
+from controllers.social_agent_api import api
 from controllers.social_agent_api.app.error import NotChatAppError
 from controllers.social_agent_api.wraps import AppApiResource
 
@@ -21,9 +19,7 @@ from fields.conversation_fields import (
 )
 from libs.exception import BaseHTTPException
 from libs.helper import uuid_value
-from models.dataset import DatasetUpdateRealTime
-from models.model import App, AppModelConfig, Conversation, Message
-from mylogger import logger
+from models.model import App, Conversation
 from services.conversation_service import ConversationService
 
 

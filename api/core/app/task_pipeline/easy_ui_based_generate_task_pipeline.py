@@ -5,6 +5,7 @@ from collections.abc import Generator
 from typing import Optional, Union, cast
 
 from constants.tts_auto_play_timeout import TTS_AUTO_PLAY_TIMEOUT, TTS_AUTO_PLAY_YIELD_CPU_TIME
+
 # from controllers.app_api.img.utils import generate_plan_img_pipeline
 from core.app.apps.advanced_chat.app_generator_tts_publisher import AppGeneratorTTSPublisher, AudioTrunk
 from core.app.apps.base_app_queue_manager import AppQueueManager, PublishFrom
@@ -55,8 +56,7 @@ from core.prompt.utils.prompt_template_parser import PromptTemplateParser
 from events.message_event import message_was_created
 from extensions.ext_database import db
 from models.account import Account
-from models.model import AppMode, Conversation, ConversationPlanDetail, EndUser, Message, MessageAgentThought
-from services.conversation_service import ConversationService
+from models.model import AppMode, Conversation, EndUser, Message, MessageAgentThought
 
 logger = logging.getLogger(__name__)
 

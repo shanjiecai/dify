@@ -4,10 +4,11 @@ import json
 from flask_restful import abort, fields, marshal_with, reqparse
 
 from constants.model_template import model_templates
+from controllers.console.app.error import ProviderNotInitializeError
+
 # from constants.model_template import model_templates
 from controllers.social_agent_api import api
 from controllers.social_agent_api.wraps import AppApiResource
-from controllers.console.app.error import ProviderNotInitializeError
 from core.errors.error import LLMBadRequestError, ProviderTokenNotInitError
 from core.model_manager import ModelManager
 from core.model_runtime.entities.model_entities import ModelType

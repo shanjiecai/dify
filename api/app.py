@@ -151,8 +151,9 @@ def create_app() -> Flask:
     # from controllers.app_api.update_real_time.update_real_time_module import init_dataset_update_real_time
     # init_dataset_update_real_time(app)
 
-    from controllers.social_agent_api.update_real_time.update_real_time_module import \
-        init_dataset_update_real_time_social_agent
+    from controllers.social_agent_api.update_real_time.update_real_time_module import (
+        init_dataset_update_real_time_social_agent,
+    )
     init_dataset_update_real_time_social_agent(app)
 
     # try:
@@ -224,12 +225,12 @@ def unauthorized_handler():
 
 # register blueprint routers
 def register_blueprints(app):
-    from controllers.social_agent_api import bp as social_agent_api_bp
     from controllers.app_api import bp as app_api_bp
     from controllers.console import bp as console_app_bp
     from controllers.files import bp as files_bp
     from controllers.inner_api import bp as inner_api_bp
     from controllers.service_api import bp as service_api_bp
+    from controllers.social_agent_api import bp as social_agent_api_bp
     from controllers.web import bp as web_bp
 
     CORS(social_agent_api_bp,

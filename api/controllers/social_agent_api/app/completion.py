@@ -1,20 +1,16 @@
-import datetime
 import json
 import logging
-import threading
-import time
 import traceback
 from collections.abc import Generator
 from typing import Union
 
-from flask import Response, current_app, request, stream_with_context
-from flask.ctx import AppContext
+from flask import Response, request, stream_with_context
 from flask_restful import reqparse
-from sqlalchemy import and_
 from werkzeug.exceptions import InternalServerError, NotFound
 
 import services
 from controllers.social_agent_api import api
+
 # from controllers.social_agent_api.app import create_or_update_end_user_for_user_id
 from controllers.social_agent_api.app.error import (
     AppUnavailableError,
@@ -27,25 +23,19 @@ from controllers.social_agent_api.app.error import (
 )
 from controllers.social_agent_api.app.utils import send_feishu_bot, split_and_get_interval
 from controllers.social_agent_api.wraps import AppApiResource
-from core.app.app_config.easy_ui_based_app.model_config.converter import ModelConfigConverter
 from core.app.apps.base_app_queue_manager import AppQueueManager
-from core.app.apps.chat.app_config_manager import ChatAppConfigManager
 from core.app.entities.app_invoke_entities import InvokeFrom
 
 # from core.application_manager import ApplicationManager
 # from core.application_queue_manager import ApplicationQueueManager
 # from core.entities.application_entities import InvokeFrom
 from core.errors.error import ModelCurrentlyNotSupportError, ProviderTokenNotInitError, QuotaExceededError
-from core.judge_llm_active import judge_llm_active
-from core.memory.token_buffer_memory import TokenBufferMemory
-from core.model_manager import ModelInstance
 from core.model_runtime.errors.invoke import InvokeError
 from extensions.ext_database import db
 from libs.helper import uuid_value
-from models.model import App, AppMode, AppModelConfig, Conversation, ConversationPlanDetail
+from models.model import App
 from mylogger import logger
 from services.app_generate_service import AppGenerateService
-from services.conversation_service import ConversationService
 
 
 class CompletionApi(AppApiResource):

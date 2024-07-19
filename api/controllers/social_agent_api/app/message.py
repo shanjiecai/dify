@@ -4,13 +4,13 @@ from werkzeug.exceptions import NotFound
 
 import services
 from controllers.social_agent_api import api
+
 # from controllers.social_agent_api.app import create_or_update_end_user_for_user_id
 from controllers.social_agent_api.app.error import NotChatAppError
 from controllers.social_agent_api.wraps import AppApiResource
 from core.app.entities.app_invoke_entities import InvokeFrom
-from extensions.ext_database import db
 from libs.helper import TimestampField, uuid_value
-from models.model import Account, App, Message, AppMode
+from models.model import App, AppMode
 from mylogger import logger
 from services.message_service import MessageService
 
