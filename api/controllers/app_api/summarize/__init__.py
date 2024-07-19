@@ -42,8 +42,7 @@ from extensions.ext_redis import redis_client
 from libs.helper import uuid_value
 from models.model import ApiToken, App, AppModelConfig, Conversation
 from mylogger import logger
-
-# from services.completion_service import CompletionService
+from services.completion_service import CompletionService
 from services.openai_base_request_service import generate_response
 
 api_key = os.environ.get('OPENAI_API_KEY')
@@ -105,7 +104,7 @@ class SummarizeApi(AppApiResource):
                 logger.info(f"query is empty args: {args}")
                 return {"result": "", "completion_tokens": [], "prompt_tokens": [], "summary": "", "tags": [], "nouns": [], "title": ""}
             if system_prompt == conversation_summary_system_prompt:
-                query = system_prompt.replace('{{text}}', query)
+                query = system_prompt.replace('{{text}}',query)
                 system_prompt = ''
             response = generate_response(
                 query,
@@ -137,7 +136,7 @@ class SummarizeApi(AppApiResource):
                 except:
                     nouns = []
                 try:
-                    title = response.choices[0].message.content.split("Title:")[1].strip().split("Tags:")[0].replace("\n\n-", " ").strip().split(",")
+                    title = response.choices[0].message.content.split("Title:")[1].strip().split("Tags:")[0].replace("\n\n-", " ").strip()
                 except:
                     title = ""
                 for n in nouns:
