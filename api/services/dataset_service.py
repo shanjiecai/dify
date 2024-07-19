@@ -644,7 +644,7 @@ class DocumentService:
 
         try:
             # check document limit
-            features = FeatureService.get_features(current_user.current_tenant_id)
+            features = FeatureService.get_features(current_user.current_tenant_id if current_user else "15270d9e-94bd-4b91-8e2e-a9f33f28f259")
 
             if features.billing.enabled:
                 if 'original_document_id' not in document_data or not document_data['original_document_id']:

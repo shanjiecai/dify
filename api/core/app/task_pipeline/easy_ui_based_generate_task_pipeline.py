@@ -5,7 +5,7 @@ from collections.abc import Generator
 from typing import Optional, Union, cast
 
 from constants.tts_auto_play_timeout import TTS_AUTO_PLAY_TIMEOUT, TTS_AUTO_PLAY_YIELD_CPU_TIME
-from controllers.app_api.img.utils import generate_plan_img_pipeline
+# from controllers.app_api.img.utils import generate_plan_img_pipeline
 from core.app.apps.advanced_chat.app_generator_tts_publisher import AppGeneratorTTSPublisher, AudioTrunk
 from core.app.apps.base_app_queue_manager import AppQueueManager, PublishFrom
 from core.app.entities.app_invoke_entities import (
@@ -293,40 +293,40 @@ class EasyUIBasedGenerateTaskPipeline(BasedGenerateTaskPipeline, MessageCycleMan
                 self._save_message(trace_manager)
 
                 yield self._message_end_to_stream_response()
-                # 识别末尾的<finish_question>
-                if answer_all.__contains__('<finish_question>'):
-                    logger.info(
-                        f"remove conversation {self._conversation.id} <finish_question> from {self._task_state.llm_result.message.content}")
-                    event.llm_result.message.content += "I have understood your problem, and I will send you a related plan later, hoping to help you."
-                    # self._task_state.llm_result.message.content = self._task_state.llm_result.message.content[:-17]
-                    # 问题提问结束，删除conversation plan_question
-                    conversation: Conversation = db.session.query(Conversation).filter(
-                        Conversation.id == self._conversation.id).first()
-                    if conversation:
-                        plan_detail_list = []
-                        # for _ in range(1):
-                        plan_detail, plan, history_str = ConversationService.generate_plan(conversation.id,
-                                                                                           plan=conversation.plan_question_invoke_plan)
-                        plan_detail_list.append(plan_detail)
-                        logger.info(f"generate_plan_from_conversation response: {plan_detail_list}")
-                        image_list, img_perfect_prompt_list = generate_plan_img_pipeline(
-                            conversation.plan_question_invoke_plan, model="search_engine")
-                        # conversation.plan_question_invoke_plan = None
-                        conversation.plan_question_invoke_user = None
-                        conversation.plan_question_invoke_user_id = None
-                        conversation.plan_question_invoke_time = None
-                        conversation_plan_detail = ConversationPlanDetail(
-                            conversation_id=self._conversation.id,
-                            plan=plan,
-                            plan_detail_list=plan_detail_list,
-                            plan_conversation_history=history_str,
-                            image_list=image_list,
-                            img_perfect_prompt_list=img_perfect_prompt_list
-                        )
-                        time.sleep(1)
-                        db.session.add(conversation_plan_detail)
-                        db.session.add(conversation)
-                        db.session.commit()
+                # # 识别末尾的<finish_question>
+                # if answer_all.__contains__('<finish_question>'):
+                #     logger.info(
+                #         f"remove conversation {self._conversation.id} <finish_question> from {self._task_state.llm_result.message.content}")
+                #     event.llm_result.message.content += "I have understood your problem, and I will send you a related plan later, hoping to help you."
+                #     # self._task_state.llm_result.message.content = self._task_state.llm_result.message.content[:-17]
+                #     # 问题提问结束，删除conversation plan_question
+                #     conversation: Conversation = db.session.query(Conversation).filter(
+                #         Conversation.id == self._conversation.id).first()
+                #     if conversation:
+                #         plan_detail_list = []
+                #         # for _ in range(1):
+                #         plan_detail, plan, history_str = ConversationService.generate_plan(conversation.id,
+                #                                                                            plan=conversation.plan_question_invoke_plan)
+                #         plan_detail_list.append(plan_detail)
+                #         logger.info(f"generate_plan_from_conversation response: {plan_detail_list}")
+                #         image_list, img_perfect_prompt_list = generate_plan_img_pipeline(
+                #             conversation.plan_question_invoke_plan, model="search_engine")
+                #         # conversation.plan_question_invoke_plan = None
+                #         conversation.plan_question_invoke_user = None
+                #         conversation.plan_question_invoke_user_id = None
+                #         conversation.plan_question_invoke_time = None
+                #         conversation_plan_detail = ConversationPlanDetail(
+                #             conversation_id=self._conversation.id,
+                #             plan=plan,
+                #             plan_detail_list=plan_detail_list,
+                #             plan_conversation_history=history_str,
+                #             image_list=image_list,
+                #             img_perfect_prompt_list=img_perfect_prompt_list
+                #         )
+                #         time.sleep(1)
+                #         db.session.add(conversation_plan_detail)
+                #         db.session.add(conversation)
+                #         db.session.commit()
             elif isinstance(event, QueueRetrieverResourcesEvent):
                 self._handle_retriever_resources(event)
             elif isinstance(event, QueueAnnotationReplyEvent):

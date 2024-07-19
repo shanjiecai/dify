@@ -6,6 +6,10 @@ class VvvappConfig(BaseModel):
     """
     Vvvapp configs
     """
+    ENV: str = Field(description='env', default='dev')
+
+    MODE: str = Field(description='mode', default='api')
+
     OPENAI_API_KEY: str = Field(
         description='openai api key',
         default='',

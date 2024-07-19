@@ -18,9 +18,12 @@ class DatasetUpdateRealTimeSocialAgentService:
     #     return dataset_update_real_time_item
 
     @classmethod
-    def get_all_dataset_upload_real_time(cls, app_id: Optional[str] = None) -> list[DatasetUpdateRealTimeSocialAgent]:
+    def get_all_dataset_upload_real_time_social_agent(cls, app_id: Optional[str] = None) -> list[DatasetUpdateRealTimeSocialAgent]:
 
-        dataset_update_real_time_items = db.session.query(DatasetUpdateRealTimeSocialAgent).filter(
-            DatasetUpdateRealTimeSocialAgent.app_id == app_id).all()
+        if not app_id:
+            dataset_update_real_time_social_agent_items = db.session.query(DatasetUpdateRealTimeSocialAgent).all()
+        else:
+            dataset_update_real_time_social_agent_items = db.session.query(DatasetUpdateRealTimeSocialAgent).filter(
+                DatasetUpdateRealTimeSocialAgent.app_id == app_id).all()
 
-        return dataset_update_real_time_items
+        return dataset_update_real_time_social_agent_items

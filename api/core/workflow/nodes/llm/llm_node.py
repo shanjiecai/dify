@@ -7,7 +7,7 @@ from typing import Optional, cast
 
 from flask.ctx import AppContext
 
-from controllers.app_api.img.utils import generate_plan_img_pipeline
+# from controllers.app_api.img.utils import generate_plan_img_pipeline
 from core.app.entities.app_invoke_entities import ModelConfigWithCredentialsEntity
 from core.app.entities.queue_entities import QueueRetrieverResourcesEvent
 from core.entities.model_entities import ModelStatus

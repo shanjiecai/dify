@@ -1,4 +1,5 @@
 import json
+from datetime import datetime
 from typing import Optional, Union
 
 from core.app.apps.advanced_chat.app_config_manager import AdvancedChatAppConfigManager
@@ -171,6 +172,45 @@ class MessageService:
             rest_count = base_query.filter(
                 Message.created_at < current_page_first_message.created_at,
                 Message.id != current_page_first_message.id
+            ).count()
+
+            if rest_count > 0:
+                has_more = True
+
+        return InfiniteScrollPagination(
+            data=history_messages,
+            limit=limit,
+            has_more=has_more
+        )
+
+    @classmethod
+    def pagination_by_more_than_updated_at(cls, updated_at: Optional[datetime], conversation_id: Optional[str] = None,
+                                           limit: int = None,
+                                           include_ids: Optional[list] = None) -> InfiniteScrollPagination:
+        base_query = db.session.query(Message)
+        if conversation_id is not None:
+            conversation = ConversationService.get_conversation(
+                app_model=None,
+                conversation_id=conversation_id
+            )
+
+            base_query = base_query.filter(Message.conversation_id == conversation.id)
+
+        if include_ids is not None:
+            base_query = base_query.filter(Message.id.in_(include_ids))
+
+        if updated_at:
+            history_messages = base_query.filter(
+                Message.updated_at > updated_at
+            ).order_by(Message.updated_at.asc()).limit(limit).all()
+        else:
+            history_messages = base_query.order_by(Message.updated_at.asc()).limit(limit).all()
+
+        has_more = False
+        if len(history_messages) == limit:
+            current_page_first_message = history_messages[-1]
+            rest_count = base_query.filter(
+                Message.updated_at > current_page_first_message.updated_at
             ).count()
 
             if rest_count > 0:

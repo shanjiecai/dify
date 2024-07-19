@@ -685,8 +685,8 @@ class DatasetUpdateRealTime(db.Model):
 class DatasetUpdateRealTimeSocialAgent(db.Model):
     __tablename__ = 'dataset_update_real_time_social_agent'
     __table_args__ = (
-        db.PrimaryKeyConstraint('id', name='dataset_update_real_time_pkey'),
-        db.Index('dataset_update_real_time_dataset_id_idx', 'dataset_id'),
+        db.PrimaryKeyConstraint('id', name='dataset_update_real_time_social_agent_pkey'),
+        db.Index('dataset_update_real_time_social_agent_dataset_id_idx', 'dataset_id'),
     )
 
     id = db.Column(StringUUID, primary_key=True, server_default=db.text('uuid_generate_v4()'))

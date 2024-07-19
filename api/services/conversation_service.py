@@ -7,11 +7,11 @@ from flask import Flask
 from sqlalchemy import or_
 
 # from controllers.app_api.openai_base_request import compare_similarity, generate_response
-from controllers.app_api.plan.generate_plan_from_conversation import (
-    generate_plan_from_conversation,
-    generate_plan_introduction,
-)
-from controllers.app_api.plan.judge_plan import judge_plan
+# from controllers.app_api.plan.generate_plan_from_conversation import (
+#     generate_plan_from_conversation,
+#     generate_plan_introduction,
+# )
+# from controllers.app_api.plan.judge_plan import judge_plan
 from core.app.entities.app_invoke_entities import InvokeFrom
 from core.llm_generator.llm_generator import LLMGenerator
 from core.prompt_const import plan_summary_system_prompt
@@ -148,6 +148,16 @@ class ConversationService:
 
         conversation.is_deleted = True
         db.session.commit()
+
+    @classmethod
+    def get_conversations_by_app_id(cls, app_id: str, limit: int = 10):
+        base_query = db.session.query(Conversation).filter(
+            Conversation.app_id == app_id,
+            Conversation.is_deleted == False,
+        )
+
+        conversations = base_query.order_by(Conversation.created_at.desc()).limit(limit).all()
+        return conversations
 
     @classmethod
     def generate_plan(cls, conversation_id: str, plan: str = None, outer_history_str: str = None):

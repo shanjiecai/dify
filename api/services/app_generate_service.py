@@ -17,7 +17,7 @@ class AppGenerateService:
 
     @classmethod
     def generate(cls, app_model: App,
-                 user: Union[Account, EndUser],
+                 user: Union[Account, EndUser, None],
                  args: Any,
                  invoke_from: InvokeFrom,
                  streaming: bool = True,
