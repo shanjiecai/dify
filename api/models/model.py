@@ -1454,3 +1454,25 @@ class TraceAppConfig(db.Model):
             "created_at": self.created_at.__str__() if self.created_at else None,
             'updated_at': self.updated_at.__str__() if self.updated_at else None,
         }
+class ModelPerson(db.Model):
+    __tablename__ = 'model_person'
+    __table_args__ = (
+        db.PrimaryKeyConstraint('id', name='tag_binding_pkey'),
+    )
+    id = db.Column(StringUUID, server_default=db.text('uuid_generate_v4()'))
+    name = db.Column(db.String(100), nullable=True)
+    habbit = db.Column(db.Text, nullable=True)
+    values = db.Column(db.Text, nullable=True)
+    knowledge = db.Column(db.Text, nullable=False)
+    mbti = db.Column(db.Text, nullable=True)
+    values_deal = db.Column(db.Text, nullable=True)
+    photo_path = db.Column(db.String(100), nullable=True)
+    audio_train_path = db.Column(db.String(100), nullable=False)
+    audio_model_s_path = db.Column(db.String(100), nullable=True)
+    audio_model_g_path = db.Column(db.String(100), nullable=True)
+    audio_reference_path = db.Column(db.String(100), nullable=True)
+    audio_reference_text = db.Column(db.Text, nullable=False)
+    appid = db.Column(StringUUID, nullable=True)
+    create_time = db.Column(db.Date, nullable=True)
+    update_time = db.Column(db.Date, nullable=True)
+    description = db.Column(db.Text, nullable=False)
