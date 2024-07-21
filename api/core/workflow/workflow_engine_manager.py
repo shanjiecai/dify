@@ -2,8 +2,7 @@ import time
 import traceback
 from typing import Optional, cast
 
-from flask import current_app
-
+from configs import dify_config
 from core.app.app_config.entities import FileExtraConfig
 from core.app.apps.base_app_queue_manager import GenerateTaskStoppedException
 from core.app.entities.app_invoke_entities import InvokeFrom
@@ -138,7 +137,7 @@ class WorkflowEngineManager:
                 user_inputs=user_inputs
             )
 
-        workflow_call_max_depth = current_app.config.get("WORKFLOW_CALL_MAX_DEPTH")
+        workflow_call_max_depth = dify_config.WORKFLOW_CALL_MAX_DEPTH
         if call_depth > workflow_call_max_depth:
             raise ValueError('Max workflow call depth {} reached.'.format(workflow_call_max_depth))
 
@@ -196,8 +195,8 @@ class WorkflowEngineManager:
             predecessor_node: BaseNode = None
             current_iteration_node: BaseIterationNode = None
             has_entry_node = False
-            max_execution_steps = current_app.config.get("WORKFLOW_MAX_EXECUTION_STEPS")
-            max_execution_time = current_app.config.get("WORKFLOW_MAX_EXECUTION_TIME")
+            max_execution_steps = dify_config.WORKFLOW_MAX_EXECUTION_STEPS
+            max_execution_time = dify_config.WORKFLOW_MAX_EXECUTION_TIME
             while True:
                 # get next node, multiple target nodes in the future
                 next_node = self._get_next_overall_node(
