@@ -42,6 +42,7 @@ from extensions.ext_redis import redis_client
 from libs.helper import uuid_value
 from models.model import ApiToken, App, AppModelConfig, Conversation
 from mylogger import logger
+
 # from services.completion_service import CompletionService
 from services.openai_base_request_service import generate_response
 

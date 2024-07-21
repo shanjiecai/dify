@@ -1,13 +1,14 @@
-import uuid
-
-from controllers.app_api.wraps import AppApiResource
-from flask_restful import reqparse
-from datetime import datetime
-from models.model import ModelPerson, App
-from extensions.ext_database import db
-from controllers.app_api import api
-import requests
 import json
+import uuid
+from datetime import datetime
+
+import requests
+from flask_restful import reqparse
+
+from controllers.app_api import api
+from controllers.app_api.wraps import AppApiResource
+from extensions.ext_database import db
+from models.model import App, ModelPerson
 
 
 class create_model_person(AppApiResource):
