@@ -1,3 +1,4 @@
+import contextvars
 import logging
 import os
 import threading
@@ -8,6 +9,7 @@ from typing import Union
 from flask import Flask, current_app
 from pydantic import ValidationError
 
+import contexts
 from core.app.app_config.features.file_upload.manager import FileUploadConfigManager
 from core.app.apps.advanced_chat.app_config_manager import AdvancedChatAppConfigManager
 from core.app.apps.advanced_chat.app_runner import AdvancedChatAppRunner
@@ -132,6 +134,7 @@ class AdvancedChatAppGenerator(MessageBasedAppGenerator):
             role_user_id=user_id,
             trace_manager=trace_manager,
         )
+        contexts.tenant_id.set(application_generate_entity.app_config.tenant_id)
 
         return self._generate(
             app_model=app_model,
@@ -198,6 +201,7 @@ class AdvancedChatAppGenerator(MessageBasedAppGenerator):
                 inputs=args['inputs']
             )
         )
+        contexts.tenant_id.set(application_generate_entity.app_config.tenant_id)
 
         return self._generate(
             app_model=app_model,
@@ -250,6 +254,8 @@ class AdvancedChatAppGenerator(MessageBasedAppGenerator):
             'queue_manager': queue_manager,
             'conversation_id': conversation.id,
             'message_id': message.id,
+            'user': user,
+            'context': contextvars.copy_context()
         })
 
         worker_thread.start()
@@ -274,7 +280,9 @@ class AdvancedChatAppGenerator(MessageBasedAppGenerator):
                          application_generate_entity: AdvancedChatAppGenerateEntity,
                          queue_manager: AppQueueManager,
                          conversation_id: str,
-                         message_id: str) -> None:
+                         message_id: str,
+                         user: Account,
+                         context: contextvars.Context) -> None:
         """
         Generate worker in a new thread.
         :param flask_app: Flask app
@@ -284,6 +292,8 @@ class AdvancedChatAppGenerator(MessageBasedAppGenerator):
         :param message_id: message ID
         :return:
         """
+        for var, val in context.items():
+            var.set(val)
         with flask_app.app_context():
             try:
                 runner = AdvancedChatAppRunner()

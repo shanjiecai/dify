@@ -25,7 +25,7 @@ class AppGenerateService:
                  assistant_name: str = None,
                  user_name: str = None,
                  user_id: str = None,
-                 ) -> Union[dict, Generator[dict, None, None]]:
+                 ):
         """
         App Content Generate
         :param app_model: app model
