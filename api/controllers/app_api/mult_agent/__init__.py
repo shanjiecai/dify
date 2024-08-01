@@ -1,17 +1,18 @@
+import json
 import time
 import uuid
-
-from controllers.app_api.wraps import AppApiResource
-from flask_restful import reqparse
 from datetime import datetime
-from models.model import ModelPerson, App
-from extensions.ext_database import db
-from controllers.app_api import api
+
 import requests
-import json
+from flask_restful import reqparse
+
+from controllers.app_api import api
+
 # from controllers.app_api.mult_agent.mult_agent import *
 from controllers.app_api.mult_agent.knowledge_limit import create_knowledge_path
-
+from controllers.app_api.wraps import AppApiResource
+from extensions.ext_database import db
+from models.model import App, ModelPerson
 
 
 class create_model_person(AppApiResource):
