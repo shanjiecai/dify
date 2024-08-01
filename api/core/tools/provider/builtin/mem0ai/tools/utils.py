@@ -1,8 +1,8 @@
 import os
-from mem0.vector_stores.configs import VectorStoreConfig
-from mem0.llms.configs import LlmConfig
-from mem0.embeddings.configs import EmbedderConfig
 
+from mem0.embeddings.configs import EmbedderConfig
+from mem0.llms.configs import LlmConfig
+from mem0.vector_stores.configs import VectorStoreConfig
 
 vector_config = VectorStoreConfig(
     provider="qdrant",

@@ -1,21 +1,19 @@
-import os
-import httpx
 import json
+from typing import Any, Union
 
-from core.tools.provider.builtin.mem0ai.tools.utils import vector_config, llm_config, embedding_config
-from core.tools.tool.builtin_tool import BuiltinTool
-from core.tools.entities.tool_entities import ToolInvokeMessage
-
-from typing import Any, Dict, List, Union
 from mem0 import Memory
+
+from core.tools.entities.tool_entities import ToolInvokeMessage
+from core.tools.provider.builtin.mem0ai.tools.utils import embedding_config, llm_config, vector_config
+from core.tools.tool.builtin_tool import BuiltinTool
 
 
 class AddMem0AIMemory(BuiltinTool):
 
     def _invoke(self,
                 user_id: str,
-                tool_parameters: Dict[str, Any],
-                ) -> Union[ToolInvokeMessage, List[ToolInvokeMessage]]:
+                tool_parameters: dict[str, Any],
+                ) -> Union[ToolInvokeMessage, list[ToolInvokeMessage]]:
         """
         Invoke the tool to add memory
         """
