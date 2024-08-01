@@ -1,0 +1,89 @@
+identity:
+  name: add_mem0ai_memory
+  author: dify
+  label:
+    en_US: Add mem0ai memory
+    zh_Hans: 写入记忆
+description:
+  human:
+    en_US: Add mem0ai memory
+    zh_Hans: 在 mem0ai 中写入记忆
+  llm: Add mem0ai memory.
+parameters:
+  - name: data
+    required: true
+    type: string
+    label:
+      en_US: Memory content
+      zh_Hans: 记忆内容
+    human_description:
+      en_US: Memory content
+      zh_Hans: 记忆内容
+    llm_description: memory content
+    form: llm
+  - name: user_id
+    type: string
+    required: true
+    label:
+      en_US: User ID
+      zh_Hans: 用户 ID
+    human_description:
+      en_US: User ID
+      zh_Hans: 用户 ID
+    llm_description: User ID
+    form: llm
+  - name: agent_id
+    type: string
+    required: false
+    label:
+      en_US: Agent ID
+      zh_Hans: Agent ID
+    human_description:
+      en_US: Agent ID
+      zh_Hans: Agent ID
+    llm_description: Agent ID
+    form: llm
+  - name: run_id
+    type: string
+    required: false
+    label:
+      en_US: Run ID
+      zh_Hans: Run ID
+    human_description:
+      en_US: Run ID
+      zh_Hans: Run ID
+    llm_description: Run ID
+    form: llm
+  - name: metadata
+    type: string
+    required: false
+    label:
+      en_US: Metadata
+      zh_Hans: 元数据
+    human_description:
+      en_US: Metadata
+      zh_Hans: 元数据
+    llm_description: Metadata
+    form: llm
+  - name: filters
+    type: string
+    required: false
+    label:
+      en_US: Filters
+      zh_Hans: 过滤条件
+    human_description:
+      en_US: Filters
+      zh_Hans: 过滤条件
+    llm_description: Filters
+    form: llm
+  - name: prompt
+    type: string
+    required: false
+    label:
+      en_US: Prompt
+      zh_Hans: 提示词
+    human_description:
+      en_US: Prompt
+      zh_Hans: 提示词
+    llm_description: Prompt
+    form: llm

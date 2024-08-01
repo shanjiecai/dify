@@ -50,7 +50,7 @@ class HttpRequestNode(BaseNode):
             },
         }
 
-    def _run(self, variable_pool: VariablePool) -> NodeRunResult:
+    def _run(self, variable_pool: VariablePool, **kwargs) -> NodeRunResult:
         node_data: HttpRequestNodeData = cast(HttpRequestNodeData, self.node_data)
         # TODO: Switch to use segment directly
         if node_data.authorization.config and node_data.authorization.config.api_key:

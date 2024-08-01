@@ -36,7 +36,7 @@ class QuestionClassifierNode(LLMNode):
     _node_data_cls = QuestionClassifierNodeData
     node_type = NodeType.QUESTION_CLASSIFIER
 
-    def _run(self, variable_pool: VariablePool) -> NodeRunResult:
+    def _run(self, variable_pool: VariablePool, **kwargs) -> NodeRunResult:
         node_data: QuestionClassifierNodeData = cast(self._node_data_cls, self.node_data)
         node_data = cast(QuestionClassifierNodeData, node_data)
 

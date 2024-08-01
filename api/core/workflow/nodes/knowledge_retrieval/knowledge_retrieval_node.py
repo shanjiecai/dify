@@ -37,7 +37,7 @@ class KnowledgeRetrievalNode(BaseNode):
     _node_data_cls = KnowledgeRetrievalNodeData
     node_type = NodeType.KNOWLEDGE_RETRIEVAL
 
-    def _run(self, variable_pool: VariablePool) -> NodeRunResult:
+    def _run(self, variable_pool: VariablePool, **kwargs) -> NodeRunResult:
         node_data: KnowledgeRetrievalNodeData = cast(self._node_data_cls, self.node_data)
 
         # extract variables

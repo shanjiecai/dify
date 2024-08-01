@@ -12,7 +12,7 @@ class VariableAggregatorNode(BaseNode):
     _node_data_cls = VariableAssignerNodeData
     _node_type = NodeType.VARIABLE_AGGREGATOR
 
-    def _run(self, variable_pool: VariablePool) -> NodeRunResult:
+    def _run(self, variable_pool: VariablePool, **kwargs) -> NodeRunResult:
         node_data = cast(VariableAssignerNodeData, self.node_data)
         # Get variables
         outputs = {}

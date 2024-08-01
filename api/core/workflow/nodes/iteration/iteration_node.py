@@ -16,7 +16,7 @@ class IterationNode(BaseIterationNode):
     _node_data_cls = IterationNodeData
     _node_type = NodeType.ITERATION
 
-    def _run(self, variable_pool: VariablePool) -> BaseIterationState:
+    def _run(self, variable_pool: VariablePool, **kwargs) -> BaseIterationState:
         """
         Run the node.
         """

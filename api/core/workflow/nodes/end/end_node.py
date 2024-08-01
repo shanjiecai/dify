@@ -12,7 +12,7 @@ class EndNode(BaseNode):
     _node_data_cls = EndNodeData
     _node_type = NodeType.END
 
-    def _run(self, variable_pool: VariablePool) -> NodeRunResult:
+    def _run(self, variable_pool: VariablePool, **kwargs) -> NodeRunResult:
         """
         Run node
         :param variable_pool: variable pool

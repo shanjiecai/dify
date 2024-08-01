@@ -42,7 +42,7 @@ class CodeNode(BaseNode):
 
         return code_provider.get_default_config()
 
-    def _run(self, variable_pool: VariablePool) -> NodeRunResult:
+    def _run(self, variable_pool: VariablePool, **kwargs) -> NodeRunResult:
         """
         Run code
         :param variable_pool: variable pool

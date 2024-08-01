@@ -34,7 +34,7 @@ class TemplateTransformNode(BaseNode):
             }
         }
 
-    def _run(self, variable_pool: VariablePool) -> NodeRunResult:
+    def _run(self, variable_pool: VariablePool, **kwargs) -> NodeRunResult:
         """
         Run node
         """

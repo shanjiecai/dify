@@ -14,7 +14,7 @@ class IfElseNode(BaseNode):
     _node_data_cls = IfElseNodeData
     _node_type = NodeType.IF_ELSE
 
-    def _run(self, variable_pool: VariablePool) -> NodeRunResult:
+    def _run(self, variable_pool: VariablePool, **kwargs) -> NodeRunResult:
         """
         Run node
         :param variable_pool: variable pool

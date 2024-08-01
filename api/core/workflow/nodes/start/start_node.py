@@ -11,7 +11,7 @@ class StartNode(BaseNode):
     _node_data_cls = StartNodeData
     _node_type = NodeType.START
 
-    def _run(self, variable_pool: VariablePool) -> NodeRunResult:
+    def _run(self, variable_pool: VariablePool, **kwargs) -> NodeRunResult:
         """
         Run node
         :param variable_pool: variable pool

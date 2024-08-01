@@ -19,7 +19,7 @@ class AnswerNode(BaseNode):
     _node_data_cls = AnswerNodeData
     _node_type: NodeType = NodeType.ANSWER
 
-    def _run(self, variable_pool: VariablePool) -> NodeRunResult:
+    def _run(self, variable_pool: VariablePool, **kwargs) -> NodeRunResult:
         """
         Run node
         :param variable_pool: variable pool

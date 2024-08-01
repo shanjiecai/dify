@@ -11,7 +11,7 @@ class LoopNode(BaseIterationNode):
     _node_data_cls = LoopNodeData
     _node_type = NodeType.LOOP
 
-    def _run(self, variable_pool: VariablePool) -> LoopState:
+    def _run(self, variable_pool: VariablePool, **kwargs) -> LoopState:
         return super()._run(variable_pool)
 
     def _get_next_iteration(self, variable_loop: VariablePool) -> NodeRunResult | str:

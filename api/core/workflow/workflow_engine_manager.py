@@ -1,6 +1,5 @@
 import time
 import traceback
-from typing import Optional, cast
 from collections.abc import Mapping, Sequence
 from typing import Any, Optional, cast
 

@@ -1,0 +1,11 @@
+identity:
+  author: dify # 作者
+  name: mem0ai # 名称，唯一，不允许和其他供应商重名
+  label: # 标签，用于前端展示
+    en_US: mem0ai # 英文标签
+    zh_Hans: mem0ai # 中文标签
+  description: # 描述，用于前端展示
+    en_US: "mem0ai provider. "
+    zh_Hans: "mem0ai provider. "
+  icon: logo.png
+credentials_for_provider:
