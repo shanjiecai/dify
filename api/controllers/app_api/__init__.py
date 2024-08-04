@@ -8,6 +8,7 @@ api = ExternalApi(bp)
 from .app import app, completion, conversation, message
 from .copywriter import *
 from .img import *
+from .mult_agent import *
 from .quote import *
 from .role_model_customize import knowledge_level, persona_matrix
 from .summarize import *

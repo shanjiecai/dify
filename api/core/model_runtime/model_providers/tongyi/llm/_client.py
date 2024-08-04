@@ -49,9 +49,9 @@ class EnhanceTongyi(Tongyi):
                     [
                         Generation(
                             text=current_text,
-                            generation_info=dict(
-                                finish_reason=stream_resp["output"]["finish_reason"],
-                            ),
+                            generation_info={
+                                "finish_reason": stream_resp["output"]["finish_reason"],
+                            },
                         )
                     ]
                 )
@@ -73,9 +73,9 @@ class EnhanceTongyi(Tongyi):
                     [
                         Generation(
                             text=completion["output"]["text"],
-                            generation_info=dict(
-                                finish_reason=completion["output"]["finish_reason"],
-                            ),
+                            generation_info={
+                                "finish_reason": completion["output"]["finish_reason"],
+                            },
                         )
                     ]
                 )
