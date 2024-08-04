@@ -478,9 +478,11 @@ def I_F_O(history, query, Profile, Personalities, Big5):
 
 
 def Cot_Agent_1(Profile, Personalities, Big5, MBTI, query):
-    print("in Cot_Agent_1")
-    agentscope.init(model_configs=os.path.join(os.path.dirname(os.path.abspath(__file__)), "./configs/Models_configs.json"), logger_level="DEBUG")
-    print("agentscope init")
+    # 切换工作目录
+    os.chdir(os.path.dirname(os.path.abspath(__file__)))
+    print("Cot1 cwd", os.getcwd())
+    agentscope.init(model_configs=os.path.join(os.path.dirname(os.path.abspath(__file__)), "./configs/Models_configs.json"),
+                    logger_level="DEBUG", save_code=False, save_dir=os.path.join(os.path.dirname(os.path.abspath(__file__)), "./runs"))
     my_knowledge_bank = KnowledgeBank(configs=os.path.join(os.path.dirname(os.path.abspath(__file__)), f'./configs/know_{MBTI}.json'))
     Query = Msg(name="user", content=query)
     Cot_gen_1 = LlamaIndexAgent(
@@ -522,6 +524,7 @@ def Cot_Agent_1(Profile, Personalities, Big5, MBTI, query):
         recent_n_mem_for_retrieve=0
     )
     output1 = Cot_gen_1(Query)
+    print("output1: ", output1)
     try:
         output1 = extract_json_(output1.content)
         output = [output1.get("chain of thought 1"), output1.get("chain of thought 2")]
@@ -533,7 +536,11 @@ def Cot_Agent_1(Profile, Personalities, Big5, MBTI, query):
 
 
 def Cot_Agent_2(Profile, Personalities_con, Big5, MBTI, query):
-    agentscope.init(model_configs=os.path.join(os.path.dirname(os.path.abspath(__file__)), "./configs/Models_configs.json"))
+    # 切换工作目录
+    os.chdir(os.path.dirname(os.path.abspath(__file__)))
+    print("Cot2 cwd", os.getcwd())
+    agentscope.init(model_configs=os.path.join(os.path.dirname(os.path.abspath(__file__)), "./configs/Models_configs.json"),
+                    logger_level="DEBUG", save_code=False, save_dir=os.path.join(os.path.dirname(os.path.abspath(__file__)), "./runs"))
     my_knowledge_bank = KnowledgeBank(configs=os.path.join(os.path.dirname(os.path.abspath(__file__)), f'./configs/know_{MBTI}.json'))
     Query = Msg(name="user", content=query)
     Cot_gen_2 = LlamaIndexAgent(
@@ -961,6 +968,9 @@ def Backup(history, query, Profile, Personalities, Big5):
 
 
 def Role_play(Big5, MBTI, Profile, Topic_prefer, Values, query, Flag=True):
+    # # 切换工作目录
+    # os.chdir(os.path.dirname(os.path.abspath(__file__)))
+    # print(os.getcwd())
     try:
         Big5 = extract_Big5(Big5)
     except:

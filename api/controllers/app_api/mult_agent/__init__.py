@@ -1,4 +1,5 @@
 import json
+import os
 import time
 import uuid
 from datetime import datetime
@@ -433,14 +434,13 @@ class Multi_agent(AppApiResource):
             # executor = ProcessPoolExecutor(max_workers=7)
             # p = executor.submit(t)
             # print(p.result())
-            print("before")
-            logger.info("hello world")
-            agentscope.init(
-                # model_configs=os.path.join(os.path.dirname(os.path.abspath(__file__)), "./configs/Models_configs.json"),
-                model_configs="./configs/Models_configs.json",
-                logger_level="DEBUG")
-            logger.info("init finish")
-
+            # print("before")
+            # logger.info("hello world")
+            # agentscope.init(
+            #     # model_configs=os.path.join(os.path.dirname(os.path.abspath(__file__)), "./configs/Models_configs.json"),
+            #     model_configs="./configs/Models_configs.json",
+            #     logger_level="DEBUG")
+            # logger.info("init finish")
             result = Role_play(Big5=big5,MBTI=mbti, query={'query': query, 'history': history_str}, Profile=description,
                        Topic_prefer=habbit, Values=values_deal, Flag=knowledge_flag)
             return {'code': 0, 'result': result}, 200
