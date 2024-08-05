@@ -1,9 +1,4 @@
 import os
-import sys
-import traceback
-from logging.handlers import RotatingFileHandler
-
-from configs import dify_config
 
 if os.environ.get("DEBUG", "false").lower() != 'true':
     from gevent import monkey
@@ -27,7 +22,9 @@ from flask_cors import CORS
 from werkzeug.exceptions import Unauthorized
 
 # from core.model_providers.providers import hosted
+import contexts
 from commands import register_commands
+from configs import dify_config
 
 # DO NOT REMOVE BELOW
 from events import event_handlers
@@ -204,7 +201,10 @@ def load_user_from_request(request_from_flask_login):
     decoded = PassportService().verify(auth_token)
     user_id = decoded.get('user_id')
 
-    return AccountService.load_logged_in_account(account_id=user_id, token=auth_token)
+    account = AccountService.load_logged_in_account(account_id=user_id, token=auth_token)
+    if account:
+        contexts.tenant_id.set(account.current_tenant_id)
+    return account
 
 
 @login_manager.unauthorized_handler
@@ -313,6 +313,7 @@ def after_request(response):
 @app.route('/health')
 def health():
     return Response(json.dumps({
+        'pid': os.getpid(),
         'status': 'ok',
         'version': app.config['CURRENT_VERSION']
     }), status=200, content_type="application/json")
@@ -336,6 +337,7 @@ def threads():
         })
 
     return {
+        'pid': os.getpid(),
         'thread_num': num_threads,
         'threads': thread_list
     }
@@ -345,6 +347,7 @@ def threads():
 def pool_stat():
     engine = db.engine
     return {
+        'pid': os.getpid(),
         'pool_size': engine.pool.size(),
         'checked_in_connections': engine.pool.checkedin(),
         'checked_out_connections': engine.pool.checkedout(),

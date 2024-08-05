@@ -189,8 +189,6 @@ class DatasetApi(Resource):
         dataset = DatasetService.get_dataset(dataset_id_str)
         if dataset is None:
             raise NotFound("Dataset not found.")
-        # check user's model setting
-        DatasetService.check_dataset_model_setting(dataset)
 
         parser = reqparse.RequestParser()
         parser.add_argument('name', nullable=False,
@@ -214,6 +212,13 @@ class DatasetApi(Resource):
         parser.add_argument('partial_member_list', type=list, location='json', help='Invalid parent user list.')
         args = parser.parse_args()
         data = request.get_json()
+
+        # check embedding model setting
+        if data.get('indexing_technique') == 'high_quality':
+            DatasetService.check_embedding_model_setting(dataset.tenant_id,
+                                                         data.get('embedding_model_provider'),
+                                                         data.get('embedding_model')
+                                                         )
 
         # The role of the current user in the ta table must be admin, owner, editor, or dataset_operator
         DatasetPermissionService.check_permission(
@@ -544,13 +549,13 @@ class DatasetRetrievalSettingApi(Resource):
     def get(self):
         vector_type = dify_config.VECTOR_STORE
         match vector_type:
-            case VectorType.MILVUS | VectorType.RELYT | VectorType.PGVECTOR | VectorType.TIDB_VECTOR | VectorType.CHROMA | VectorType.TENCENT | VectorType.ORACLE:
+            case VectorType.MILVUS | VectorType.RELYT | VectorType.PGVECTOR | VectorType.TIDB_VECTOR | VectorType.CHROMA | VectorType.TENCENT:
                 return {
                     'retrieval_method': [
                         RetrievalMethod.SEMANTIC_SEARCH.value
                     ]
                 }
-            case VectorType.QDRANT | VectorType.WEAVIATE | VectorType.OPENSEARCH | VectorType.ANALYTICDB | VectorType.MYSCALE:
+            case VectorType.QDRANT | VectorType.WEAVIATE | VectorType.OPENSEARCH | VectorType.ANALYTICDB | VectorType.MYSCALE | VectorType.ORACLE:
                 return {
                     'retrieval_method': [
                         RetrievalMethod.SEMANTIC_SEARCH.value,
@@ -568,13 +573,13 @@ class DatasetRetrievalSettingMockApi(Resource):
     @account_initialization_required
     def get(self, vector_type):
         match vector_type:
-            case VectorType.MILVUS | VectorType.RELYT | VectorType.PGVECTOR | VectorType.TIDB_VECTOR | VectorType.CHROMA | VectorType.TENCENT | VectorType.ORACLE:
+            case VectorType.MILVUS | VectorType.RELYT | VectorType.PGVECTOR | VectorType.TIDB_VECTOR | VectorType.CHROMA | VectorType.TENCENT:
                 return {
                     'retrieval_method': [
                         RetrievalMethod.SEMANTIC_SEARCH.value
                     ]
                 }
-            case VectorType.QDRANT | VectorType.WEAVIATE | VectorType.OPENSEARCH| VectorType.ANALYTICDB | VectorType.MYSCALE:
+            case VectorType.QDRANT | VectorType.WEAVIATE | VectorType.OPENSEARCH| VectorType.ANALYTICDB | VectorType.MYSCALE | VectorType.ORACLE:
                 return {
                     'retrieval_method': [
                         RetrievalMethod.SEMANTIC_SEARCH.value,

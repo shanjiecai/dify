@@ -1,3 +1,4 @@
+from collections.abc import Mapping
 from enum import Enum
 from typing import Any, Optional
 
@@ -79,7 +80,7 @@ class AppGenerateEntity(BaseModel):
     # app config
     app_config: AppConfig
 
-    inputs: dict[str, Any]
+    inputs: Mapping[str, Any]
     files: list[FileVar] = []
     user_id: str
 
@@ -148,7 +149,7 @@ class AdvancedChatAppGenerateEntity(AppGenerateEntity):
     app_config: WorkflowUIBasedAppConfig
 
     conversation_id: Optional[str] = None
-    query: Optional[str] = None
+    query: str
     is_new_message: bool = True
     user_name: Optional[str] = None
     assistant_name: Optional[str] = None

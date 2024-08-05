@@ -85,6 +85,7 @@ class LLMNode(BaseNode):
     _node_data_cls = LLMNodeData
     node_type = NodeType.LLM
     _conversation: Conversation = None
+    _node_type = NodeType.LLM
 
     def _run(self, variable_pool: VariablePool, **kwargs) -> NodeRunResult:
         """
@@ -137,7 +138,7 @@ class LLMNode(BaseNode):
             # fetch prompt messages
             prompt_messages, stop = self._fetch_prompt_messages(
                 node_data=node_data,
-                query=variable_pool.get_variable_value(['sys', SystemVariable.QUERY.value])
+                query=variable_pool.get_any(['sys', SystemVariable.QUERY.value])
                 if node_data.memory else None,
                 query_prompt_template=node_data.memory.query_prompt_template if node_data.memory else None,
                 inputs=inputs,
@@ -303,8 +304,8 @@ class LLMNode(BaseNode):
 
         for variable_selector in node_data.prompt_config.jinja2_variables or []:
             variable = variable_selector.variable
-            value = variable_pool.get_variable_value(
-                variable_selector=variable_selector.value_selector
+            value = variable_pool.get_any(
+                variable_selector.value_selector
             )
 
             def parse_dict(d: dict) -> str:
@@ -367,7 +368,7 @@ class LLMNode(BaseNode):
             variable_selectors = variable_template_parser.extract_variable_selectors()
 
         for variable_selector in variable_selectors:
-            variable_value = variable_pool.get_variable_value(variable_selector.value_selector)
+            variable_value = variable_pool.get_any(variable_selector.value_selector)
             if variable_value is None:
                 raise ValueError(f'Variable {variable_selector.variable} not found')
 
@@ -378,7 +379,7 @@ class LLMNode(BaseNode):
             query_variable_selectors = (VariableTemplateParser(template=memory.query_prompt_template)
                                         .extract_variable_selectors())
             for variable_selector in query_variable_selectors:
-                variable_value = variable_pool.get_variable_value(variable_selector.value_selector)
+                variable_value = variable_pool.get_any(variable_selector.value_selector)
                 if variable_value is None:
                     raise ValueError(f'Variable {variable_selector.variable} not found')
 
@@ -396,7 +397,7 @@ class LLMNode(BaseNode):
         if not node_data.vision.enabled:
             return []
 
-        files = variable_pool.get_variable_value(['sys', SystemVariable.FILES.value])
+        files = variable_pool.get_any(['sys', SystemVariable.FILES.value])
         if not files:
             return []
 
@@ -415,7 +416,7 @@ class LLMNode(BaseNode):
         if not node_data.context.variable_selector:
             return None
 
-        context_value = variable_pool.get_variable_value(node_data.context.variable_selector)
+        context_value = variable_pool.get_any(node_data.context.variable_selector)
         if context_value:
             if isinstance(context_value, str):
                 return context_value
@@ -561,7 +562,7 @@ class LLMNode(BaseNode):
             return None
 
         # get conversation id
-        conversation_id = variable_pool.get_variable_value(['sys', SystemVariable.CONVERSATION_ID.value])
+        conversation_id = variable_pool.get_any(['sys', SystemVariable.CONVERSATION_ID.value])
         if conversation_id is None:
             return None
 

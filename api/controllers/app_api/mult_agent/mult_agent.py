@@ -3,6 +3,7 @@ import json
 # agentscope 需要 flask 3.0.0，需要观察下是否有影响
 import os
 import re
+import time
 import traceback
 
 import openai
@@ -480,9 +481,11 @@ def I_F_O(history, query, Profile, Personalities, Big5):
 def Cot_Agent_1(Profile, Personalities, Big5, MBTI, query):
     # 切换工作目录
     os.chdir(os.path.dirname(os.path.abspath(__file__)))
-    print("Cot1 cwd", os.getcwd())
+    # print("Cot1 cwd", os.getcwd())
+    # use_monitor sqlite3.OperationalError: database is locked
     agentscope.init(model_configs=os.path.join(os.path.dirname(os.path.abspath(__file__)), "./configs/Models_configs.json"),
-                    logger_level="DEBUG", save_code=False, save_dir=os.path.join(os.path.dirname(os.path.abspath(__file__)), "./runs"))
+                    logger_level="DEBUG", save_code=False, save_dir=os.path.join(os.path.dirname(os.path.abspath(__file__)), "./runs"),
+                    use_monitor=False)
     my_knowledge_bank = KnowledgeBank(configs=os.path.join(os.path.dirname(os.path.abspath(__file__)), f'./configs/know_{MBTI}.json'))
     Query = Msg(name="user", content=query)
     Cot_gen_1 = LlamaIndexAgent(
@@ -538,9 +541,10 @@ def Cot_Agent_1(Profile, Personalities, Big5, MBTI, query):
 def Cot_Agent_2(Profile, Personalities_con, Big5, MBTI, query):
     # 切换工作目录
     os.chdir(os.path.dirname(os.path.abspath(__file__)))
-    print("Cot2 cwd", os.getcwd())
+    # print("Cot2 cwd", os.getcwd())
     agentscope.init(model_configs=os.path.join(os.path.dirname(os.path.abspath(__file__)), "./configs/Models_configs.json"),
-                    logger_level="DEBUG", save_code=False, save_dir=os.path.join(os.path.dirname(os.path.abspath(__file__)), "./runs"))
+                    logger_level="DEBUG", save_code=False, save_dir=os.path.join(os.path.dirname(os.path.abspath(__file__)), "./runs"),
+                    use_monitor=False)
     my_knowledge_bank = KnowledgeBank(configs=os.path.join(os.path.dirname(os.path.abspath(__file__)), f'./configs/know_{MBTI}.json'))
     Query = Msg(name="user", content=query)
     Cot_gen_2 = LlamaIndexAgent(
@@ -1128,8 +1132,10 @@ if __name__ == '__main__':
     Topic_prefer = ["General Greetings", "School Affairs", "Homework", "Gossips", "All the Outdoor Activities", "Games",
                     "Teachers", "Head Master", "Classmates"]
     Values = ["Fulfillment", "Honesty", "Hard-working"]
-
+    begin = time.time()
     Result = Role_play(Big5=Big5, MBTI=MBTI, query=query, Profile=Profile, Topic_prefer=Topic_prefer, Values=Values,
                        Flag=True)
+    end = time.time()
+    print(f"Time: {end - begin}")
     print(f"Result: \n\n{Result}")
     # Cot_Agent_1(Profile=Profile, Personalities="", Big5=Big5, MBTI=MBTI, query="Who's your favourite teacher?")
