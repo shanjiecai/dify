@@ -5,7 +5,6 @@ from datetime import datetime, timezone
 from typing import Optional, Union
 
 from flask import Flask
-from sqlalchemy import or_
 from sqlalchemy import asc, desc, or_
 
 # from controllers.app_api.openai_base_request import compare_similarity, generate_response

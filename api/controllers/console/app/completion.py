@@ -1,15 +1,10 @@
-import datetime
 import logging
-import threading
 
 import flask_login
-from flask import current_app
 from flask_restful import Resource, reqparse
-from sqlalchemy import and_
 from werkzeug.exceptions import InternalServerError, NotFound
 
 import services
-from controllers.app_api.plan.pipeline import plan_question_background
 from controllers.console import api
 from controllers.console.app.error import (
     AppUnavailableError,
@@ -32,11 +27,10 @@ from core.errors.error import (
     QuotaExceededError,
 )
 from core.model_runtime.errors.invoke import InvokeError
-from extensions.ext_database import db
 from libs import helper
 from libs.helper import uuid_value
 from libs.login import login_required
-from models.model import AppMode, Conversation
+from models.model import AppMode
 from services.app_generate_service import AppGenerateService
 from services.errors.llm import InvokeRateLimitError
 

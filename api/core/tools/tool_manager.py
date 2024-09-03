@@ -33,7 +33,6 @@ from mylogger import logger
 from services.tools.tools_transform_service import ToolTransformService
 
 
-
 class ToolManager:
     _builtin_provider_lock = Lock()
     _builtin_providers = {}
