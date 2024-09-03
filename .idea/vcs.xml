@@ -12,15 +12,18 @@
   </component>
   <component name="VcsDirectoryMappings">
     <mapping directory="" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/Awesome-Dify-Workflow" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/LangChain-Tutorials" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/StepBackSearch" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/api/retrieval/ms-marco-MiniLM-L-6-v2" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/dify-helm" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/dify-plugin-mem0ai" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/evaluate/CharacterEval" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/evaluate/RoleBench" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/evaluate/character_AI_open" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/evaluate/opencompass" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/kefu/JDDC-Baseline-Seq2Seq" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/mem0ai-api" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/open-parse" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/psy/PsyQA" vcs="Git" />
   </component>

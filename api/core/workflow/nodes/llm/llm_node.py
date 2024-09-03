@@ -3,7 +3,7 @@ import threading
 import time
 from collections.abc import Generator
 from copy import deepcopy
-from typing import Optional, cast
+from typing import TYPE_CHECKING, Optional, cast
 
 from flask.ctx import AppContext
 
@@ -13,7 +13,6 @@ from core.app.entities.queue_entities import QueueRetrieverResourcesEvent
 from core.entities.model_entities import ModelStatus
 from core.entities.provider_entities import QuotaUnit
 from core.errors.error import ModelCurrentlyNotSupportError, ProviderTokenNotInitError, QuotaExceededError
-from core.file.file_obj import FileVar
 from core.memory.token_buffer_memory import TokenBufferMemory
 from core.model_manager import ModelInstance, ModelManager
 from core.model_runtime.entities.llm_entities import LLMUsage
@@ -28,8 +27,9 @@ from core.model_runtime.utils.encoders import jsonable_encoder
 from core.prompt.advanced_prompt_transform import AdvancedPromptTransform
 from core.prompt.entities.advanced_prompt_entities import CompletionModelPromptTemplate, MemoryConfig
 from core.prompt.utils.prompt_message_util import PromptMessageUtil
-from core.workflow.entities.node_entities import NodeRunMetadataKey, NodeRunResult, NodeType, SystemVariable
+from core.workflow.entities.node_entities import NodeRunMetadataKey, NodeRunResult, NodeType
 from core.workflow.entities.variable_pool import VariablePool
+from core.workflow.enums import SystemVariable
 from core.workflow.nodes.base_node import BaseNode
 from core.workflow.nodes.llm.entities import (
     LLMNodeChatModelMessage,
@@ -80,6 +80,10 @@ def _plan_finish_question(conversation: Conversation, main_context: AppContext):
         db.session.add(conversation)
         db.session.commit()
 
+if TYPE_CHECKING:
+    from core.file.file_obj import FileVar
+
+
 
 class LLMNode(BaseNode):
     _node_data_cls = LLMNodeData
@@ -117,7 +121,7 @@ class LLMNode(BaseNode):
             node_inputs = {}
 
             # fetch files
-            files: list[FileVar] = self._fetch_files(node_data, variable_pool)
+            files = self._fetch_files(node_data, variable_pool)
 
             if files:
                 node_inputs['#files#'] = [file.to_dict() for file in files]
@@ -386,7 +390,7 @@ class LLMNode(BaseNode):
 
         return inputs
 
-    def _fetch_files(self, node_data: LLMNodeData, variable_pool: VariablePool) -> list[FileVar]:
+    def _fetch_files(self, node_data: LLMNodeData, variable_pool: VariablePool) -> list["FileVar"]:
         """
         Fetch files
         :param node_data: node data
@@ -585,7 +589,7 @@ class LLMNode(BaseNode):
                                query: Optional[str],
                                query_prompt_template: Optional[str],
                                inputs: dict[str, str],
-                               files: list[FileVar],
+                               files: list["FileVar"],
                                context: Optional[str],
                                memory: Optional[TokenBufferMemory],
                                model_config: ModelConfigWithCredentialsEntity,

@@ -1,3 +1,4 @@
+import json
 import logging
 from collections.abc import Generator
 from typing import Optional, Union, cast
@@ -149,9 +150,9 @@ class OpenAILargeLanguageModel(_CommonOpenAI, LargeLanguageModel):
             user=user
         )
 
-    def _transform_chat_json_prompts(self, model: str, credentials: dict, 
-                               prompt_messages: list[PromptMessage], model_parameters: dict, 
-                               tools: list[PromptMessageTool] | None = None, stop: list[str] | None = None, 
+    def _transform_chat_json_prompts(self, model: str, credentials: dict,
+                               prompt_messages: list[PromptMessage], model_parameters: dict,
+                               tools: list[PromptMessageTool] | None = None, stop: list[str] | None = None,
                                stream: bool = True, user: str | None = None, response_format: str = 'JSON') \
                             -> None:
         """
@@ -179,7 +180,7 @@ class OpenAILargeLanguageModel(_CommonOpenAI, LargeLanguageModel):
                     .replace("{{block}}", response_format)
             ))
             prompt_messages.append(AssistantPromptMessage(content=f"\n```{response_format}"))
-    
+
     def _transform_completion_json_prompts(self, model: str, credentials: dict,
                                             prompt_messages: list[PromptMessage], model_parameters: dict,
                                             tools: list[PromptMessageTool] | None = None, stop: list[str] | None = None,
@@ -275,7 +276,7 @@ class OpenAILargeLanguageModel(_CommonOpenAI, LargeLanguageModel):
 
             if model_mode == LLMMode.CHAT:
                 # chat model
-                client.chat.completions.create(
+                response = client.chat.completions.create(
                     messages=[{"role": "user", "content": 'ping'}],
                     model=model,
                     temperature=0,
@@ -284,13 +285,14 @@ class OpenAILargeLanguageModel(_CommonOpenAI, LargeLanguageModel):
                 )
             else:
                 # text completion model
-                client.completions.create(
+                response = client.completions.create(
                     prompt='ping',
                     model=model,
                     temperature=0,
                     max_tokens=20,
                     stream=False,
                 )
+            print(response)
         except Exception as ex:
             raise CredentialsValidateFailedError(str(ex))
 
@@ -382,7 +384,7 @@ class OpenAILargeLanguageModel(_CommonOpenAI, LargeLanguageModel):
             extra_model_kwargs['stream_options'] = {
                 "include_usage": True
             }
-        
+
         # text completion model
         response = client.completions.create(
             prompt=prompt_messages[0].content,
@@ -544,13 +546,18 @@ class OpenAILargeLanguageModel(_CommonOpenAI, LargeLanguageModel):
 
         response_format = model_parameters.get("response_format")
         if response_format:
-            if response_format == "json_object":
-                response_format = {"type": "json_object"}
+            if response_format == "json_schema":
+                json_schema = model_parameters.get("json_schema")
+                if not json_schema:
+                    raise ValueError("Must define JSON Schema when the response format is json_schema")
+                try:
+                    schema = json.loads(json_schema)
+                except:
+                    raise ValueError(f"not currect json_schema format: {json_schema}")
+                model_parameters.pop("json_schema")
+                model_parameters["response_format"] = {"type": "json_schema", "json_schema": schema}
             else:
-                response_format = {"type": "text"}
-
-            model_parameters["response_format"] = response_format
-
+                model_parameters["response_format"] = {"type": response_format}
 
         extra_model_kwargs = {}
 
@@ -922,10 +929,13 @@ class OpenAILargeLanguageModel(_CommonOpenAI, LargeLanguageModel):
                                   tools: Optional[list[PromptMessageTool]] = None) -> int:
         """Calculate num tokens for gpt-3.5-turbo and gpt-4 with tiktoken package.
 
-        Official documentation: https://github.com/openai/openai-cookbook/blob/
-        main/examples/How_to_format_inputs_to_ChatGPT_models.ipynb"""
+        Official documentation: https://github.com/openai/openai-cookbook/blob/main/examples/How_to_format_inputs_to_ChatGPT_models.ipynb"""
         if model.startswith('ft:'):
             model = model.split(':')[1]
+
+        # Currently, we can use gpt4o to calculate chatgpt-4o-latest's token.
+        if model == "chatgpt-4o-latest":
+            model = "gpt-4o"
 
         try:
             encoding = tiktoken.encoding_for_model(model)
@@ -946,7 +956,7 @@ class OpenAILargeLanguageModel(_CommonOpenAI, LargeLanguageModel):
             raise NotImplementedError(
                 f"get_num_tokens_from_messages() is not presently implemented "
                 f"for model {model}."
-                "See https://github.com/openai/openai-python/blob/main/chatml.md for "
+                "See https://platform.openai.com/docs/advanced-usage/managing-tokens for "
                 "information on how messages are converted to tokens."
             )
         num_tokens = 0
@@ -1059,7 +1069,7 @@ class OpenAILargeLanguageModel(_CommonOpenAI, LargeLanguageModel):
         model_map = {model.model: model for model in models}
         if base_model not in model_map:
             raise ValueError(f'Base model {base_model} not found')
-        
+
         base_model_schema = model_map[base_model]
 
         base_model_schema_features = base_model_schema.features or []
@@ -1077,7 +1087,7 @@ class OpenAILargeLanguageModel(_CommonOpenAI, LargeLanguageModel):
             fetch_from=FetchFrom.CUSTOMIZABLE_MODEL,
             model_properties=dict(base_model_schema_model_properties.items()),
             parameter_rules=list(base_model_schema_parameters_rules),
-            pricing=base_model_schema.pricing    
+            pricing=base_model_schema.pricing
         )
 
         return entity

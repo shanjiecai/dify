@@ -14,9 +14,7 @@ from opentelemetry.sdk.trace.export import BatchSpanProcessor
 
 
 def init_trace(app: Flask):
-    trace.set_tracer_provider(
-        TracerProvider(resource=Resource.create({SERVICE_NAME: 'role'}))
-    )
+    trace.set_tracer_provider(TracerProvider(resource=Resource.create({SERVICE_NAME: "role"})))
 
     trace.get_tracer_provider().add_span_processor(
         BatchSpanProcessor(
@@ -28,7 +26,7 @@ def init_trace(app: Flask):
         )
     )
 
-    FlaskInstrumentor().instrument_app(app, excluded_urls='client/.*/healthcheck')
+    FlaskInstrumentor().instrument_app(app, excluded_urls="client/.*/healthcheck")
     RequestsInstrumentor().instrument()
     RedisInstrumentor().instrument()
     # PymongoInstrumentor().instrument(capture_statement=True)

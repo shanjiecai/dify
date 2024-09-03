@@ -12,7 +12,7 @@ import models as models
 
 # revision identifiers, used by Alembic.
 revision = '48dbcfae4bb8'
-down_revision = 'eeb2e349e6ac'
+down_revision = '8782057ff0dc'
 branch_labels = None
 depends_on = None
 
