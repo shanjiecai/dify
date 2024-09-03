@@ -3,7 +3,7 @@ import os
 import threading
 import uuid
 from collections.abc import Generator
-from typing import Any, Union
+from typing import Any, Literal, Union, overload
 
 from flask import Flask, current_app
 from pydantic import ValidationError
@@ -28,16 +28,40 @@ logger = logging.getLogger(__name__)
 
 
 class ChatAppGenerator(MessageBasedAppGenerator):
-    def generate(self, app_model: App,
-                 user: Union[Account, EndUser],
-                 args: Any,
-                 invoke_from: InvokeFrom,
-                 stream: bool = True,
-                 user_name: str = None,
-                 assistant_name: str = None,
-                 user_id: str = None,
-                 ) \
-            -> Union[dict, Generator[dict, None, None]]:
+    @overload
+    def generate(
+        self, app_model: App,
+        user: Union[Account, EndUser],
+        args: Any,
+        invoke_from: InvokeFrom,
+        stream: Literal[True] = True,
+        user_name: str = None,
+        assistant_name: str = None,
+        user_id: str = None,
+    ) -> Generator[str, None, None]: ...
+
+    @overload
+    def generate(
+        self, app_model: App,
+        user: Union[Account, EndUser],
+        args: Any,
+        invoke_from: InvokeFrom,
+        stream: Literal[False] = False,
+        user_name: str = None,
+        assistant_name: str = None,
+        user_id: str = None,
+    ) -> dict: ...
+
+    def generate(
+        self, app_model: App,
+        user: Union[Account, EndUser],
+        args: Any,
+        invoke_from: InvokeFrom,
+        stream: bool = True,
+        user_name: str = None,
+        assistant_name: str = None,
+        user_id: str = None,
+    ) -> Union[dict, Generator[str, None, None]]:
         """
         Generate App response.
 
@@ -138,7 +162,7 @@ class ChatAppGenerator(MessageBasedAppGenerator):
             app_config=app_config,
             model_conf=ModelConfigConverter.convert(app_config),
             conversation_id=conversation.id if conversation else None,
-            inputs=conversation.inputs if conversation and conversation.inputs else self._get_cleaned_inputs(inputs, app_config),
+            inputs=conversation.inputs if conversation else self._get_cleaned_inputs(inputs, app_config),
             query=query,
             files=file_objs,
             user_id=user.id,

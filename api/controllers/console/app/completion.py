@@ -22,6 +22,7 @@ from controllers.console.app.error import (
 from controllers.console.app.wraps import get_app_model
 from controllers.console.setup import setup_required
 from controllers.console.wraps import account_initialization_required
+from controllers.web.error import InvokeRateLimitError as InvokeRateLimitHttpError
 from core.app.apps.base_app_queue_manager import AppQueueManager
 from core.app.entities.app_invoke_entities import InvokeFrom
 from core.errors.error import (
@@ -37,39 +38,35 @@ from libs.helper import uuid_value
 from libs.login import login_required
 from models.model import AppMode, Conversation
 from services.app_generate_service import AppGenerateService
+from services.errors.llm import InvokeRateLimitError
 
 # from services.completion_service import CompletionService
 
 
 # define completion message api for user
 class CompletionMessageApi(Resource):
-
     @setup_required
     @login_required
     @account_initialization_required
     @get_app_model(mode=AppMode.COMPLETION)
     def post(self, app_model):
         parser = reqparse.RequestParser()
-        parser.add_argument('inputs', type=dict, required=True, location='json')
-        parser.add_argument('query', type=str, location='json', default='')
-        parser.add_argument('files', type=list, required=False, location='json')
-        parser.add_argument('model_config', type=dict, required=True, location='json')
-        parser.add_argument('response_mode', type=str, choices=['blocking', 'streaming'], location='json')
-        parser.add_argument('retriever_from', type=str, required=False, default='dev', location='json')
+        parser.add_argument("inputs", type=dict, required=True, location="json")
+        parser.add_argument("query", type=str, location="json", default="")
+        parser.add_argument("files", type=list, required=False, location="json")
+        parser.add_argument("model_config", type=dict, required=True, location="json")
+        parser.add_argument("response_mode", type=str, choices=["blocking", "streaming"], location="json")
+        parser.add_argument("retriever_from", type=str, required=False, default="dev", location="json")
         args = parser.parse_args()
 
-        streaming = args['response_mode'] != 'blocking'
-        args['auto_generate_name'] = False
+        streaming = args["response_mode"] != "blocking"
+        args["auto_generate_name"] = False
 
         account = flask_login.current_user
 
         try:
             response = AppGenerateService.generate(
-                app_model=app_model,
-                user=account,
-                args=args,
-                invoke_from=InvokeFrom.DEBUGGER,
-                streaming=streaming
+                app_model=app_model, user=account, args=args, invoke_from=InvokeFrom.DEBUGGER, streaming=streaming
             )
 
             return helper.compact_generate_response(response)
@@ -105,7 +102,7 @@ class CompletionMessageStopApi(Resource):
 
         AppQueueManager.set_stop_flag(task_id, InvokeFrom.DEBUGGER, account.id)
 
-        return {'result': 'success'}, 200
+        return {"result": "success"}, 200
 
 
 class ChatMessageApi(Resource):
@@ -115,46 +112,42 @@ class ChatMessageApi(Resource):
     @get_app_model(mode=[AppMode.CHAT, AppMode.AGENT_CHAT])
     def post(self, app_model):
         parser = reqparse.RequestParser()
-        parser.add_argument('inputs', type=dict, required=True, location='json')
-        parser.add_argument('query', type=str, required=True, location='json')
-        parser.add_argument('files', type=list, required=False, location='json')
-        parser.add_argument('model_config', type=dict, required=True, location='json')
-        parser.add_argument('conversation_id', type=uuid_value, location='json')
-        parser.add_argument('response_mode', type=str, choices=['blocking', 'streaming'], location='json')
-        parser.add_argument('retriever_from', type=str, required=False, default='dev', location='json')
+        parser.add_argument("inputs", type=dict, required=True, location="json")
+        parser.add_argument("query", type=str, required=True, location="json")
+        parser.add_argument("files", type=list, required=False, location="json")
+        parser.add_argument("model_config", type=dict, required=True, location="json")
+        parser.add_argument("conversation_id", type=uuid_value, location="json")
+        parser.add_argument("response_mode", type=str, choices=["blocking", "streaming"], location="json")
+        parser.add_argument("retriever_from", type=str, required=False, default="dev", location="json")
         args = parser.parse_args()
 
-        streaming = args['response_mode'] != 'blocking'
-        args['auto_generate_name'] = False
+        streaming = args["response_mode"] != "blocking"
+        args["auto_generate_name"] = False
 
         account = flask_login.current_user
 
-        if args["query"] and args["conversation_id"]:
-            conversation_filter = [
-                Conversation.id == args['conversation_id'],
-                # Conversation.app_id == app_model.id,
-                Conversation.status == 'normal'
-            ]
-            conversation = db.session.query(Conversation).filter(and_(*conversation_filter)).first()
-            if conversation and (
-                    not conversation.plan_question_invoke_user or not conversation.plan_question_invoke_time or conversation.plan_question_invoke_time < datetime.datetime.utcnow() - datetime.timedelta(
-                hours=8)) and app_model.id not in ["a756e5d2-c735-4f68-8db0-1de49333501c",
-                                                   "19d2fd0b-6e1c-47f9-87ab-cc039b6d3881",
-                                                   "4cb1eee5-72d9-4cd6-befc-e4e0d4fb6333",
-                                                   "cee86a23-56ab-4b3d-a548-ca34191b23a1"] and args["query"]:
-                # 另起线程执行plan_question
-                threading.Thread(target=plan_question_background,
-                                 args=(current_app._get_current_object(), args["query"], conversation,
-                                       "test", None)).start()
+        # if args["query"] and args["conversation_id"]:
+        #     conversation_filter = [
+        #         Conversation.id == args['conversation_id'],
+        #         # Conversation.app_id == app_model.id,
+        #         Conversation.status == 'normal'
+        #     ]
+        #     conversation = db.session.query(Conversation).filter(and_(*conversation_filter)).first()
+        #     if conversation and (
+        #             not conversation.plan_question_invoke_user or not conversation.plan_question_invoke_time or conversation.plan_question_invoke_time < datetime.datetime.utcnow() - datetime.timedelta(
+        #         hours=8)) and app_model.id not in ["a756e5d2-c735-4f68-8db0-1de49333501c",
+        #                                            "19d2fd0b-6e1c-47f9-87ab-cc039b6d3881",
+        #                                            "4cb1eee5-72d9-4cd6-befc-e4e0d4fb6333",
+        #                                            "cee86a23-56ab-4b3d-a548-ca34191b23a1"] and args["query"]:
+        #         # 另起线程执行plan_question
+        #         threading.Thread(target=plan_question_background,
+        #                          args=(current_app._get_current_object(), args["query"], conversation,
+        #                                "test", None)).start()
         try:
             response = AppGenerateService.generate(
-                app_model=app_model,
-                user=account,
-                args=args,
-                invoke_from=InvokeFrom.DEBUGGER,
-                streaming=streaming,
+                app_model=app_model, user=account, args=args, invoke_from=InvokeFrom.DEBUGGER, streaming=streaming,
                 assistant_name=app_model.name,
-                user_name=None
+                user_name=None,
             )
 
             return helper.compact_generate_response(response)
@@ -171,6 +164,8 @@ class ChatMessageApi(Resource):
             raise ProviderQuotaExceededError()
         except ModelCurrentlyNotSupportError:
             raise ProviderModelCurrentlyNotSupportError()
+        except InvokeRateLimitError as ex:
+            raise InvokeRateLimitHttpError(ex.description)
         except InvokeError as e:
             raise CompletionRequestError(e.description)
         except (ValueError, AppInvokeQuotaExceededError) as e:
@@ -190,10 +185,10 @@ class ChatMessageStopApi(Resource):
 
         AppQueueManager.set_stop_flag(task_id, InvokeFrom.DEBUGGER, account.id)
 
-        return {'result': 'success'}, 200
+        return {"result": "success"}, 200
 
 
-api.add_resource(CompletionMessageApi, '/apps/<uuid:app_id>/completion-messages')
-api.add_resource(CompletionMessageStopApi, '/apps/<uuid:app_id>/completion-messages/<string:task_id>/stop')
-api.add_resource(ChatMessageApi, '/apps/<uuid:app_id>/chat-messages')
-api.add_resource(ChatMessageStopApi, '/apps/<uuid:app_id>/chat-messages/<string:task_id>/stop')
+api.add_resource(CompletionMessageApi, "/apps/<uuid:app_id>/completion-messages")
+api.add_resource(CompletionMessageStopApi, "/apps/<uuid:app_id>/completion-messages/<string:task_id>/stop")
+api.add_resource(ChatMessageApi, "/apps/<uuid:app_id>/chat-messages")
+api.add_resource(ChatMessageStopApi, "/apps/<uuid:app_id>/chat-messages/<string:task_id>/stop")

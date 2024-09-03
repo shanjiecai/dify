@@ -45,7 +45,8 @@ class ModelInstance:
             credentials=self.credentials
         )
 
-    def _fetch_credentials_from_bundle(self, provider_model_bundle: ProviderModelBundle, model: str) -> dict:
+    @staticmethod
+    def _fetch_credentials_from_bundle(provider_model_bundle: ProviderModelBundle, model: str) -> dict:
         """
         Fetch credentials from provider model bundle
         :param provider_model_bundle: provider model bundle
@@ -64,7 +65,8 @@ class ModelInstance:
 
         return credentials
 
-    def _get_load_balancing_manager(self, configuration: ProviderConfiguration,
+    @staticmethod
+    def _get_load_balancing_manager(configuration: ProviderConfiguration,
                                     model_type: ModelType,
                                     model: str,
                                     credentials: dict) -> Optional["LBModelManager"]:
@@ -370,6 +372,15 @@ class ModelManager:
 
         return ModelInstance(provider_model_bundle, model)
 
+    def get_default_provider_model_name(self, tenant_id: str, model_type: ModelType) -> tuple[str, str]:
+        """
+        Return first provider and the first model in the provider
+        :param tenant_id: tenant id
+        :param model_type: model type
+        :return: provider name, model name
+        """
+        return self._provider_manager.get_first_provider_first_model(tenant_id, model_type)
+
     def get_default_model_instance(self, tenant_id: str, model_type: ModelType) -> ModelInstance:
         """
         Get default model instance
@@ -504,13 +515,12 @@ class LBModelManager:
             config.id
         )
 
-
         res = redis_client.exists(cooldown_cache_key)
         res = cast(bool, res)
         return res
 
-    @classmethod
-    def get_config_in_cooldown_and_ttl(cls, tenant_id: str,
+    @staticmethod
+    def get_config_in_cooldown_and_ttl(tenant_id: str,
                                        provider: str,
                                        model_type: ModelType,
                                        model: str,
