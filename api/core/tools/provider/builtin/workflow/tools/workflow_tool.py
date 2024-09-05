@@ -1,15 +1,16 @@
-import requests
-from core.tools.tool.builtin_tool import BuiltinTool
-from core.tools.entities.tool_entities import ToolInvokeMessage
+from typing import Any, Union
 
-from typing import Any, Dict, List, Union
+import requests
+
+from core.tools.entities.tool_entities import ToolInvokeMessage
+from core.tools.tool.builtin_tool import BuiltinTool
 
 
 class WorkflowAPITool(BuiltinTool):
     def _invoke(self,
                 user_id: str,
-                tool_parameters: Dict[str, Any]
-                ) -> Union[ToolInvokeMessage, List[ToolInvokeMessage]]:
+                tool_parameters: dict[str, Any]
+                ) -> Union[ToolInvokeMessage, list[ToolInvokeMessage]]:
         """
         调用 Workflow API
         """
@@ -23,7 +24,7 @@ class WorkflowAPITool(BuiltinTool):
         url = "http://127.0.0.1:5001/v1/chat-messages"
         headers = {
             # "Authorization": f"Bearer {self.runtime.credentials['workflow_api_key']}",
-            "Authorization": f"Bearer app-kJcpTE5fyofhUZyqn2XOxjYv",
+            "Authorization": "Bearer app-kJcpTE5fyofhUZyqn2XOxjYv",
             "Content-Type": "application/json"
         }
         payload = {
