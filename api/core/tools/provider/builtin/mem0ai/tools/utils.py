@@ -15,7 +15,7 @@ vector_config = VectorStoreConfig(
 llm_config = LlmConfig(
     provider="openai",
     config={
-        "model": os.getenv("OPENAI_MODEL", "gpt-4o")
+        "model": os.getenv("OPENAI_MODEL", "gpt-4o-mini")
     }
 ).dict()
 

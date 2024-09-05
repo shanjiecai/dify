@@ -1,0 +1,26 @@
+identity: # 工具供应商的基本信息
+  author: Dify # 作者
+  name: workflow # 名称，唯一，不允许和其他供应商重名
+  label: # 标签，用于前端展示
+    en_US: Workflow # 英文标签
+    zh_Hans: 工作流 # 中文标签
+  description: # 描述，用于前端展示
+    en_US: A tool to interact with Workflow API # 英文描述
+    zh_Hans: 用于与Workflow API进行交互的工具 # 中文描述
+  icon: icon.svg # 图标，需要放置在当前模块的_assets文件夹下
+  tags: # 标签，用于前端展示
+    - utilities
+
+credentials_for_provider:
+#  workflow_api_key: # 凭据字段名称
+#    type: secret-input # 凭据字段类型
+#    required: true # 是否必填
+#    label: # 凭据字段标签
+#      en_US: Workflow API key # 英文标签
+#      zh_Hans: Workflow API 密钥 # 中文标签
+#    placeholder: # 凭据字段占位符
+#      en_US: Please input your Workflow API key # 英文占位符
+#      zh_Hans: 请输入你的 Workflow API 密钥 # 中文占位符
+#    help: # 凭据字段帮助文本
+#      en_US: You can get your Workflow API key from the platform # 英文帮助文本
+#      zh_Hans: 您可以从平台获取您的 Workflow API 密钥 # 中文帮助文本

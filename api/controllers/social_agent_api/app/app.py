@@ -66,7 +66,9 @@ class AppListApi(AppApiResource):
             # print(f"app_model:{app_model.name} {app_model.id}")
             # print(f"app_model:{app_model.model_id}")
             # app_models_new.append({'name': app_model.name, 'id': app_model.id, 'model': app_model.model_id})
-            app_models_new.append({'name': app_model.name, 'id': app_model.id})
+            # 只获取包含“个人助理”的APP
+            if "个人助理" in app_model.name:
+                app_models_new.append({'name': app_model.name, 'id': app_model.id})
         return app_models_new
 
 

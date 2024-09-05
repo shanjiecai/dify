@@ -1,0 +1,56 @@
+identity: # 工具的基本信息
+  name: workflow_tool # 工具名称，唯一，不允许和其他工具重名
+  author: Dify # 作者
+  label: # 标签，用于前端展示
+    en_US: Workflow API Tool # 英文标签
+    zh_Hans: 工作流 API 工具 # 中文标签
+description: # 描述，用于前端展示
+  human: # 用于前端展示的介绍，支持多语言
+    en_US: A tool to interact with Workflow API, allowing execution of chat-based queries and sending files. # 英文介绍
+    zh_Hans: 用于与Workflow API进行交互，允许执行基于对话的查询和发送文件。 # 中文介绍
+  llm: A tool for querying Workflow API and sending files. # 传递给LLM的介绍
+parameters: # 参数列表
+  - name: query # 参数名称
+    type: string # 参数类型
+    required: true # 是否必填
+    label: # 参数标签
+      en_US: Query # 英文标签
+      zh_Hans: 查询 # 中文标签
+    human_description: # 用于前端展示的介绍
+      en_US: The text of the query # 英文描述
+      zh_Hans: 查询的文本内容 # 中文描述
+    llm_description: The query to be executed # LLM介绍
+    form: llm
+  - name: user_name
+    type: string
+    required: true
+    label:
+      en_US: User Name
+      zh_Hans: 用户名
+    human_description:
+      en_US: The name of the user
+      zh_Hans: 与workflow交流的用户的名称
+    llm_description: The name of the user
+    form: llm
+  - name: agent_name
+    type: string
+    required: true
+    label:
+      en_US: Agent Name
+      zh_Hans: 代理名称
+    human_description:
+      en_US: The name of the agent
+      zh_Hans: 与workflow交流的代理的名称
+    llm_description: The name of the agent
+    form: llm
+  - name: files
+    type: string
+    required: false
+    label:
+      en_US: Files
+      zh_Hans: 文件
+    human_description:
+      en_US: URLs to remote files for the query
+      zh_Hans: 查询相关的远程文件URL
+    llm_description: URLs of files to include in the request
+    form: llm
