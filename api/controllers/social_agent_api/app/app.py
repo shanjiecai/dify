@@ -1,6 +1,7 @@
 import datetime
 import json
 import os
+
 from flask_restful import abort, fields, marshal_with, reqparse
 
 from constants.model_template import model_templates
@@ -18,9 +19,8 @@ from fields.app_fields import model_config_fields
 from models.dataset import DatasetUpdateRealTimeSocialAgent
 from models.model import App, AppModelConfig, Site
 from mylogger import logger
-from services.account_service import AccountService
+from services.account_service import AccountService, TenantService
 from services.app_dsl_service import AppDslService
-from services.account_service import TenantService, AccountService
 from services.app_model_config_service import AppModelConfigService
 from services.app_model_service import AppModelService
 
@@ -108,7 +108,7 @@ class AppImportApi(AppApiResource):
                 "name": app.name,
             }
 
-        with open(os.path.join(cur_path, "个人助理.yaml"), "r", encoding="utf-8") as f:
+        with open(os.path.join(cur_path, "个人助理.yaml"), encoding="utf-8") as f:
             data = f.read().replace("sjc", args["user_name"])
         args.update(
             {

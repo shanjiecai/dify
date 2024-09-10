@@ -1,14 +1,15 @@
-import requests
-from core.tools.tool.builtin_tool import BuiltinTool
-from core.tools.entities.tool_entities import ToolInvokeMessage
+from typing import Any, Union
 
-from typing import Any, Dict, Union
+import requests
+
+from core.tools.entities.tool_entities import ToolInvokeMessage
+from core.tools.tool.builtin_tool import BuiltinTool
 
 
 class ViewAppTool(BuiltinTool):
     def _invoke(self,
                 user_id: str,
-                tool_parameters: Dict[str, Any]
+                tool_parameters: dict[str, Any]
                 ) -> Union[ToolInvokeMessage]:
         """
         处理查看 App 的操作
@@ -17,7 +18,7 @@ class ViewAppTool(BuiltinTool):
 
         url = f"http://127.0.0.1:5001/backend-api/v1/app/check?app_name={app_name}"
         headers = {
-            "Authorization": f"Bearer b10dd914-d28d-10b4-11c4-3a8b61d8a77f",
+            "Authorization": "Bearer b10dd914-d28d-10b4-11c4-3a8b61d8a77f",
             "Content-Type": "application/json"
         }
 
