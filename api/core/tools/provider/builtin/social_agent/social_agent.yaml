@@ -1,0 +1,14 @@
+identity: # 工具供应商的基本信息
+  author: Dify # 作者
+  name: social_agent # 名称，唯一，不允许和其他供应商重名
+  label: # 标签，用于前端展示
+    en_US: Social Agent # 英文标签
+    zh_Hans: 社交代理 # 中文标签
+  description: # 描述，用于前端展示
+    en_US: A tool to interact with the Social Agent API for viewing and creating apps # 英文描述
+    zh_Hans: 用于与 Social Agent API 进行交互的工具，用来查看和创建应用 # 中文描述
+  icon: icon.svg # 图标，需要放置在当前模块的_assets文件夹下
+  tags: # 标签，用于前端展示
+    - utilities
+
+credentials_for_provider:

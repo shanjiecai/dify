@@ -14,7 +14,10 @@ def validate_app_token(func):
             raise Unauthorized('Invalid Authorization header')
         if request.path in ["/backend-api/v1/app/list", "/backend-api/v1/person/list",
                             "/backend-api/v1/role_model_customize/list",
-                            "/backend-api/v1/app/create"]:
+                            "/backend-api/v1/app/create",
+                            "/backend-api/v1/app/import",
+                            "/backend-api/v1/app/check"
+                            ]:
             return func(*args, **kwargs)
         if request.method == "GET":
             app_id = request.args.get('app_id')

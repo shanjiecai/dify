@@ -1,0 +1,23 @@
+identity: # 工具的基本信息
+  name: view_app_tool # 工具名称，唯一，不允许和其他工具重名
+  author: Dify # 作者
+  label: # 标签，用于前端展示
+    en_US: View App Tool # 英文标签
+    zh_Hans: 查看应用工具 # 中文标签
+description: # 描述，用于前端展示
+  human: # 用于前端展示的介绍，支持多语言
+    en_US: A tool to view apps using Social Agent API # 英文描述
+    zh_Hans: 用于通过 Social Agent API 查看应用的工具 # 中文描述
+  llm: A tool to view apps in Social Agent API # 传递给 LLM 的描述
+parameters: # 参数列表
+  - name: app_name
+    type: string
+    required: true
+    label:
+      en_US: App Name
+      zh_Hans: 应用名称
+    human_description:
+      en_US: The name of the app to be checked
+      zh_Hans: 要检查的应用名称
+    llm_description: The name of the app to be checked in Social Agent API
+    form: llm

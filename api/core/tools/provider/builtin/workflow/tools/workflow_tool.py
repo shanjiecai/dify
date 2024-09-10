@@ -4,6 +4,7 @@ import requests
 
 from core.tools.entities.tool_entities import ToolInvokeMessage
 from core.tools.tool.builtin_tool import BuiltinTool
+from services.api_tokens_service import APITokensService
 
 
 class WorkflowAPITool(BuiltinTool):
@@ -19,12 +20,15 @@ class WorkflowAPITool(BuiltinTool):
         files = tool_parameters.get('files', [])
         user_name = tool_parameters['user_name']
         agent_name = tool_parameters['agent_name']
-        # TODO agent_name to workflow_api_key
+        print(f"user_name: {user_name}, agent_name: {agent_name}, query: {query}, response_mode: {response_mode}, files: {files}")
+        api_token = APITokensService.get_api_tokens_from_app_name("个人助理"+agent_name)
+
+        workflow_api_key = api_token.token
 
         url = "http://127.0.0.1:5001/v1/chat-messages"
         headers = {
             # "Authorization": f"Bearer {self.runtime.credentials['workflow_api_key']}",
-            "Authorization": "Bearer app-kJcpTE5fyofhUZyqn2XOxjYv",
+            "Authorization": f"Bearer {workflow_api_key}",
             "Content-Type": "application/json"
         }
         payload = {

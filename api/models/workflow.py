@@ -13,6 +13,7 @@ from core.app.segments import SecretVariable, Variable, factory
 from core.helper import encrypter
 from extensions.ext_database import db
 from libs import helper
+from services.account_service import TenantService
 
 from .account import Account
 from .types import StringUUID
@@ -207,8 +208,10 @@ class Workflow(db.Model):
         # TODO: find some way to init `self._environment_variables` when instance created.
         if self._environment_variables is None:
             self._environment_variables = '{}'
-
-        tenant_id = contexts.tenant_id.get()
+        try:
+            tenant_id = contexts.tenant_id.get()
+        except:
+            tenant_id = TenantService.get_first_tenant().id
 
         environment_variables_dict: dict[str, Any] = json.loads(self._environment_variables)
         results = [factory.build_variable_from_mapping(v) for v in environment_variables_dict.values()]
@@ -226,7 +229,10 @@ class Workflow(db.Model):
 
     @environment_variables.setter
     def environment_variables(self, value: Sequence[Variable]):
-        tenant_id = contexts.tenant_id.get()
+        try:
+            tenant_id = contexts.tenant_id.get()
+        except:
+            tenant_id = TenantService.get_first_tenant().id
 
         value = list(value)
         if any(var for var in value if not var.id):

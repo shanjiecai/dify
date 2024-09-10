@@ -246,6 +246,10 @@ class AccountService:
     def get_reset_password_data(cls, token: str) -> Optional[dict[str, Any]]:
         return TokenManager.get_token_data(token, "reset_password")
 
+    @staticmethod
+    def get_first_user() -> Optional[Account]:
+        return Account.query.filter_by(status=AccountStatus.ACTIVE.value).order_by(Account.id.asc()).first()
+
 
 def _get_login_cache_key(*, account_id: str, token: str):
     return f"account_login:{account_id}:{token}"
@@ -485,6 +489,10 @@ class TenantService:
         tenant = db.session.query(Tenant).filter(Tenant.id == tenant_id).one_or_404()
 
         return tenant.custom_config_dict
+
+    @staticmethod
+    def get_first_tenant() -> Tenant:
+        return db.session.query(Tenant).first()
 
 
 class RegisterService:

@@ -1,6 +1,6 @@
 import datetime
 import json
-
+import os
 from flask_restful import abort, fields, marshal_with, reqparse
 
 from constants.model_template import model_templates
@@ -19,6 +19,8 @@ from models.dataset import DatasetUpdateRealTimeSocialAgent
 from models.model import App, AppModelConfig, Site
 from mylogger import logger
 from services.account_service import AccountService
+from services.app_dsl_service import AppDslService
+from services.account_service import TenantService, AccountService
 from services.app_model_config_service import AppModelConfigService
 from services.app_model_service import AppModelService
 
@@ -67,9 +69,69 @@ class AppListApi(AppApiResource):
             # print(f"app_model:{app_model.model_id}")
             # app_models_new.append({'name': app_model.name, 'id': app_model.id, 'model': app_model.model_id})
             # 只获取包含“个人助理”的APP
-            if "个人助理" in app_model.name:
+            if "个人助理" in app_model.name and app_model.name != "个人助理":
                 app_models_new.append({'name': app_model.name, 'id': app_model.id})
         return app_models_new
+
+
+class AppGet(AppApiResource):
+    def get(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument('app_name', type=str, required=True, location='args')
+        args = parser.parse_args()
+        app = AppModelService.get_app_model_by_app_name("个人助理" + args["app_name"])
+        if app is None:
+            return {
+                "message": "App not found"
+            }, 404
+        else:
+            return {
+                "id": app.id,
+                "name": app.name,
+            }
+
+
+class AppImportApi(AppApiResource):
+    def post(self):
+        """Import app"""
+        # The role of the current user in the ta table must be admin, owner, or editor
+
+        parser = reqparse.RequestParser()
+        parser.add_argument("user_name", type=str, required=True, location="json")
+        args = parser.parse_args()
+        # 读取当前目录下个人助理.yaml文件
+        cur_path = os.path.dirname(__file__)
+        app = AppModelService.get_app_model_by_app_name("个人助理" + args["user_name"])
+        if app:
+            return {
+                "id": app.id,
+                "name": app.name,
+            }
+
+        with open(os.path.join(cur_path, "个人助理.yaml"), "r", encoding="utf-8") as f:
+            data = f.read().replace("sjc", args["user_name"])
+        args.update(
+            {
+                "name": None,
+                "description": None,
+                "icon_type": None,
+                "icon": None,
+                "icon_background": None,
+                "data": data
+            }
+        )
+
+        first_user = AccountService.get_first_user()
+        tenant = TenantService.get_first_tenant()
+
+        app = AppDslService.import_and_create_new_app(
+            tenant_id=tenant.id, data=args["data"], args=args, account=first_user
+        )
+
+        return {
+            "id": app.id,
+            "name": app.name,
+        }
 
 
 class PersonListApi(AppApiResource):
@@ -506,5 +568,7 @@ class AppUpdateDataset(AppApiResource):
 
 api.add_resource(AppCreateApi, '/app/create')
 api.add_resource(AppListApi, '/app/list')
+api.add_resource(AppGet, '/app/check')
 api.add_resource(PersonListApi, '/person/list')
 api.add_resource(AppUpdateDataset, '/app/update_dataset')
+api.add_resource(AppImportApi, '/app/import')

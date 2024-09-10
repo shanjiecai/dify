@@ -1,0 +1,23 @@
+identity: # 工具的基本信息
+  name: create_app_tool # 工具名称，唯一，不允许和其他工具重名
+  author: Dify # 作者
+  label: # 标签，用于前端展示
+    en_US: Create App Tool # 英文标签
+    zh_Hans: 创建应用工具 # 中文标签
+description: # 描述，用于前端展示
+  human: # 用于前端展示的介绍，支持多语言
+    en_US: A tool to create apps using Social Agent API # 英文描述
+    zh_Hans: 用于通过 Social Agent API 创建应用的工具 # 中文描述
+  llm: A tool to create apps in Social Agent API # 传递给 LLM 的描述
+parameters: # 参数列表
+  - name: user_name
+    type: string
+    required: true
+    label:
+      en_US: User Name
+      zh_Hans: 用户名
+    human_description:
+      en_US: The user name associated with the app
+      zh_Hans: 与应用关联的用户名
+    llm_description: The user name to be used for creating the app
+    form: llm
