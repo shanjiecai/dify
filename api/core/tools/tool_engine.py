@@ -1,4 +1,5 @@
 import json
+import traceback
 from collections.abc import Mapping
 from copy import deepcopy
 from datetime import datetime, timezone
@@ -155,6 +156,7 @@ class ToolEngine:
 
             return response
         except Exception as e:
+            print(traceback.format_exc())
             workflow_tool_callback.on_tool_error(e)
             raise e
         
