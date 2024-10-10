@@ -488,8 +488,8 @@ services:
   # (if used, you need to set VECTOR_STORE to qdrant in the api & worker service.)
   qdrant:
     image: langgenius/qdrant:v1.7.3
-    profiles:
-      - qdrant
+#    profiles:
+#      - qdrant
     restart: always
     volumes:
       - ./volumes/qdrant:/qdrant/storage

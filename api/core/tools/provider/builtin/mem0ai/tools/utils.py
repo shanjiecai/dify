@@ -7,8 +7,8 @@ from mem0.vector_stores.configs import VectorStoreConfig
 vector_config = VectorStoreConfig(
     provider="qdrant",
     config={
-        "host": "127.0.0.1",
-        "port": 6333,
+        "host": os.getenv("QDRANT_HOST", "127.0.0.1"),
+        "port": os.getenv("QDRANT_PORT", "6333")
     }
 ).dict()
 
