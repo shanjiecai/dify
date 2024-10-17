@@ -29,7 +29,9 @@ from controllers.app_api.app.utils import send_feishu_bot, split_and_get_interva
 from controllers.app_api.img.utils import generate_plan_img_pipeline
 from controllers.app_api.plan.pipeline import plan_question_background
 from controllers.app_api.wraps import AppApiResource
-from core.app.app_config.easy_ui_based_app.model_config.converter import ModelConfigConverter
+from core.app.app_config.easy_ui_based_app.model_config.converter import (
+    ModelConfigConverter,
+)
 from core.app.apps.base_app_queue_manager import AppQueueManager
 from core.app.apps.chat.app_config_manager import ChatAppConfigManager
 from core.app.entities.app_invoke_entities import InvokeFrom
@@ -37,14 +39,24 @@ from core.app.entities.app_invoke_entities import InvokeFrom
 # from core.application_manager import ApplicationManager
 # from core.application_queue_manager import ApplicationQueueManager
 # from core.entities.application_entities import InvokeFrom
-from core.errors.error import ModelCurrentlyNotSupportError, ProviderTokenNotInitError, QuotaExceededError
+from core.errors.error import (
+    ModelCurrentlyNotSupportError,
+    ProviderTokenNotInitError,
+    QuotaExceededError,
+)
 from core.judge_llm_active import judge_llm_active
 from core.memory.token_buffer_memory import TokenBufferMemory
 from core.model_manager import ModelInstance
 from core.model_runtime.errors.invoke import InvokeError
 from extensions.ext_database import db
 from libs.helper import uuid_value
-from models.model import App, AppMode, AppModelConfig, Conversation, ConversationPlanDetail
+from models.model import (
+    App,
+    AppMode,
+    AppModelConfig,
+    Conversation,
+    ConversationPlanDetail,
+)
 from mylogger import logger
 from services.app_generate_service import AppGenerateService
 from services.conversation_service import ConversationService
@@ -52,22 +64,22 @@ from services.conversation_service import ConversationService
 
 class CompletionApi(AppApiResource):
     def post(self, app_model: App, end_user):
-        if app_model.mode != 'completion':
+        if app_model.mode != "completion":
             raise AppUnavailableError()
 
         parser = reqparse.RequestParser()
-        parser.add_argument('inputs', type=dict, required=True, location='json')
-        parser.add_argument('query', type=str, location='json', default='')
-        parser.add_argument('response_mode', type=str, choices=['blocking', 'streaming'], location='json')
-        parser.add_argument('user', type=str, location='json')
-        parser.add_argument('retriever_from', type=str, required=False, default='dev', location='json')
+        parser.add_argument("inputs", type=dict, required=True, location="json")
+        parser.add_argument("query", type=str, location="json", default="")
+        parser.add_argument("response_mode", type=str, choices=["blocking", "streaming"], location="json")
+        parser.add_argument("user", type=str, location="json")
+        parser.add_argument("retriever_from", type=str, required=False, default="dev", location="json")
 
         args = parser.parse_args()
 
-        streaming = args['response_mode'] == 'streaming'
+        streaming = args["response_mode"] == "streaming"
 
-        if end_user is None and args['user'] is not None:
-            end_user = create_or_update_end_user_for_user_id(app_model, args['user'])
+        if end_user is None and args["user"] is not None:
+            end_user = create_or_update_end_user_for_user_id(app_model, args["user"])
 
         try:
             # response = CompletionService.completion(
@@ -110,14 +122,14 @@ class CompletionApi(AppApiResource):
 
 class ChatStopApi(AppApiResource):
     def post(self, app_model, _, task_id):
-        if app_model.mode != 'chat':
+        if app_model.mode != "chat":
             raise NotChatAppError()
 
-        end_user_id = request.get_json().get('user')
+        end_user_id = request.get_json().get("user")
 
         AppQueueManager.set_stop_flag(task_id, InvokeFrom.APP_API, end_user_id)
 
-        return {'result': 'success'}, 200
+        return {"result": "success"}, 200
 
 
 def _plan_finish_question(conversation: Conversation, main_context: AppContext):
@@ -128,12 +140,14 @@ def _plan_finish_question(conversation: Conversation, main_context: AppContext):
     """
     with main_context:
         plan_detail_list = []
-        plan_detail, plan, history_str = ConversationService.generate_plan(conversation.id,
-                                                                           plan=conversation.plan_question_invoke_plan)
+        plan_detail, plan, history_str = ConversationService.generate_plan(
+            conversation.id, plan=conversation.plan_question_invoke_plan
+        )
         plan_detail_list.append(plan_detail)
         logger.info(f"generate_final_plan_from_conversation response: {plan_detail_list}")
         image_list, img_perfect_prompt_list = generate_plan_img_pipeline(
-            conversation.plan_question_invoke_plan, model="search_engine")
+            conversation.plan_question_invoke_plan, model="search_engine"
+        )
         # 暂时不去掉plan_question_invoke_plan
         # conversation.plan_question_invoke_plan = None
         # logger.info(conversation.id)
@@ -147,7 +161,7 @@ def _plan_finish_question(conversation: Conversation, main_context: AppContext):
             plan_detail_list=plan_detail_list,
             plan_conversation_history=history_str,
             image_list=image_list,
-            img_perfect_prompt_list=img_perfect_prompt_list
+            img_perfect_prompt_list=img_perfect_prompt_list,
         )
         time.sleep(1)
         db.session.add(conversation_plan_detail)
@@ -291,55 +305,65 @@ class ChatApi(AppApiResource):
         """
 
         parser = reqparse.RequestParser()
-        parser.add_argument('inputs', type=dict, required=False, location='json', default={})
-        parser.add_argument('query', type=str, required=False, location='json', default='')
-        parser.add_argument('response_mode', type=str, choices=['blocking', 'streaming'], location='json')
-        parser.add_argument('conversation_id', type=uuid_value, location='json', required=False)
-        parser.add_argument('user', type=str, location='json', required=False, default="")
-        parser.add_argument('user_id', type=str, location='json', required=False, default="")
-        parser.add_argument('retriever_from', type=str, required=False, default='dev', location='json')
-        parser.add_argument('auto_generate_name', type=bool, required=False, default=True, location='json')
+        parser.add_argument("inputs", type=dict, required=False, location="json", default={})
+        parser.add_argument("query", type=str, required=False, location="json", default="")
+        parser.add_argument("response_mode", type=str, choices=["blocking", "streaming"], location="json")
+        parser.add_argument("conversation_id", type=uuid_value, location="json", required=False)
+        parser.add_argument("user", type=str, location="json", required=False, default="")
+        parser.add_argument("user_id", type=str, location="json", required=False, default="")
+        parser.add_argument("retriever_from", type=str, required=False, default="dev", location="json")
+        parser.add_argument("auto_generate_name", type=bool, required=False, default=True, location="json")
         # outer_memory = [
         #     {"role": "A", "message": "hello"},
         #     {"role": "B", "message": "hi"}
         # ]
         mode = app_model.mode
-        parser.add_argument('outer_memory', type=list, required=False, default=None, location='json')
+        parser.add_argument("outer_memory", type=list, required=False, default=None, location="json")
         # validate
-        outer_memory = parser.parse_args()['outer_memory']
+        outer_memory = parser.parse_args()["outer_memory"]
         if outer_memory is not None:
             for item in outer_memory:
-                if 'role' not in item or 'message' not in item:
+                if "role" not in item or "message" not in item:
                     raise ValueError("outer_memory should be a list of dict with keys 'role' and 'message'")
         args = parser.parse_args()
         # conversation_id和query不可以同时没有
-        if args['conversation_id'] is None and args['query'] == '' and outer_memory is None:
+        if args["conversation_id"] is None and args["query"] == "" and outer_memory is None:
             raise ValueError("conversation_id , query and outer_memory cannot be None all")
 
-        streaming = args['response_mode'] == 'streaming'
+        streaming = args["response_mode"] == "streaming"
         if args["conversation_id"]:
             conversation_filter = [
-                Conversation.id == args['conversation_id'],
+                Conversation.id == args["conversation_id"],
                 # Conversation.app_id == app_model.id,
-                Conversation.status == 'normal'
+                Conversation.status == "normal",
             ]
             conversation = db.session.query(Conversation).filter(and_(*conversation_filter)).first()
-            if conversation and (
-                    not conversation.plan_question_invoke_user or conversation.plan_question_invoke_time < datetime.datetime.utcnow() - datetime.timedelta(
-                    hours=8)) and app_model.id not in ["a756e5d2-c735-4f68-8db0-1de49333501c",
-                                                       "19d2fd0b-6e1c-47f9-87ab-cc039b6d3881",
-                                                       "4cb1eee5-72d9-4cd6-befc-e4e0d4fb6333",
-                                                       "cee86a23-56ab-4b3d-a548-ca34191b23a1"] and args["query"]:
+            if (
+                conversation
+                and (
+                    not conversation.plan_question_invoke_user
+                    or conversation.plan_question_invoke_time < datetime.datetime.utcnow() - datetime.timedelta(hours=8)
+                )
+                and app_model.id
+                not in [
+                    "a756e5d2-c735-4f68-8db0-1de49333501c",
+                    "19d2fd0b-6e1c-47f9-87ab-cc039b6d3881",
+                    "4cb1eee5-72d9-4cd6-befc-e4e0d4fb6333",
+                    "cee86a23-56ab-4b3d-a548-ca34191b23a1",
+                ]
+                and args["query"]
+            ):
                 # 另起线程执行plan_question
-                threading.Thread(target=plan_question_background,
-                                 args=(current_app._get_current_object(), args["query"], conversation,
-                                       args["user"], None)).start()
+                threading.Thread(
+                    target=plan_question_background,
+                    args=(current_app._get_current_object(), args["query"], conversation, args["user"], None),
+                ).start()
 
         # # 补充modelStudentId
         # if args["user_id"]:
         #     args["input"]["modelStudentId"] = args["user_id"]
         # if end_user is None and args['user'] is not None:
-        end_user = create_or_update_end_user_for_user_id(app_model, args['user'])
+        end_user = create_or_update_end_user_for_user_id(app_model, args["user"])
         try:
             # raise InvokeError("test")
             logger.info(f"{app_model.name} {args['conversation_id']} {args['query']} {args['user']}")
@@ -350,16 +374,20 @@ class ChatApi(AppApiResource):
                 args=args,
                 invoke_from=InvokeFrom.SERVICE_API,
                 streaming=streaming,
-                user_name=args['user'],
+                user_name=args["user"],
                 assistant_name=app_model.name,
-                user_id=args['user_id'],
+                user_id=args["user_id"],
             )
-            if isinstance(response, dict) and response.get("answer", '').__contains__(
-                    '<finish_question>') and args["conversation_id"] and mode == AppMode.CHAT.value:
-                logger.info(
-                    f"remove conversation {conversation.id} <finish_question> from {response.get('answer')}")
-                threading.Thread(target=_plan_finish_question,
-                                 args=(conversation, current_app._get_current_object().app_context())).start()
+            if (
+                isinstance(response, dict)
+                and (response.get("answer", "") in "<finish_question>")
+                and args["conversation_id"]
+                and mode == AppMode.CHAT.value
+            ):
+                logger.info(f"remove conversation {conversation.id} <finish_question> from {response.get('answer')}")
+                threading.Thread(
+                    target=_plan_finish_question, args=(conversation, current_app._get_current_object().app_context())
+                ).start()
             return compact_response(response)
         except services.errors.conversation.ConversationNotExistsError:
             raise NotFound("Conversation Not Exists.")
@@ -379,20 +407,18 @@ class ChatApi(AppApiResource):
             send_feishu_bot(str(e))
             try:
                 from services.account_service import AccountService
+
                 logger.info("使用备用模型回复")
                 # 新建db.session
                 db.session.rollback()
                 """{"provider": "zhipuai", "name": "chatglm_turbo", "mode": "chat", "completion_params": {"temperature": 0.95, "top_p": 0.7, "stop": []}}"""
-                args["model_config"] = {"model": {
-                    "provider": "zhipuai",
-                    "name": "glm-3-turbo",
-                    "mode": "chat",
-                    "completion_params": {
-                        "temperature": 0.95,
-                        "top_p": 0.7,
-                        "stop": []
+                args["model_config"] = {
+                    "model": {
+                        "provider": "zhipuai",
+                        "name": "glm-3-turbo",
+                        "mode": "chat",
+                        "completion_params": {"temperature": 0.95, "top_p": 0.7, "stop": []},
                     }
-                }
                 }
                 user = AccountService.load_user("1c795cbf-0924-4f01-aec5-1b5abef50bca")
                 # 去掉outer_memory逻辑
@@ -402,15 +428,22 @@ class ChatApi(AppApiResource):
                     args=args,
                     invoke_from=InvokeFrom.SERVICE_API,
                     streaming=streaming,
-                    user_name=args['user'],
+                    user_name=args["user"],
                     assistant_name=app_model.name,
                 )
-                if isinstance(response, dict) and response.get("answer", '').endswith(
-                        '<finish_question>') and args["conversation_id"] and mode == AppMode.CHAT.value:
+                if (
+                    isinstance(response, dict)
+                    and response.get("answer", "").endswith("<finish_question>")
+                    and args["conversation_id"]
+                    and mode == AppMode.CHAT.value
+                ):
                     logger.info(
-                        f"remove conversation {conversation.id} <finish_question> from {response.get('answer')}")
-                    threading.Thread(target=_plan_finish_question,
-                                     args=(conversation, current_app._get_current_object().app_context())).start()
+                        f"remove conversation {conversation.id} <finish_question> from {response.get('answer')}"
+                    )
+                    threading.Thread(
+                        target=_plan_finish_question,
+                        args=(conversation, current_app._get_current_object().app_context()),
+                    ).start()
                 return compact_response(response)
             except Exception as _e:
                 logger.info(f"使用备用模型回复失败: {str(traceback.format_exc())}")
@@ -474,37 +507,39 @@ class ChatActiveApi(AppApiResource):
             """
             b = time.time()
             parser = reqparse.RequestParser()
-            parser.add_argument('conversation_id', type=uuid_value, location='json')
-            parser.add_argument('inputs', type=dict, required=False, location='json', default={})
-            parser.add_argument('query', type=str, required=False, location='json', default='')
-            parser.add_argument('outer_memory', type=list, required=False, default=None, location='json')
-            parser.add_argument('user', type=str, location='json', required=False, default="")
-            parser.add_argument('response_mode', type=str, choices=['blocking', 'streaming'], location='json')
-            parser.add_argument("user_id", type=str, location='json', required=False, default="")
+            parser.add_argument("conversation_id", type=uuid_value, location="json")
+            parser.add_argument("inputs", type=dict, required=False, location="json", default={})
+            parser.add_argument("query", type=str, required=False, location="json", default="")
+            parser.add_argument("outer_memory", type=list, required=False, default=None, location="json")
+            parser.add_argument("user", type=str, location="json", required=False, default="")
+            parser.add_argument("response_mode", type=str, choices=["blocking", "streaming"], location="json")
+            parser.add_argument("user_id", type=str, location="json", required=False, default="")
             # validate
-            outer_memory = parser.parse_args()['outer_memory']
+            outer_memory = parser.parse_args()["outer_memory"]
             if outer_memory is not None:
                 for item in outer_memory:
-                    if 'role' not in item or 'message' not in item:
+                    if "role" not in item or "message" not in item:
                         raise ValueError("outer_memory should be a list of dict with keys 'role' and 'message'")
             mode = app_model.mode
             args = parser.parse_args()
 
-            streaming = args.get('response_mode', 'blocking') == 'streaming'
+            streaming = args.get("response_mode", "blocking") == "streaming"
 
             conversation_filter = [
-                Conversation.id == args['conversation_id'],
+                Conversation.id == args["conversation_id"],
                 # Conversation.app_id == app_model.id,
-                Conversation.status == 'normal'
+                Conversation.status == "normal",
             ]
             conversation = db.session.query(Conversation).filter(and_(*conversation_filter)).first()
 
             if conversation.plan_question:
                 judge_result = True
             else:
-                app_model_config = db.session.query(AppModelConfig).filter(
-                    AppModelConfig.id == conversation.app_model_config_id
-                ).first()
+                app_model_config = (
+                    db.session.query(AppModelConfig)
+                    .filter(AppModelConfig.id == conversation.app_model_config_id)
+                    .first()
+                )
 
                 # application_manager = ApplicationManager()
                 # app_orchestration_config = application_manager.convert_from_app_model_config_dict(app_model.tenant_id, app_model_config.to_dict())
@@ -514,27 +549,21 @@ class ChatActiveApi(AppApiResource):
                     app_model=app_model,
                     app_model_config=app_model_config,
                     conversation=conversation,
-                    override_config_dict=None
+                    override_config_dict=None,
                 )
                 model_config = ModelConfigConverter.convert(app_config)
 
                 model_instance = ModelInstance(
-                    provider_model_bundle=model_config.provider_model_bundle,
-                    model=model_config.model
+                    provider_model_bundle=model_config.provider_model_bundle, model=model_config.model
                 )
-                memory = TokenBufferMemory(
-                    conversation=conversation,
-                    model_instance=model_instance
-                )
+                memory = TokenBufferMemory(conversation=conversation, model_instance=model_instance)
 
-                history_list = memory.get_history_prompt_messages(
-                    max_token_limit=2000
-                )
+                history_list = memory.get_history_prompt_messages(max_token_limit=2000)
                 histories = ""
                 for history in history_list:
                     if not history.content and not history.name:
                         continue
-                    histories += history.name if history.name else "user"
+                    histories += history.name or "user"
                     histories += ": " + history.content if history.content else ""
                     histories += "\n"
                 logger.info(f"histories: {histories}, app_model.name: {app_model.name}")
@@ -542,13 +571,13 @@ class ChatActiveApi(AppApiResource):
                 # messages = MessageService.pagination_by_first_id(app_model, None,
                 #                                              args['conversation_id'], None, 20)
                 # logger.info(f"messages: {messages.data}, app_model.name: {app_model.name}")
-                '''
+                """
                 如果最后三条为：
                 A：@app_model.name hello
                 app_model.name: hi
                 A: how are you?
                 则认为是同一个人的追问，应该回话
-                '''
+                """
                 # buffer = [dict(item) for item in memory.buffer]
                 # if memory.last_query:
                 #     buffer.append({"role": memory.last_role, "content": memory.last_query})
@@ -565,8 +594,9 @@ class ChatActiveApi(AppApiResource):
                 # else:
                 #     judge_result = judge_llm_active(memory.model_instance.credentials["openai_api_key"], histories,
                 #                                     app_model.name)
-                judge_result = judge_llm_active(memory.model_instance.credentials["openai_api_key"], histories,
-                                                app_model.name)
+                judge_result = judge_llm_active(
+                    memory.model_instance.credentials["openai_api_key"], histories, app_model.name
+                )
             # judge_result = True
             end_user = create_or_update_end_user_for_user_id(app_model, "")
             if judge_result:
@@ -580,17 +610,34 @@ class ChatActiveApi(AppApiResource):
 
                 try:
                     if args["conversation_id"]:
-                        if conversation and (
-                                not conversation.plan_question_invoke_user or not conversation.plan_question_invoke_time or conversation.plan_question_invoke_time < datetime.datetime.utcnow() - datetime.timedelta(
-                                hours=8)) and app_model.id not in ["a756e5d2-c735-4f68-8db0-1de49333501c",
-                                                                   "19d2fd0b-6e1c-47f9-87ab-cc039b6d3881",
-                                                                   "4cb1eee5-72d9-4cd6-befc-e4e0d4fb6333",
-                                                                   "cee86a23-56ab-4b3d-a548-ca34191b23a1"] and args[
-                            "query"]:
+                        if (
+                            conversation
+                            and (
+                                not conversation.plan_question_invoke_user
+                                or not conversation.plan_question_invoke_time
+                                or conversation.plan_question_invoke_time
+                                < datetime.datetime.utcnow() - datetime.timedelta(hours=8)
+                            )
+                            and app_model.id
+                            not in [
+                                "a756e5d2-c735-4f68-8db0-1de49333501c",
+                                "19d2fd0b-6e1c-47f9-87ab-cc039b6d3881",
+                                "4cb1eee5-72d9-4cd6-befc-e4e0d4fb6333",
+                                "cee86a23-56ab-4b3d-a548-ca34191b23a1",
+                            ]
+                            and args["query"]
+                        ):
                             # 另起线程执行plan_question
-                            threading.Thread(target=plan_question_background,
-                                             args=(current_app._get_current_object(), args["query"], conversation,
-                                                   args["user"], None)).start()
+                            threading.Thread(
+                                target=plan_question_background,
+                                args=(
+                                    current_app._get_current_object(),
+                                    args["query"],
+                                    conversation,
+                                    args["user"],
+                                    None,
+                                ),
+                            ).start()
                     response = AppGenerateService.generate(
                         app_model=app_model,
                         user=end_user,
@@ -603,33 +650,37 @@ class ChatActiveApi(AppApiResource):
                     logger.info(f"get response in {time.time() - b}")
                     response["result"] = True
                     logger.info(f"response: {response}")
-                    if isinstance(response, dict) and mode == AppMode.CHAT.value and response.get("answer",
-                                                                                                  '').__contains__(
-                            '<finish_question>') and conversation:
+                    if (
+                        isinstance(response, dict)
+                        and mode == AppMode.CHAT.value
+                        and (response.get("answer", "") in "<finish_question>")
+                        and conversation
+                    ):
                         logger.info(
-                            f"remove conversation {conversation.id} <finish_question> from {response.get('answer')}")
-                        threading.Thread(target=_plan_finish_question,
-                                         args=(conversation, current_app._get_current_object().app_context())).start()
-                    return Response(response=json.dumps(response), status=200, mimetype='application/json')
+                            f"remove conversation {conversation.id} <finish_question> from {response.get('answer')}"
+                        )
+                        threading.Thread(
+                            target=_plan_finish_question,
+                            args=(conversation, current_app._get_current_object().app_context()),
+                        ).start()
+                    return Response(response=json.dumps(response), status=200, mimetype="application/json")
                 except InvokeError as e:
                     send_feishu_bot(str(e))
                     logger.info("使用备用模型回复")
                     try:
                         from services.account_service import AccountService
+
                         logger.info("使用备用模型回复")
                         # 新建db.session
                         db.session.rollback()
                         """{"provider": "zhipuai", "name": "chatglm_turbo", "mode": "chat", "completion_params": {"temperature": 0.95, "top_p": 0.7, "stop": []}}"""
-                        args["model_config"] = {"model": {
-                            "provider": "zhipuai",
-                            "name": "glm-3-turbo",
-                            "mode": "chat",
-                            "completion_params": {
-                                "temperature": 0.95,
-                                "top_p": 0.7,
-                                "stop": []
+                        args["model_config"] = {
+                            "model": {
+                                "provider": "zhipuai",
+                                "name": "glm-3-turbo",
+                                "mode": "chat",
+                                "completion_params": {"temperature": 0.95, "top_p": 0.7, "stop": []},
                             }
-                        }
                         }
                         user = AccountService.load_user("1c795cbf-0924-4f01-aec5-1b5abef50bca")
                         # response = CompletionService.completion(
@@ -649,7 +700,7 @@ class ChatActiveApi(AppApiResource):
                             args=args,
                             invoke_from=InvokeFrom.SERVICE_API,
                             streaming=streaming,
-                            user_name=args['user'],
+                            user_name=args["user"],
                             assistant_name=app_model.name,
                         )
                         return compact_response(response)
@@ -659,7 +710,8 @@ class ChatActiveApi(AppApiResource):
             logger.info(judge_result)
             logger.info(time.time() - b)
             # return {"result": judge_result}
-            return Response(response=json.dumps({"result": judge_result}), status=200, mimetype='application/json')
+            return Response(response=json.dumps({"result": judge_result}), status=200, mimetype="application/json")
+
     except Exception as e:
         logger.exception("error in chat active api")
         send_feishu_bot(str(e))
@@ -682,16 +734,16 @@ def compact_response(response: Union[dict | Generator]) -> Response:
             sentence_list, interval_list = split_and_get_interval(response["answer"])
             response["sentence_list"] = sentence_list
             response["interval_list"] = interval_list
-        return Response(response=json.dumps(response), status=200, mimetype='application/json')
+        return Response(response=json.dumps(response), status=200, mimetype="application/json")
     else:
+
         def generate() -> Generator:
             try:
                 # for chunk in response:
                 #     yield chunk
                 yield from response
             except services.errors.conversation.ConversationNotExistsError:
-                yield "data: " + json.dumps(
-                    api.handle_error(NotFound("Conversation Not Exists.")).get_json()) + "\n\n"
+                yield "data: " + json.dumps(api.handle_error(NotFound("Conversation Not Exists.")).get_json()) + "\n\n"
             except services.errors.conversation.ConversationCompletedError:
                 yield "data: " + json.dumps(api.handle_error(ConversationCompletedError()).get_json()) + "\n\n"
             except services.errors.app_model_config.AppModelConfigBrokenError:
@@ -699,12 +751,14 @@ def compact_response(response: Union[dict | Generator]) -> Response:
                 yield "data: " + json.dumps(api.handle_error(AppUnavailableError()).get_json()) + "\n\n"
             except ProviderTokenNotInitError as ex:
                 yield "data: " + json.dumps(
-                    api.handle_error(ProviderNotInitializeError(ex.description)).get_json()) + "\n\n"
+                    api.handle_error(ProviderNotInitializeError(ex.description)).get_json()
+                ) + "\n\n"
             except QuotaExceededError:
                 yield "data: " + json.dumps(api.handle_error(ProviderQuotaExceededError()).get_json()) + "\n\n"
             except ModelCurrentlyNotSupportError:
                 yield "data: " + json.dumps(
-                    api.handle_error(ProviderModelCurrentlyNotSupportError()).get_json()) + "\n\n"
+                    api.handle_error(ProviderModelCurrentlyNotSupportError()).get_json()
+                ) + "\n\n"
             except InvokeError as e:
                 yield "data: " + json.dumps(api.handle_error(CompletionRequestError(e.description)).get_json()) + "\n\n"
             except ValueError as e:
@@ -713,12 +767,11 @@ def compact_response(response: Union[dict | Generator]) -> Response:
                 logging.exception("internal server error.")
                 yield "data: " + json.dumps(api.handle_error(InternalServerError()).get_json()) + "\n\n"
 
-        return Response(stream_with_context(generate()), status=200,
-                        mimetype='text/event-stream')
+        return Response(stream_with_context(generate()), status=200, mimetype="text/event-stream")
 
 
 # api.add_resource(CompletionApi, '/completion-messages')
 # api.add_resource(CompletionStopApi, '/completion-messages/<string:task_id>/stop')
-api.add_resource(ChatApi, '/chat-messages')  # 只有被@才会调用，后续合并到chat-messages-active
-api.add_resource(ChatActiveApi, '/chat-messages-active')
+api.add_resource(ChatApi, "/chat-messages")  # 只有被@才会调用，后续合并到chat-messages-active
+api.add_resource(ChatActiveApi, "/chat-messages-active")
 # api.add_resource(ChatStopApi, '/chat-messages/<string:task_id>/stop')

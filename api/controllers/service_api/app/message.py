@@ -7,7 +7,11 @@ from werkzeug.exceptions import BadRequest, InternalServerError, NotFound
 import services
 from controllers.service_api import api
 from controllers.service_api.app.error import NotChatAppError
-from controllers.service_api.wraps import FetchUserArg, WhereisUserArg, validate_app_token
+from controllers.service_api.wraps import (
+    FetchUserArg,
+    WhereisUserArg,
+    validate_app_token,
+)
 from core.app.entities.app_invoke_entities import InvokeFrom
 from fields.conversation_fields import message_file_fields
 from libs.helper import TimestampField, uuid_value
@@ -54,6 +58,7 @@ class MessageListApi(Resource):
     message_fields = {
         "id": fields.String,
         "conversation_id": fields.String,
+        "parent_message_id": fields.String,
         "inputs": fields.Raw,
         "query": fields.String,
         "answer": fields.String(attribute="re_sign_file_url_answer"),
@@ -76,7 +81,7 @@ class MessageListApi(Resource):
     @marshal_with(message_infinite_scroll_pagination_fields)
     def get(self, app_model: App, end_user: EndUser):
         app_mode = AppMode.value_of(app_model.mode)
-        if app_mode not in [AppMode.CHAT, AppMode.AGENT_CHAT, AppMode.ADVANCED_CHAT]:
+        if app_mode not in {AppMode.CHAT, AppMode.AGENT_CHAT, AppMode.ADVANCED_CHAT}:
             raise NotChatAppError()
 
         parser = reqparse.RequestParser()
@@ -117,7 +122,7 @@ class MessageSuggestedApi(Resource):
     def get(self, app_model: App, end_user: EndUser, message_id):
         message_id = str(message_id)
         app_mode = AppMode.value_of(app_model.mode)
-        if app_mode not in [AppMode.CHAT, AppMode.AGENT_CHAT, AppMode.ADVANCED_CHAT]:
+        if app_mode not in {AppMode.CHAT, AppMode.AGENT_CHAT, AppMode.ADVANCED_CHAT}:
             raise NotChatAppError()
 
         try:

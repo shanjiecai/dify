@@ -1,4 +1,5 @@
 import json
+from typing import Optional
 
 from httpx import get
 
@@ -29,13 +30,11 @@ class ApiToolManageService:
     @staticmethod
     def list_tool_providers(user_id: str, tenant_id: str):
         """
-            list tool providers
+        list tool providers
 
-            :return: the list of tool providers
+        :return: the list of tool providers
         """
-        providers = ToolManager.user_list_providers(
-            user_id, tenant_id
-        )
+        providers = ToolManager.user_list_providers(user_id, tenant_id)
 
         # add icon
         for provider in providers:
@@ -98,7 +97,9 @@ class ApiToolManageService:
             raise ValueError(f"invalid schema: {str(e)}")
 
     @staticmethod
-    def convert_schema_to_tool_bundles(schema: str, extra_info: dict = None) -> list[ApiToolBundle]:
+    def convert_schema_to_tool_bundles(
+        schema: str, extra_info: Optional[dict] = None
+    ) -> tuple[list[ApiToolBundle], str]:
         """
         convert schema to tool bundles
 
@@ -195,7 +196,8 @@ class ApiToolManageService:
         get api tool provider remote schema
         """
         headers = {
-            "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36 Edg/120.0.0.0",
+            "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko)"
+            " Chrome/120.0.0.0 Safari/537.36 Edg/120.0.0.0",
             "Accept": "*/*",
         }
 
@@ -242,23 +244,25 @@ class ApiToolManageService:
         ]
 
     @staticmethod
-    def update_builtin_tool_provider(
-        user_id: str, tenant_id: str, provider_name: str, credentials: dict
-    ):
+    def update_builtin_tool_provider(user_id: str, tenant_id: str, provider_name: str, credentials: dict):
         """
-            update builtin tool provider
+        update builtin tool provider
         """
         # get if the provider exists
-        provider: BuiltinToolProvider = db.session.query(BuiltinToolProvider).filter(
-            BuiltinToolProvider.tenant_id == tenant_id,
-            BuiltinToolProvider.provider == provider_name,
-        ).first()
+        provider: BuiltinToolProvider = (
+            db.session.query(BuiltinToolProvider)
+            .filter(
+                BuiltinToolProvider.tenant_id == tenant_id,
+                BuiltinToolProvider.provider == provider_name,
+            )
+            .first()
+        )
 
         try:
             # get provider
             provider_controller = ToolManager.get_builtin_provider(provider_name)
             if not provider_controller.need_credentials:
-                raise ValueError(f'provider {provider_name} does not need credentials')
+                raise ValueError(f"provider {provider_name} does not need credentials")
             tool_configuration = ToolConfigurationManager(tenant_id=tenant_id, provider_controller=provider_controller)
             # get original credentials if exists
             if provider is not None:
@@ -295,19 +299,21 @@ class ApiToolManageService:
             # delete cache
             tool_configuration.delete_tool_credentials_cache()
 
-        return { 'result': 'success' }
+        return {"result": "success"}
 
     @staticmethod
-    def get_builtin_tool_provider_credentials(
-        user_id: str, tenant_id: str, provider: str
-    ):
+    def get_builtin_tool_provider_credentials(user_id: str, tenant_id: str, provider: str):
         """
-            get builtin tool provider credentials
+        get builtin tool provider credentials
         """
-        provider: BuiltinToolProvider = db.session.query(BuiltinToolProvider).filter(
-            BuiltinToolProvider.tenant_id == tenant_id,
-            BuiltinToolProvider.provider == provider,
-        ).first()
+        provider: BuiltinToolProvider = (
+            db.session.query(BuiltinToolProvider)
+            .filter(
+                BuiltinToolProvider.tenant_id == tenant_id,
+                BuiltinToolProvider.provider == provider,
+            )
+            .first()
+        )
 
         if provider is None:
             return {}
@@ -516,24 +522,23 @@ class ApiToolManageService:
 
         return {"result": result or "empty response"}
 
-
     @staticmethod
-    def list_builtin_tools(
-        user_id: str, tenant_id: str
-    ) -> list[UserToolProvider]:
+    def list_builtin_tools(user_id: str, tenant_id: str) -> list[UserToolProvider]:
         """
-            list builtin tools
+        list builtin tools
         """
         # get all builtin providers
         provider_controllers = ToolManager.list_builtin_providers()
 
         # get all user added providers
-        db_providers: list[BuiltinToolProvider] = db.session.query(BuiltinToolProvider).filter(
-            BuiltinToolProvider.tenant_id == tenant_id
-        ).all() or []
+        db_providers: list[BuiltinToolProvider] = (
+            db.session.query(BuiltinToolProvider).filter(BuiltinToolProvider.tenant_id == tenant_id).all() or []
+        )
 
         # find provider
-        find_provider = lambda provider: next(filter(lambda db_provider: db_provider.provider == provider, db_providers), None)
+        find_provider = lambda provider: next(
+            filter(lambda db_provider: db_provider.provider == provider, db_providers), None
+        )
 
         result: list[UserToolProvider] = []
 
@@ -542,7 +547,7 @@ class ApiToolManageService:
             user_builtin_provider = ToolTransformService.builtin_provider_to_user_provider(
                 provider_controller=provider_controller,
                 db_provider=find_provider(provider_controller.identity.name),
-                decrypt_credentials=True
+                decrypt_credentials=True,
             )
 
             # add icon
@@ -550,11 +555,13 @@ class ApiToolManageService:
 
             tools = provider_controller.get_tools()
             for tool in tools:
-                user_builtin_provider.tools.append(ToolTransformService.tool_to_user_tool(
-                    tenant_id=tenant_id,
-                    tool=tool,
-                    credentials=user_builtin_provider.original_credentials,
-                ))
+                user_builtin_provider.tools.append(
+                    ToolTransformService.tool_to_user_tool(
+                        tenant_id=tenant_id,
+                        tool=tool,
+                        credentials=user_builtin_provider.original_credentials,
+                    )
+                )
 
             result.append(user_builtin_provider)
 

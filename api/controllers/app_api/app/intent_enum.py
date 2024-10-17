@@ -14,4 +14,3 @@ class Intent(Enum):
     NONE = None
     JUDGE_PLAN = "judge_plan"
     JUDGE_FORCE_PLAN = "judge_force_plan"
-

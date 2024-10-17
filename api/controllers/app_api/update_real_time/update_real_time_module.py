@@ -7,7 +7,9 @@ from flask import Flask
 from flask.ctx import AppContext
 
 from controllers.app_api.app.utils import *
-from controllers.app_api.update_real_time import update_dataset_id_with_conversation_id_pipeline
+from controllers.app_api.update_real_time import (
+    update_dataset_id_with_conversation_id_pipeline,
+)
 
 # from core.completion import Completion
 from mylogger import logger
@@ -25,7 +27,7 @@ class CountdownTask:
     def run(self, n):
         # run方法的主循环条件加入对状态变量的判断
         while self._running and n > 0:
-            print('T-minus', n)
+            print("T-minus", n)
             n -= 1
             time.sleep(5)
         print("thread is ended")
@@ -39,7 +41,8 @@ class CountdownTask:
                     update_dataset_id_with_conversation_id_pipeline(
                         conversation_id=dataset_upload_real_time.conversation_id,
                         group_id=dataset_upload_real_time.group_id,
-                        dataset_id=dataset_upload_real_time.dataset_id)
+                        dataset_id=dataset_upload_real_time.dataset_id,
+                    )
                 except:
                     logger.info(f"{traceback.format_exc()}")
                 time.sleep(60 * 60 * 8)
@@ -49,12 +52,12 @@ task_list = []
 
 
 def init_dataset_update_real_time(main_app: Flask):
-    env = main_app.config.get('ENV')
-    mode = main_app.config.get('MODE')
+    env = main_app.config.get("ENV")
+    mode = main_app.config.get("MODE")
     logger.info(f"init_dataset_update_real_time, 当前环境：{env}, 当前模式：{mode}")
     with main_app.app_context():
         try:
-            if env == 'production' and mode == 'api':
+            if env == "production" and mode == "api":
                 # if mode == 'api':
                 dataset_upload_real_time_list = DatasetUpdateRealTimeService.get_all_dataset_upload_real_time()
             else:
@@ -76,12 +79,12 @@ def restart_dataset_update_real_time(main_app: Flask):
     for task in task_list:
         task.terminate()
     task_list.clear()
-    env = main_app.config.get('ENV')
-    mode = main_app.config.get('MODE')
+    env = main_app.config.get("ENV")
+    mode = main_app.config.get("MODE")
     logger.info(f"restart_dataset_update_real_time, 当前环境：{env}, 当前模式：{mode}")
     with main_app.app_context():
         try:
-            if env == 'production' and mode == 'api':
+            if env == "production" and mode == "api":
                 # if mode == 'api':
                 dataset_upload_real_time_list = DatasetUpdateRealTimeService.get_all_dataset_upload_real_time()
             else:

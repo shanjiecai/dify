@@ -3,21 +3,40 @@ from typing import Optional
 
 from core.agent.entities import AgentEntity
 from core.app.app_config.base_app_config_manager import BaseAppConfigManager
-from core.app.app_config.common.sensitive_word_avoidance.manager import SensitiveWordAvoidanceConfigManager
+from core.app.app_config.common.sensitive_word_avoidance.manager import (
+    SensitiveWordAvoidanceConfigManager,
+)
 from core.app.app_config.easy_ui_based_app.agent.manager import AgentConfigManager
 from core.app.app_config.easy_ui_based_app.dataset.manager import DatasetConfigManager
-from core.app.app_config.easy_ui_based_app.model_config.manager import ModelConfigManager
-from core.app.app_config.easy_ui_based_app.prompt_template.manager import PromptTemplateConfigManager
-from core.app.app_config.easy_ui_based_app.variables.manager import BasicVariablesConfigManager
-from core.app.app_config.entities import EasyUIBasedAppConfig, EasyUIBasedAppModelConfigFrom
+from core.app.app_config.easy_ui_based_app.model_config.manager import (
+    ModelConfigManager,
+)
+from core.app.app_config.easy_ui_based_app.prompt_template.manager import (
+    PromptTemplateConfigManager,
+)
+from core.app.app_config.easy_ui_based_app.variables.manager import (
+    BasicVariablesConfigManager,
+)
+from core.app.app_config.entities import (
+    EasyUIBasedAppConfig,
+    EasyUIBasedAppModelConfigFrom,
+)
 from core.app.app_config.features.file_upload.manager import FileUploadConfigManager
-from core.app.app_config.features.opening_statement.manager import OpeningStatementConfigManager
-from core.app.app_config.features.retrieval_resource.manager import RetrievalResourceConfigManager
-from core.app.app_config.features.speech_to_text.manager import SpeechToTextConfigManager
+from core.app.app_config.features.opening_statement.manager import (
+    OpeningStatementConfigManager,
+)
+from core.app.app_config.features.retrieval_resource.manager import (
+    RetrievalResourceConfigManager,
+)
+from core.app.app_config.features.speech_to_text.manager import (
+    SpeechToTextConfigManager,
+)
 from core.app.app_config.features.suggested_questions_after_answer.manager import (
     SuggestedQuestionsAfterAnswerConfigManager,
 )
-from core.app.app_config.features.text_to_speech.manager import TextToSpeechConfigManager
+from core.app.app_config.features.text_to_speech.manager import (
+    TextToSpeechConfigManager,
+)
 from core.entities.agent_entities import PlanningStrategy
 from models.model import App, AppMode, AppModelConfig, Conversation
 
@@ -28,15 +47,19 @@ class AgentChatAppConfig(EasyUIBasedAppConfig):
     """
     Agent Chatbot App Config Entity.
     """
+
     agent: Optional[AgentEntity] = None
 
 
 class AgentChatAppConfigManager(BaseAppConfigManager):
     @classmethod
-    def get_app_config(cls, app_model: App,
-                       app_model_config: AppModelConfig,
-                       conversation: Optional[Conversation] = None,
-                       override_config_dict: Optional[dict] = None) -> AgentChatAppConfig:
+    def get_app_config(
+        cls,
+        app_model: App,
+        app_model_config: AppModelConfig,
+        conversation: Optional[Conversation] = None,
+        override_config_dict: Optional[dict] = None,
+    ) -> AgentChatAppConfig:
         """
         Convert app model config to agent chat app config
         :param app_model: app model
@@ -66,22 +89,12 @@ class AgentChatAppConfigManager(BaseAppConfigManager):
             app_model_config_from=config_from,
             app_model_config_id=app_model_config.id,
             app_model_config_dict=config_dict,
-            model=ModelConfigManager.convert(
-                config=config_dict
-            ),
-            prompt_template=PromptTemplateConfigManager.convert(
-                config=config_dict
-            ),
-            sensitive_word_avoidance=SensitiveWordAvoidanceConfigManager.convert(
-                config=config_dict
-            ),
-            dataset=DatasetConfigManager.convert(
-                config=config_dict
-            ),
-            agent=AgentConfigManager.convert(
-                config=config_dict
-            ),
-            additional_features=cls.convert_features(config_dict, app_mode)
+            model=ModelConfigManager.convert(config=config_dict),
+            prompt_template=PromptTemplateConfigManager.convert(config=config_dict),
+            sensitive_word_avoidance=SensitiveWordAvoidanceConfigManager.convert(config=config_dict),
+            dataset=DatasetConfigManager.convert(config=config_dict),
+            agent=AgentConfigManager.convert(config=config_dict),
+            additional_features=cls.convert_features(config_dict, app_mode),
         )
 
         app_config.variables, app_config.external_data_variables = BasicVariablesConfigManager.convert(
@@ -128,7 +141,8 @@ class AgentChatAppConfigManager(BaseAppConfigManager):
 
         # suggested_questions_after_answer
         config, current_related_config_keys = SuggestedQuestionsAfterAnswerConfigManager.validate_and_set_defaults(
-            config)
+            config
+        )
         related_config_keys.extend(current_related_config_keys)
 
         # speech_to_text
@@ -145,13 +159,15 @@ class AgentChatAppConfigManager(BaseAppConfigManager):
 
         # dataset configs
         # dataset_query_variable
-        config, current_related_config_keys = DatasetConfigManager.validate_and_set_defaults(tenant_id, app_mode,
-                                                                                             config)
+        config, current_related_config_keys = DatasetConfigManager.validate_and_set_defaults(
+            tenant_id, app_mode, config
+        )
         related_config_keys.extend(current_related_config_keys)
 
         # moderation validation
-        config, current_related_config_keys = SensitiveWordAvoidanceConfigManager.validate_and_set_defaults(tenant_id,
-                                                                                                            config)
+        config, current_related_config_keys = SensitiveWordAvoidanceConfigManager.validate_and_set_defaults(
+            tenant_id, config
+        )
         related_config_keys.extend(current_related_config_keys)
 
         related_config_keys = list(set(related_config_keys))
@@ -170,10 +186,7 @@ class AgentChatAppConfigManager(BaseAppConfigManager):
         :param config: app model config args
         """
         if not config.get("agent_mode"):
-            config["agent_mode"] = {
-                "enabled": False,
-                "tools": []
-            }
+            config["agent_mode"] = {"enabled": False, "tools": []}
 
         if not isinstance(config["agent_mode"], dict):
             raise ValueError("agent_mode must be of object type")
@@ -187,8 +200,9 @@ class AgentChatAppConfigManager(BaseAppConfigManager):
         if not config["agent_mode"].get("strategy"):
             config["agent_mode"]["strategy"] = PlanningStrategy.ROUTER.value
 
-        if config["agent_mode"]["strategy"] not in [member.value for member in
-                                                    list(PlanningStrategy.__members__.values())]:
+        if config["agent_mode"]["strategy"] not in [
+            member.value for member in list(PlanningStrategy.__members__.values())
+        ]:
             raise ValueError("strategy in agent_mode must be in the specified strategy list")
 
         if not config["agent_mode"].get("tools"):
@@ -210,7 +224,7 @@ class AgentChatAppConfigManager(BaseAppConfigManager):
                     raise ValueError("enabled in agent_mode.tools must be of boolean type")
 
                 if key == "dataset":
-                    if 'id' not in tool_item:
+                    if "id" not in tool_item:
                         raise ValueError("id is required in dataset")
 
                     try:

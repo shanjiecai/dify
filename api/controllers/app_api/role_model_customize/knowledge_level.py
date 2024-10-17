@@ -1,4 +1,3 @@
-
 from flask_restful import reqparse
 
 from controllers.app_api import AppApiResource, api
@@ -48,16 +47,16 @@ class KnowledgeLevelApi(AppApiResource):
                     default: success
         """
         parser = reqparse.RequestParser()
-        parser.add_argument('modelStudentId', type=str, required=True, help='modelStudentId')
-        parser.add_argument('knowledgeDomain', type=str, required=True, help='knowledgeDomain')
-        parser.add_argument('KnowledgeLevel', type=float, required=True, help='KnowledgeLevel')
+        parser.add_argument("modelStudentId", type=str, required=True, help="modelStudentId")
+        parser.add_argument("knowledgeDomain", type=str, required=True, help="knowledgeDomain")
+        parser.add_argument("KnowledgeLevel", type=float, required=True, help="KnowledgeLevel")
         args = parser.parse_args()
-        modelStudentId = args['modelStudentId']
-        knowledgeDomain = args['knowledgeDomain']
-        KnowledgeLevel = args['KnowledgeLevel']
+        modelStudentId = args["modelStudentId"]
+        knowledgeDomain = args["knowledgeDomain"]
+        KnowledgeLevel = args["KnowledgeLevel"]
         result = post_knowledge_level(modelStudentId, knowledgeDomain, KnowledgeLevel)
         logger.info(f"result: {result}")
-        return {'result': 'success'}
+        return {"result": "success"}
 
     # def patch(self, app_model: App):
     #     """
@@ -105,4 +104,4 @@ class KnowledgeLevelApi(AppApiResource):
     #     return {'result': 'success'}
 
 
-api.add_resource(KnowledgeLevelApi, '/role_model_customize/knowledge_level')
+api.add_resource(KnowledgeLevelApi, "/role_model_customize/knowledge_level")

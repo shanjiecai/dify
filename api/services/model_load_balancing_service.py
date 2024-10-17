@@ -7,7 +7,10 @@ from typing import Optional
 from constants import HIDDEN_VALUE
 from core.entities.provider_configuration import ProviderConfiguration
 from core.helper import encrypter
-from core.helper.model_provider_cache import ProviderCredentialsCache, ProviderCredentialsCacheType
+from core.helper.model_provider_cache import (
+    ProviderCredentialsCache,
+    ProviderCredentialsCacheType,
+)
 from core.model_manager import LBModelManager
 from core.model_runtime.entities.model_entities import ModelType
 from core.model_runtime.entities.provider_entities import (

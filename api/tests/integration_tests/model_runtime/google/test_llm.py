@@ -3,7 +3,11 @@ from collections.abc import Generator
 
 import pytest
 
-from core.model_runtime.entities.llm_entities import LLMResult, LLMResultChunk, LLMResultChunkDelta
+from core.model_runtime.entities.llm_entities import (
+    LLMResult,
+    LLMResultChunk,
+    LLMResultChunkDelta,
+)
 from core.model_runtime.entities.message_entities import (
     AssistantPromptMessage,
     ImagePromptMessageContent,
@@ -155,7 +159,7 @@ def test_invoke_chat_model_with_vision_multi_pics(setup_google_mock):
         user="abc-123",
     )
 
-    print(f"resultz: {result.message.content}")
+    print(f"result: {result.message.content}")
     assert isinstance(result, LLMResult)
     assert len(result.message.content) > 0
 

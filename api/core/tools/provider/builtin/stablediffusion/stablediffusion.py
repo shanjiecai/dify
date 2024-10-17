@@ -1,7 +1,9 @@
 from typing import Any
 
 from core.tools.errors import ToolProviderCredentialValidationError
-from core.tools.provider.builtin.stablediffusion.tools.stable_diffusion import StableDiffusionTool
+from core.tools.provider.builtin.stablediffusion.tools.stable_diffusion import (
+    StableDiffusionTool,
+)
 from core.tools.provider.builtin_tool_provider import BuiltinToolProviderController
 
 
@@ -15,4 +17,3 @@ class StableDiffusionProvider(BuiltinToolProviderController):
             ).validate_models()
         except Exception as e:
             raise ToolProviderCredentialValidationError(str(e))
-    

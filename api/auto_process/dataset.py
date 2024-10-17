@@ -45,7 +45,6 @@ def delete_dataset(dataset_id):
     headers = {"Authorization": f"Bearer {api_key}"}
     response = requests.delete(url, headers=headers, params=params)
     print(response.text)
-    return
 
 
 # 通过文件上传文档

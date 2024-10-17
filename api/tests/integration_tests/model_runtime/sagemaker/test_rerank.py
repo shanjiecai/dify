@@ -4,7 +4,9 @@ import pytest
 
 from core.model_runtime.entities.rerank_entities import RerankResult
 from core.model_runtime.errors.validate import CredentialsValidateFailedError
-from core.model_runtime.model_providers.sagemaker.rerank.rerank import SageMakerRerankModel
+from core.model_runtime.model_providers.sagemaker.rerank.rerank import (
+    SageMakerRerankModel,
+)
 
 
 def test_validate_credentials():

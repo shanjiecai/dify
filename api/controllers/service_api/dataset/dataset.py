@@ -6,7 +6,10 @@ from werkzeug.exceptions import NotFound
 
 import services.dataset_service
 from controllers.service_api import api
-from controllers.service_api.dataset.error import DatasetInUseError, DatasetNameDuplicateError
+from controllers.service_api.dataset.error import (
+    DatasetInUseError,
+    DatasetNameDuplicateError,
+)
 from controllers.service_api.wraps import DatasetApiResource
 from core.model_runtime.entities.model_entities import ModelType
 from core.provider_manager import ProviderManager
@@ -30,11 +33,11 @@ class DatasetListApi(DatasetApiResource):
 
         page = request.args.get("page", default=1, type=int)
         limit = request.args.get("limit", default=20, type=int)
-        provider = request.args.get("provider", default="vendor")
+        # provider = request.args.get("provider", default="vendor")
         search = request.args.get("keyword", default=None, type=str)
         tag_ids = request.args.getlist("tag_ids")
 
-        datasets, total = DatasetService.get_datasets(page, limit, provider, tenant_id, current_user, search, tag_ids)
+        datasets, total = DatasetService.get_datasets(page, limit, tenant_id, current_user, search, tag_ids)
         # check embedding setting
         provider_manager = ProviderManager()
         configurations = provider_manager.get_configurations(tenant_id=current_user.current_tenant_id)
@@ -84,6 +87,26 @@ class DatasetListApi(DatasetApiResource):
             required=False,
             nullable=False,
         )
+        parser.add_argument(
+            "external_knowledge_api_id",
+            type=str,
+            nullable=True,
+            required=False,
+            default="_validate_name",
+        )
+        parser.add_argument(
+            "provider",
+            type=str,
+            nullable=True,
+            required=False,
+            default="vendor",
+        )
+        parser.add_argument(
+            "external_knowledge_id",
+            type=str,
+            nullable=True,
+            required=False,
+        )
         args = parser.parse_args()
 
         try:
@@ -93,20 +116,23 @@ class DatasetListApi(DatasetApiResource):
                 indexing_technique=args["indexing_technique"],
                 account=current_user,
                 permission=args["permission"],
+                provider=args["provider"],
+                external_knowledge_api_id=args["external_knowledge_api_id"],
+                external_knowledge_id=args["external_knowledge_id"],
             )
         except services.errors.dataset.DatasetNameDuplicateError:
             raise DatasetNameDuplicateError()
 
         return marshal(dataset, dataset_detail_fields), 200
 
-
     def delete(self, tenant_id):
         # 获取参数dataset_id
-        dataset_id_str = request.args.get('dataset_id', default=None, type=str)
+        dataset_id_str = request.args.get("dataset_id", default=None, type=str)
         if DatasetService.delete_dataset(dataset_id_str, current_user):
-            return {'result': 'success'}, 204
+            return {"result": "success"}, 204
         else:
             raise NotFound("Dataset not found.")
+
 
 class DatasetApi(DatasetApiResource):
     """Resource for dataset."""

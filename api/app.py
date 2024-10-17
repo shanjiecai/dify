@@ -1,6 +1,5 @@
 import os
 import sys
-import traceback
 from logging.handlers import RotatingFileHandler
 
 if os.environ.get("DEBUG", "false").lower() != "true":
@@ -14,11 +13,9 @@ if os.environ.get("DEBUG", "false").lower() != "true":
 
 import json
 import logging
-import sys
 import threading
 import time
 import warnings
-from logging.handlers import RotatingFileHandler
 
 from flask import Flask, Response, request
 from flask_cors import CORS
@@ -30,7 +27,7 @@ from commands import register_commands
 from configs import dify_config
 
 # DO NOT REMOVE BELOW
-from events import event_handlers
+from events import event_handlers  # noqa: F401
 from extensions import (
     ext_celery,
     ext_code_based_extension,
@@ -40,6 +37,7 @@ from extensions import (
     ext_login,
     ext_mail,
     ext_migrate,
+    ext_proxy_fix,
     ext_redis,
     ext_sentry,
     ext_storage,
@@ -49,7 +47,7 @@ from extensions.ext_login import login_manager
 from libs.passport import PassportService
 
 # TODO: Find a way to avoid importing models here
-from models import account, dataset, model, source, task, tool, tools, web
+from models import account, dataset, model, source, task, tool, tools, web  # noqa: F401
 from services.account_service import AccountService
 
 # DO NOT REMOVE ABOVE
@@ -57,11 +55,9 @@ from services.account_service import AccountService
 
 warnings.simplefilter("ignore", ResourceWarning)
 
-# fix windows platform
-if os.name == "nt":
-    os.system('tzutil /s "UTC"')
-else:
-    os.environ["TZ"] = "UTC"
+os.environ["TZ"] = "UTC"
+# windows platform not support tzset
+if hasattr(time, "tzset"):
     time.tzset()
 
 
@@ -156,6 +152,7 @@ def create_app() -> Flask:
     from controllers.social_agent_api.update_real_time.update_real_time_module import (
         init_dataset_update_real_time_social_agent,
     )
+
     init_dataset_update_real_time_social_agent(app)
 
     # try:
@@ -188,13 +185,14 @@ def initialize_extensions(app):
     ext_mail.init_app(app)
     ext_hosting_provider.init_app(app)
     ext_sentry.init_app(app)
+    ext_proxy_fix.init_app(app)
 
 
 # Flask-Login configuration
 @login_manager.request_loader
 def load_user_from_request(request_from_flask_login):
     """Load user based on the request."""
-    if request.blueprint not in ["console", "inner_api"]:
+    if request.blueprint not in {"console", "inner_api"}:
         return None
     # Check if the user_id contains a dot, indicating the old format
     auth_header = request.headers.get("Authorization", "")
@@ -213,10 +211,10 @@ def load_user_from_request(request_from_flask_login):
     decoded = PassportService().verify(auth_token)
     user_id = decoded.get("user_id")
 
-    account = AccountService.load_logged_in_account(account_id=user_id, token=auth_token)
-    if account:
-        contexts.tenant_id.set(account.current_tenant_id)
-    return account
+    logged_in_account = AccountService.load_logged_in_account(account_id=user_id)
+    if logged_in_account:
+        contexts.tenant_id.set(logged_in_account.current_tenant_id)
+    return logged_in_account
 
 
 @login_manager.unauthorized_handler
@@ -231,7 +229,6 @@ def unauthorized_handler():
 
 # register blueprint routers
 def register_blueprints(app):
-    from controllers.app_api import bp as app_api_bp
     from controllers.console import bp as console_app_bp
     from controllers.files import bp as files_bp
     from controllers.inner_api import bp as inner_api_bp

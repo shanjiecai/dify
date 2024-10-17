@@ -13,7 +13,11 @@ from werkzeug.exceptions import InternalServerError, NotFound
 
 import services
 from controllers.app_api import api
-from controllers.app_api.app.utils import get_recent_history, get_recent_history_within_timestamp, send_feishu_bot
+from controllers.app_api.app.utils import (
+    get_recent_history,
+    get_recent_history_within_timestamp,
+    send_feishu_bot,
+)
 from controllers.app_api.quote.quotable_api import get_quotable_quote
 
 # import spacy
@@ -54,7 +58,7 @@ from mylogger import logger
 # from services.completion_service import CompletionService
 from services.openai_base_request_service import generate_response
 
-api_key = os.environ.get('OPENAI_API_KEY')
+api_key = os.environ.get("OPENAI_API_KEY")
 
 model_name_dict = {
     "DJ Bot": "James Corden",
@@ -131,21 +135,21 @@ class QuotaApi(AppApiResource):
         """
 
         parser = reqparse.RequestParser()
-        parser.add_argument('prompt', type=str, required=False, location='json')
-        parser.add_argument('word_limit', type=int, required=False, location='json')
-        parser.add_argument('kwargs', type=dict, required=False, default={}, location='json')
+        parser.add_argument("prompt", type=str, required=False, location="json")
+        parser.add_argument("word_limit", type=int, required=False, location="json")
+        parser.add_argument("kwargs", type=dict, required=False, default={}, location="json")
         args = parser.parse_args()
-        prompt = args['prompt']
-        n = args['word_limit']
-        kwargs = args['kwargs']
+        prompt = args["prompt"]
+        n = args["word_limit"]
+        kwargs = args["kwargs"]
 
         history_messages = [
             {"role": "assistant", "content": quote_generator_opening},
-            {"role": "user", "content": prompt}
+            {"role": "user", "content": prompt},
         ]
         try:
             try:
-                res_item = get_quotable_quote(prompt, word_limit=30 if not n else n)
+                res_item = get_quotable_quote(prompt, word_limit=n or 30)
                 """
                     {
                     "_id": "uSGo8Fn65z",
@@ -161,12 +165,10 @@ class QuotaApi(AppApiResource):
                     "dateModified": "2023-04-14"
                 }
                 """
-                content = res_item['content']
-                author = res_item['author']
+                content = res_item["content"]
+                author = res_item["author"]
                 quote = f"{content} - {author}"
-                return {"result": "success", "quote": quote,
-                        "content": content.strip(), "author": author.strip()
-                        }, 200
+                return {"result": "success", "quote": quote, "content": content.strip(), "author": author.strip()}, 200
             except:
                 logger.info("quotable api error, use gpt-4o to generate quote")
                 pass
@@ -177,14 +179,17 @@ class QuotaApi(AppApiResource):
                 history_messages=history_messages,
                 model="gpt-4o",
                 temperature=0.9,
-                **kwargs
+                **kwargs,
             )
             quote = response.choices[0].message.content
             # quote 按照最后一个-分割
             content, author = quote.rsplit("-", 1)
-            return {"result": "success", "quote": response.choices[0].message.content,
-                    "content": content.strip(), "author": author.strip()
-                    }, 200
+            return {
+                "result": "success",
+                "quote": response.choices[0].message.content,
+                "content": content.strip(),
+                "author": author.strip(),
+            }, 200
         except Exception as e:
             logger.info(f"internal server error: {traceback.format_exc()}")
             logger.info(f"args: {args}")
@@ -192,4 +197,4 @@ class QuotaApi(AppApiResource):
             raise InternalServerError()
 
 
-api.add_resource(QuotaApi, '/quote')
+api.add_resource(QuotaApi, "/quote")

@@ -17,8 +17,16 @@ from controllers.service_api.app.error import (
     ProviderQuotaExceededError,
     UnsupportedAudioTypeError,
 )
-from controllers.service_api.wraps import FetchUserArg, WhereisUserArg, validate_app_token
-from core.errors.error import ModelCurrentlyNotSupportError, ProviderTokenNotInitError, QuotaExceededError
+from controllers.service_api.wraps import (
+    FetchUserArg,
+    WhereisUserArg,
+    validate_app_token,
+)
+from core.errors.error import (
+    ModelCurrentlyNotSupportError,
+    ProviderTokenNotInitError,
+    QuotaExceededError,
+)
 from core.model_runtime.errors.invoke import InvokeError
 from models.model import App, AppMode, EndUser
 from services.audio_service import AudioService
@@ -79,19 +87,15 @@ class TextApi(Resource):
             message_id = args.get("message_id", None)
             text = args.get("text", None)
             if (
-                app_model.mode in [AppMode.ADVANCED_CHAT.value, AppMode.WORKFLOW.value]
+                app_model.mode in {AppMode.ADVANCED_CHAT.value, AppMode.WORKFLOW.value}
                 and app_model.workflow
                 and app_model.workflow.features_dict
             ):
                 text_to_speech = app_model.workflow.features_dict.get("text_to_speech")
-                voice = args.get("voice") if args.get("voice") else text_to_speech.get("voice")
+                voice = args.get("voice") or text_to_speech.get("voice")
             else:
                 try:
-                    voice = (
-                        args.get("voice")
-                        if args.get("voice")
-                        else app_model.app_model_config.text_to_speech_dict.get("voice")
-                    )
+                    voice = args.get("voice") or app_model.app_model_config.text_to_speech_dict.get("voice")
                 except Exception:
                     voice = None
             response = AudioService.transcript_tts(

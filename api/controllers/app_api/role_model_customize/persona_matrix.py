@@ -2,7 +2,10 @@ from flask_restful import reqparse
 
 from controllers.app_api import AppApiResource, api
 from models.model import App
-from services.role_model_customize_service import get_role_model_customize_list, post_persona_matrix
+from services.role_model_customize_service import (
+    get_role_model_customize_list,
+    post_persona_matrix,
+)
 
 """
 序号	参数名称	参数说明	类型	备注
@@ -50,13 +53,13 @@ class PersonaMatrixApi(AppApiResource):
                         type: string
         """
         parser = reqparse.RequestParser()
-        parser.add_argument('modelStudentId', type=str, required=True)
-        parser.add_argument('portraitDesign', type=list, required=True, action='append')
+        parser.add_argument("modelStudentId", type=str, required=True)
+        parser.add_argument("portraitDesign", type=list, required=True, action="append")
         args = parser.parse_args()
-        model_student_id = args.get('modelStudentId')
-        portrait_design = args.get('portraitDesign')
+        model_student_id = args.get("modelStudentId")
+        portrait_design = args.get("portraitDesign")
         result = post_persona_matrix(model_student_id, portrait_design)
-        return {'result': 'success', 'personaMatrix': result}
+        return {"result": "success", "personaMatrix": result}
 
 
 """
@@ -117,16 +120,16 @@ class RoleModelCustomizelist(AppApiResource):
                             type: string
         """
         parser = reqparse.RequestParser()
-        parser.add_argument('category', type=str, required=False, default='RoleModel')
-        parser.add_argument('page', type=int, required=False, default=1)
-        parser.add_argument('pageSize', type=int, required=False, default=20)
+        parser.add_argument("category", type=str, required=False, default="RoleModel")
+        parser.add_argument("page", type=int, required=False, default=1)
+        parser.add_argument("pageSize", type=int, required=False, default=20)
         args = parser.parse_args()
-        category = args.get('category')
-        page = args.get('page')
-        page_size = args.get('pageSize')
+        category = args.get("category")
+        page = args.get("page")
+        page_size = args.get("pageSize")
         result = get_role_model_customize_list(category, page, page_size)
-        return {'result': 'success', 'roleModelList': result}
+        return {"result": "success", "roleModelList": result}
 
 
-api.add_resource(PersonaMatrixApi, '/role_model_customize/persona_matrix')
-api.add_resource(RoleModelCustomizelist, '/role_model_customize/list')
+api.add_resource(PersonaMatrixApi, "/role_model_customize/persona_matrix")
+api.add_resource(RoleModelCustomizelist, "/role_model_customize/list")

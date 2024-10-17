@@ -45,13 +45,7 @@ from services.openai_base_request_service import generate_response
 
 
 def judge_plan(prompt: str):
-    messages = [{
-        "role": "system",
-        "content": judge_plan_system_prompt
-    }, {
-        "role": "user",
-        "content": prompt
-    }]
+    messages = [{"role": "system", "content": judge_plan_system_prompt}, {"role": "user", "content": prompt}]
     # for example in judge_plan_examples:
     #     messages.append({
     #         "role": "user",
@@ -62,8 +56,9 @@ def judge_plan(prompt: str):
     #         "content": example["output"]
     #     })
     logger.info(f"judge_plan messages: {messages}")
-    response = generate_response(prompt=None, system_prompt=None, history_messages=messages, model="gpt-4o",
-                                 max_tokens=50)
+    response = generate_response(
+        prompt=None, system_prompt=None, history_messages=messages, model="gpt-4o", max_tokens=50
+    )
     content = response.choices[0].message.content
     # logger.debug(f"judge_plan response: {content}")
     if "\n" in content:
@@ -75,16 +70,14 @@ def judge_plan(prompt: str):
 
 
 def judge_force_plan(prompt: str):
-    messages = [{
-        "role": "system",
-        "content": judge_force_plan_system_prompt
-    }, {
-        "role": "user",
-        "content": prompt + "\nif the user's input contains explicit intent to create a plan?"
-    }]
+    messages = [
+        {"role": "system", "content": judge_force_plan_system_prompt},
+        {"role": "user", "content": prompt + "\nif the user's input contains explicit intent to create a plan?"},
+    ]
     logger.info(f"judge_force_plan messages: {messages}")
-    response = generate_response(prompt=None, system_prompt=None, history_messages=messages, model="gpt-4o",
-                                 max_tokens=50)
+    response = generate_response(
+        prompt=None, system_prompt=None, history_messages=messages, model="gpt-4o", max_tokens=50
+    )
     content = response.choices[0].message.content
     # logger.debug(f"judge_force_plan response: {content}")
     if "\n" in content:

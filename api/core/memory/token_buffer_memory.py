@@ -12,6 +12,7 @@ from core.model_runtime.entities.message_entities import (
     TextPromptMessageContent,
     UserPromptMessage,
 )
+from core.prompt.utils.extract_thread_messages import extract_thread_messages
 from extensions.ext_database import db
 from models.model import AppMode, Conversation, Message, MessageFile
 from models.workflow import WorkflowRun
@@ -22,88 +23,89 @@ class TokenBufferMemory:
         self.conversation = conversation
         self.model_instance = model_instance
 
-    def get_history_prompt_messages(self, max_token_limit: int = 2000,
-                                    message_limit: Optional[int] = None,
-                                    assistant_name: Optional[str] = None,
-                                    user_name: Optional[str] = None
-                                    ) -> list[PromptMessage]:
+    def get_history_prompt_messages(
+        self,
+        max_token_limit: int = 2000,
+        message_limit: Optional[int] = None,
+        assistant_name: Optional[str] = None,
+        user_name: Optional[str] = None,
+    ) -> list[PromptMessage]:
         """
         Get history prompt messages.
         :param max_token_limit: max token limit
         :param message_limit: message limit
-        # :param assistant_name: assistant name
-        # :param user_name: user name
+        :param assistant_name: assistant name
+        :param user_name: user name
         """
-        # old_assistant_name = assistant_name
-        # old_user_name = user_name
-        # if not assistant_name:
-        #     assistant_name = PromptMessageRole.USER.name
-        # if not user_name:
-        #     user_name = PromptMessageRole.USER.name
-
         app_record = self.conversation.app
 
         # fetch limited messages, and return reversed
-        query = db.session.query(
-            Message.id,
-            Message.query,
-            Message.answer,
-            Message.created_at,
-            Message.workflow_run_id,
-            Message.role,
-            Message.assistant_name
-        ).filter(
-            Message.conversation_id == self.conversation.id,
-            # Message.answer != ''
-        ).order_by(Message.created_at.desc())
+        query = (
+            db.session.query(
+                Message.id,
+                Message.query,
+                Message.answer,
+                Message.created_at,
+                Message.workflow_run_id,
+                Message.parent_message_id,
+                Message.role,
+                Message.assistant_name,
+            )
+            .filter(
+                Message.conversation_id == self.conversation.id,
+            )
+            .order_by(Message.created_at.desc())
+        )
 
         if message_limit and message_limit > 0:
-            message_limit = message_limit if message_limit <= 500 else 500
+            message_limit = min(message_limit, 500)
         else:
             message_limit = 500
 
         messages = query.limit(message_limit).all()
 
-        messages = list(reversed(messages))
-        message_file_parser = MessageFileParser(
-            tenant_id=app_record.tenant_id,
-            app_id=app_record.id
-        )
-        if messages[-1].answer is None or messages[-1].answer == "":
-            # self.last_query = messages[-1].query
-            # self.last_role = messages[-1].role
-            messages = messages[:-1]
+        # instead of all messages from the conversation, we only need to extract messages
+        # that belong to the thread of last message
+        thread_messages = extract_thread_messages(messages)
 
+        # for newly created message, its answer is temporarily empty, we don't need to add it to memory
+        if thread_messages and not thread_messages[0].answer:
+            thread_messages.pop(0)
+
+        messages = list(reversed(thread_messages))
+
+        message_file_parser = MessageFileParser(tenant_id=app_record.tenant_id, app_id=app_record.id)
         prompt_messages = []
         for message in messages:
             if messages.index(message) + 1 < len(messages):
                 next_message = messages[messages.index(message) + 1]
                 # print(f"message: {message.answer}, next_message: {next_message.answer}")
-                if (message.answer is None or message.answer == "") and message.query == next_message.query and \
-                        message.role == next_message.role and next_message.answer is not None and \
-                        next_message.answer != "":
+                if (
+                    (message.answer is None or message.answer == "")
+                    and message.query == next_message.query
+                    and message.role == next_message.role
+                    and next_message.answer is not None
+                    and next_message.answer != ""
+                ):
                     continue
             files = db.session.query(MessageFile).filter(MessageFile.message_id == message.id).all()
             if files:
                 file_extra_config = None
-                if self.conversation.mode not in [AppMode.ADVANCED_CHAT.value, AppMode.WORKFLOW.value]:
+                if self.conversation.mode not in {AppMode.ADVANCED_CHAT.value, AppMode.WORKFLOW.value}:
                     file_extra_config = FileUploadConfigManager.convert(self.conversation.model_config)
                 else:
                     if message.workflow_run_id:
-                        workflow_run = (db.session.query(WorkflowRun)
-                                        .filter(WorkflowRun.id == message.workflow_run_id).first())
+                        workflow_run = (
+                            db.session.query(WorkflowRun).filter(WorkflowRun.id == message.workflow_run_id).first()
+                        )
 
                         if workflow_run:
                             file_extra_config = FileUploadConfigManager.convert(
-                                workflow_run.workflow.features_dict,
-                                is_vision=False
+                                workflow_run.workflow.features_dict, is_vision=False
                             )
 
                 if file_extra_config:
-                    file_objs = message_file_parser.transform_message_files(
-                        files,
-                        file_extra_config
-                    )
+                    file_objs = message_file_parser.transform_message_files(files, file_extra_config)
                 else:
                     file_objs = []
 
@@ -120,20 +122,32 @@ class TokenBufferMemory:
                     continue
                 if not message.role or message.role == "Human":
                     if user_name:
-                        prompt_messages.append(UserPromptMessage(content=message.query, name=correct_name_field(user_name)))
+                        prompt_messages.append(
+                            UserPromptMessage(content=message.query, name=correct_name_field(user_name))
+                        )
                     else:
-                        prompt_messages.append(UserPromptMessage(content=message.query,))
+                        prompt_messages.append(
+                            UserPromptMessage(
+                                content=message.query,
+                            )
+                        )
                 else:
-                    prompt_messages.append(UserPromptMessage(content=message.query, name=correct_name_field(message.role)))
+                    prompt_messages.append(
+                        UserPromptMessage(content=message.query, name=correct_name_field(message.role))
+                    )
 
             # prompt_messages.append(AssistantPromptMessage(content=message.answer))
             if not message.answer:
                 continue
             else:
                 if message.assistant_name:
-                    prompt_messages.append(UserPromptMessage(content=message.answer, name=correct_name_field(message.assistant_name)))
+                    prompt_messages.append(
+                        UserPromptMessage(content=message.answer, name=correct_name_field(message.assistant_name))
+                    )
                 elif assistant_name:
-                    prompt_messages.append(AssistantPromptMessage(content=message.answer, name=correct_name_field(assistant_name)))
+                    prompt_messages.append(
+                        AssistantPromptMessage(content=message.answer, name=correct_name_field(assistant_name))
+                    )
                 else:
                     prompt_messages.append(AssistantPromptMessage(content=message.answer))
 
@@ -141,24 +155,23 @@ class TokenBufferMemory:
             return []
 
         # prune the chat message if it exceeds the max token limit
-        curr_message_tokens = self.model_instance.get_llm_num_tokens(
-            prompt_messages
-        )
+        curr_message_tokens = self.model_instance.get_llm_num_tokens(prompt_messages)
 
         if curr_message_tokens > max_token_limit:
             pruned_memory = []
-            while curr_message_tokens > max_token_limit and len(prompt_messages)>1:
+            while curr_message_tokens > max_token_limit and len(prompt_messages) > 1:
                 pruned_memory.append(prompt_messages.pop(0))
-                curr_message_tokens = self.model_instance.get_llm_num_tokens(
-                    prompt_messages
-                )
+                curr_message_tokens = self.model_instance.get_llm_num_tokens(prompt_messages)
 
         return prompt_messages
 
-    def get_history_prompt_text(self, human_prefix: str = "Human",
-                                ai_prefix: str = "Assistant",
-                                max_token_limit: int = 2000,
-                                message_limit: Optional[int] = None) -> str:
+    def get_history_prompt_text(
+        self,
+        human_prefix: str = "Human",
+        ai_prefix: str = "Assistant",
+        max_token_limit: int = 2000,
+        message_limit: Optional[int] = None,
+    ) -> str:
         """
         Get history prompt text.
         :param human_prefix: human prefix
@@ -167,10 +180,7 @@ class TokenBufferMemory:
         :param message_limit: message limit
         :return:
         """
-        prompt_messages = self.get_history_prompt_messages(
-            max_token_limit=max_token_limit,
-            message_limit=message_limit
-        )
+        prompt_messages = self.get_history_prompt_messages(max_token_limit=max_token_limit, message_limit=message_limit)
 
         string_messages = []
         for m in prompt_messages:

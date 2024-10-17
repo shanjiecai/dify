@@ -3,7 +3,11 @@ from collections.abc import Generator
 
 import pytest
 
-from core.model_runtime.entities.llm_entities import LLMResult, LLMResultChunk, LLMResultChunkDelta
+from core.model_runtime.entities.llm_entities import (
+    LLMResult,
+    LLMResultChunk,
+    LLMResultChunkDelta,
+)
 from core.model_runtime.entities.message_entities import (
     AssistantPromptMessage,
     PromptMessageTool,
@@ -11,7 +15,9 @@ from core.model_runtime.entities.message_entities import (
     UserPromptMessage,
 )
 from core.model_runtime.errors.validate import CredentialsValidateFailedError
-from core.model_runtime.model_providers.openai_api_compatible.llm.llm import OAIAPICompatLargeLanguageModel
+from core.model_runtime.model_providers.openai_api_compatible.llm.llm import (
+    OAIAPICompatLargeLanguageModel,
+)
 
 """
 Using Together.ai's OpenAI-compatible API as testing endpoint

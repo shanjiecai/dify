@@ -11,14 +11,24 @@ from core.entities.agent_entities import PlanningStrategy
 from core.entities.application_entities import ModelConfigEntity
 from core.entities.message_entities import prompt_messages_to_lc_messages
 from core.features.dataset_retrieval.agent.agent_llm_callback import AgentLLMCallback
-from core.features.dataset_retrieval.agent.multi_dataset_router_agent import MultiDatasetRouterAgent
-from core.features.dataset_retrieval.agent.output_parser.structured_chat import StructuredChatOutputParser
-from core.features.dataset_retrieval.agent.structed_multi_dataset_router_agent import StructuredMultiDatasetRouterAgent
+from core.features.dataset_retrieval.agent.multi_dataset_router_agent import (
+    MultiDatasetRouterAgent,
+)
+from core.features.dataset_retrieval.agent.output_parser.structured_chat import (
+    StructuredChatOutputParser,
+)
+from core.features.dataset_retrieval.agent.structed_multi_dataset_router_agent import (
+    StructuredMultiDatasetRouterAgent,
+)
 from core.helper import moderation
 from core.memory.token_buffer_memory import TokenBufferMemory
 from core.model_runtime.errors.invoke import InvokeError
-from core.tools.tool.dataset_retriever.dataset_multi_retriever_tool import DatasetMultiRetrieverTool
-from core.tools.tool.dataset_retriever.dataset_retriever_tool import DatasetRetrieverTool
+from core.tools.tool.dataset_retriever.dataset_multi_retriever_tool import (
+    DatasetMultiRetrieverTool,
+)
+from core.tools.tool.dataset_retriever.dataset_retriever_tool import (
+    DatasetRetrieverTool,
+)
 
 
 class AgentConfiguration(BaseModel):
@@ -54,25 +64,28 @@ class AgentExecutor:
 
     def _init_agent(self) -> Union[BaseSingleActionAgent, BaseMultiActionAgent]:
         if self.configuration.strategy == PlanningStrategy.ROUTER:
-            self.configuration.tools = [t for t in self.configuration.tools
-                                        if isinstance(t, DatasetRetrieverTool)
-                                        or isinstance(t, DatasetMultiRetrieverTool)]
+            self.configuration.tools = [
+                t for t in self.configuration.tools if isinstance(t, DatasetRetrieverTool | DatasetMultiRetrieverTool)
+            ]
             agent = MultiDatasetRouterAgent.from_llm_and_tools(
                 model_config=self.configuration.model_config,
                 tools=self.configuration.tools,
-                extra_prompt_messages=prompt_messages_to_lc_messages(self.configuration.memory.get_history_prompt_messages())
-                if self.configuration.memory else None,
-                verbose=True
+                extra_prompt_messages=(
+                    prompt_messages_to_lc_messages(self.configuration.memory.get_history_prompt_messages())
+                    if self.configuration.memory
+                    else None
+                ),
+                verbose=True,
             )
         elif self.configuration.strategy == PlanningStrategy.REACT_ROUTER:
-            self.configuration.tools = [t for t in self.configuration.tools
-                                        if isinstance(t, DatasetRetrieverTool)
-                                        or isinstance(t, DatasetMultiRetrieverTool)]
+            self.configuration.tools = [
+                t for t in self.configuration.tools if isinstance(t, DatasetRetrieverTool | DatasetMultiRetrieverTool)
+            ]
             agent = StructuredMultiDatasetRouterAgent.from_llm_and_tools(
                 model_config=self.configuration.model_config,
                 tools=self.configuration.tools,
                 output_parser=StructuredChatOutputParser(),
-                verbose=True
+                verbose=True,
             )
         else:
             raise NotImplementedError(f"Unknown Agent Strategy: {self.configuration.strategy}")
@@ -83,16 +96,13 @@ class AgentExecutor:
         return self.agent.should_use_agent(query)
 
     def run(self, query: str) -> AgentExecuteResult:
-        moderation_result = moderation.check_moderation(
-            self.configuration.model_config,
-            query
-        )
+        moderation_result = moderation.check_moderation(self.configuration.model_config, query)
 
         if moderation_result:
             return AgentExecuteResult(
                 output="I apologize for any confusion, but I'm an AI assistant to be helpful, harmless, and honest.",
                 strategy=self.configuration.strategy,
-                configuration=self.configuration
+                configuration=self.configuration,
             )
 
         agent_executor = LCAgentExecutor.from_agent_and_tools(
@@ -101,7 +111,7 @@ class AgentExecutor:
             max_iterations=self.configuration.max_iterations,
             max_execution_time=self.configuration.max_execution_time,
             early_stopping_method=self.configuration.early_stopping_method,
-            callbacks=self.configuration.callbacks
+            callbacks=self.configuration.callbacks,
         )
 
         try:
@@ -115,8 +125,4 @@ class AgentExecutor:
             logging.exception("agent_executor run failed")
             output = None
 
-        return AgentExecuteResult(
-            output=output,
-            strategy=self.configuration.strategy,
-            configuration=self.configuration
-        )
+        return AgentExecuteResult(output=output, strategy=self.configuration.strategy, configuration=self.configuration)

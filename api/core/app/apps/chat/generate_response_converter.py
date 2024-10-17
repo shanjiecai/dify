@@ -2,7 +2,9 @@ import json
 from collections.abc import Generator
 from typing import cast
 
-from core.app.apps.base_app_generate_response_converter import AppGenerateResponseConverter
+from core.app.apps.base_app_generate_response_converter import (
+    AppGenerateResponseConverter,
+)
 from core.app.entities.task_entities import (
     ChatbotAppBlockingResponse,
     ChatbotAppStreamResponse,
@@ -24,15 +26,15 @@ class ChatAppGenerateResponseConverter(AppGenerateResponseConverter):
         :return:
         """
         response = {
-            'event': 'message',
-            'task_id': blocking_response.task_id,
-            'id': blocking_response.data.id,
-            'message_id': blocking_response.data.message_id,
-            'conversation_id': blocking_response.data.conversation_id,
-            'mode': blocking_response.data.mode,
-            'answer': blocking_response.data.answer,
-            'metadata': blocking_response.data.metadata,
-            'created_at': blocking_response.data.created_at
+            "event": "message",
+            "task_id": blocking_response.task_id,
+            "id": blocking_response.data.id,
+            "message_id": blocking_response.data.message_id,
+            "conversation_id": blocking_response.data.conversation_id,
+            "mode": blocking_response.data.mode,
+            "answer": blocking_response.data.answer,
+            "metadata": blocking_response.data.metadata,
+            "created_at": blocking_response.data.created_at,
         }
         logger.info(f"[invoke_llm_result]: {blocking_response.data.answer}")
         return response
@@ -46,14 +48,15 @@ class ChatAppGenerateResponseConverter(AppGenerateResponseConverter):
         """
         response = cls.convert_blocking_full_response(blocking_response)
 
-        metadata = response.get('metadata', {})
-        response['metadata'] = cls._get_simple_metadata(metadata)
+        metadata = response.get("metadata", {})
+        response["metadata"] = cls._get_simple_metadata(metadata)
 
         return response
 
     @classmethod
-    def convert_stream_full_response(cls, stream_response: Generator[ChatbotAppStreamResponse, None, None]) \
-            -> Generator[str, None, None]:
+    def convert_stream_full_response(
+        cls, stream_response: Generator[ChatbotAppStreamResponse, None, None]
+    ) -> Generator[str, None, None]:
         """
         Convert stream full response.
         :param stream_response: stream response
@@ -64,14 +67,14 @@ class ChatAppGenerateResponseConverter(AppGenerateResponseConverter):
             sub_stream_response = chunk.stream_response
 
             if isinstance(sub_stream_response, PingStreamResponse):
-                yield 'ping'
+                yield "ping"
                 continue
 
             response_chunk = {
-                'event': sub_stream_response.event.value,
-                'conversation_id': chunk.conversation_id,
-                'message_id': chunk.message_id,
-                'created_at': chunk.created_at
+                "event": sub_stream_response.event.value,
+                "conversation_id": chunk.conversation_id,
+                "message_id": chunk.message_id,
+                "created_at": chunk.created_at,
             }
 
             if isinstance(sub_stream_response, ErrorStreamResponse):
@@ -82,8 +85,9 @@ class ChatAppGenerateResponseConverter(AppGenerateResponseConverter):
             yield json.dumps(response_chunk)
 
     @classmethod
-    def convert_stream_simple_response(cls, stream_response: Generator[ChatbotAppStreamResponse, None, None]) \
-            -> Generator[str, None, None]:
+    def convert_stream_simple_response(
+        cls, stream_response: Generator[ChatbotAppStreamResponse, None, None]
+    ) -> Generator[str, None, None]:
         """
         Convert stream simple response.
         :param stream_response: stream response
@@ -94,20 +98,20 @@ class ChatAppGenerateResponseConverter(AppGenerateResponseConverter):
             sub_stream_response = chunk.stream_response
 
             if isinstance(sub_stream_response, PingStreamResponse):
-                yield 'ping'
+                yield "ping"
                 continue
 
             response_chunk = {
-                'event': sub_stream_response.event.value,
-                'conversation_id': chunk.conversation_id,
-                'message_id': chunk.message_id,
-                'created_at': chunk.created_at
+                "event": sub_stream_response.event.value,
+                "conversation_id": chunk.conversation_id,
+                "message_id": chunk.message_id,
+                "created_at": chunk.created_at,
             }
 
             if isinstance(sub_stream_response, MessageEndStreamResponse):
                 sub_stream_response_dict = sub_stream_response.to_dict()
-                metadata = sub_stream_response_dict.get('metadata', {})
-                sub_stream_response_dict['metadata'] = cls._get_simple_metadata(metadata)
+                metadata = sub_stream_response_dict.get("metadata", {})
+                sub_stream_response_dict["metadata"] = cls._get_simple_metadata(metadata)
                 response_chunk.update(sub_stream_response_dict)
             if isinstance(sub_stream_response, ErrorStreamResponse):
                 data = cls._error_to_stream_response(sub_stream_response.err)

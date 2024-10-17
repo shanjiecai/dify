@@ -26,9 +26,7 @@ class PublishFrom(Enum):
 
 
 class AppQueueManager:
-    def __init__(self, task_id: str,
-                 user_id: str,
-                 invoke_from: InvokeFrom) -> None:
+    def __init__(self, task_id: str, user_id: str, invoke_from: InvokeFrom) -> None:
         if not user_id:
             raise ValueError("user is required")
 
@@ -36,9 +34,10 @@ class AppQueueManager:
         self._user_id = user_id
         self._invoke_from = invoke_from
 
-        user_prefix = 'account' if self._invoke_from in [InvokeFrom.EXPLORE, InvokeFrom.DEBUGGER] else 'end-user'
-        redis_client.setex(AppQueueManager._generate_task_belong_cache_key(self._task_id), 1800,
-                           f"{user_prefix}-{self._user_id}")
+        user_prefix = "account" if self._invoke_from in {InvokeFrom.EXPLORE, InvokeFrom.DEBUGGER} else "end-user"
+        redis_client.setex(
+            AppQueueManager._generate_task_belong_cache_key(self._task_id), 1800, f"{user_prefix}-{self._user_id}"
+        )
 
         q = queue.Queue()
 
@@ -75,8 +74,7 @@ class AppQueueManager:
                     # publish two messages to make sure the client can receive the stop signal
                     # and stop listening after the stop signal processed
                     self.publish(
-                        QueueStopEvent(stopped_by=QueueStopEvent.StopBy.USER_MANUAL),
-                        PublishFrom.TASK_PIPELINE
+                        QueueStopEvent(stopped_by=QueueStopEvent.StopBy.USER_MANUAL), PublishFrom.TASK_PIPELINE
                     )
 
                 if elapsed_time // 10 > last_ping_time:
@@ -97,9 +95,7 @@ class AppQueueManager:
         :param pub_from: publish from
         :return:
         """
-        self.publish(QueueErrorEvent(
-            error=e
-        ), pub_from)
+        self.publish(QueueErrorEvent(error=e), pub_from)
 
     def publish(self, event: AppQueueEvent, pub_from: PublishFrom) -> None:
         """
@@ -131,8 +127,8 @@ class AppQueueManager:
         if result is None:
             return
 
-        user_prefix = 'account' if invoke_from in [InvokeFrom.EXPLORE, InvokeFrom.DEBUGGER] else 'end-user'
-        if result.decode('utf-8') != f"{user_prefix}-{user_id}":
+        user_prefix = "account" if invoke_from in {InvokeFrom.EXPLORE, InvokeFrom.DEBUGGER} else "end-user"
+        if result.decode("utf-8") != f"{user_prefix}-{user_id}":
             return
 
         stopped_cache_key = cls._generate_stopped_cache_key(task_id)
@@ -177,10 +173,12 @@ class AppQueueManager:
             for item in data:
                 self._check_for_sqlalchemy_models(item)
         else:
-            if isinstance(data, DeclarativeMeta) or hasattr(data, '_sa_instance_state'):
-                raise TypeError("Critical Error: Passing SQLAlchemy Model instances "
-                                "that cause thread safety issues is not allowed.")
+            if isinstance(data, DeclarativeMeta) or hasattr(data, "_sa_instance_state"):
+                raise TypeError(
+                    "Critical Error: Passing SQLAlchemy Model instances "
+                    "that cause thread safety issues is not allowed."
+                )
 
 
-class GenerateTaskStoppedException(Exception):
+class GenerateTaskStoppedError(Exception):
     pass

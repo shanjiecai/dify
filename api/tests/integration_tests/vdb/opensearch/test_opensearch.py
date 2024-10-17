@@ -3,7 +3,10 @@ from unittest.mock import MagicMock, patch
 import pytest
 
 from core.rag.datasource.vdb.field import Field
-from core.rag.datasource.vdb.opensearch.opensearch_vector import OpenSearchConfig, OpenSearchVector
+from core.rag.datasource.vdb.opensearch.opensearch_vector import (
+    OpenSearchConfig,
+    OpenSearchVector,
+)
 from core.rag.models.document import Document
 from extensions import ext_redis
 
@@ -34,7 +37,7 @@ class TestOpenSearchVector:
         self.vector._client = MagicMock()
 
     @pytest.mark.parametrize(
-        "search_response, expected_length, expected_doc_id",
+        ("search_response", "expected_length", "expected_doc_id"),
         [
             (
                 {

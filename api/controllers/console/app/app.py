@@ -7,7 +7,10 @@ from werkzeug.exceptions import BadRequest, Forbidden, abort
 from controllers.console import api
 from controllers.console.app.wraps import get_app_model
 from controllers.console.setup import setup_required
-from controllers.console.wraps import account_initialization_required, cloud_edition_billing_resource_check
+from controllers.console.wraps import (
+    account_initialization_required,
+    cloud_edition_billing_resource_check,
+)
 from core.ops.ops_trace_manager import OpsTraceManager
 from fields.app_fields import (
     app_detail_fields,

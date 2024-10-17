@@ -4,7 +4,9 @@ import pytest
 
 from core.model_runtime.entities.text_embedding_entities import TextEmbeddingResult
 from core.model_runtime.errors.validate import CredentialsValidateFailedError
-from core.model_runtime.model_providers.upstage.text_embedding.text_embedding import UpstageTextEmbeddingModel
+from core.model_runtime.model_providers.upstage.text_embedding.text_embedding import (
+    UpstageTextEmbeddingModel,
+)
 from tests.integration_tests.model_runtime.__mock.openai import setup_openai_mock
 
 

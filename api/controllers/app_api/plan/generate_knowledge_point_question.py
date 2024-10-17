@@ -2,7 +2,10 @@ import json
 
 # 基于提供的知识点提出几个用于针对这个知识点生成计划的问题
 # from controllers.app_api.openai_base_request import generate_response
-from core.prompt_const import generate_plan_question_examples, generate_plan_question_system_prompt
+from core.prompt_const import (
+    generate_plan_question_examples,
+    generate_plan_question_system_prompt,
+)
 from mylogger import logger
 from services.openai_base_request_service import generate_response
 
@@ -55,27 +58,21 @@ from services.openai_base_request_service import generate_response
 
 def generate_knowledge_point_question(prompt: str):
     messages = [
-        {
-            "role": "system",
-            "content": generate_plan_question_system_prompt
-        },
+        {"role": "system", "content": generate_plan_question_system_prompt},
     ]
     for example in generate_plan_question_examples:
-        messages.append({
-            "role": "user",
-            "content": example["input"]
-        })
-        messages.append({
-            "role": "assistant",
-            "content": json.dumps(example["output"], ensure_ascii=False)
-        })
-    messages.append({
-        "role": "user",
-        "content": prompt
-    })
+        messages.append({"role": "user", "content": example["input"]})
+        messages.append({"role": "assistant", "content": json.dumps(example["output"], ensure_ascii=False)})
+    messages.append({"role": "user", "content": prompt})
 
-    response = generate_response(prompt=None, system_prompt=None, history_messages=messages, json_format=True, max_tokens=512,
-                                 model="gpt-4-turbo")
+    response = generate_response(
+        prompt=None,
+        system_prompt=None,
+        history_messages=messages,
+        json_format=True,
+        max_tokens=512,
+        model="gpt-4-turbo",
+    )
     content = response.choices[0].message.content
     logger.info(f"generate_knowledge_point_question response: {content}")
     questions = json.loads(content)["questions"]

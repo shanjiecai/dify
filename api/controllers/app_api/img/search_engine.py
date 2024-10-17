@@ -19,12 +19,10 @@ class MyImageDownloader(ImageDownloader):
         self.filenames = []
 
     def get_filename(self, task, default_ext="jpg"):
-        url_path = urlparse(task['file_url'])[2]
-        if '.' in url_path:
-            extension = url_path.split('.')[-1]
-            if extension.lower() not in [
-                'jpg', 'jpeg', 'png', 'bmp', 'tiff', 'gif', 'ppm', 'pgm'
-            ]:
+        url_path = urlparse(task["file_url"])[2]
+        if "." in url_path:
+            extension = url_path.split(".")[-1]
+            if extension.lower() not in ["jpg", "jpeg", "png", "bmp", "tiff", "gif", "ppm", "pgm"]:
                 extension = default_ext
         else:
             extension = default_ext
@@ -36,9 +34,9 @@ class MyImageDownloader(ImageDownloader):
         #     filename = url_path.split('/')[-1]
         # if self.filename_prefix:
         #     filename = self.filename_prefix + '_' + filename
-        filename = url_path.split('/')[-1].split('.')[0]
+        filename = url_path.split("/")[-1].split(".")[0]
         print(filename)
-        return '{}.{}'.format(filename, extension)
+        return "{}.{}".format(filename, extension)
 
     def download(self, task, default_ext, timeout=5, max_retry=3, overwrite=False, **kwargs):
         """Download the image and save it to the corresponding path.
@@ -291,22 +289,23 @@ class MyBaiduFeeder(Feeder):
 
 def search_engine_invoke(keyword, shape=None, size=None, dst_dir="./", max_num=1) -> list[str]:
     # Initialize Bing crawler
-    bing_crawler = BingImageCrawler(storage={'root_dir': dst_dir},
-                                    downloader_cls=MyImageDownloader,
-                                    feeder_cls=MyBingFeed,
-                                    downloader_threads=4,
-                                    parser_threads=2
-                                    )
+    bing_crawler = BingImageCrawler(
+        storage={"root_dir": dst_dir},
+        downloader_cls=MyImageDownloader,
+        feeder_cls=MyBingFeed,
+        downloader_threads=4,
+        parser_threads=2,
+    )
 
     try:
         # Try crawling with Bing
         # layout_choice = ["square", "wide", "tall"]
         if shape:
-            if shape=="square":
+            if shape == "square":
                 layout = "square"
-            elif shape=="vertical":
+            elif shape == "vertical":
                 layout = "tall"
-            elif shape=="horizontal":
+            elif shape == "horizontal":
                 layout = "wide"
             else:
                 layout = "tall"
@@ -315,12 +314,10 @@ def search_engine_invoke(keyword, shape=None, size=None, dst_dir="./", max_num=1
         begin = time.time()
         bing_filters = {
             # 'license': 'commercial,modify',
-            'layout': layout,
+            "layout": layout,
             # 'type': 'photo',
         }
-        bing_crawler.crawl(keyword=keyword, max_num=max_num, overwrite=True,
-                           filters=bing_filters
-                           )
+        bing_crawler.crawl(keyword=keyword, max_num=max_num, overwrite=True, filters=bing_filters)
 
         logger.info(f"搜索引擎耗时：{time.time() - begin}")
         return bing_crawler.downloader.filenames
@@ -329,21 +326,18 @@ def search_engine_invoke(keyword, shape=None, size=None, dst_dir="./", max_num=1
         # print("Retrying with Baidu...")
         logger.info(f"Error occurred with Bing: {e}")
         # Initialize Baidu crawler
-        baidu_crawler = BaiduImageCrawler(storage={'root_dir': dst_dir},
-                                          downloader_cls=MyImageDownloader,
-                                          feeder_cls=MyBaiduFeeder,
-                                          downloader_threads=2,
-                                          parser_threads=2,
-                                          )
+        baidu_crawler = BaiduImageCrawler(
+            storage={"root_dir": dst_dir},
+            downloader_cls=MyImageDownloader,
+            feeder_cls=MyBaiduFeeder,
+            downloader_threads=2,
+            parser_threads=2,
+        )
 
         try:
             # Try crawling with Bing
-            baidu_filter = {
-                'type': 'static'
-            }
-            baidu_crawler.crawl(keyword=keyword, max_num=max_num, overwrite=True,
-                                filters=baidu_filter
-                                )
+            baidu_filter = {"type": "static"}
+            baidu_crawler.crawl(keyword=keyword, max_num=max_num, overwrite=True, filters=baidu_filter)
             return baidu_crawler.downloader.filenames
         except Exception as e:
             # print("Error occurred with Baidu:", e)
@@ -351,5 +345,5 @@ def search_engine_invoke(keyword, shape=None, size=None, dst_dir="./", max_num=1
             logger.info(f"Error occurred with Baidu: {e}")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     print(search_engine_invoke("run", max_num=3))

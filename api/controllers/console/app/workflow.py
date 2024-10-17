@@ -11,7 +11,11 @@ from werkzeug.exceptions import Forbidden, InternalServerError, NotFound
 import services
 from controllers.app_api.plan.pipeline import plan_question_background
 from controllers.console import api
-from controllers.console.app.error import ConversationCompletedError, DraftWorkflowNotExist, DraftWorkflowNotSync
+from controllers.console.app.error import (
+    ConversationCompletedError,
+    DraftWorkflowNotExist,
+    DraftWorkflowNotSync,
+)
 from controllers.console.app.wraps import get_app_model
 from controllers.console.setup import setup_required
 from controllers.console.wraps import account_initialization_required
@@ -47,7 +51,7 @@ class DraftWorkflowApi(Resource):
         # The role of the current user in the ta table must be admin, owner, or editor
         if not current_user.is_editor:
             raise Forbidden()
-        
+
         # fetch draft workflow by app_model
         workflow_service = WorkflowService()
         workflow = workflow_service.get_draft_workflow(app_model=app_model)
@@ -171,23 +175,27 @@ class AdvancedChatDraftWorkflowRunApi(Resource):
         parser.add_argument("query", type=str, required=True, location="json", default="")
         parser.add_argument("files", type=list, location="json")
         parser.add_argument("conversation_id", type=uuid_value, location="json")
+        parser.add_argument("parent_message_id", type=uuid_value, required=False, location="json")
+
         args = parser.parse_args()
 
         try:
             if args["conversation_id"]:
                 conversation_filter = [
-                    Conversation.id == args['conversation_id'],
+                    Conversation.id == args["conversation_id"],
                     # Conversation.app_id == app_model.id,
-                    Conversation.status == 'normal'
+                    Conversation.status == "normal",
                 ]
                 conversation = db.session.query(Conversation).filter(and_(*conversation_filter)).first()
                 if conversation and (
-                        not conversation.plan_question_invoke_user or conversation.plan_question_invoke_time < datetime.datetime.utcnow() - datetime.timedelta(
-                        hours=8)):
+                    not conversation.plan_question_invoke_user
+                    or conversation.plan_question_invoke_time < datetime.datetime.utcnow() - datetime.timedelta(hours=8)
+                ):
                     # 另起线程执行plan_question
-                    threading.Thread(target=plan_question_background,
-                                     args=(current_app._get_current_object(), args["query"], conversation,
-                                           "user", None)).start()
+                    threading.Thread(
+                        target=plan_question_background,
+                        args=(current_app._get_current_object(), args["query"], conversation, "user", None),
+                    ).start()
             response = AppGenerateService.generate(
                 app_model=app_model, user=current_user, args=args, invoke_from=InvokeFrom.DEBUGGER, streaming=True
             )
@@ -484,6 +492,6 @@ api.add_resource(
 api.add_resource(PublishedWorkflowApi, "/apps/<uuid:app_id>/workflows/publish")
 api.add_resource(DefaultBlockConfigsApi, "/apps/<uuid:app_id>/workflows/default-workflow-block-configs")
 api.add_resource(
-    DefaultBlockConfigApi, "/apps/<uuid:app_id>/workflows/default-workflow-block-configs" "/<string:block_type>"
+    DefaultBlockConfigApi, "/apps/<uuid:app_id>/workflows/default-workflow-block-configs/<string:block_type>"
 )
 api.add_resource(ConvertToWorkflowApi, "/apps/<uuid:app_id>/convert-to-workflow")

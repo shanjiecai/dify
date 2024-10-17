@@ -23,7 +23,10 @@ from libs.infinite_scroll_pagination import InfiniteScrollPagination
 from models.account import Account
 from models.model import App, Conversation, ConversationPlanDetail, EndUser, Message
 from mylogger import logger
-from services.errors.conversation import ConversationNotExistsError, LastConversationNotExistsError
+from services.errors.conversation import (
+    ConversationNotExistsError,
+    LastConversationNotExistsError,
+)
 from services.errors.message import MessageNotExistsError
 from services.openai_base_request_service import compare_similarity, generate_response
 
@@ -151,7 +154,12 @@ class ConversationService:
         return conversation
 
     @classmethod
-    def get_conversation(cls, app_model: Optional[App] = None, conversation_id: str = None, user: Optional[Union[Account, EndUser]] = None):
+    def get_conversation(
+        cls,
+        app_model: Optional[App] = None,
+        conversation_id: str | None = None,
+        user: Optional[Union[Account, EndUser]] = None,
+    ):
         conversation = (
             db.session.query(Conversation)
             .filter(
@@ -188,25 +196,35 @@ class ConversationService:
         return conversations
 
     @classmethod
-    def generate_plan(cls, conversation_id: str, plan: str = None, outer_history_str: str = None):
+    def generate_plan(cls, conversation_id: str, plan: str | None = None, outer_history_str: str | None = None):
         history_str = ""
         plan_detail_dict = {}
         if not outer_history_str:
             conversation = cls.get_conversation(conversation_id=conversation_id)
             # if not conversation.plan_question_invoke_plan and not plan:
             #     return None
-            plan = plan if plan else conversation.plan_question_invoke_plan
+            plan = plan or conversation.plan_question_invoke_plan
 
-            messages = db.session.query(Message).filter(
-                Message.conversation_id == conversation.id,
-            ).order_by(Message.created_at.desc()).limit(10).all()
+            messages = (
+                db.session.query(Message)
+                .filter(
+                    Message.conversation_id == conversation.id,
+                )
+                .order_by(Message.created_at.desc())
+                .limit(10)
+                .all()
+            )
             messages = list(reversed(messages))
             for message in messages:
                 if messages.index(message) + 1 < len(messages):
                     next_message = messages[messages.index(message) + 1]
-                    if (message.answer is None or message.answer == "") and message.query == next_message.query and \
-                            message.role == next_message.role and next_message.answer is not None and \
-                            next_message.answer != "":
+                    if (
+                        (message.answer is None or message.answer == "")
+                        and message.query == next_message.query
+                        and message.role == next_message.role
+                        and next_message.answer is not None
+                        and next_message.answer != ""
+                    ):
                         continue
                 if not message.role:
                     history_str += "User: " + message.query + "\n"
@@ -230,11 +248,7 @@ class ConversationService:
         for k, v in plan_detail.items():
             if not isinstance(v, list):
                 continue
-            goals.append({
-                "day": day,
-                "title": k,
-                "detail": v
-            })
+            goals.append({"day": day, "title": k, "detail": v})
             day += 1
         days = len(goals)
         plan_detail_dict["goals"] = goals
@@ -252,10 +266,10 @@ class ConversationService:
         # print(plan_detail_dict)
         # introduction = generate_plan_introduction(json.dumps(plan_detail))
         # plan_detail_dict["description"] = introduction
-        return plan_detail_dict, plan, history_str if not outer_history_str else outer_history_str
+        return plan_detail_dict, plan, outer_history_str or history_str
 
     @classmethod
-    def generate_plan_and_notice_app(cls, flask_app: Flask,  conversation_id: str, plan: str = None):
+    def generate_plan_and_notice_app(cls, flask_app: Flask, conversation_id: str, plan: str | None = None):
         try:
             with flask_app.app_context():
                 plan_detail, plan, history_str = cls.generate_plan(conversation_id, plan)
@@ -263,7 +277,7 @@ class ConversationService:
                     conversation_id=conversation_id,
                     plan=plan,
                     plan_detail_list=[plan_detail],
-                    plan_conversation_history=history_str
+                    plan_conversation_history=history_str,
                 )
                 db.session.add(conversation_plan_detail)
                 db.session.commit()
@@ -273,4 +287,3 @@ class ConversationService:
                 return
         except:
             logger.info(f"generate_plan_and_notice_app error: {traceback.format_exc(limit=10)}")
-

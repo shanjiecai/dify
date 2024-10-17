@@ -8,6 +8,7 @@ from urllib.parse import urljoin
 import numpy as np
 import requests
 
+from core.embedding.embedding_constant import EmbeddingInputType
 from core.model_runtime.entities.common_entities import I18nObject
 from core.model_runtime.entities.model_entities import (
     AIModelEntity,
@@ -17,7 +18,10 @@ from core.model_runtime.entities.model_entities import (
     PriceConfig,
     PriceType,
 )
-from core.model_runtime.entities.text_embedding_entities import EmbeddingUsage, TextEmbeddingResult
+from core.model_runtime.entities.text_embedding_entities import (
+    EmbeddingUsage,
+    TextEmbeddingResult,
+)
 from core.model_runtime.errors.invoke import (
     InvokeAuthorizationError,
     InvokeBadRequestError,
@@ -27,7 +31,9 @@ from core.model_runtime.errors.invoke import (
     InvokeServerUnavailableError,
 )
 from core.model_runtime.errors.validate import CredentialsValidateFailedError
-from core.model_runtime.model_providers.__base.text_embedding_model import TextEmbeddingModel
+from core.model_runtime.model_providers.__base.text_embedding_model import (
+    TextEmbeddingModel,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -37,9 +43,14 @@ class OllamaEmbeddingModel(TextEmbeddingModel):
     Model class for an Ollama text embedding model.
     """
 
-    def _invoke(self, model: str, credentials: dict,
-                texts: list[str], user: Optional[str] = None) \
-            -> TextEmbeddingResult:
+    def _invoke(
+        self,
+        model: str,
+        credentials: dict,
+        texts: list[str],
+        user: Optional[str] = None,
+        input_type: EmbeddingInputType = EmbeddingInputType.DOCUMENT,
+    ) -> TextEmbeddingResult:
         """
         Invoke text embedding model
 
@@ -47,19 +58,18 @@ class OllamaEmbeddingModel(TextEmbeddingModel):
         :param credentials: model credentials
         :param texts: texts to embed
         :param user: unique user id
+        :param input_type: input type
         :return: embeddings result
         """
 
         # Prepare headers and payload for the request
-        headers = {
-            'Content-Type': 'application/json'
-        }
+        headers = {"Content-Type": "application/json"}
 
-        endpoint_url = credentials.get('base_url')
-        if not endpoint_url.endswith('/'):
-            endpoint_url += '/'
+        endpoint_url = credentials.get("base_url")
+        if not endpoint_url.endswith("/"):
+            endpoint_url += "/"
 
-        endpoint_url = urljoin(endpoint_url, 'api/embed')
+        endpoint_url = urljoin(endpoint_url, "api/embed")
 
         # get model properties
         context_size = self._get_context_size(model, credentials)
@@ -67,52 +77,36 @@ class OllamaEmbeddingModel(TextEmbeddingModel):
         inputs = []
         used_tokens = 0
 
-        for i, text in enumerate(texts):
+        for text in texts:
             # Here token count is only an approximation based on the GPT2 tokenizer
             num_tokens = self._get_num_tokens_by_gpt2(text)
 
             if num_tokens >= context_size:
                 cutoff = int(np.floor(len(text) * (context_size / num_tokens)))
                 # if num tokens is larger than context length, only use the start
-                inputs.append(text[0: cutoff])
+                inputs.append(text[0:cutoff])
             else:
                 inputs.append(text)
 
         # Prepare the payload for the request
-        payload = {
-            'input': inputs,
-            'model': model,
-        }
+        payload = {"input": inputs, "model": model, "options": {"use_mmap": True}}
 
-        # Make the request to the OpenAI API
-        response = requests.post(
-            endpoint_url,
-            headers=headers,
-            data=json.dumps(payload),
-            timeout=(10, 300)
-        )
+        # Make the request to the Ollama API
+        response = requests.post(endpoint_url, headers=headers, data=json.dumps(payload), timeout=(10, 300))
 
         response.raise_for_status()  # Raise an exception for HTTP errors
         response_data = response.json()
 
         # Extract embeddings and used tokens from the response
-        embeddings = response_data['embeddings']
+        embeddings = response_data["embeddings"]
         embedding_used_tokens = self.get_num_tokens(model, credentials, inputs)
 
         used_tokens += embedding_used_tokens
 
         # calc usage
-        usage = self._calc_response_usage(
-            model=model,
-            credentials=credentials,
-            tokens=used_tokens
-        )
+        usage = self._calc_response_usage(model=model, credentials=credentials, tokens=used_tokens)
 
-        return TextEmbeddingResult(
-            embeddings=embeddings,
-            usage=usage,
-            model=model
-        )
+        return TextEmbeddingResult(embeddings=embeddings, usage=usage, model=model)
 
     def get_num_tokens(self, model: str, credentials: dict, texts: list[str]) -> int:
         """
@@ -134,19 +128,15 @@ class OllamaEmbeddingModel(TextEmbeddingModel):
         :return:
         """
         try:
-            self._invoke(
-                model=model,
-                credentials=credentials,
-                texts=['ping']
-            )
+            self._invoke(model=model, credentials=credentials, texts=["ping"])
         except InvokeError as ex:
-            raise CredentialsValidateFailedError(f'An error occurred during credentials validation: {ex.description}')
+            raise CredentialsValidateFailedError(f"An error occurred during credentials validation: {ex.description}")
         except Exception as ex:
-            raise CredentialsValidateFailedError(f'An error occurred during credentials validation: {str(ex)}')
+            raise CredentialsValidateFailedError(f"An error occurred during credentials validation: {str(ex)}")
 
     def get_customizable_model_schema(self, model: str, credentials: dict) -> AIModelEntity:
         """
-            generate custom model entities from credentials
+        generate custom model entities from credentials
         """
         entity = AIModelEntity(
             model=model,
@@ -154,15 +144,15 @@ class OllamaEmbeddingModel(TextEmbeddingModel):
             model_type=ModelType.TEXT_EMBEDDING,
             fetch_from=FetchFrom.CUSTOMIZABLE_MODEL,
             model_properties={
-                ModelPropertyKey.CONTEXT_SIZE: int(credentials.get('context_size')),
+                ModelPropertyKey.CONTEXT_SIZE: int(credentials.get("context_size")),
                 ModelPropertyKey.MAX_CHUNKS: 1,
             },
             parameter_rules=[],
             pricing=PriceConfig(
-                input=Decimal(credentials.get('input_price', 0)),
-                unit=Decimal(credentials.get('unit', 0)),
-                currency=credentials.get('currency', "USD")
-            )
+                input=Decimal(credentials.get("input_price", 0)),
+                unit=Decimal(credentials.get("unit", 0)),
+                currency=credentials.get("currency", "USD"),
+            ),
         )
 
         return entity
@@ -178,10 +168,7 @@ class OllamaEmbeddingModel(TextEmbeddingModel):
         """
         # get input price info
         input_price_info = self.get_price(
-            model=model,
-            credentials=credentials,
-            price_type=PriceType.INPUT,
-            tokens=tokens
+            model=model, credentials=credentials, price_type=PriceType.INPUT, tokens=tokens
         )
 
         # transform usage
@@ -192,7 +179,7 @@ class OllamaEmbeddingModel(TextEmbeddingModel):
             price_unit=input_price_info.unit,
             total_price=input_price_info.total_amount,
             currency=input_price_info.currency,
-            latency=time.perf_counter() - self.started_at
+            latency=time.perf_counter() - self.started_at,
         )
 
         return usage
@@ -215,15 +202,13 @@ class OllamaEmbeddingModel(TextEmbeddingModel):
                 requests.exceptions.HTTPError,  # Invalid Endpoint URL or model name
                 requests.exceptions.InvalidURL,  # Misconfigured request or other API error
             ],
-            InvokeRateLimitError: [
-                requests.exceptions.RetryError  # Too many requests sent in a short period of time
-            ],
+            InvokeRateLimitError: [requests.exceptions.RetryError],  # Too many requests sent in a short period of time
             InvokeServerUnavailableError: [
                 requests.exceptions.ConnectionError,  # Engine Overloaded
-                requests.exceptions.HTTPError  # Server Error
+                requests.exceptions.HTTPError,  # Server Error
             ],
             InvokeConnectionError: [
                 requests.exceptions.ConnectTimeout,  # Timeout
-                requests.exceptions.ReadTimeout  # Timeout
-            ]
+                requests.exceptions.ReadTimeout,  # Timeout
+            ],
         }

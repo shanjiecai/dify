@@ -6,11 +6,17 @@ from controllers.web import api
 from controllers.web.error import NotChatAppError
 from controllers.web.wraps import WebApiResource
 from core.app.entities.app_invoke_entities import InvokeFrom
-from fields.conversation_fields import conversation_infinite_scroll_pagination_fields, simple_conversation_fields
+from fields.conversation_fields import (
+    conversation_infinite_scroll_pagination_fields,
+    simple_conversation_fields,
+)
 from libs.helper import uuid_value
 from models.model import AppMode
 from services.conversation_service import ConversationService
-from services.errors.conversation import ConversationNotExistsError, LastConversationNotExistsError
+from services.errors.conversation import (
+    ConversationNotExistsError,
+    LastConversationNotExistsError,
+)
 from services.web_conversation_service import WebConversationService
 
 
@@ -18,7 +24,7 @@ class ConversationListApi(WebApiResource):
     @marshal_with(conversation_infinite_scroll_pagination_fields)
     def get(self, app_model, end_user):
         app_mode = AppMode.value_of(app_model.mode)
-        if app_mode not in [AppMode.CHAT, AppMode.AGENT_CHAT, AppMode.ADVANCED_CHAT]:
+        if app_mode not in {AppMode.CHAT, AppMode.AGENT_CHAT, AppMode.ADVANCED_CHAT}:
             raise NotChatAppError()
 
         parser = reqparse.RequestParser()
@@ -56,7 +62,7 @@ class ConversationListApi(WebApiResource):
 class ConversationApi(WebApiResource):
     def delete(self, app_model, end_user, c_id):
         app_mode = AppMode.value_of(app_model.mode)
-        if app_mode not in [AppMode.CHAT, AppMode.AGENT_CHAT, AppMode.ADVANCED_CHAT]:
+        if app_mode not in {AppMode.CHAT, AppMode.AGENT_CHAT, AppMode.ADVANCED_CHAT}:
             raise NotChatAppError()
 
         conversation_id = str(c_id)
@@ -73,7 +79,7 @@ class ConversationRenameApi(WebApiResource):
     @marshal_with(simple_conversation_fields)
     def post(self, app_model, end_user, c_id):
         app_mode = AppMode.value_of(app_model.mode)
-        if app_mode not in [AppMode.CHAT, AppMode.AGENT_CHAT, AppMode.ADVANCED_CHAT]:
+        if app_mode not in {AppMode.CHAT, AppMode.AGENT_CHAT, AppMode.ADVANCED_CHAT}:
             raise NotChatAppError()
 
         conversation_id = str(c_id)
@@ -92,7 +98,7 @@ class ConversationRenameApi(WebApiResource):
 class ConversationPinApi(WebApiResource):
     def patch(self, app_model, end_user, c_id):
         app_mode = AppMode.value_of(app_model.mode)
-        if app_mode not in [AppMode.CHAT, AppMode.AGENT_CHAT, AppMode.ADVANCED_CHAT]:
+        if app_mode not in {AppMode.CHAT, AppMode.AGENT_CHAT, AppMode.ADVANCED_CHAT}:
             raise NotChatAppError()
 
         conversation_id = str(c_id)
@@ -108,7 +114,7 @@ class ConversationPinApi(WebApiResource):
 class ConversationUnPinApi(WebApiResource):
     def patch(self, app_model, end_user, c_id):
         app_mode = AppMode.value_of(app_model.mode)
-        if app_mode not in [AppMode.CHAT, AppMode.AGENT_CHAT, AppMode.ADVANCED_CHAT]:
+        if app_mode not in {AppMode.CHAT, AppMode.AGENT_CHAT, AppMode.ADVANCED_CHAT}:
             raise NotChatAppError()
 
         conversation_id = str(c_id)

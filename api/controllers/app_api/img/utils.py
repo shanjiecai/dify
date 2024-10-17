@@ -10,7 +10,10 @@ from controllers.app_api.app.utils import upload_file
 from controllers.app_api.plan.judge_plan import judge_plan
 from models.model import Conversation
 from mylogger import logger
-from services.openai_base_request_service import generate_dalle_query_variations_gpt, generate_optimized_prompt
+from services.openai_base_request_service import (
+    generate_dalle_query_variations_gpt,
+    generate_optimized_prompt,
+)
 
 
 def download_img_form_url(url, filepath):
@@ -28,7 +31,7 @@ def download_img_form_url(url, filepath):
 def save_base64_img(base64_str, filepath):
     try:
         imgdata = b64decode(base64_str)
-        with open(filepath, 'wb') as f:
+        with open(filepath, "wb") as f:
             f.write(imgdata)
         return filepath
     except Exception as e:
@@ -36,9 +39,9 @@ def save_base64_img(base64_str, filepath):
         return None
 
 
-def generate_plan_img_pipeline(plan, model="dalle3", conversation: Conversation = None, shape: str = None,
-                               main_app: Flask = None,
-                               **kwargs):
+def generate_plan_img_pipeline(
+    plan, model="dalle3", conversation: Conversation = None, shape: str | None = None, main_app: Flask = None, **kwargs
+):
     if len(plan.split(" ")) > 8:
         new_plan = judge_plan(plan)
         if not new_plan.startswith("no"):
@@ -48,6 +51,7 @@ def generate_plan_img_pipeline(plan, model="dalle3", conversation: Conversation 
         begin = time.time()
         if model == "search_engine":
             from controllers.app_api.img.search_engine import search_engine_invoke
+
             dst_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "static", "images")
             img_list = search_engine_invoke(plan, dst_dir=dst_dir, shape=shape)
             images = []
@@ -56,9 +60,11 @@ def generate_plan_img_pipeline(plan, model="dalle3", conversation: Conversation 
                     dst = os.path.join(os.path.dirname(os.path.abspath(__file__)), "static", "images", image_name)
                     res = upload_file(dst, image_name)
                     logger.info(f"上传图片：{res}")
-                    images.append({
-                        "uuid": res["data"]["uuid"],
-                    })
+                    images.append(
+                        {
+                            "uuid": res["data"]["uuid"],
+                        }
+                    )
             logger.info(f"生成图片pipeline耗时：{time.time() - begin}")
             return images, []
         perfect_prompt = generate_dalle_query_variations_gpt(plan)
@@ -69,12 +75,15 @@ def generate_plan_img_pipeline(plan, model="dalle3", conversation: Conversation 
         logger.info(f"img prompt: {prompt}")
         if model == "dalle3":
             from controllers.app_api.img.dalle3 import dalle3_invoke
+
             img_list = dalle3_invoke(prompt, **kwargs)
         elif model == "cogview3":
             from controllers.app_api.img.cogview3 import cogview3_invoke
+
             img_list = cogview3_invoke(prompt, **kwargs)
         elif model == "dalle2":
             from controllers.app_api.img.dalle2 import dalle2_invoke
+
             img_list = dalle2_invoke(prompt, **kwargs)
         else:
             return None
@@ -95,10 +104,12 @@ def generate_plan_img_pipeline(plan, model="dalle3", conversation: Conversation 
                         "uuid": "e5b53831-fa5f-477c-bf7c-2e42d9ff67ff"
                     }
                 }"""
-                images.append({
-                    "uuid": res["data"]["uuid"],
-                    # "img": img
-                })
+                images.append(
+                    {
+                        "uuid": res["data"]["uuid"],
+                        # "img": img
+                    }
+                )
         logger.info(f"生成图片pipeline耗时：{time.time() - begin}")
         return images, perfect_prompt_list
 
@@ -112,7 +123,9 @@ def generate_plan_img_pipeline(plan, model="dalle3", conversation: Conversation 
 
 # shape可选：square, vertical, horizontal
 # size a*b 例如：1024*1024
-def generate_img_pipeline(query, model="dalle3", shape: str = None, size: str = None, main_app: Flask = None, **kwargs):
+def generate_img_pipeline(
+    query, model="dalle3", shape: str | None = None, size: str | None = None, main_app: Flask = None, **kwargs
+):
     if len(query.split(" ")) > 8:
         query = generate_optimized_prompt(query)
     if shape and shape not in ["square", "vertical", "horizontal"]:
@@ -131,6 +144,7 @@ def generate_img_pipeline(query, model="dalle3", shape: str = None, size: str = 
         begin = time.time()
         if model == "search_engine":
             from controllers.app_api.img.search_engine import search_engine_invoke
+
             dst_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "static", "images")
             img_list = search_engine_invoke(query, shape=shape, size=size, dst_dir=dst_dir)
             images = []
@@ -140,22 +154,27 @@ def generate_img_pipeline(query, model="dalle3", shape: str = None, size: str = 
                     dst = os.path.join(os.path.dirname(os.path.abspath(__file__)), "static", "images", image_name)
                     res = upload_file(dst, image_name)
                     logger.info(f"上传图片：{res}")
-                    images.append({
-                        "uuid": res["data"]["uuid"],
-                    })
+                    images.append(
+                        {
+                            "uuid": res["data"]["uuid"],
+                        }
+                    )
 
             logger.info(f"生成图片pipeline耗时：{time.time() - begin}")
             return images
 
         elif model == "dalle3":
             from controllers.app_api.img.dalle3 import dalle3_invoke
+
             img_list = dalle3_invoke(query, size=shape, **kwargs)
         elif model == "cogview3":
             from controllers.app_api.img.cogview3 import cogview3_invoke
+
             img_list = cogview3_invoke(query, **kwargs)
 
         elif model == "dalle2":
             from controllers.app_api.img.dalle2 import dalle2_invoke
+
             img_list = dalle2_invoke(query, **kwargs)
         else:
             return None
@@ -175,10 +194,12 @@ def generate_img_pipeline(query, model="dalle3", shape: str = None, size: str = 
                         "uuid": "e5b53831-fa5f-477c-bf7c-2e42d9ff67ff"
                     }
                 }"""
-                images.append({
-                    "uuid": res["data"]["uuid"],
-                    # "img": img
-                })
+                images.append(
+                    {
+                        "uuid": res["data"]["uuid"],
+                        # "img": img
+                    }
+                )
         logger.info(f"生成图片pipeline耗时：{time.time() - begin}")
         return images
 
@@ -190,9 +211,14 @@ def generate_img_pipeline(query, model="dalle3", shape: str = None, size: str = 
     return images
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # test
     # print(generate_plan_img_pipeline("python programming", model="search_engine"))
     # print(generate_plan_img_pipeline("lose weight", model="search_engine"))
-    print(generate_plan_img_pipeline("@Yyh 2707 hotmail(AI) Can you give me a plan for walking 15km in 10 days?",
-                                     model="search_engine", shape="square"))
+    print(
+        generate_plan_img_pipeline(
+            "@Yyh 2707 hotmail(AI) Can you give me a plan for walking 15km in 10 days?",
+            model="search_engine",
+            shape="square",
+        )
+    )

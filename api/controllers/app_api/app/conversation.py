@@ -27,7 +27,13 @@ from fields.conversation_fields import (
 from libs.exception import BaseHTTPException
 from libs.helper import uuid_value
 from models.dataset import DatasetUpdateRealTime
-from models.model import App, AppModelConfig, Conversation, ConversationPlanDetail, Message
+from models.model import (
+    App,
+    AppModelConfig,
+    Conversation,
+    ConversationPlanDetail,
+    Message,
+)
 from mylogger import logger
 from services.conversation_service import ConversationService
 
@@ -74,20 +80,20 @@ class ConversationApi(AppApiResource):
                                     items:
                                         $ref: '#/components/schemas/SimpleConversation'
         """
-        if app_model.mode != 'chat':
+        if app_model.mode != "chat":
             raise NotChatAppError()
 
         parser = reqparse.RequestParser()
-        parser.add_argument('last_id', type=uuid_value, location='args')
-        parser.add_argument('limit', type=int_range(1, 100), required=False, default=20, location='args')
-        parser.add_argument('user', type=str, location='args')
+        parser.add_argument("last_id", type=uuid_value, location="args")
+        parser.add_argument("limit", type=int_range(1, 100), required=False, default=20, location="args")
+        parser.add_argument("user", type=str, location="args")
         args = parser.parse_args()
 
         # if end_user is None and args['user'] is not None:
-        end_user = create_or_update_end_user_for_user_id(app_model, args['user'])
+        end_user = create_or_update_end_user_for_user_id(app_model, args["user"])
 
         try:
-            return ConversationService.pagination_by_last_id(app_model, end_user, args['last_id'], args['limit'])
+            return ConversationService.pagination_by_last_id(app_model, end_user, args["last_id"], args["limit"])
         except services.errors.conversation.LastConversationNotExistsError:
             raise NotFound("Last Conversation Not Exists.")
 
@@ -145,17 +151,17 @@ class ConversationApi(AppApiResource):
         conversation = Conversation(
             app_id=app_model.id,
             app_model_config_id=app_model_config.id,
-            model_provider=model_dict.get('provider'),
-            model_id=model_dict.get('name'),
+            model_provider=model_dict.get("provider"),
+            model_id=model_dict.get("name"),
             override_model_configs=None,
             mode=app_model.mode,
-            name='',
+            name="",
             inputs={},
             introduction=app_model_config.opening_statement,
             system_instruction="",
             system_instruction_tokens=0,
-            status='normal',
-            from_source='api',
+            status="normal",
+            from_source="api",
             from_end_user_id=end_user.id,
             from_account_id=None,
         )
@@ -166,7 +172,7 @@ class ConversationApi(AppApiResource):
 
 
 class ConversationNotFoundError(BaseHTTPException):
-    error_code = 'app_not_found'
+    error_code = "app_not_found"
     description = "App not found."
     code = 404
 
@@ -222,21 +228,21 @@ class ConversationAddMessage(AppApiResource):
         app_model_config = AppModelConfig.query.filter_by(app_id=app_model.id).first()
         model_dict = app_model_config.model_dict
         parser = reqparse.RequestParser()
-        parser.add_argument('conversation_id', type=str, required=True, location='json')
-        parser.add_argument('message', type=str, required=True, location='json')
-        parser.add_argument('user', type=str, location='json')
-        parser.add_argument('user_id', type=str, location='json')
-        parser.add_argument('mood', type=str, required=False, location='json')
+        parser.add_argument("conversation_id", type=str, required=True, location="json")
+        parser.add_argument("message", type=str, required=True, location="json")
+        parser.add_argument("user", type=str, location="json")
+        parser.add_argument("user_id", type=str, location="json")
+        parser.add_argument("mood", type=str, required=False, location="json")
         args = parser.parse_args()
 
-        if app_model.mode != 'chat':
+        if app_model.mode != "chat":
             raise NotChatAppError()
 
-        conversation_id = args.get('conversation_id')
-        message = args.get('message')
-        user = args.get('user')
-        user_id = args.get('user_id', None)
-        mood = args.get('mood')
+        conversation_id = args.get("conversation_id")
+        message = args.get("message")
+        user = args.get("user")
+        user_id = args.get("user_id", None)
+        mood = args.get("mood")
 
         conversation = Conversation.query.filter_by(id=conversation_id).first()
         if conversation is None:
@@ -244,8 +250,8 @@ class ConversationAddMessage(AppApiResource):
         # message_id = str(uuid.uuid4())
         message_class = Message(
             app_id=app_model.id,
-            model_provider=model_dict.get('provider'),
-            model_id=model_dict.get('name'),
+            model_provider=model_dict.get("provider"),
+            model_id=model_dict.get("name"),
             override_model_configs=None,
             conversation_id=conversation.id,
             inputs={},
@@ -261,7 +267,7 @@ class ConversationAddMessage(AppApiResource):
             provider_response_latency=0,
             total_price=0,
             currency="USD",
-            from_source='api',
+            from_source="api",
             from_end_user_id=None,
             from_account_id=None,
             agent_based=True,
@@ -277,17 +283,25 @@ class ConversationAddMessage(AppApiResource):
             intent = Intent.JUDGE_FORCE_PLAN
         else:
             # 如果没有或生成时间超过8小时，就生成plan_question
-            if not conversation.plan_question_invoke_user or not conversation.plan_question_invoke_time or not conversation.plan_question_invoke_time or conversation.plan_question_invoke_time < datetime.datetime.utcnow() - datetime.timedelta(
-                    hours=8) and app_model.id != "a756e5d2-c735-4f68-8db0-1de49333501c":
+            if (
+                not conversation.plan_question_invoke_user
+                or not conversation.plan_question_invoke_time
+                or not conversation.plan_question_invoke_time
+                or conversation.plan_question_invoke_time < datetime.datetime.utcnow() - datetime.timedelta(hours=8)
+                and app_model.id != "a756e5d2-c735-4f68-8db0-1de49333501c"
+            ):
                 # 另起线程执行plan_question
                 judge_plan_res = judge_plan(message)
-                if not judge_plan_res.startswith('no'):
+                if not judge_plan_res.startswith("no"):
                     intent = Intent.JUDGE_PLAN
                     metadata = {"judge_plan_res": judge_plan_res}
-                    logger.info(f"add {user}:{message} to conversation {conversation_id} with intent {intent.value} metadata {metadata}")
-                    threading.Thread(target=plan_question_background,
-                                     args=(current_app._get_current_object(), message, conversation,
-                                           user, user_id, judge_plan_res)).start()
+                    logger.info(
+                        f"add {user}:{message} to conversation {conversation_id} with intent {intent.value} metadata {metadata}"
+                    )
+                    threading.Thread(
+                        target=plan_question_background,
+                        args=(current_app._get_current_object(), message, conversation, user, user_id, judge_plan_res),
+                    ).start()
         if intent == Intent.JUDGE_FORCE_PLAN:
             logger.info(f"add {user}:{message} to conversation {conversation_id} with intent {intent.value} ")
         elif intent == Intent.NONE:
@@ -300,12 +314,12 @@ class ConversationAddMessage(AppApiResource):
 class ConversationDetailApi(AppApiResource):
     @marshal_with(simple_conversation_fields)
     def delete(self, app_model, end_user, c_id):
-        if app_model.mode != 'chat':
+        if app_model.mode != "chat":
             raise NotChatAppError()
 
         conversation_id = str(c_id)
 
-        user = request.get_json().get('user')
+        user = request.get_json().get("user")
 
         if end_user is None and user is not None:
             end_user = create_or_update_end_user_for_user_id(app_model, user)
@@ -318,8 +332,7 @@ class ConversationDetailApi(AppApiResource):
 
     @marshal_with(app_conversation_detail_fields)
     def get(self, app_model, conversation_id):
-        conversation = db.session.query(Conversation) \
-            .filter(Conversation.id == str(conversation_id)).first()
+        conversation = db.session.query(Conversation).filter(Conversation.id == str(conversation_id)).first()
         if not conversation:
             raise NotFound("Conversation Not Exists.")
         return conversation
@@ -329,21 +342,21 @@ class ConversationRenameApi(AppApiResource):
 
     @marshal_with(simple_conversation_fields)
     def post(self, app_model, end_user, c_id):
-        if app_model.mode != 'chat':
+        if app_model.mode != "chat":
             raise NotChatAppError()
 
         conversation_id = str(c_id)
 
         parser = reqparse.RequestParser()
-        parser.add_argument('name', type=str, required=True, location='json')
-        parser.add_argument('user', type=str, location='json')
+        parser.add_argument("name", type=str, required=True, location="json")
+        parser.add_argument("user", type=str, location="json")
         args = parser.parse_args()
 
-        if end_user is None and args['user'] is not None:
-            end_user = create_or_update_end_user_for_user_id(app_model, args['user'])
+        if end_user is None and args["user"] is not None:
+            end_user = create_or_update_end_user_for_user_id(app_model, args["user"])
 
         try:
-            return ConversationService.rename(app_model, conversation_id, end_user, args['name'])
+            return ConversationService.rename(app_model, conversation_id, end_user, args["name"])
         except services.errors.conversation.ConversationNotExistsError:
             raise NotFound("Conversation Not Exists.")
 
@@ -353,15 +366,15 @@ class ConversationUpdateDataset(AppApiResource):
     def post(self, app_model: App):
         # conversation_id, dataset_id
         parser = reqparse.RequestParser()
-        parser.add_argument('conversation_id', type=str, required=False, location='json', default=None)
-        parser.add_argument('dataset_id', type=str, required=True, location='json')
-        parser.add_argument('group_id', type=str, required=False, location='json', default=None)
+        parser.add_argument("conversation_id", type=str, required=False, location="json", default=None)
+        parser.add_argument("dataset_id", type=str, required=True, location="json")
+        parser.add_argument("group_id", type=str, required=False, location="json", default=None)
         args = parser.parse_args()
 
         dataset_update_real_time = DatasetUpdateRealTime(
-            dataset_id=args['dataset_id'],
-            conversation_id=args['conversation_id'],
-            group_id=args['group_id'],
+            dataset_id=args["dataset_id"],
+            conversation_id=args["conversation_id"],
+            group_id=args["group_id"],
             created_at=datetime.datetime.utcnow(),
             last_updated_at=datetime.datetime.utcnow(),
         )
@@ -430,37 +443,42 @@ class ConversationPlan(AppApiResource):
                                         type: string
         """
         parser = reqparse.RequestParser()
-        parser.add_argument('conversation_id', type=str, required=True, location='json')
-        parser.add_argument('plan', type=str, required=False, location='json')
-        parser.add_argument('plan_detail_number', type=int, required=False, location='json', default=1)
+        parser.add_argument("conversation_id", type=str, required=True, location="json")
+        parser.add_argument("plan", type=str, required=False, location="json")
+        parser.add_argument("plan_detail_number", type=int, required=False, location="json", default=1)
         # parser.add_argument('image_number', type=int, required=False, location='json', default=1)
-        parser.add_argument('use_cache', type=bool, required=False, location='json', default=True)
-        parser.add_argument('use_cache_only', type=bool, required=False, location='json', default=False)
-        parser.add_argument('outer_history', type=str, required=False, location='json', default='')
+        parser.add_argument("use_cache", type=bool, required=False, location="json", default=True)
+        parser.add_argument("use_cache_only", type=bool, required=False, location="json", default=False)
+        parser.add_argument("outer_history", type=str, required=False, location="json", default="")
         args = parser.parse_args()
-        conversation_id = args['conversation_id']
-        plan = args['plan']
-        plan_detail_number = int(args['plan_detail_number'])
+        conversation_id = args["conversation_id"]
+        plan = args["plan"]
+        plan_detail_number = int(args["plan_detail_number"])
         plan_detail_list = []
-        if args['use_cache'] or args['use_cache_only']:
+        if args["use_cache"] or args["use_cache_only"]:
             conversation_plan_detail = ConversationPlanDetail.query.filter_by(conversation_id=conversation_id).first()
-            if args['use_cache_only'] and not conversation_plan_detail:
+            if args["use_cache_only"] and not conversation_plan_detail:
                 return {"result": "success", "plan_detail_list": [], "plan": plan, "image_list": []}, 200
             if conversation_plan_detail:
-                return {"result": "success", "plan_detail_list": conversation_plan_detail.plan_detail_list,
-                        "image_list": conversation_plan_detail.image_list,
-                        "plan": conversation_plan_detail.plan}, 200
+                return {
+                    "result": "success",
+                    "plan_detail_list": conversation_plan_detail.plan_detail_list,
+                    "image_list": conversation_plan_detail.image_list,
+                    "plan": conversation_plan_detail.plan,
+                }, 200
 
         # future_plan_list = []
-        conversation = Conversation.query.filter_by(id=conversation_id, ).first()
-        plan = plan if plan else conversation.plan_question_invoke_plan
+        conversation = Conversation.query.filter_by(
+            id=conversation_id,
+        ).first()
+        plan = plan or conversation.plan_question_invoke_plan
         pool = ThreadPoolExecutor()
         future_image = pool.submit(generate_plan_img_pipeline, plan, model="search_engine")
 
         for _ in range(plan_detail_number):
-            plan_detail, plan, history_str = ConversationService.generate_plan(conversation_id, plan=plan,
-                                                                               outer_history_str=args['outer_history']
-                                                                               )
+            plan_detail, plan, history_str = ConversationService.generate_plan(
+                conversation_id, plan=plan, outer_history_str=args["outer_history"]
+            )
             plan_detail_list.append(plan_detail)
         image_list, img_perfect_prompt_list = future_image.result()
         pool.shutdown()
@@ -470,7 +488,7 @@ class ConversationPlan(AppApiResource):
             plan_detail_list=plan_detail_list,
             plan_conversation_history=history_str,
             image_list=image_list,
-            img_perfect_prompt_list=img_perfect_prompt_list
+            img_perfect_prompt_list=img_perfect_prompt_list,
         )
         db.session.add(conversation_plan_detail)
         db.session.commit()
@@ -482,20 +500,24 @@ class ConversationPlanDetailApi(AppApiResource):
         conversation_plan_detail = ConversationPlanDetail.query.filter_by(conversation_id=conversation_id).first()
         if not conversation_plan_detail:
             raise NotFound("Conversation Plan Detail Not Exists.")
-        return {"result": "success", "plan_detail_list": conversation_plan_detail.plan_detail_list,
-                "plan": conversation_plan_detail.plan}, 200
+        return {
+            "result": "success",
+            "plan_detail_list": conversation_plan_detail.plan_detail_list,
+            "plan": conversation_plan_detail.plan,
+        }, 200
 
 
 # api.add_resource(ConversationRenameApi, '/conversations/<uuid:c_id>/name', endpoint='conversation_name')
-api.add_resource(ConversationApi, '/conversations')
+api.add_resource(ConversationApi, "/conversations")
 # api.add_resource(ConversationApi, '/conversations/<uuid:c_id>', endpoint='conversation')
-api.add_resource(ConversationAddMessage, '/conversations/add_message', endpoint='conversation_message')
-api.add_resource(ConversationUpdateDataset, '/conversations/update_knowledge', endpoint='conversation_update_knowledge')
+api.add_resource(ConversationAddMessage, "/conversations/add_message", endpoint="conversation_message")
+api.add_resource(ConversationUpdateDataset, "/conversations/update_knowledge", endpoint="conversation_update_knowledge")
 
-api.add_resource(ConversationDetailApi, '/conversations/plan/<uuid:conversation_id>', endpoint='conversation_detail')
-api.add_resource(ConversationPlanDetailApi, '/conversations/plan/detail/<conversation_id>',
-                 endpoint='conversation_plan_detail')
+api.add_resource(ConversationDetailApi, "/conversations/plan/<uuid:conversation_id>", endpoint="conversation_detail")
+api.add_resource(
+    ConversationPlanDetailApi, "/conversations/plan/detail/<conversation_id>", endpoint="conversation_plan_detail"
+)
 
-api.add_resource(ConversationPlan, '/conversations/plan', endpoint='conversation_plan')
+api.add_resource(ConversationPlan, "/conversations/plan", endpoint="conversation_plan")
 
 # api.add_resource(ConversationDetailApi, '/conversations/<uuid:c_id>', endpoint='conversation_detail')

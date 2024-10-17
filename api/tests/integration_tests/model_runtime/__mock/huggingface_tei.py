@@ -1,4 +1,6 @@
-from core.model_runtime.model_providers.huggingface_tei.tei_helper import TeiModelExtraParameter
+from core.model_runtime.model_providers.huggingface_tei.tei_helper import (
+    TeiModelExtraParameter,
+)
 
 
 class MockTEIClass:
@@ -51,7 +53,7 @@ class MockTEIClass:
         #     }
         # }
         embeddings = []
-        for idx, text in enumerate(texts):
+        for idx in range(len(texts)):
             embedding = [0.1] * 768
             embeddings.append(
                 {
@@ -70,6 +72,7 @@ class MockTEIClass:
             },
         }
 
+    @staticmethod
     def invoke_rerank(server_url: str, query: str, texts: list[str]) -> list[dict]:
         #         Example response:
         # [

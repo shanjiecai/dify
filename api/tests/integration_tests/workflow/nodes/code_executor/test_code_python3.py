@@ -1,9 +1,10 @@
-import json
 from textwrap import dedent
 
 from core.helper.code_executor.code_executor import CodeExecutor, CodeLanguage
 from core.helper.code_executor.python3.python3_code_provider import Python3CodeProvider
-from core.helper.code_executor.python3.python3_transformer import Python3TemplateTransformer
+from core.helper.code_executor.python3.python3_transformer import (
+    Python3TemplateTransformer,
+)
 
 CODE_LANGUAGE = CodeLanguage.PYTHON3
 
@@ -15,10 +16,12 @@ def test_python3_plain():
 
 
 def test_python3_json():
-    code = dedent("""
+    code = dedent(
+        """
     import json
     print(json.dumps({'Hello': 'World'}))
-    """)
+    """
+    )
     result = CodeExecutor.execute_code(language=CODE_LANGUAGE, preload="", code=code)
     assert result == '{"Hello": "World"}\n'
 

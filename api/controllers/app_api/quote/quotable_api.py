@@ -50,26 +50,26 @@ import requests
 
 
 #
-def get_quotable_quote(query: str, word_limit: int = None):
+def get_quotable_quote(query: str, word_limit: int | None = None):
     url = f"https://api.quotable.io/search/quotes?query={query}"
     response = requests.request("GET", url)
-    if response.json()['totalCount'] == 0:
+    if response.json()["totalCount"] == 0:
         raise Exception("No quote found")
     if word_limit:
         # 随机返回一个符合条件的，否则返回最短的
         res = []
         min_index = 0
         min_length = 10000
-        for index, i in enumerate(response.json()['results']):
-            if len(i['content'].split(" ")) <= word_limit:
+        for index, i in enumerate(response.json()["results"]):
+            if len(i["content"].split(" ")) <= word_limit:
                 res.append(i)
-            if len(i['content'].split(" ")) < min_length:
-                min_length = len(i['content'].split())
+            if len(i["content"].split(" ")) < min_length:
+                min_length = len(i["content"].split())
                 min_index = index
         if res:
             return random.choice(res)
         else:
-            return response.json()['results'][min_index]
+            return response.json()["results"][min_index]
     else:
         # 随机返回一个
-        return random.choice(response.json()['results'])
+        return random.choice(response.json()["results"])

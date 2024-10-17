@@ -4,7 +4,9 @@ import pytest
 
 from core.model_runtime.entities.text_embedding_entities import TextEmbeddingResult
 from core.model_runtime.errors.validate import CredentialsValidateFailedError
-from core.model_runtime.model_providers.zhipuai.text_embedding.text_embedding import ZhipuAITextEmbeddingModel
+from core.model_runtime.model_providers.zhipuai.text_embedding.text_embedding import (
+    ZhipuAITextEmbeddingModel,
+)
 
 
 def test_validate_credentials():

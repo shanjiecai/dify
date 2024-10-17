@@ -13,7 +13,11 @@ from werkzeug.exceptions import InternalServerError, NotFound
 
 import services
 from controllers.app_api import api
-from controllers.app_api.app.utils import get_recent_history, get_recent_history_within_timestamp, send_feishu_bot
+from controllers.app_api.app.utils import (
+    get_recent_history,
+    get_recent_history_within_timestamp,
+    send_feishu_bot,
+)
 
 # import spacy
 # nlp = spacy.load("en_core_web_sm")
@@ -51,12 +55,14 @@ from mylogger import logger
 # from services.completion_service import CompletionService
 from services.openai_base_request_service import generate_response
 
-api_key = os.environ.get('OPENAI_API_KEY')
+api_key = os.environ.get("OPENAI_API_KEY")
 
 
 model_name_dict = {
     "DJ Bot": "James Corden",
 }
+
+
 def model_name_transform(model_name: str):
     if model_name in model_name_dict:
         return model_name_dict[model_name]
@@ -124,23 +130,20 @@ class CopywriterApi(AppApiResource):
         """
 
         parser = reqparse.RequestParser()
-        parser.add_argument('prompt', type=str, required=False, location='json')
-        parser.add_argument('kwargs', type=dict, required=False, default={}, location='json')
+        parser.add_argument("prompt", type=str, required=False, location="json")
+        parser.add_argument("kwargs", type=dict, required=False, default={}, location="json")
         args = parser.parse_args()
-        prompt = args['prompt']
-        kwargs = args['kwargs']
+        prompt = args["prompt"]
+        kwargs = args["kwargs"]
 
         try:
             query = copywriter_user_prompt.format(content=prompt)
-            response = generate_response(
-                query,
-                copywriter_system_prompt,
-                model="gpt-4o",
-                **kwargs
-            )
+            response = generate_response(query, copywriter_system_prompt, model="gpt-4o", **kwargs)
 
-            return {"result": "success", "copywriter": response.choices[0].message.content,
-                    }, 200
+            return {
+                "result": "success",
+                "copywriter": response.choices[0].message.content,
+            }, 200
         except Exception as e:
             logger.info(f"internal server error: {traceback.format_exc()}")
             logger.info(f"args: {args}")
@@ -148,7 +151,4 @@ class CopywriterApi(AppApiResource):
             raise InternalServerError()
 
 
-api.add_resource(CopywriterApi, '/copywriter')
-
-
-
+api.add_resource(CopywriterApi, "/copywriter")

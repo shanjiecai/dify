@@ -8,14 +8,14 @@ url_base = "http://127.0.0.1:5001"
 dj_app_id = "a756e5d2-c735-4f68-8db0-1de49333501c"
 
 st.title("role model group chat")
+
+
 def get_app_list():
     global app_name_select
     url = f"{url_base}/backend-api/v1/app/list"
 
     payload = {}
-    headers = {
-        'Authorization': 'Bearer b10dd914-d28d-10b4-11c4-3a8b61d8a77f'
-    }
+    headers = {"Authorization": "Bearer b10dd914-d28d-10b4-11c4-3a8b61d8a77f"}
 
     response = requests.request("GET", url, headers=headers, data=payload)
     # print(response.text)
@@ -72,13 +72,8 @@ def create_conversation():
 
     url = f"{url_base}/backend-api/v1/conversations"
 
-    payload = json.dumps({
-        "app_id": dj_app_id
-    })
-    headers = {
-        'Authorization': 'Bearer b10dd914-d28d-10b4-11c4-3a8b61d8a77f',
-        'Content-Type': 'application/json'
-    }
+    payload = json.dumps({"app_id": dj_app_id})
+    headers = {"Authorization": "Bearer b10dd914-d28d-10b4-11c4-3a8b61d8a77f", "Content-Type": "application/json"}
 
     response = requests.request("POST", url, headers=headers, data=payload)
     print(response.text)
@@ -93,19 +88,17 @@ def create_conversation():
 def add_message(conversation_id, message, user):
     url = f"{url_base}/backend-api/v1/conversations/add_message"
 
-    payload = json.dumps({
-        "message": message,
-        "conversation_id": conversation_id,
-        "user": user,
-        "app_id": dj_app_id,
-    })
-    headers = {
-        'Authorization': 'Bearer b10dd914-d28d-10b4-11c4-3a8b61d8a77f',
-        'Content-Type': 'application/json'
-    }
+    payload = json.dumps(
+        {
+            "message": message,
+            "conversation_id": conversation_id,
+            "user": user,
+            "app_id": dj_app_id,
+        }
+    )
+    headers = {"Authorization": "Bearer b10dd914-d28d-10b4-11c4-3a8b61d8a77f", "Content-Type": "application/json"}
     response = requests.request("POST", url, headers=headers, data=payload)
     print(f"add message {response.text}")
-    return
 
 
 def chat_message_active(app_id, conversation_id, force=False):
@@ -114,14 +107,13 @@ def chat_message_active(app_id, conversation_id, force=False):
     else:
         url = f"{url_base}/backend-api/v1/chat-messages"
 
-    payload = json.dumps({
-        "app_id": app_id,
-        "conversation_id": conversation_id,
-    })
-    headers = {
-        'Authorization': 'Bearer b10dd914-d28d-10b4-11c4-3a8b61d8a77f',
-        'Content-Type': 'application/json'
-    }
+    payload = json.dumps(
+        {
+            "app_id": app_id,
+            "conversation_id": conversation_id,
+        }
+    )
+    headers = {"Authorization": "Bearer b10dd914-d28d-10b4-11c4-3a8b61d8a77f", "Content-Type": "application/json"}
 
     response = requests.request("POST", url, headers=headers, data=payload)
     print(f"chat {app_id} {response.text}")
@@ -145,8 +137,9 @@ if not st.session_state.conversation_id:
 
         for index, role_name in enumerate(role_name_list):
             print(role_name)
-            assistant1_response = chat_message_active(role_model_id_list[index], st.session_state.conversation_id,
-                                                      force=True)
+            assistant1_response = chat_message_active(
+                role_model_id_list[index], st.session_state.conversation_id, force=True
+            )
             if assistant1_response is not None:
                 # with st.chat_message(role_name):
                 #     message_placeholder = st.empty()
@@ -215,8 +208,9 @@ if prompt := st.chat_input("What is up?"):
                 # 如果上一句是他说的，跳过
                 if st.session_state.messages[-1]["role"] == role_name:
                     continue
-                assistant1_response = chat_message_active(role_model_id_list[index], st.session_state.conversation_id,
-                                                          force=force_list[index])
+                assistant1_response = chat_message_active(
+                    role_model_id_list[index], st.session_state.conversation_id, force=force_list[index]
+                )
                 if assistant1_response is not None:
                     is_anyone_speak = True
                     with st.chat_message(role_name):
@@ -237,5 +231,3 @@ if prompt := st.chat_input("What is up?"):
             #         is_new_message = True
     else:
         st.error("Please start conversation first")
-
-

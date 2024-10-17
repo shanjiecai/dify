@@ -13,7 +13,9 @@ from core.app.features.rate_limiting import RateLimit
 from core.errors.error import LLMBadRequestError, ProviderTokenNotInitError
 from core.model_manager import ModelManager
 from core.model_runtime.entities.model_entities import ModelPropertyKey, ModelType
-from core.model_runtime.model_providers.__base.large_language_model import LargeLanguageModel
+from core.model_runtime.model_providers.__base.large_language_model import (
+    LargeLanguageModel,
+)
 from core.tools.tool_manager import ToolManager
 from core.tools.utils.configuration import ToolParameterConfigurationManager
 from events.app_event import app_was_created
@@ -316,7 +318,7 @@ class AppService:
 
         meta = {"tool_icons": {}}
 
-        if app_mode in [AppMode.ADVANCED_CHAT, AppMode.WORKFLOW]:
+        if app_mode in {AppMode.ADVANCED_CHAT, AppMode.WORKFLOW}:
             workflow = app_model.workflow
             if workflow is None:
                 return meta

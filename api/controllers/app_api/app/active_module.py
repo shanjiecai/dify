@@ -29,11 +29,11 @@ from models.model import App, Conversation
 from mylogger import logger
 from services.app_generate_service import AppGenerateService
 
-api_key = os.environ.get('OPENAI_API_KEY')
+api_key = os.environ.get("OPENAI_API_KEY")
 # print(api_key)
 
 
-def model_chat(conversation_id: str, outer_memory: list=None, is_force=False, query="", user_name=''):
+def model_chat(conversation_id: str, outer_memory: list | None = None, is_force=False, query="", user_name=""):
     # time.sleep(10000)
     # 对当前conversation上锁
     if redis_client.get(conversation_id) is None:
@@ -41,9 +41,7 @@ def model_chat(conversation_id: str, outer_memory: list=None, is_force=False, qu
     else:
         logger.info(f"conversation {conversation_id} is locked")
         return None
-    conversation_filter = [
-        Conversation.id == conversation_id
-    ]
+    conversation_filter = [Conversation.id == conversation_id]
 
     conversation = db.session.query(Conversation).filter(and_(*conversation_filter)).first()
     if not conversation:
@@ -51,9 +49,7 @@ def model_chat(conversation_id: str, outer_memory: list=None, is_force=False, qu
         return None
     app_id = conversation.app_id
     app_model = db.session.query(App).filter(App.id == app_id).first()
-    args = {
-        'conversation_id': conversation_id, "inputs": {}, "query": query
-    }
+    args = {"conversation_id": conversation_id, "inputs": {}, "query": query}
     logger.info(f"{app_model.name} {conversation_id}")
     histories = ""
     for message in outer_memory:
@@ -61,10 +57,9 @@ def model_chat(conversation_id: str, outer_memory: list=None, is_force=False, qu
     if is_force:
         judge_result = True
     else:
-        judge_result = judge_llm_active(api_key, histories,
-                                        app_model.name, is_random_true=False)
+        judge_result = judge_llm_active(api_key, histories, app_model.name, is_random_true=False)
     if judge_result:
-        end_user = create_or_update_end_user_for_user_id(app_model, '')
+        end_user = create_or_update_end_user_for_user_id(app_model, "")
         logger.info(f"主动发起聊天：{app_model.name} {conversation_id}")
         # logger.info(f"{outer_memory[:-min(2, len(outer_memory))]}")
         logger.info(f"主动发起聊天历史：{outer_memory}")
@@ -92,7 +87,6 @@ def model_chat(conversation_id: str, outer_memory: list=None, is_force=False, qu
         return None
 
 
-
 # 映射
 model_name_dict = {
     "DJ Bot": "James Corden",
@@ -109,20 +103,18 @@ def model_name_transform(model_name: str):
 def send_message(group_id: int, message: str):
     url = "https://rm.triple3v.org/api/sys/send_chat_message"
 
-    payload = json.dumps({
-        "group_id": group_id,
-        "txt": message
-    })
+    payload = json.dumps({"group_id": group_id, "txt": message})
     headers = {
-        'Authorization': 'Bearer 6520|LyHTtFbuGPxYPNllyTQ5DRu0jIInQt8ZqDeyBG425c19f8cf',
-        'Content-Type': 'application/json'
+        "Authorization": "Bearer 6520|LyHTtFbuGPxYPNllyTQ5DRu0jIInQt8ZqDeyBG425c19f8cf",
+        "Content-Type": "application/json",
     }
 
     response = requests.request("POST", url, headers=headers, data=payload)
     # print(response.text)
     return response.json()
 
-'''
+
+"""
 message:
 [{
     "id": 5867,
@@ -149,13 +141,14 @@ message:
     }
 },
 ]
-'''
+"""
 
 
 # 主动询问是否回话，每五分钟一次
 # 同时检测历史如果最近一条消息超过两小时，主动发起对话
 def chat_thread(group_id: int, main_context: AppContext):
     import uuid
+
     logger.info(f"开始监控：{group_id} {str(uuid.uuid4())}")
     with main_context:
         while True:
@@ -169,32 +162,49 @@ def chat_thread(group_id: int, main_context: AppContext):
                         continue
                     else:
                         # 过滤message_type不是txt的消息
-                        recent_history['data'] = [message for message in recent_history['data'] if
-                                                    message['message_type'] == "txt"]
+                        recent_history["data"] = [
+                            message for message in recent_history["data"] if message["message_type"] == "txt"
+                        ]
                     logger.info(f"获取最近聊天记录：{group_id} {recent_history['data'][0]['chat_text']}")
-                    last_message = recent_history['data'][0]
+                    last_message = recent_history["data"][0]
                     # logger.info(f"最近一条消息：{group_id} {last_message}")
-                    ai_api_info = last_message['ai_api_info']
+                    ai_api_info = last_message["ai_api_info"]
                     if "openai" not in ai_api_info:
                         continue
-                    conversation_id = ai_api_info['openai']['conversation_id']
+                    conversation_id = ai_api_info["openai"]["conversation_id"]
                     outer_memory = []
                     if conversation_id:
-                        for message in recent_history['data'][:min(50, len(recent_history['data']))]:
+                        for message in recent_history["data"][: min(50, len(recent_history["data"]))]:
                             outer_memory.append(
-                                {"role": model_name_transform(message["from_user"]["name"]), "message": message['chat_text']})
+                                {
+                                    "role": model_name_transform(message["from_user"]["name"]),
+                                    "message": message["chat_text"],
+                                }
+                            )
                         # 倒序outer_memory
                         outer_memory.reverse()
                         question_list = []
                         if not outer_memory:
                             continue
-                        elif (datetime.datetime.now() - datetime.datetime.strptime(recent_history['data'][0]['created_at'], "%Y-%m-%d %H:%M:%S")).total_seconds() > 3600*4 and outer_memory[-1]["role"] != "James Corden":
+                        elif (
+                            datetime.datetime.now()
+                            - datetime.datetime.strptime(recent_history["data"][0]["created_at"], "%Y-%m-%d %H:%M:%S")
+                        ).total_seconds() > 3600 * 4 and outer_memory[-1]["role"] != "James Corden":
                             logger.info(f"超过4小时，强制回复：{group_id} {uuid.uuid4()}")
                             res = model_chat(conversation_id, outer_memory=outer_memory, is_force=True)
                             # res = model_chat(conversation_id, is_force=True)
                         # elif (datetime.datetime.now() - datetime.datetime.strptime(last_message['created_at'], "%Y-%m-%d %H:%M:%S")).total_seconds() > 3600*24:
                         # 如果最后5条都是机器人消息，换个话题
-                        elif len(outer_memory) >= 5 and (datetime.datetime.now() - datetime.datetime.strptime(recent_history['data'][0]['created_at'], "%Y-%m-%d %H:%M:%S")).total_seconds() > 3600*24:
+                        elif (
+                            len(outer_memory) >= 5
+                            and (
+                                datetime.datetime.now()
+                                - datetime.datetime.strptime(
+                                    recent_history["data"][0]["created_at"], "%Y-%m-%d %H:%M:%S"
+                                )
+                            ).total_seconds()
+                            > 3600 * 24
+                        ):
                             # all([message["role"] == "James Corden" for message in outer_memory[-5:]]) \
                             try:
                                 topic, url, image_url = get_topic()
@@ -205,7 +215,9 @@ def chat_thread(group_id: int, main_context: AppContext):
                             if image_url:
                                 try:
                                     image_name = image_url.split("/")[-1]
-                                    dst = os.path.join(os.path.dirname(os.path.abspath(__file__)), "static", "images", image_name)
+                                    dst = os.path.join(
+                                        os.path.dirname(os.path.abspath(__file__)), "static", "images", image_name
+                                    )
                                     download_from_url(image_url, dst)
                                     res = upload_file(dst, image_name)
                                     logger.info(f"上传图片：{res}")
@@ -217,14 +229,26 @@ def chat_thread(group_id: int, main_context: AppContext):
                                 except:
                                     logger.info(f"{traceback.format_exc()}")
                                     image_url = None
-                            query = "<news>" + topic + "</news>" + "you must introduce the story and raise any points or topics you would like to discuss. you can\'t say sorry or mix up or talk about other topics. "
+                            query = (
+                                "<news>"
+                                + topic
+                                + "</news>"
+                                + "you must introduce the story and raise any points or topics you would like to discuss. you can't say sorry or mix up or talk about other topics. "
+                            )
                             # query += "After expressing your views, list some questions related to the news topic on a separate line, with each question not exceeding 10 words, using Question 1: question\nQuestion 2: question\n as serial numbers. Please follow this format closely to ensure consistency and accuracy of output."
                             import uuid
+
                             logger.info(f"超过24小时，换个话题强制回复：{group_id} {topic} {uuid.uuid4()}")
                             if image_url:
                                 # 发图片
                                 pass
-                            res = model_chat(conversation_id, outer_memory=outer_memory, is_force=True, query=query, user_name="Human")
+                            res = model_chat(
+                                conversation_id,
+                                outer_memory=outer_memory,
+                                is_force=True,
+                                query=query,
+                                user_name="Human",
+                            )
                             time.sleep(20)
                             if res and res.get("answer", None):
                                 res_answer_new = ""
@@ -240,13 +264,23 @@ def chat_thread(group_id: int, main_context: AppContext):
 
                             # res = model_chat(conversation_id, is_force=True, query=query, user_name="Human")
                         # 如果倒数第二条消息是机器人且最后一条消息不是机器人且与倒数第二条间隔不超过30s,回复
-                        elif len(outer_memory) > 1 and \
-                            outer_memory[-2]["role"] == "James Corden" and \
-                            outer_memory[-1]["role"] != "James Corden" and \
-                                (datetime.datetime.strptime(recent_history['data'][0]['created_at'], "%Y-%m-%d %H:%M:%S") - datetime.datetime.strptime(recent_history['data'][1]['created_at'], "%Y-%m-%d %H:%M:%S")).total_seconds() < 30:
+                        elif (
+                            len(outer_memory) > 1
+                            and outer_memory[-2]["role"] == "James Corden"
+                            and outer_memory[-1]["role"] != "James Corden"
+                            and (
+                                datetime.datetime.strptime(recent_history["data"][0]["created_at"], "%Y-%m-%d %H:%M:%S")
+                                - datetime.datetime.strptime(
+                                    recent_history["data"][1]["created_at"], "%Y-%m-%d %H:%M:%S"
+                                )
+                            ).total_seconds()
+                            < 30
+                        ):
                             # print(outer_memory[-1])
                             # print(outer_memory[-2])
-                            logger.info(f"倒数第二条消息是机器人，且与最后一条消息间隔不超过30s，强制回复：{group_id} {uuid.uuid4()}")
+                            logger.info(
+                                f"倒数第二条消息是机器人，且与最后一条消息间隔不超过30s，强制回复：{group_id} {uuid.uuid4()}"
+                            )
                             # res = model_chat(conversation_id, is_force=True)
                             res = model_chat(conversation_id, is_force=True, outer_memory=outer_memory)
                         elif outer_memory[-1]["role"] != "James Corden" and sleep_num > 20:
@@ -254,7 +288,11 @@ def chat_thread(group_id: int, main_context: AppContext):
                             # res = model_chat(conversation_id)
                             res = model_chat(conversation_id, outer_memory=outer_memory)
                             sleep_num = 0
-                        elif len(outer_memory) > 1 and outer_memory[-1]["role"] == "James Corden" and outer_memory[-2]["role"] == "James Corden":
+                        elif (
+                            len(outer_memory) > 1
+                            and outer_memory[-1]["role"] == "James Corden"
+                            and outer_memory[-2]["role"] == "James Corden"
+                        ):
                             logger.info("上两条消息是机器人，不回复")
                             res = None
                         else:
@@ -295,11 +333,11 @@ def chat_thread(group_id: int, main_context: AppContext):
 
 def init_active_chat(main_app: Flask):
     # group_id_list = get_group_id_list()
-    env = main_app.config.get('ENV')
-    mode = main_app.config.get('MODE')
+    env = main_app.config.get("ENV")
+    mode = main_app.config.get("MODE")
     logger.info(f"当前环境：{env}, 当前模式：{mode}")
     try:
-        if env == 'production' and mode == 'api':
+        if env == "production" and mode == "api":
             group_id_list = get_all_groups(only_dj_bot=True)
         else:
             # group_id_list = []
@@ -313,5 +351,3 @@ def init_active_chat(main_app: Flask):
         # 新开线程监控group
         t = threading.Thread(target=chat_thread, args=(group_id, main_app.app_context()))
         t.start()
-
-

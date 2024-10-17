@@ -30,7 +30,13 @@ from models.model import (
 )
 from models.tools import WorkflowToolProvider
 from models.web import PinnedConversation, SavedMessage
-from models.workflow import ConversationVariable, Workflow, WorkflowAppLog, WorkflowNodeExecution, WorkflowRun
+from models.workflow import (
+    ConversationVariable,
+    Workflow,
+    WorkflowAppLog,
+    WorkflowNodeExecution,
+    WorkflowRun,
+)
 
 
 @shared_task(queue="app_deletion", bind=True, max_retries=3)

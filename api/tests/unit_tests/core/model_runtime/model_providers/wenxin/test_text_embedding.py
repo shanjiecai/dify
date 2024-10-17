@@ -1,7 +1,9 @@
 import numpy as np
 
 from core.model_runtime.entities.text_embedding_entities import TextEmbeddingResult
-from core.model_runtime.model_providers.__base.tokenizers.gpt2_tokenzier import GPT2Tokenizer
+from core.model_runtime.model_providers.__base.tokenizers.gpt2_tokenzier import (
+    GPT2Tokenizer,
+)
 from core.model_runtime.model_providers.wenxin.text_embedding.text_embedding import (
     TextEmbedding,
     WenxinTextEmbeddingModel,

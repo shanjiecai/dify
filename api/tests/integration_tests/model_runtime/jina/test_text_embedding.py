@@ -4,7 +4,9 @@ import pytest
 
 from core.model_runtime.entities.text_embedding_entities import TextEmbeddingResult
 from core.model_runtime.errors.validate import CredentialsValidateFailedError
-from core.model_runtime.model_providers.jina.text_embedding.text_embedding import JinaTextEmbeddingModel
+from core.model_runtime.model_providers.jina.text_embedding.text_embedding import (
+    JinaTextEmbeddingModel,
+)
 
 
 def test_validate_credentials():

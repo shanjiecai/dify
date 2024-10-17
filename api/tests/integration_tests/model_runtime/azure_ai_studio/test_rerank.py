@@ -4,7 +4,9 @@ import pytest
 
 from core.model_runtime.entities.rerank_entities import RerankResult
 from core.model_runtime.errors.validate import CredentialsValidateFailedError
-from core.model_runtime.model_providers.azure_ai_studio.rerank.rerank import AzureAIStudioRerankModel
+from core.model_runtime.model_providers.azure_ai_studio.rerank.rerank import (
+    AzureAIStudioRerankModel,
+)
 
 
 def test_validate_credentials():

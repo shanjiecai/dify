@@ -63,11 +63,11 @@ class WorkflowConverter:
         # create new app
         new_app = App()
         new_app.tenant_id = app_model.tenant_id
-        new_app.name = name if name else app_model.name + "(workflow)"
+        new_app.name = name or app_model.name + "(workflow)"
         new_app.mode = AppMode.ADVANCED_CHAT.value if app_model.mode == AppMode.CHAT.value else AppMode.WORKFLOW.value
-        new_app.icon_type = icon_type if icon_type else app_model.icon_type
-        new_app.icon = icon if icon else app_model.icon
-        new_app.icon_background = icon_background if icon_background else app_model.icon_background
+        new_app.icon_type = icon_type or app_model.icon_type
+        new_app.icon = icon or app_model.icon
+        new_app.icon_background = icon_background or app_model.icon_background
         new_app.enable_site = app_model.enable_site
         new_app.enable_api = app_model.enable_api
         new_app.api_rpm = app_model.api_rpm
@@ -351,26 +351,30 @@ class WorkflowConverter:
                 "query_variable_selector": query_variable_selector,
                 "dataset_ids": dataset_config.dataset_ids,
                 "retrieval_mode": retrieve_config.retrieve_strategy.value,
-                "single_retrieval_config": {
-                    "model": {
-                        "provider": model_config.provider,
-                        "name": model_config.model,
-                        "mode": model_config.mode,
-                        "completion_params": {
-                            **model_config.parameters,
-                            "stop": model_config.stop,
-                        },
+                "single_retrieval_config": (
+                    {
+                        "model": {
+                            "provider": model_config.provider,
+                            "name": model_config.model,
+                            "mode": model_config.mode,
+                            "completion_params": {
+                                **model_config.parameters,
+                                "stop": model_config.stop,
+                            },
+                        }
                     }
-                }
-                if retrieve_config.retrieve_strategy == DatasetRetrieveConfigEntity.RetrieveStrategy.SINGLE
-                else None,
-                "multiple_retrieval_config": {
-                    "top_k": retrieve_config.top_k,
-                    "score_threshold": retrieve_config.score_threshold,
-                    "reranking_model": retrieve_config.reranking_model,
-                }
-                if retrieve_config.retrieve_strategy == DatasetRetrieveConfigEntity.RetrieveStrategy.MULTIPLE
-                else None,
+                    if retrieve_config.retrieve_strategy == DatasetRetrieveConfigEntity.RetrieveStrategy.SINGLE
+                    else None
+                ),
+                "multiple_retrieval_config": (
+                    {
+                        "top_k": retrieve_config.top_k,
+                        "score_threshold": retrieve_config.score_threshold,
+                        "reranking_model": retrieve_config.reranking_model,
+                    }
+                    if retrieve_config.retrieve_strategy == DatasetRetrieveConfigEntity.RetrieveStrategy.MULTIPLE
+                    else None
+                ),
             },
         }
 
@@ -515,16 +519,18 @@ class WorkflowConverter:
                 "memory": memory,
                 "context": {
                     "enabled": knowledge_retrieval_node is not None,
-                    "variable_selector": ["knowledge_retrieval", "result"]
-                    if knowledge_retrieval_node is not None
-                    else None,
+                    "variable_selector": (
+                        ["knowledge_retrieval", "result"] if knowledge_retrieval_node is not None else None
+                    ),
                 },
                 "vision": {
                     "enabled": file_upload is not None,
                     "variable_selector": ["sys", "files"] if file_upload is not None else None,
-                    "configs": {"detail": file_upload.image_config["detail"]}
-                    if file_upload is not None and file_upload.image_config is not None
-                    else None,
+                    "configs": (
+                        {"detail": file_upload.image_config["detail"]}
+                        if file_upload is not None and file_upload.image_config is not None
+                        else None
+                    ),
                 },
             },
         }

@@ -16,45 +16,43 @@ from services.message_service import MessageService
 
 
 class MessageListApi(AppApiResource):
-    feedback_fields = {
-        'rating': fields.String
-    }
+    feedback_fields = {"rating": fields.String}
     retriever_resource_fields = {
-        'id': fields.String,
-        'message_id': fields.String,
-        'position': fields.Integer,
-        'dataset_id': fields.String,
-        'dataset_name': fields.String,
-        'document_id': fields.String,
-        'document_name': fields.String,
-        'data_source_type': fields.String,
-        'segment_id': fields.String,
-        'score': fields.Float,
-        'hit_count': fields.Integer,
-        'word_count': fields.Integer,
-        'segment_position': fields.Integer,
-        'index_node_hash': fields.String,
-        'content': fields.String,
-        'created_at': TimestampField
+        "id": fields.String,
+        "message_id": fields.String,
+        "position": fields.Integer,
+        "dataset_id": fields.String,
+        "dataset_name": fields.String,
+        "document_id": fields.String,
+        "document_name": fields.String,
+        "data_source_type": fields.String,
+        "segment_id": fields.String,
+        "score": fields.Float,
+        "hit_count": fields.Integer,
+        "word_count": fields.Integer,
+        "segment_position": fields.Integer,
+        "index_node_hash": fields.String,
+        "content": fields.String,
+        "created_at": TimestampField,
     }
 
     message_fields = {
-        'id': fields.String,
-        'conversation_id': fields.String,
-        'inputs': fields.Raw,
-        'query': fields.String,
-        'answer': fields.String,
-        'feedback': fields.Nested(feedback_fields, attribute='user_feedback', allow_null=True),
-        'retriever_resources': fields.List(fields.Nested(retriever_resource_fields)),
-        'created_at': TimestampField,
-        'role': fields.String,
-        'assistant_name': fields.String,
+        "id": fields.String,
+        "conversation_id": fields.String,
+        "inputs": fields.Raw,
+        "query": fields.String,
+        "answer": fields.String,
+        "feedback": fields.Nested(feedback_fields, attribute="user_feedback", allow_null=True),
+        "retriever_resources": fields.List(fields.Nested(retriever_resource_fields)),
+        "created_at": TimestampField,
+        "role": fields.String,
+        "assistant_name": fields.String,
     }
 
     message_infinite_scroll_pagination_fields = {
-        'limit': fields.Integer,
-        'has_more': fields.Boolean,
-        'data': fields.List(fields.Nested(message_fields))
+        "limit": fields.Integer,
+        "has_more": fields.Boolean,
+        "data": fields.List(fields.Nested(message_fields)),
     }
 
     @marshal_with(message_infinite_scroll_pagination_fields)
@@ -63,18 +61,19 @@ class MessageListApi(AppApiResource):
         #     raise NotChatAppError()
 
         parser = reqparse.RequestParser()
-        parser.add_argument('conversation_id', required=True, type=uuid_value, location='args')
-        parser.add_argument('first_id', required=False, type=uuid_value, location='args')
-        parser.add_argument('limit', type=int_range(1, 100), required=False, default=20, location='args')
-        parser.add_argument('user', type=str, location='args')
+        parser.add_argument("conversation_id", required=True, type=uuid_value, location="args")
+        parser.add_argument("first_id", required=False, type=uuid_value, location="args")
+        parser.add_argument("limit", type=int_range(1, 100), required=False, default=20, location="args")
+        parser.add_argument("user", type=str, location="args")
         args = parser.parse_args()
 
         # if end_user is None and args['user'] is not None:
         # end_user = create_or_update_end_user_for_user_id(app_model, args['user'])
 
         try:
-            messages = MessageService.pagination_by_first_id(app_model, None,
-                                                         args['conversation_id'], args['first_id'], args['limit'])
+            messages = MessageService.pagination_by_first_id(
+                app_model, None, args["conversation_id"], args["first_id"], args["limit"]
+            )
             logger.info(messages)
             # 获取与app_model相关的dataset_id
             # app_dataset_joins = db.session.query(AppDatasetJoin).filter(
@@ -105,19 +104,19 @@ class MessageFeedbackApi(AppApiResource):
         message_id = str(message_id)
 
         parser = reqparse.RequestParser()
-        parser.add_argument('rating', type=str, choices=['like', 'dislike', None], location='json')
-        parser.add_argument('user', type=str, location='json')
+        parser.add_argument("rating", type=str, choices=["like", "dislike", None], location="json")
+        parser.add_argument("user", type=str, location="json")
         args = parser.parse_args()
 
         # if end_user is None and args['user'] is not None:
         #     end_user = create_or_update_end_user_for_user_id(app_model, args['user'])
 
         try:
-            MessageService.create_feedback(app_model, message_id, end_user, args['rating'])
+            MessageService.create_feedback(app_model, message_id, end_user, args["rating"])
         except services.errors.message.MessageNotExistsError:
             raise NotFound("Message Not Exists.")
 
-        return {'result': 'success'}
+        return {"result": "success"}
 
 
 class MessageSuggestedApi(AppApiResource):
@@ -129,17 +128,14 @@ class MessageSuggestedApi(AppApiResource):
 
         try:
             questions = MessageService.get_suggested_questions_after_answer(
-                app_model=app_model,
-                user=end_user,
-                message_id=message_id,
-                invoke_from=InvokeFrom.SOCIAL_AGENT_API
+                app_model=app_model, user=end_user, message_id=message_id, invoke_from=InvokeFrom.SOCIAL_AGENT_API
             )
         except services.errors.message.MessageNotExistsError:
             raise NotFound("Message Not Exists.")
 
-        return {'result': 'success', 'data': questions}
+        return {"result": "success", "data": questions}
 
 
-api.add_resource(MessageListApi, '/messages')
+api.add_resource(MessageListApi, "/messages")
 # api.add_resource(MessageFeedbackApi, '/messages/<uuid:message_id>/feedbacks')
 # api.add_resource(MessageSuggestedApi, '/messages/<uuid:message_id>/suggested')

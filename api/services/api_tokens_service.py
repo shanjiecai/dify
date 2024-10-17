@@ -1,5 +1,3 @@
-
-
 from extensions.ext_database import db
 from models.model import ApiToken, App
 
@@ -10,9 +8,7 @@ class APITokensService:
         try:
             app = db.session.query(App).filter_by(name=app_name).first()
             # print(app.id)
-            api_token = db.session.query(ApiToken).filter_by(
-                app_id=app.id
-            ).first()
+            api_token = db.session.query(ApiToken).filter_by(app_id=app.id).first()
             return api_token
         except Exception as e:
             print(e)

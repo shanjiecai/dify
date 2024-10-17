@@ -4,15 +4,23 @@ from time import sleep
 
 import pytest
 
-from core.model_runtime.entities.llm_entities import LLMResult, LLMResultChunk, LLMResultChunkDelta
-from core.model_runtime.entities.message_entities import AssistantPromptMessage, SystemPromptMessage, UserPromptMessage
+from core.model_runtime.entities.llm_entities import (
+    LLMResult,
+    LLMResultChunk,
+    LLMResultChunkDelta,
+)
+from core.model_runtime.entities.message_entities import (
+    AssistantPromptMessage,
+    SystemPromptMessage,
+    UserPromptMessage,
+)
 from core.model_runtime.entities.model_entities import AIModelEntity
 from core.model_runtime.errors.validate import CredentialsValidateFailedError
-from core.model_runtime.model_providers.baichuan.llm.llm import BaichuanLarguageModel
+from core.model_runtime.model_providers.baichuan.llm.llm import BaichuanLanguageModel
 
 
 def test_predefined_models():
-    model = BaichuanLarguageModel()
+    model = BaichuanLanguageModel()
     model_schemas = model.predefined_models()
     assert len(model_schemas) >= 1
     assert isinstance(model_schemas[0], AIModelEntity)
@@ -20,7 +28,7 @@ def test_predefined_models():
 
 def test_validate_credentials_for_chat_model():
     sleep(3)
-    model = BaichuanLarguageModel()
+    model = BaichuanLanguageModel()
 
     with pytest.raises(CredentialsValidateFailedError):
         model.validate_credentials(
@@ -38,7 +46,7 @@ def test_validate_credentials_for_chat_model():
 
 def test_invoke_model():
     sleep(3)
-    model = BaichuanLarguageModel()
+    model = BaichuanLanguageModel()
 
     response = model.invoke(
         model="baichuan2-turbo",
@@ -64,7 +72,7 @@ def test_invoke_model():
 
 def test_invoke_model_with_system_message():
     sleep(3)
-    model = BaichuanLarguageModel()
+    model = BaichuanLanguageModel()
 
     response = model.invoke(
         model="baichuan2-turbo",
@@ -93,7 +101,7 @@ def test_invoke_model_with_system_message():
 
 def test_invoke_stream_model():
     sleep(3)
-    model = BaichuanLarguageModel()
+    model = BaichuanLanguageModel()
 
     response = model.invoke(
         model="baichuan2-turbo",
@@ -122,7 +130,7 @@ def test_invoke_stream_model():
 
 def test_invoke_with_search():
     sleep(3)
-    model = BaichuanLarguageModel()
+    model = BaichuanLanguageModel()
 
     response = model.invoke(
         model="baichuan2-turbo",
@@ -156,7 +164,7 @@ def test_invoke_with_search():
 
 def test_get_num_tokens():
     sleep(3)
-    model = BaichuanLarguageModel()
+    model = BaichuanLanguageModel()
 
     response = model.get_num_tokens(
         model="baichuan2-turbo",

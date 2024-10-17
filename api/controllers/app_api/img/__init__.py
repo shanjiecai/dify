@@ -13,7 +13,11 @@ from werkzeug.exceptions import InternalServerError, NotFound
 
 import services
 from controllers.app_api import api
-from controllers.app_api.app.utils import get_recent_history, get_recent_history_within_timestamp, send_feishu_bot
+from controllers.app_api.app.utils import (
+    get_recent_history,
+    get_recent_history_within_timestamp,
+    send_feishu_bot,
+)
 from controllers.app_api.img.utils import generate_img_pipeline
 
 # from controllers.app_api.openai_base_request import generate_response
@@ -23,7 +27,7 @@ from mylogger import logger
 
 # from services.completion_service import CompletionService
 
-api_key = os.environ.get('OPENAI_API_KEY')
+api_key = os.environ.get("OPENAI_API_KEY")
 
 
 # 获取图片，支持dalle和search_engine
@@ -67,17 +71,15 @@ class ImgApi(AppApiResource):
 
         """
         parser = reqparse.RequestParser()
-        parser.add_argument('prompt', type=str, required=True, help='img prompt')
-        parser.add_argument('model', type=str, default='search_engine', required=False, help='dalle3 or search_engine')
+        parser.add_argument("prompt", type=str, required=True, help="img prompt")
+        parser.add_argument("model", type=str, default="search_engine", required=False, help="dalle3 or search_engine")
         parser.add_argument("shape", type=str, default=None, required=False, help="shape: square, vertical, horizontal")
         args = parser.parse_args()
-        prompt = args.get('prompt')
-        model = args.get('model')
-        shape = args.get('shape')
+        prompt = args.get("prompt")
+        model = args.get("model")
+        shape = args.get("shape")
         images = generate_img_pipeline(prompt, model=model, shape=shape)
-        return {'images': images}, 200
+        return {"images": images}, 200
 
 
-api.add_resource(ImgApi, '/img')
-
-
+api.add_resource(ImgApi, "/img")

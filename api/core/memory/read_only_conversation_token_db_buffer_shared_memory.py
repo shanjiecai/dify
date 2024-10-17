@@ -4,7 +4,11 @@ from langchain.memory.chat_memory import BaseChatMemory
 from langchain.schema import BaseMessage, get_buffer_string
 
 from core.file.message_file_parser import MessageFileParser
-from core.model_providers.models.entity.message import MessageType, PromptMessage, to_lc_messages
+from core.model_providers.models.entity.message import (
+    MessageType,
+    PromptMessage,
+    to_lc_messages,
+)
 
 # from core.model_providers.models.llm.base import BaseLLM
 from extensions.ext_database import db
@@ -28,18 +32,24 @@ class ReadOnlyConversationTokenDBBufferSharedMemory(BaseChatMemory):
         app_model = self.conversation.app
 
         # fetch limited messages desc, and return reversed
-        messages = db.session.query(Message).filter(
-            Message.conversation_id == self.conversation.id,
-            # Message.answer_tokens > 0
-            # Message.answer != ''
-        ).order_by(Message.created_at.desc()).limit(self.message_limit).all()
+        messages = (
+            db.session.query(Message)
+            .filter(
+                Message.conversation_id == self.conversation.id,
+                # Message.answer_tokens > 0
+                # Message.answer != ''
+            )
+            .order_by(Message.created_at.desc())
+            .limit(self.message_limit)
+            .all()
+        )
 
         messages = list(reversed(messages))
         message_file_parser = MessageFileParser(tenant_id=app_model.tenant_id, app_id=self.conversation.app_id)
 
         chat_messages: list[PromptMessage] = []
         # 去掉最后一个
-        if messages[-1].answer == None or messages[-1].answer == "":
+        if messages[-1].answer in (None, ""):
             self.last_query = messages[-1].query
             self.last_role = messages[-1].role
             messages = messages[:-1]
@@ -49,32 +59,43 @@ class ReadOnlyConversationTokenDBBufferSharedMemory(BaseChatMemory):
             if messages.index(message) + 1 < len(messages):
                 next_message = messages[messages.index(message) + 1]
                 # print(f"message: {message.answer}, next_message: {next_message.answer}")
-                if (message.answer == None or message.answer == "") and message.query == next_message.query and message.role == next_message.role and next_message.answer != None and next_message.answer != "":
+                if (
+                    (message.answer in (None, ""))
+                    and message.query == next_message.query
+                    and message.role == next_message.role
+                    and next_message.answer != None
+                    and next_message.answer != ""
+                ):
                     continue
             # chat_messages.append(PromptMessage(content=message.query, type=MessageType.USER if message.role == "Human" else message.role))
             # if message.answer:
             #     chat_messages.append(PromptMessage(content=message.answer, type=MessageType.ASSISTANT if self.ai_prefix == "Assistant" else self.ai_prefix))
             files = message.message_files
             if files:
-                file_objs = message_file_parser.transform_message_files(
-                    files, message.app_model_config
-                )
+                file_objs = message_file_parser.transform_message_files(files, message.app_model_config)
 
                 prompt_message_files = [file_obj.prompt_message_file for file_obj in file_objs]
-                chat_messages.append(PromptMessage(
-                    content=message.query,
-                    type=MessageType.USER,
-                    files=prompt_message_files
-                ))
+                chat_messages.append(
+                    PromptMessage(content=message.query, type=MessageType.USER, files=prompt_message_files)
+                )
             else:
                 # chat_messages.append(PromptMessage(content=message.query, type=MessageType.USER))
-                chat_messages.append(PromptMessage(content=message.query, type=MessageType.USER if message.role == "Human" else message.role))
+                chat_messages.append(
+                    PromptMessage(
+                        content=message.query, type=MessageType.USER if message.role == "Human" else message.role
+                    )
+                )
                 # if message.answer:
                 #     chat_messages.append(PromptMessage(content=message.answer, type=MessageType.ASSISTANT if self.ai_prefix == "Assistant" else self.ai_prefix))
 
             # chat_messages.append(PromptMessage(content=message.answer, type=MessageType.ASSISTANT))
             if message.answer:
-                chat_messages.append(PromptMessage(content=message.answer, type=MessageType.USER if message.assistant_name == None else message.assistant_name))
+                chat_messages.append(
+                    PromptMessage(
+                        content=message.answer,
+                        type=MessageType.USER if message.assistant_name == None else message.assistant_name,
+                    )
+                )
 
         if not chat_messages:
             return []

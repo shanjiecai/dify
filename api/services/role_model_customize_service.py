@@ -2,19 +2,13 @@ import os
 
 import requests
 
-role_model_customize_service_url = os.getenv("ROLE_MODEL_CUSTOMIZE_SERVICE_URL",
-                                             "http://13.56.82.62:8000")
+role_model_customize_service_url = os.getenv("ROLE_MODEL_CUSTOMIZE_SERVICE_URL", "http://13.56.82.62:8000")
 
 
 def post_persona_matrix(model_student_id: str, portrait_design: list[str]):
     url = f"{role_model_customize_service_url}/PortraitDesign/v1"
-    payload = {
-        "modelStudentId": model_student_id,
-        "portraitDesign": portrait_design
-    }
-    headers = {
-        'Content-Type': 'application/json'
-    }
+    payload = {"modelStudentId": model_student_id, "portraitDesign": portrait_design}
+    headers = {"Content-Type": "application/json"}
     response = requests.request("POST", url, headers=headers, json=payload)
     return response.json()
 
@@ -24,11 +18,9 @@ def post_knowledge_level(model_student_id: str, knowledge_domain: str, knowledge
     payload = {
         "modelStudentId": model_student_id,
         "knowledgeDomain": knowledge_domain,
-        "knowledgeLevel": knowledge_level
+        "knowledgeLevel": knowledge_level,
     }
-    headers = {
-        'Content-Type': 'application/json'
-    }
+    headers = {"Content-Type": "application/json"}
     response = requests.request("POST", url, headers=headers, json=payload)
     return response.json()
 
@@ -36,13 +28,11 @@ def post_knowledge_level(model_student_id: str, knowledge_domain: str, knowledge
 # {"category":"RoleModel","page": 1,"pageSize":20}
 def get_role_model_customize_list(category: str = "RoleModel", page: int = 1, page_size: int = 20):
     url = f"{role_model_customize_service_url}/RoleModel/v1"
-    payload = {
-        "category": category,
-        "page": page,
-        "pageSize": page_size
-    }
+    payload = {"category": category, "page": page, "pageSize": page_size}
     response = requests.request("GET", url, json=payload)
     return response.json()
+
+
 #     mock_data = [
 #     {
 #         "modelStudentId": "daff9f4f-82a9-34ab-c5da-b88ac70409f5",

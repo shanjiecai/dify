@@ -1,23 +1,21 @@
 import re
 from collections.abc import Generator
-from json import dumps, loads
+from json import dumps
 from time import time
 
 # import monkeypatch
 from typing import Any, Literal, Optional, Union
 
-import openai.types.chat.completion_create_params as completion_create_params
 from openai import AzureOpenAI, OpenAI
 from openai._types import NOT_GIVEN, NotGiven
 from openai.resources.chat.completions import Completions
 from openai.types import Completion as CompletionMessage
 from openai.types.chat import (
-    ChatCompletion,
     ChatCompletionChunk,
     ChatCompletionMessageParam,
     ChatCompletionMessageToolCall,
-    ChatCompletionToolChoiceOptionParam,
     ChatCompletionToolParam,
+    completion_create_params,
 )
 from openai.types.chat.chat_completion import ChatCompletion as _ChatCompletion
 from openai.types.chat.chat_completion import Choice as _ChatCompletionChoice
@@ -28,7 +26,10 @@ from openai.types.chat.chat_completion_chunk import (
     ChoiceDeltaToolCall,
     ChoiceDeltaToolCallFunction,
 )
-from openai.types.chat.chat_completion_message import ChatCompletionMessage, FunctionCall
+from openai.types.chat.chat_completion_message import (
+    ChatCompletionMessage,
+    FunctionCall,
+)
 from openai.types.chat.chat_completion_message_tool_call import Function
 from openai.types.completion_usage import CompletionUsage
 
@@ -154,26 +155,30 @@ class MockChatClass:
                         Choice(
                             delta=ChoiceDelta(
                                 content="",
-                                function_call=ChoiceDeltaFunctionCall(
-                                    name=function_call.name,
-                                    arguments=function_call.arguments,
-                                )
-                                if function_call
-                                else None,
-                                role="assistant",
-                                tool_calls=[
-                                    ChoiceDeltaToolCall(
-                                        index=0,
-                                        id="misaka-mikoto",
-                                        function=ChoiceDeltaToolCallFunction(
-                                            name=tool_calls[0].function.name,
-                                            arguments=tool_calls[0].function.arguments,
-                                        ),
-                                        type="function",
+                                function_call=(
+                                    ChoiceDeltaFunctionCall(
+                                        name=function_call.name,
+                                        arguments=function_call.arguments,
                                     )
-                                ]
-                                if tool_calls and len(tool_calls) > 0
-                                else None,
+                                    if function_call
+                                    else None
+                                ),
+                                role="assistant",
+                                tool_calls=(
+                                    [
+                                        ChoiceDeltaToolCall(
+                                            index=0,
+                                            id="misaka-mikoto",
+                                            function=ChoiceDeltaToolCallFunction(
+                                                name=tool_calls[0].function.name,
+                                                arguments=tool_calls[0].function.arguments,
+                                            ),
+                                            type="function",
+                                        )
+                                    ]
+                                    if tool_calls and len(tool_calls) > 0
+                                    else None
+                                ),
                             ),
                             finish_reason="function_call",
                             index=0,
@@ -254,7 +259,7 @@ class MockChatClass:
             "gpt-3.5-turbo-16k-0613",
         ]
         azure_openai_models = ["gpt35", "gpt-4v", "gpt-35-turbo"]
-        if not re.match(r"^(https?):\/\/[^\s\/$.?#].[^\s]*$", self._client.base_url.__str__()):
+        if not re.match(r"^(https?):\/\/[^\s\/$.?#].[^\s]*$", str(self._client.base_url)):
             raise InvokeAuthorizationError("Invalid base url")
         if model in openai_models + azure_openai_models:
             if not re.match(r"sk-[a-zA-Z0-9]{24,}$", self._client.api_key) and type(self._client) == OpenAI:

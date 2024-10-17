@@ -1,6 +1,9 @@
 import os
 
-from core.helper.module_import_helper import import_module_from_source, load_single_subclass_from_source
+from core.helper.module_import_helper import (
+    import_module_from_source,
+    load_single_subclass_from_source,
+)
 from tests.integration_tests.utils.parent_class import ParentClass
 
 
@@ -9,7 +12,8 @@ def test_loading_subclass_from_source():
     module = load_single_subclass_from_source(
         module_name="ChildClass", script_path=os.path.join(current_path, "child_class.py"), parent_type=ParentClass
     )
-    assert module and module.__name__ == "ChildClass"
+    assert module
+    assert module.__name__ == "ChildClass"
 
 
 def test_load_import_module_from_source():
@@ -17,7 +21,8 @@ def test_load_import_module_from_source():
     module = import_module_from_source(
         module_name="ChildClass", py_file_path=os.path.join(current_path, "child_class.py")
     )
-    assert module and module.__name__ == "ChildClass"
+    assert module
+    assert module.__name__ == "ChildClass"
 
 
 def test_lazy_loading_subclass_from_source():

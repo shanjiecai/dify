@@ -7,7 +7,7 @@ from openai.types.chat import ChatCompletion, ChatCompletionChunk
 from core.prompt_const import generate_dalle_query_template
 from mylogger import logger
 
-api_key = os.environ.get('OPENAI_API_KEY')
+api_key = os.environ.get("OPENAI_API_KEY")
 from openai import OpenAI, Stream
 
 client = OpenAI(api_key=api_key)
@@ -23,8 +23,9 @@ client = OpenAI(api_key=api_key)
 #     return api_key
 
 
-def generate_response(prompt=None, system_prompt=None, history_messages=None, model="gpt-3.5-turbo", json_format=False,
-                      **kwargs) -> ChatCompletion | Stream[ChatCompletionChunk]:
+def generate_response(
+    prompt=None, system_prompt=None, history_messages=None, model="gpt-3.5-turbo", json_format=False, **kwargs
+) -> ChatCompletion | Stream[ChatCompletionChunk]:
     if not prompt and not history_messages and not system_prompt:
         raise ValueError("prompt history_messages and system_prompt cannot be empty all.")
     if not prompt:
@@ -39,18 +40,19 @@ def generate_response(prompt=None, system_prompt=None, history_messages=None, mo
         messages.insert(0, {"role": "system", "content": system_prompt})
     # print(messages)
     logger.debug(f"Prompt: {messages}")
-    response = client.chat.completions.create(model=model,
-                                              max_tokens=kwargs.get('max_tokens', 3000),
-                                              temperature=kwargs.get('temperature', None),
-                                              presence_penalty=kwargs.get('presence_penalty', 0),
-                                              frequency_penalty=kwargs.get('frequency_penalty', 0),
-                                              top_p=kwargs.get('top_p', 1),
-                                              stop=kwargs.get('stop', None),
-                                              messages=messages,
-                                              stream=kwargs.get('stream', False),
-                                              response_format={"type": "json_object"} if json_format else None,
-                                              timeout=kwargs.get('timeout', 120),
-                                              )
+    response = client.chat.completions.create(
+        model=model,
+        max_tokens=kwargs.get("max_tokens", 3000),
+        temperature=kwargs.get("temperature", None),
+        presence_penalty=kwargs.get("presence_penalty", 0),
+        frequency_penalty=kwargs.get("frequency_penalty", 0),
+        top_p=kwargs.get("top_p", 1),
+        stop=kwargs.get("stop", None),
+        messages=messages,
+        stream=kwargs.get("stream", False),
+        response_format={"type": "json_object"} if json_format else None,
+        timeout=kwargs.get("timeout", 120),
+    )
 
     return response
 
@@ -67,8 +69,8 @@ def generate_dalle_query_variations_gpt(original_prompt, n_variations=1) -> dict
             {
                 "role": "system",
                 "content": "You are a helpful assistant that can generate creative variations of prompts for image "
-                           "generation using stable diffusion. Remember to not violate any content policy "
-                           "restrictions. Dont generate harmful, bad content",
+                "generation using stable diffusion. Remember to not violate any content policy "
+                "restrictions. Dont generate harmful, bad content",
             },
             {"role": "assistant", "content": f"{template}"},
         ],
@@ -83,7 +85,8 @@ def generate_dalle_query_variations_gpt(original_prompt, n_variations=1) -> dict
     return query_variations
 
 
-# 原始prompt转写，例如@Yyh 2707 hotmail(AI) Can you give me a plan for walking 15km in 10 days?转写为walking 15km in 10 days
+# 原始prompt转写，例如@Yyh 2707 hotmail(AI) Can you give me a plan for walking 15km in 10 days?转写为walking 15km in
+# 10 days
 #
 def generate_optimized_prompt(original_prompt, n_variations=1) -> str:
     response = client.chat.completions.create(
@@ -93,7 +96,9 @@ def generate_optimized_prompt(original_prompt, n_variations=1) -> str:
         messages=[
             {
                 "role": "system",
-                "content": 'You are an expert in optimizing prompts for AI models. You should rewrite the prompt to make it more concise and clear.You should return the optimized prompt only and not any other information.',
+                "content": "You are an expert in optimizing prompts for AI models. You should rewrite the prompt to "
+                           "make it more concise and clear.You should return the optimized prompt only and not any "
+                           "other information.",
             },
             {"role": "user", "content": f"{original_prompt}"},
         ],
@@ -103,10 +108,7 @@ def generate_optimized_prompt(original_prompt, n_variations=1) -> str:
 
 
 def generate_embedding(prompt: str):
-    response = client.embeddings.create(
-        model="text-embedding-3-small",
-        input=prompt
-    )
+    response = client.embeddings.create(model="text-embedding-3-small", input=prompt)
 
     return response.data[0].embedding
 
@@ -156,7 +158,12 @@ if __name__ == "__main__":
     # prompt = """A futuristic robot typing on a keyboard with Python code projected in holographic displays around it,
     # symbolizing the automation achieved through Python programming."""
 
-    print(generate_optimized_prompt("A futuristic robot typing on a keyboard with Python code projected in holographic displays around it, symbolizing the automation achieved through Python programming."))
+    print(
+        generate_optimized_prompt(
+            "A futuristic robot typing on a keyboard with Python code projected in holographic displays around it, "
+            "symbolizing the automation achieved through Python programming."
+        )
+    )
     # print(generate_optimized_prompt("@Yyh 2707 hotmail(AI) Can you give me a plan for walking 15km in 10 days?"))
 
     # from controllers.app_api.img.dalle2 import dalle2_invoke
@@ -169,5 +176,3 @@ if __name__ == "__main__":
     #         embedding[tag] = generate_embedding(tag)
     #     json.dump(embedding, f)
     # print(compare_similarity("lose weight", ["Music", "Sports", "Art", "Games", "Gastronomy", "Tourism", "Religion"]))
-
-

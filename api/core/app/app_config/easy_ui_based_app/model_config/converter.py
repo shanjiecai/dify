@@ -3,17 +3,21 @@ from typing import cast
 from core.app.app_config.entities import EasyUIBasedAppConfig
 from core.app.entities.app_invoke_entities import ModelConfigWithCredentialsEntity
 from core.entities.model_entities import ModelStatus
-from core.errors.error import ModelCurrentlyNotSupportError, ProviderTokenNotInitError, QuotaExceededError
+from core.errors.error import (
+    ModelCurrentlyNotSupportError,
+    ProviderTokenNotInitError,
+    QuotaExceededError,
+)
 from core.model_runtime.entities.model_entities import ModelType
-from core.model_runtime.model_providers.__base.large_language_model import LargeLanguageModel
+from core.model_runtime.model_providers.__base.large_language_model import (
+    LargeLanguageModel,
+)
 from core.provider_manager import ProviderManager
 
 
 class ModelConfigConverter:
     @classmethod
-    def convert(cls, app_config: EasyUIBasedAppConfig,
-                skip_check: bool = False) \
-            -> ModelConfigWithCredentialsEntity:
+    def convert(cls, app_config: EasyUIBasedAppConfig, skip_check: bool = False) -> ModelConfigWithCredentialsEntity:
         """
         Convert app model config dict to entity.
         :param app_config: app config
@@ -25,9 +29,7 @@ class ModelConfigConverter:
 
         provider_manager = ProviderManager()
         provider_model_bundle = provider_manager.get_provider_model_bundle(
-            tenant_id=app_config.tenant_id,
-            provider=model_config.provider,
-            model_type=ModelType.LLM
+            tenant_id=app_config.tenant_id, provider=model_config.provider, model_type=ModelType.LLM
         )
 
         provider_name = provider_model_bundle.configuration.provider.provider
@@ -38,8 +40,7 @@ class ModelConfigConverter:
 
         # check model credentials
         model_credentials = provider_model_bundle.configuration.get_current_credentials(
-            model_type=ModelType.LLM,
-            model=model_config.model
+            model_type=ModelType.LLM, model=model_config.model
         )
 
         if model_credentials is None:
@@ -51,8 +52,7 @@ class ModelConfigConverter:
         if not skip_check:
             # check model
             provider_model = provider_model_bundle.configuration.get_provider_model(
-                model=model_config.model,
-                model_type=ModelType.LLM
+                model=model_config.model, model_type=ModelType.LLM
             )
 
             if provider_model is None:
@@ -69,24 +69,18 @@ class ModelConfigConverter:
         # model config
         completion_params = model_config.parameters
         stop = []
-        if 'stop' in completion_params:
-            stop = completion_params['stop']
-            del completion_params['stop']
+        if "stop" in completion_params:
+            stop = completion_params["stop"]
+            del completion_params["stop"]
 
         # get model mode
         model_mode = model_config.mode
         if not model_mode:
-            mode_enum = model_type_instance.get_model_mode(
-                model=model_config.model,
-                credentials=model_credentials
-            )
+            mode_enum = model_type_instance.get_model_mode(model=model_config.model, credentials=model_credentials)
 
             model_mode = mode_enum.value
 
-        model_schema = model_type_instance.get_model_schema(
-            model_config.model,
-            model_credentials
-        )
+        model_schema = model_type_instance.get_model_schema(model_config.model, model_credentials)
 
         if not skip_check and not model_schema:
             raise ValueError(f"Model {model_name} not exist.")

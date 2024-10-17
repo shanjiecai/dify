@@ -2,9 +2,14 @@ from collections.abc import Mapping
 from enum import Enum
 from typing import Any, Optional
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field, ValidationInfo, field_validator
 
-from core.app.app_config.entities import AppConfig, EasyUIBasedAppConfig, WorkflowUIBasedAppConfig
+from constants import UUID_NIL
+from core.app.app_config.entities import (
+    AppConfig,
+    EasyUIBasedAppConfig,
+    WorkflowUIBasedAppConfig,
+)
 from core.entities.provider_configuration import ProviderModelBundle
 from core.file.file_obj import FileVar
 from core.model_runtime.entities.model_entities import AIModelEntity
@@ -15,15 +20,16 @@ class InvokeFrom(Enum):
     """
     Invoke From.
     """
-    SERVICE_API = 'service-api'
-    WEB_APP = 'web-app'
-    EXPLORE = 'explore'
-    DEBUGGER = 'debugger'
-    APP_API = 'app-api'
-    SOCIAL_AGENT_API = 'social-agent-api'
+
+    SERVICE_API = "service-api"
+    WEB_APP = "web-app"
+    EXPLORE = "explore"
+    DEBUGGER = "debugger"
+    APP_API = "app-api"
+    SOCIAL_AGENT_API = "social-agent-api"
 
     @classmethod
-    def value_of(cls, value: str) -> 'InvokeFrom':
+    def value_of(cls, value: str) -> "InvokeFrom":
         """
         Get value of given mode.
 
@@ -33,7 +39,7 @@ class InvokeFrom(Enum):
         for mode in cls:
             if mode.value == value:
                 return mode
-        raise ValueError(f'invalid invoke from value {value}')
+        raise ValueError(f"invalid invoke from value {value}")
 
     def to_source(self) -> str:
         """
@@ -42,23 +48,24 @@ class InvokeFrom(Enum):
         :return: source
         """
         if self == InvokeFrom.WEB_APP:
-            return 'web_app'
+            return "web_app"
         elif self == InvokeFrom.DEBUGGER:
-            return 'dev'
+            return "dev"
         elif self == InvokeFrom.EXPLORE:
-            return 'explore_app'
+            return "explore_app"
         elif self == InvokeFrom.SERVICE_API:
-            return 'api'
+            return "api"
         elif self == InvokeFrom.APP_API:
-            return 'app_api'
+            return "app_api"
 
-        return 'dev'
+        return "dev"
 
 
 class ModelConfigWithCredentialsEntity(BaseModel):
     """
     Model Config With Credentials Entity.
     """
+
     provider: str
     model: str
     model_schema: AIModelEntity
@@ -76,6 +83,7 @@ class AppGenerateEntity(BaseModel):
     """
     App Generate Entity.
     """
+
     task_id: str
 
     # app config
@@ -106,6 +114,7 @@ class EasyUIBasedAppGenerateEntity(AppGenerateEntity):
     """
     Chat Application Generate Entity.
     """
+
     # app config
     app_config: EasyUIBasedAppConfig
     model_conf: ModelConfigWithCredentialsEntity
@@ -116,61 +125,96 @@ class EasyUIBasedAppGenerateEntity(AppGenerateEntity):
     model_config = ConfigDict(protected_namespaces=())
 
 
-class ChatAppGenerateEntity(EasyUIBasedAppGenerateEntity):
+class ConversationAppGenerateEntity(AppGenerateEntity):
     """
-    Chat Application Generate Entity.
+    Base entity for conversation-based app generation.
     """
+
     conversation_id: Optional[str] = None
     is_new_message: bool = True
     user_name: Optional[str] = None
     assistant_name: Optional[str] = None
     role_user_id: Optional[str] = None
+    parent_message_id: Optional[str] = Field(
+        default=None,
+        description=(
+            "Starting from v0.9.0, parent_message_id is used to support message regeneration for internal chat API."
+            "For service API, we need to ensure its forward compatibility, "
+            "so passing in the parent_message_id as request arg is not supported for now. "
+            "It needs to be set to UUID_NIL so that the subsequent processing will treat it as legacy messages."
+        ),
+    )
+
+    @field_validator("parent_message_id")
+    @classmethod
+    def validate_parent_message_id(cls, v, info: ValidationInfo):
+        if info.data.get("invoke_from") == InvokeFrom.SERVICE_API and v != UUID_NIL:
+            raise ValueError("parent_message_id should be UUID_NIL for service API")
+        return v
+
+
+class ChatAppGenerateEntity(ConversationAppGenerateEntity, EasyUIBasedAppGenerateEntity):
+    """
+    Chat Application Generate Entity.
+    """
+
+    pass
 
 
 class CompletionAppGenerateEntity(EasyUIBasedAppGenerateEntity):
     """
     Completion Application Generate Entity.
     """
+
     pass
 
 
-class AgentChatAppGenerateEntity(EasyUIBasedAppGenerateEntity):
+class AgentChatAppGenerateEntity(ConversationAppGenerateEntity, EasyUIBasedAppGenerateEntity):
     """
     Agent Chat Application Generate Entity.
     """
+
     conversation_id: Optional[str] = None
     is_new_message: bool = True
+    pass
 
 
-class AdvancedChatAppGenerateEntity(AppGenerateEntity):
+class AdvancedChatAppGenerateEntity(ConversationAppGenerateEntity):
     """
     Advanced Chat Application Generate Entity.
     """
+
     # app config
     app_config: WorkflowUIBasedAppConfig
 
     conversation_id: Optional[str] = None
-    query: Optional[str] = None
     is_new_message: bool = True
     user_name: Optional[str] = None
     assistant_name: Optional[str] = None
     role_user_id: Optional[str] = None
 
+    workflow_run_id: Optional[str] = None
+    query: str
+
     class SingleIterationRunEntity(BaseModel):
         """
         Single Iteration Run Entity.
         """
+
         node_id: str
         inputs: dict
 
     single_iteration_run: Optional[SingleIterationRunEntity] = None
 
+
 class WorkflowAppGenerateEntity(AppGenerateEntity):
     """
     Workflow Application Generate Entity.
     """
+
     # app config
     app_config: WorkflowUIBasedAppConfig
+    workflow_run_id: Optional[str] = None
     is_new_message: bool = True
     user_name: Optional[str] = None
     assistant_name: Optional[str] = None
@@ -180,6 +224,7 @@ class WorkflowAppGenerateEntity(AppGenerateEntity):
         """
         Single Iteration Run Entity.
         """
+
         node_id: str
         inputs: dict
 

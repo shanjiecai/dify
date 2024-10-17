@@ -3,10 +3,19 @@ from collections.abc import Generator
 
 import pytest
 
-from core.model_runtime.entities.llm_entities import LLMResult, LLMResultChunk, LLMResultChunkDelta
-from core.model_runtime.entities.message_entities import AssistantPromptMessage, UserPromptMessage
+from core.model_runtime.entities.llm_entities import (
+    LLMResult,
+    LLMResultChunk,
+    LLMResultChunkDelta,
+)
+from core.model_runtime.entities.message_entities import (
+    AssistantPromptMessage,
+    UserPromptMessage,
+)
 from core.model_runtime.errors.validate import CredentialsValidateFailedError
-from core.model_runtime.model_providers.volcengine_maas.llm.llm import VolcengineMaaSLargeLanguageModel
+from core.model_runtime.model_providers.volcengine_maas.llm.llm import (
+    VolcengineMaaSLargeLanguageModel,
+)
 
 
 def test_validate_credentials_for_chat_model():

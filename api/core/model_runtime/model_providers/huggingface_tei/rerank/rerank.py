@@ -3,7 +3,12 @@ from typing import Optional
 import httpx
 
 from core.model_runtime.entities.common_entities import I18nObject
-from core.model_runtime.entities.model_entities import AIModelEntity, FetchFrom, ModelPropertyKey, ModelType
+from core.model_runtime.entities.model_entities import (
+    AIModelEntity,
+    FetchFrom,
+    ModelPropertyKey,
+    ModelType,
+)
 from core.model_runtime.entities.rerank_entities import RerankDocument, RerankResult
 from core.model_runtime.errors.invoke import (
     InvokeAuthorizationError,
@@ -47,29 +52,28 @@ class HuggingfaceTeiRerankModel(RerankModel):
         """
         if len(docs) == 0:
             return RerankResult(model=model, docs=[])
-        server_url = credentials['server_url']
+        server_url = credentials["server_url"]
 
-        if server_url.endswith('/'):
-            server_url = server_url[:-1]
+        server_url = server_url.removesuffix("/")
 
         try:
             results = TeiHelper.invoke_rerank(server_url, query, docs)
 
             rerank_documents = []
-            for result in results:  
+            for result in results:
                 rerank_document = RerankDocument(
-                    index=result['index'],
-                    text=result['text'],
-                    score=result['score'],
+                    index=result["index"],
+                    text=result["text"],
+                    score=result["score"],
                 )
-                if score_threshold is None or result['score'] >= score_threshold:
+                if score_threshold is None or result["score"] >= score_threshold:
                     rerank_documents.append(rerank_document)
                 if top_n is not None and len(rerank_documents) >= top_n:
                     break
 
             return RerankResult(model=model, docs=rerank_documents)
         except httpx.HTTPStatusError as e:
-            raise InvokeServerUnavailableError(str(e))  
+            raise InvokeServerUnavailableError(str(e))
 
     def validate_credentials(self, model: str, credentials: dict) -> None:
         """
@@ -80,21 +84,21 @@ class HuggingfaceTeiRerankModel(RerankModel):
         :return:
         """
         try:
-            server_url = credentials['server_url']
+            server_url = credentials["server_url"]
             extra_args = TeiHelper.get_tei_extra_parameter(server_url, model)
-            if extra_args.model_type != 'reranker':
-                raise CredentialsValidateFailedError('Current model is not a rerank model')
+            if extra_args.model_type != "reranker":
+                raise CredentialsValidateFailedError("Current model is not a rerank model")
 
-            credentials['context_size'] = extra_args.max_input_length
+            credentials["context_size"] = extra_args.max_input_length
 
             self.invoke(
                 model=model,
                 credentials=credentials,
-                query='Whose kasumi',
+                query="Whose kasumi",
                 docs=[
                     'Kasumi is a girl\'s name of Japanese origin meaning "mist".',
-                    'Her music is a kawaii bass, a mix of future bass, pop, and kawaii music ',
-                    'and she leads a team named PopiParty.',
+                    "Her music is a kawaii bass, a mix of future bass, pop, and kawaii music ",
+                    "and she leads a team named PopiParty.",
                 ],
                 score_threshold=0.8,
             )
@@ -129,7 +133,7 @@ class HuggingfaceTeiRerankModel(RerankModel):
             fetch_from=FetchFrom.CUSTOMIZABLE_MODEL,
             model_type=ModelType.RERANK,
             model_properties={
-                ModelPropertyKey.CONTEXT_SIZE: int(credentials.get('context_size', 512)),
+                ModelPropertyKey.CONTEXT_SIZE: int(credentials.get("context_size", 512)),
             },
             parameter_rules=[],
         )

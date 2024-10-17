@@ -9,24 +9,36 @@ from tencentcloud.common.profile.client_profile import ClientProfile
 from tencentcloud.common.profile.http_profile import HttpProfile
 from tencentcloud.hunyuan.v20230901 import hunyuan_client, models
 
+from core.embedding.embedding_constant import EmbeddingInputType
 from core.model_runtime.entities.model_entities import PriceType
-from core.model_runtime.entities.text_embedding_entities import EmbeddingUsage, TextEmbeddingResult
+from core.model_runtime.entities.text_embedding_entities import (
+    EmbeddingUsage,
+    TextEmbeddingResult,
+)
 from core.model_runtime.errors.invoke import (
     InvokeError,
 )
 from core.model_runtime.errors.validate import CredentialsValidateFailedError
-from core.model_runtime.model_providers.__base.text_embedding_model import TextEmbeddingModel
+from core.model_runtime.model_providers.__base.text_embedding_model import (
+    TextEmbeddingModel,
+)
 
 logger = logging.getLogger(__name__)
+
 
 class HunyuanTextEmbeddingModel(TextEmbeddingModel):
     """
     Model class for Hunyuan text embedding model.
     """
 
-    def _invoke(self, model: str, credentials: dict,
-                texts: list[str], user: Optional[str] = None) \
-            -> TextEmbeddingResult:
+    def _invoke(
+        self,
+        model: str,
+        credentials: dict,
+        texts: list[str],
+        user: Optional[str] = None,
+        input_type: EmbeddingInputType = EmbeddingInputType.DOCUMENT,
+    ) -> TextEmbeddingResult:
         """
         Invoke text embedding model
 
@@ -34,12 +46,13 @@ class HunyuanTextEmbeddingModel(TextEmbeddingModel):
         :param credentials: model credentials
         :param texts: texts to embed
         :param user: unique user id
+        :param input_type: input type
         :return: embeddings result
         """
 
-        if model != 'hunyuan-embedding':
-            raise ValueError('Invalid model name')
-        
+        if model != "hunyuan-embedding":
+            raise ValueError("Invalid model name")
+
         client = self._setup_hunyuan_client(credentials)
 
         embeddings = []
@@ -47,9 +60,7 @@ class HunyuanTextEmbeddingModel(TextEmbeddingModel):
 
         for input in texts:
             request = models.GetEmbeddingRequest()
-            params = {
-                "Input": input
-            }
+            params = {"Input": input}
             request.from_json_string(json.dumps(params))
             response = client.GetEmbedding(request)
             usage = response.Usage.TotalTokens
@@ -60,11 +71,7 @@ class HunyuanTextEmbeddingModel(TextEmbeddingModel):
         result = TextEmbeddingResult(
             model=model,
             embeddings=embeddings,
-            usage=self._calc_response_usage(
-                model=model,
-                credentials=credentials,
-                tokens=token_usage
-            )
+            usage=self._calc_response_usage(model=model, credentials=credentials, tokens=token_usage),
         )
 
         return result
@@ -79,22 +86,19 @@ class HunyuanTextEmbeddingModel(TextEmbeddingModel):
             req = models.ChatCompletionsRequest()
             params = {
                 "Model": model,
-                "Messages": [{
-                    "Role": "user",
-                    "Content": "hello"
-                }],
+                "Messages": [{"Role": "user", "Content": "hello"}],
                 "TopP": 1,
                 "Temperature": 0,
-                "Stream": False
+                "Stream": False,
             }
             req.from_json_string(json.dumps(params))
             client.ChatCompletions(req)
         except Exception as e:
-            raise CredentialsValidateFailedError(f'Credentials validation failed: {e}')
+            raise CredentialsValidateFailedError(f"Credentials validation failed: {e}")
 
     def _setup_hunyuan_client(self, credentials):
-        secret_id = credentials['secret_id']
-        secret_key = credentials['secret_key']
+        secret_id = credentials["secret_id"]
+        secret_key = credentials["secret_key"]
         cred = credential.Credential(secret_id, secret_key)
         httpProfile = HttpProfile()
         httpProfile.endpoint = "hunyuan.tencentcloudapi.com"
@@ -102,7 +106,7 @@ class HunyuanTextEmbeddingModel(TextEmbeddingModel):
         clientProfile.httpProfile = httpProfile
         client = hunyuan_client.HunyuanClient(cred, "", clientProfile)
         return client
-    
+
     def _calc_response_usage(self, model: str, credentials: dict, tokens: int) -> EmbeddingUsage:
         """
         Calculate response usage
@@ -114,10 +118,7 @@ class HunyuanTextEmbeddingModel(TextEmbeddingModel):
         """
         # get input price info
         input_price_info = self.get_price(
-            model=model,
-            credentials=credentials,
-            price_type=PriceType.INPUT,
-            tokens=tokens
+            model=model, credentials=credentials, price_type=PriceType.INPUT, tokens=tokens
         )
 
         # transform usage
@@ -128,11 +129,11 @@ class HunyuanTextEmbeddingModel(TextEmbeddingModel):
             price_unit=input_price_info.unit,
             total_price=input_price_info.total_amount,
             currency=input_price_info.currency,
-            latency=time.perf_counter() - self.started_at
+            latency=time.perf_counter() - self.started_at,
         )
 
         return usage
-    
+
     @property
     def _invoke_error_mapping(self) -> dict[type[InvokeError], list[type[Exception]]]:
         """
@@ -146,7 +147,7 @@ class HunyuanTextEmbeddingModel(TextEmbeddingModel):
         return {
             InvokeError: [TencentCloudSDKException],
         }
-    
+
     def get_num_tokens(self, model: str, credentials: dict, texts: list[str]) -> int:
         """
         Get number of tokens for given prompt messages

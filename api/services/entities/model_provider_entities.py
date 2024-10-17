@@ -4,7 +4,10 @@ from typing import Optional
 from pydantic import BaseModel, ConfigDict
 
 from configs import dify_config
-from core.entities.model_entities import ModelWithProviderEntity, ProviderModelWithStatusEntity
+from core.entities.model_entities import (
+    ModelWithProviderEntity,
+    ProviderModelWithStatusEntity,
+)
 from core.entities.provider_entities import QuotaConfiguration
 from core.model_runtime.entities.common_entities import I18nObject
 from core.model_runtime.entities.model_entities import ModelType

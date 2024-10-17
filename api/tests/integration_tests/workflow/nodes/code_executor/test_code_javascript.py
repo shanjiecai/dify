@@ -1,8 +1,12 @@
 from textwrap import dedent
 
 from core.helper.code_executor.code_executor import CodeExecutor, CodeLanguage
-from core.helper.code_executor.javascript.javascript_code_provider import JavascriptCodeProvider
-from core.helper.code_executor.javascript.javascript_transformer import NodeJsTemplateTransformer
+from core.helper.code_executor.javascript.javascript_code_provider import (
+    JavascriptCodeProvider,
+)
+from core.helper.code_executor.javascript.javascript_transformer import (
+    NodeJsTemplateTransformer,
+)
 
 CODE_LANGUAGE = CodeLanguage.JAVASCRIPT
 
@@ -14,10 +18,12 @@ def test_javascript_plain():
 
 
 def test_javascript_json():
-    code = dedent("""
+    code = dedent(
+        """
     obj = {'Hello': 'World'}
     console.log(JSON.stringify(obj))
-    """)
+    """
+    )
     result = CodeExecutor.execute_code(language=CODE_LANGUAGE, preload="", code=code)
     assert result == '{"Hello":"World"}\n'
 

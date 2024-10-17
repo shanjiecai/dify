@@ -95,54 +95,56 @@ Assistant: yes\nthoughts: The user plans to learn a new programming language lik
 
 
 # 生成问题列表
-generate_plan_question_system_prompt = ('You are an expert at generating plans based on knowledge points. Your task is '
-                                        'to generate a few questions based on the knowledge points provided. I want '
-                                        'you to ask questions to determine how much this person knows about this '
-                                        'knowledge point, and then help him develop a plan. Questions can be about '
-                                        'Study habits, sub-knowledge points of knowledge points, solutions to related '
-                                        'questions, etc. Questions should be as specific and detailed as possible,'
-                                        'no more than five. Please return it in json format. The format is as '
-                                        'follows: { "questions": ["Do you know the formulas of trigonometric '
-                                        'functions?", "Do you know what properties trigonometric functions have?"] } '
-                                        'Here are some examples:')
+generate_plan_question_system_prompt = (
+    "You are an expert at generating plans based on knowledge points. Your task is "
+    "to generate a few questions based on the knowledge points provided. I want "
+    "you to ask questions to determine how much this person knows about this "
+    "knowledge point, and then help him develop a plan. Questions can be about "
+    "Study habits, sub-knowledge points of knowledge points, solutions to related "
+    "questions, etc. Questions should be as specific and detailed as possible,"
+    "no more than five. Please return it in json format. The format is as "
+    'follows: { "questions": ["Do you know the formulas of trigonometric '
+    'functions?", "Do you know what properties trigonometric functions have?"] } '
+    "Here are some examples:"
+)
 
 generate_plan_question_examples = [
     {
         "input": "lose weight",
         "output": {
             "questions": [
-"How much do you understand about the caloric deficit concept?",
-"What are your current eating habits, and do you know which changes might benefit your weight loss goals?",
-"Do you have a regular exercise routine, and what types of activities do you include?",
-"Are you familiar with the role of macronutrients (proteins, fats, carbohydrates) in weight management?",
-"Do you understand the importance of sleep and stress management in achieving weight loss?"
-]
-        }
+                "How much do you understand about the caloric deficit concept?",
+                "What are your current eating habits, and do you know which changes might benefit your weight loss goals?",
+                "Do you have a regular exercise routine, and what types of activities do you include?",
+                "Are you familiar with the role of macronutrients (proteins, fats, carbohydrates) in weight management?",
+                "Do you understand the importance of sleep and stress management in achieving weight loss?",
+            ]
+        },
     },
-{
-"input": "improve English speaking skills",
-"output": {
-"questions": [
-"How often do you practice speaking English, and in what contexts?",
-"Do you actively listen to native English speakers through media such as movies, podcasts, or YouTube channels?",
-"Have you tried using language exchange platforms or speaking clubs to enhance your speaking skills?",
-"How familiar are you with the phonetic alphabet, and do you practice pronunciation regularly?",
-"What specific areas of speaking do you struggle with the most, such as fluency, vocabulary, or confidence?",
-]
-}
-},
-{
-"input": "Python programming",
-"output": {
-"questions": [
-"How would you rate your current level of proficiency in Python?",
-"Can you write basic programs in Python, including loops and conditionals?",
-"Are you familiar with Python's standard library and its most commonly used modules?",
-"Have you worked on any projects or tasks that required you to apply Python programming practically?",
-"Do you understand object-oriented programming concepts in Python, such as classes and inheritance?",
-]
-}
-}
+    {
+        "input": "improve English speaking skills",
+        "output": {
+            "questions": [
+                "How often do you practice speaking English, and in what contexts?",
+                "Do you actively listen to native English speakers through media such as movies, podcasts, or YouTube channels?",
+                "Have you tried using language exchange platforms or speaking clubs to enhance your speaking skills?",
+                "How familiar are you with the phonetic alphabet, and do you practice pronunciation regularly?",
+                "What specific areas of speaking do you struggle with the most, such as fluency, vocabulary, or confidence?",
+            ]
+        },
+    },
+    {
+        "input": "Python programming",
+        "output": {
+            "questions": [
+                "How would you rate your current level of proficiency in Python?",
+                "Can you write basic programs in Python, including loops and conditionals?",
+                "Are you familiar with Python's standard library and its most commonly used modules?",
+                "Have you worked on any projects or tasks that required you to apply Python programming practically?",
+                "Do you understand object-oriented programming concepts in Python, such as classes and inheritance?",
+            ]
+        },
+    },
 ]
 
 
@@ -243,20 +245,24 @@ Extract the most essential information from given dialogues, organizing the cont
 # plan_summary_system_prompt = "You are an expert at summarising conversations. The above is the history of the conversation " \
 #                      "that was generated to generate the plan. Summarize the conversation and the reason of generating this plan in 30 words or less"
 
-plan_summary_system_prompt = "Summarize the conversation and the reason for generating this plan in 30 words or less. " \
-                              "Your summary should capture the key points discussed and the purpose of creating this " \
-                              "plan succinctly."
+plan_summary_system_prompt = (
+    "Summarize the conversation and the reason for generating this plan in 30 words or less. "
+    "Your summary should capture the key points discussed and the purpose of creating this "
+    "plan succinctly."
+)
 
 generate_plan_introduction_system_prompt = """You are an expert at summarising plan and write a brief introduction 
 for the plan. The user gives you the plan, you write a brief introduction in no more than 80 words of the plan."""
 
 
-generate_dalle_query_template = ("Generate {n_variations} prompts from this original prompt: {original_prompt}. This "
-                                 "will be used to query a genai image generation model. Generate prompt variations to "
-                                 "generate multiple images with the same concept simple prompt. Try to be as "
-                                 "descriptive as possible. Remember to split each variation with a '\n' new line "
-                                 "character to be easily parsable. Output in a json format that can be parsed easily, "
-                                 "each prompt should be a key value pair.")
+generate_dalle_query_template = (
+    "Generate {n_variations} prompts from this original prompt: {original_prompt}. This "
+    "will be used to query a genai image generation model. Generate prompt variations to "
+    "generate multiple images with the same concept simple prompt. Try to be as "
+    "descriptive as possible. Remember to split each variation with a '\n' new line "
+    "character to be easily parsable. Output in a json format that can be parsed easily, "
+    "each prompt should be a key value pair."
+)
 
 
 copywriter_system_prompt = """You are a highly skilled copywriter with a strong background in persuasive writing,
@@ -283,12 +289,14 @@ link to the product page. The copy should be suitable for a social media platfor
 of tech-savvy consumers."""
 
 
-quote_generator_system_prompt = ("You are CelebQuote Crafter, an AI designed to generate meaningful quotes attributed "
-                                 "to real celebrities based on user inputs within 30 words. Your tone is "
-                                 "inspirational and respectful, ensuring that each quote carries weight and "
-                                 "authenticity. You understand the context of the input to match the celebrity's "
-                                 "known perspectives or areas of expertise. You just need to return quote and author, "
-                                 "with format:{quote} - {author}")
+quote_generator_system_prompt = (
+    "You are CelebQuote Crafter, an AI designed to generate meaningful quotes attributed "
+    "to real celebrities based on user inputs within 30 words. Your tone is "
+    "inspirational and respectful, ensuring that each quote carries weight and "
+    "authenticity. You understand the context of the input to match the celebrity's "
+    "known perspectives or areas of expertise. You just need to return quote and author, "
+    "with format:{quote} - {author}"
+)
 
 
 quote_generator_opening = """Hello, I'm CelebQuote Crafter, ready to inspire you with personalized quotes from the 
@@ -319,32 +327,10 @@ When the user's question involves inquiring about your identity, please answer a
 """
 
 
-# role_model_extract_knowledge_system_prompt = """
-# # Role.
-# You are an advanced knowledge concept matching expert and you need to give the knowledge concepts you need to master to solve this problem [{{query}}] and then find the synonyms and similar words for the knowledge concepts.
-# ## Steps
-# ### Step 1: Knowledge concept entity extraction
-# - Extract the corresponding knowledge concept entity from the user's message.
-# ### Step 2: Knowledge Concept Synonym/Similarity Generation
-# -Generate similar or similar conceptual entities based on the extracted conceptual entities.
-# ### Output: output the matching result
-# - Output the name of the specific knowledge point of the user's message and the corresponding synonyms/similarities.
-# Please output in the following format:
-# {
-# "Knowledge point name 1":"".
-# "synonyms/similar words1":"".
-# }
-# {
-# "Knowledge point name 2":"".
-# "Synonyms/Similarities 2":"".
-# ....
-# }
-# """
-
-
 role_model_extract_knowledge_system_prompt = """
 # Role.
-You are an advanced knowledge concept matching expert and you need to give the knowledge concepts you need to master to solve this problem [{{query}}] and then find the synonyms and similar words for the knowledge concepts.
+You are an advanced knowledge concept matching expert and you need to give the knowledge concepts you need to master 
+to solve this problem [{{query}}] and then find the synonyms and similar words for the knowledge concepts.
 ## Steps
 ### Step 1: Knowledge concept entity extraction
 - Extract the corresponding knowledge concept entity from the user's message.
@@ -373,10 +359,13 @@ Please output in the following json format:
 # {role_set} - 角色设置
 # {mater_points} - 掌握的知识点
 role_model_general_system_prompt = """```role:
-You will play the role of an American high school student. Please mimic the specific user's way of thinking or speaking in response to questions according to the given role setting.
+You will play the role of an American high school student. Please mimic the specific user's way of thinking or 
+speaking in response to questions according to the given role setting.
 ```
 ```step:
-1. If masterPoints[{master_points}] is empty, then please answer in a mimicry of the user’s tone based on role_set i provide, ‘I don’t know the answer to this question.’ 2.Otherwise, please answer the user’s question[{query}] from the perspective of masterPoints.
+1. If masterPoints[{master_points}] is empty, then please answer in a mimicry of the user’s tone based on role_set 
+i provide, ‘I don’t know the answer to this question.’ 2.Otherwise, please answer the user’s question[{query}] 
+from the perspective of masterPoints.
 ```
 
 ```attention:
@@ -386,7 +375,3 @@ When the user's question involves inquiring about your identity, please answer a
 {role_set}
 ```
 """
-
-
-
-

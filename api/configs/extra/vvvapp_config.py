@@ -1,4 +1,3 @@
-
 from pydantic import BaseModel, Field
 
 
@@ -6,36 +5,37 @@ class VvvappConfig(BaseModel):
     """
     Vvvapp configs
     """
-    ENV: str = Field(description='env', default='dev')
 
-    MODE: str = Field(description='mode', default='api')
+    ENV: str = Field(description="env", default="dev")
+
+    MODE: str = Field(description="mode", default="api")
 
     OPENAI_API_KEY: str = Field(
-        description='openai api key',
-        default='',
+        description="openai api key",
+        default="",
     )
 
     NEWS_API_KEY: str = Field(
-        description='news api key',
-        default='',
+        description="news api key",
+        default="",
     )
 
     FEISHU_ALERT_URL: str = Field(
-        description='feishu alert url',
-        default='',
+        description="feishu alert url",
+        default="",
     )
 
     APP_ENDPOINT: str = Field(
-        description='app endpoint',
-        default='',
+        description="app endpoint",
+        default="",
     )
 
     ES_HOST: str = Field(
-        description='es host',
-        default='localhost',
+        description="es host",
+        default="localhost",
     )
 
     ROLE_MODEL_CUSTOMIZE_SERVICE_URL: str = Field(
-        description='role model customize service url',
-        default='',
+        description="role model customize service url",
+        default="",
     )

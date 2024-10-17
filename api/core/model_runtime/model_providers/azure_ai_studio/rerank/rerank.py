@@ -6,7 +6,11 @@ import urllib.request
 from typing import Optional
 
 from core.model_runtime.entities.common_entities import I18nObject
-from core.model_runtime.entities.model_entities import AIModelEntity, FetchFrom, ModelType
+from core.model_runtime.entities.model_entities import (
+    AIModelEntity,
+    FetchFrom,
+    ModelType,
+)
 from core.model_runtime.entities.rerank_entities import RerankDocument, RerankResult
 from core.model_runtime.errors.invoke import (
     InvokeAuthorizationError,

@@ -3,7 +3,9 @@ import os
 import pytest
 
 from core.model_runtime.errors.validate import CredentialsValidateFailedError
-from core.model_runtime.model_providers.siliconflow.siliconflow import SiliconflowProvider
+from core.model_runtime.model_providers.siliconflow.siliconflow import (
+    SiliconflowProvider,
+)
 
 
 def test_validate_provider_credentials():

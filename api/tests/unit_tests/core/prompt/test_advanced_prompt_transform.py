@@ -5,9 +5,17 @@ import pytest
 from core.app.app_config.entities import ModelConfigEntity
 from core.file.file_obj import FileExtraConfig, FileTransferMethod, FileType, FileVar
 from core.memory.token_buffer_memory import TokenBufferMemory
-from core.model_runtime.entities.message_entities import AssistantPromptMessage, PromptMessageRole, UserPromptMessage
+from core.model_runtime.entities.message_entities import (
+    AssistantPromptMessage,
+    PromptMessageRole,
+    UserPromptMessage,
+)
 from core.prompt.advanced_prompt_transform import AdvancedPromptTransform
-from core.prompt.entities.advanced_prompt_entities import ChatModelMessage, CompletionModelPromptTemplate, MemoryConfig
+from core.prompt.entities.advanced_prompt_entities import (
+    ChatModelMessage,
+    CompletionModelPromptTemplate,
+    MemoryConfig,
+)
 from core.prompt.utils.prompt_template_parser import PromptTemplateParser
 from models.model import Conversation
 
@@ -53,7 +61,7 @@ def test__get_completion_model_prompt_messages():
             "#context#": context,
             "#histories#": "\n".join(
                 [
-                    f"{'Human' if prompt.role.value == 'user' else 'Assistant'}: " f"{prompt.content}"
+                    f"{'Human' if prompt.role.value == 'user' else 'Assistant'}: {prompt.content}"
                     for prompt in history_prompt_messages
                 ]
             ),

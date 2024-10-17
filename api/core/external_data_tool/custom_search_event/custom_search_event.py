@@ -28,4 +28,4 @@ class YourToolNameTool(ExternalDataTool):
         """
         # implement your own query logic here
 
-        return ''
+        return ""

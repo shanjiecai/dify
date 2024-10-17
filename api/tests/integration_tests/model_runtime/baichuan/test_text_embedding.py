@@ -4,7 +4,9 @@ import pytest
 
 from core.model_runtime.entities.text_embedding_entities import TextEmbeddingResult
 from core.model_runtime.errors.validate import CredentialsValidateFailedError
-from core.model_runtime.model_providers.baichuan.text_embedding.text_embedding import BaichuanTextEmbeddingModel
+from core.model_runtime.model_providers.baichuan.text_embedding.text_embedding import (
+    BaichuanTextEmbeddingModel,
+)
 
 
 def test_validate_credentials():

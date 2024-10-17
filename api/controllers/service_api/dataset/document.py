@@ -14,7 +14,10 @@ from controllers.service_api.dataset.error import (
     NoFileUploadedError,
     TooManyFilesError,
 )
-from controllers.service_api.wraps import DatasetApiResource, cloud_edition_billing_resource_check
+from controllers.service_api.wraps import (
+    DatasetApiResource,
+    cloud_edition_billing_resource_check,
+)
 from core.errors.error import ProviderTokenNotInitError
 from extensions.ext_database import db
 from fields.document_fields import document_fields, document_status_fields

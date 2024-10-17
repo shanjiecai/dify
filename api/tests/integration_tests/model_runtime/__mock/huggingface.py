@@ -4,7 +4,9 @@ import pytest
 from _pytest.monkeypatch import MonkeyPatch
 from huggingface_hub import InferenceClient
 
-from tests.integration_tests.model_runtime.__mock.huggingface_chat import MockHuggingfaceChatClass
+from tests.integration_tests.model_runtime.__mock.huggingface_chat import (
+    MockHuggingfaceChatClass,
+)
 
 MOCK = os.getenv("MOCK_SWITCH", "false").lower() == "true"
 

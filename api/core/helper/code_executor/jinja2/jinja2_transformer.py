@@ -11,13 +11,12 @@ class Jinja2TemplateTransformer(TemplateTransformer):
         :param response: response
         :return:
         """
-        return {
-            'result': cls.extract_result_str_from_response(response)
-        }
+        return {"result": cls.extract_result_str_from_response(response)}
 
     @classmethod
     def get_runner_script(cls) -> str:
-        runner_script = dedent(f"""
+        runner_script = dedent(
+            f"""
             # declare main function
             def main(**inputs):
                 import jinja2
@@ -37,12 +36,14 @@ class Jinja2TemplateTransformer(TemplateTransformer):
             result = f'''<<RESULT>>{{output}}<<RESULT>>'''
             print(result)
             
-            """)
+            """
+        )
         return runner_script
 
     @classmethod
     def get_preload_script(cls) -> str:
-        preload_script = dedent("""
+        preload_script = dedent(
+            """
             import jinja2
             from base64 import b64decode
             
@@ -54,6 +55,7 @@ class Jinja2TemplateTransformer(TemplateTransformer):
             if __name__ == '__main__':
                 _jinja2_preload_()
             
-            """)
+            """
+        )
 
         return preload_script

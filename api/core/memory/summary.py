@@ -44,9 +44,7 @@ class SummarizerMixin(BaseModel):
     prompt: BasePromptTemplate = SUMMARY_PROMPT
     summary_message_cls: type[BaseMessage] = ChatMessage
 
-    def predict_new_summary(
-        self, messages: list[BaseMessage], existing_summary: str
-    ) -> str:
+    def predict_new_summary(self, messages: list[BaseMessage], existing_summary: str) -> str:
         new_lines = get_buffer_string(
             messages,
             human_prefix=self.human_prefix,
@@ -74,9 +72,7 @@ class ConversationSummaryMemory(BaseChatMemory, SummarizerMixin):
     ) -> ConversationSummaryMemory:
         obj = cls(llm=llm, chat_memory=chat_memory, **kwargs)
         for i in range(0, len(obj.chat_memory.messages), summarize_step):
-            obj.buffer = obj.predict_new_summary(
-                obj.chat_memory.messages[i : i + summarize_step], obj.buffer
-            )
+            obj.buffer = obj.predict_new_summary(obj.chat_memory.messages[i : i + summarize_step], obj.buffer)
         return obj
 
     @property
@@ -96,7 +92,7 @@ class ConversationSummaryMemory(BaseChatMemory, SummarizerMixin):
         return {self.memory_key: buffer}
 
     @root_validator()
-    def validate_prompt_input_variables(cls, values: dict) -> dict:
+    def validate_prompt_input_variables(self, values: dict) -> dict:
         """Validate that prompt input variables are consistent."""
         prompt_variables = values["prompt"].input_variables
         expected_keys = {"summary", "new_lines"}
@@ -110,13 +106,9 @@ class ConversationSummaryMemory(BaseChatMemory, SummarizerMixin):
     def save_context(self, inputs: dict[str, Any], outputs: dict[str, str]) -> None:
         """Save context from this conversation to buffer."""
         super().save_context(inputs, outputs)
-        self.buffer = self.predict_new_summary(
-            self.chat_memory.messages[-2:], self.buffer
-        )
+        self.buffer = self.predict_new_summary(self.chat_memory.messages[-2:], self.buffer)
 
     def clear(self) -> None:
         """Clear memory contents."""
         super().clear()
         self.buffer = ""
-
-

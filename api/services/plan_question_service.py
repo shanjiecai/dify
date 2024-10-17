@@ -9,8 +9,7 @@ class PlanQuestionService:
 
     @classmethod
     def get(cls, plan: str) -> Optional[PlanQuestion]:
-        plan_question = db.session.query(PlanQuestion).filter(
-            PlanQuestion.plan == plan).first()
+        plan_question = db.session.query(PlanQuestion).filter(PlanQuestion.plan == plan).first()
         return plan_question
 
     @classmethod

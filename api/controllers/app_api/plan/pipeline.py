@@ -3,7 +3,9 @@ import datetime
 
 from flask import Flask
 
-from controllers.app_api.plan.generate_knowledge_point_question import generate_knowledge_point_question
+from controllers.app_api.plan.generate_knowledge_point_question import (
+    generate_knowledge_point_question,
+)
 from controllers.app_api.plan.judge_plan import judge_plan
 from extensions.ext_database import db
 from models.model import Conversation
@@ -12,17 +14,18 @@ from mylogger import logger
 from services.plan_question_service import PlanQuestionService
 
 
-def generate_plan_question_pipeline(query, conversation: Conversation, user: str, user_id: str, judge_res: str = None):
+def generate_plan_question_pipeline(
+    query, conversation: Conversation, user: str, user_id: str, judge_res: str | None = None
+):
     # # 根据用户问题判断是否需要生成计划
     if not judge_res:
         judge_res = judge_plan(query)
-    if judge_res == 'no' or judge_res.startswith('no'):
+    if judge_res == "no" or judge_res.startswith("no"):
         return None
     else:
         # query neo4j
         # pass
-        _conversation: Conversation = db.session.query(Conversation).filter(
-            Conversation.id == conversation.id).first()
+        _conversation: Conversation = db.session.query(Conversation).filter(Conversation.id == conversation.id).first()
         if PlanQuestionService.get(judge_res):
             plan_question = PlanQuestionService.get(judge_res)
             questions = plan_question.questions
@@ -61,7 +64,9 @@ def generate_plan_question_pipeline(query, conversation: Conversation, user: str
         return questions
 
 
-def plan_question_background(flask_app: Flask, query: str, conversation: Conversation, user: str, user_id: str, judge_plan_res: str = None):
+def plan_question_background(
+    flask_app: Flask, query: str, conversation: Conversation, user: str, user_id: str, judge_plan_res: str | None = None
+):
     with flask_app.app_context():
         questions = generate_plan_question_pipeline(query, conversation, user, user_id, judge_plan_res)
         if questions is None:
@@ -69,10 +74,10 @@ def plan_question_background(flask_app: Flask, query: str, conversation: Convers
         logger.info(f"plan_question_background: {query} {questions}")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     import sys
 
-    sys.path.append('/Users/jiecai/PycharmProjects/dify/api')
+    sys.path.append("/Users/jiecai/PycharmProjects/dify/api")
     from app import create_app
 
     app = create_app()

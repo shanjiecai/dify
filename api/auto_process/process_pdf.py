@@ -1,3 +1,4 @@
+from pathlib import Path
 from typing import Optional
 
 import camelot
@@ -155,5 +156,4 @@ if __name__ == "__main__":
         if not os.path.exists(os.path.dirname(out_file)):
             os.makedirs(os.path.dirname(out_file))
         # pprint(res)
-        with open(out_file, "w") as f:
-            f.write(res)
+        Path(out_file).write_text(res)

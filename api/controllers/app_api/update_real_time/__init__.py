@@ -33,17 +33,18 @@ from services.dataset_update_real_time_service import DatasetUpdateRealTimeServi
 from services.file_service import FileService
 from services.message_service import MessageService
 
-api_key = os.environ.get('OPENAI_API_KEY')
+api_key = os.environ.get("OPENAI_API_KEY")
 
 
 # 根据对话实时更新知识库
 # 每天导出AI bot所有对话为一个文件，新文件重新加入当前AI bot知识库，并总结当日对话内容
 
+
 def real_time_update():
     while True:
         try:
             # 获取当前日期
-            current_date = datetime.datetime.now().strftime('%Y-%m-%d')
+            current_date = datetime.datetime.now().strftime("%Y-%m-%d")
             # 获取所有对话
             conversations = Conversation.query.all()
             # 获取所有对话的对话内容
@@ -63,11 +64,11 @@ def real_time_update():
 
 def init_real_time_update(main_app: Flask):
     # group_id_list = get_group_id_list()
-    env = main_app.config.get('ENV')
-    mode = main_app.config.get('MODE')
+    env = main_app.config.get("ENV")
+    mode = main_app.config.get("MODE")
     logger.info(f"当前环境：{env}, 当前模式：{mode}")
     try:
-        if env == 'production' and mode == 'api':
+        if env == "production" and mode == "api":
             group_id_list = get_all_groups(only_dj_bot=False)
         else:
             # group_id_list = []
@@ -83,18 +84,21 @@ def init_real_time_update(main_app: Flask):
         t.start()
 
 
-def get_conversation_message_str(conversation_id: str=None, group_id: str = None, limit=1000, last_id=None):
+def get_conversation_message_str(
+    conversation_id: str | None = None, group_id: str | None = None, limit=1000, last_id=None
+):
     conversation_messages_str = ""
     if conversation_id:
-        messages = MessageService.pagination_by_more_than_last_id(None, None, last_id=last_id, limit=limit,
-                                                                  conversation_id=conversation_id, include_ids=None)
+        messages = MessageService.pagination_by_more_than_last_id(
+            None, None, last_id=last_id, limit=limit, conversation_id=conversation_id, include_ids=None
+        )
         messages = messages.data
 
         conversation = ConversationService.get_conversation(
             # app_model=app_model,
             app_model=None,
             # user=user,
-            conversation_id=conversation_id
+            conversation_id=conversation_id,
         )
         app_id = conversation.app_id
         app = AppModelService.get_app_model_by_app_id(app_id)
@@ -104,7 +108,9 @@ def get_conversation_message_str(conversation_id: str=None, group_id: str = None
                 if message.query:
                     conversation_messages_str += message.role + ": " + message.query + "\n"
                 if message.answer:
-                    conversation_messages_str += (message.assistant_name if message.assistant_name else conversation_assistant_name) + ": " + message.answer + "\n"
+                    conversation_messages_str += (
+                        (message.assistant_name or conversation_assistant_name) + ": " + message.answer + "\n"
+                    )
             last_id = messages[-1].id
             return conversation_messages_str, last_id
         else:
@@ -126,10 +132,11 @@ def get_conversation_message_str(conversation_id: str=None, group_id: str = None
 # 将历史对话存到临时文件中
 def save_conversation_to_file(conversation_id: str, group_id: str, conversation_messages_str: str):
     # 获取当前日期
-    current_date = datetime.datetime.utcnow().strftime('%Y-%m-%d_%H:%M:%S')
+    current_date = datetime.datetime.utcnow().strftime("%Y-%m-%d_%H:%M:%S")
     # 获取当前对话的对话内容
-    conversation_file_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'tmp',
-                                          f"{current_date}_{conversation_id if conversation_id else group_id}.txt")
+    conversation_file_path = os.path.join(
+        os.path.abspath(os.path.dirname(__file__)), "tmp", f"{current_date}_{conversation_id or group_id}.txt"
+    )
     with open(conversation_file_path, "w") as f:
         f.write(conversation_messages_str)
     return conversation_file_path
@@ -137,7 +144,7 @@ def save_conversation_to_file(conversation_id: str, group_id: str, conversation_
 
 # 上传文件
 def upload_file_to_dify(conversation_file_path: str):
-    file = open(conversation_file_path, 'rb')
+    file = open(conversation_file_path, "rb")
     filename = os.path.basename(conversation_file_path)
     user = AccountService.load_user("1c795cbf-0924-4f01-aec5-1b5abef50bca")
     upload_file = FileService.upload_file(file, user, filename=filename)
@@ -146,28 +153,25 @@ def upload_file_to_dify(conversation_file_path: str):
 
 def upload_document_with_dataset_id(upload_file: UploadFile, dataset_id: str):
     args = {
-        "data_source": {"type": "upload_file",
-                        "info_list": {"data_source_type": "upload_file",
-                                      "file_info_list": {"file_ids": [upload_file.id]}}},
+        "data_source": {
+            "type": "upload_file",
+            "info_list": {"data_source_type": "upload_file", "file_info_list": {"file_ids": [upload_file.id]}},
+        },
         "indexing_technique": "high_quality",
         "process_rule": {"rules": {}, "mode": "automatic"},
         "doc_form": "text_model",
         "doc_language": "Chinese",
-        "retrieval_model":
-            {"search_method": "hybrid_search",
-             "reranking_enable": False,
-             "reranking_model": {
-                 "reranking_provider_name": "xinference",
-                 "reranking_model_name": "bge-base"},
-             "top_k": 3,
-             "score_threshold_enabled": False,
-             "score_threshold": None
-             }
+        "retrieval_model": {
+            "search_method": "hybrid_search",
+            "reranking_enable": False,
+            "reranking_model": {"reranking_provider_name": "xinference", "reranking_model_name": "bge-base"},
+            "top_k": 3,
+            "score_threshold_enabled": False,
+            "score_threshold": None,
+        },
     }
     DocumentService.document_create_args_validate(args)
-    dataset = db.session.query(Dataset).filter(
-        Dataset.id == dataset_id
-    ).first()
+    dataset = db.session.query(Dataset).filter(Dataset.id == dataset_id).first()
     user = AccountService.load_user("1c795cbf-0924-4f01-aec5-1b5abef50bca")
     # logger.info(user)
     try:
@@ -175,9 +179,9 @@ def upload_document_with_dataset_id(upload_file: UploadFile, dataset_id: str):
             dataset=dataset,
             document_data=args,
             account=user,
-            dataset_process_rule=dataset.latest_process_rule if 'process_rule' not in args else None,
+            dataset_process_rule=dataset.latest_process_rule if "process_rule" not in args else None,
             # 对话更新
-            created_from='conversation_update'
+            created_from="conversation_update",
         )
     except ProviderTokenNotInitError as ex:
         raise ProviderNotInitializeError(ex.description)
@@ -185,10 +189,15 @@ def upload_document_with_dataset_id(upload_file: UploadFile, dataset_id: str):
     return documents
 
 
-def update_dataset_id_with_conversation_id_pipeline(dataset_id: str, conversation_id: str = None, group_id: str = None):
-    dataset_update_real_time = DatasetUpdateRealTimeService.get(dataset_id, group_id=group_id, conversation_id=conversation_id)
-    message_str, last_id = get_conversation_message_str(conversation_id, group_id,
-                                                        last_id=dataset_update_real_time.last_update_message_id)
+def update_dataset_id_with_conversation_id_pipeline(
+    dataset_id: str, conversation_id: str | None = None, group_id: str | None = None
+):
+    dataset_update_real_time = DatasetUpdateRealTimeService.get(
+        dataset_id, group_id=group_id, conversation_id=conversation_id
+    )
+    message_str, last_id = get_conversation_message_str(
+        conversation_id, group_id, last_id=dataset_update_real_time.last_update_message_id
+    )
     logger.info(message_str)
     if message_str:
         tmp_file_path = save_conversation_to_file(conversation_id, group_id, message_str)
@@ -203,5 +212,5 @@ def update_dataset_id_with_conversation_id_pipeline(dataset_id: str, conversatio
         logger.info(f"conversation_id: {conversation_id} dataset_id: {dataset_id} 最新对话为空，不更新")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     pass

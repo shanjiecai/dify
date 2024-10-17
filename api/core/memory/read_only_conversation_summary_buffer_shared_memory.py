@@ -12,7 +12,12 @@ from langchain.schema.language_model import BaseLanguageModel
 from pydantic import root_validator
 
 from controllers.service_api.app import create_or_update_end_user_for_user_id
-from core.model_providers.models.entity.message import MessageType, PromptMessage, to_lc_messages, to_prompt_messages
+from core.model_providers.models.entity.message import (
+    MessageType,
+    PromptMessage,
+    to_lc_messages,
+    to_prompt_messages,
+)
 from core.model_providers.models.llm.base import BaseLLM
 from core.prompt.prompt_builder import PromptBuilder
 from extensions.ext_database import db
@@ -34,7 +39,7 @@ class ReadOnlyConversationSummaryBufferSharedMemory(BaseChatMemory, SummarizerMi
     # 默认1970年
     previous_summary_updated_at: datetime.datetime = datetime.datetime(1970, 1, 1)
     messages: list[Message] = None
-    final_buffer: str|None = None
+    final_buffer: str | None = None
 
     @property
     def buffer(self) -> list[BaseMessage]:
@@ -44,18 +49,24 @@ class ReadOnlyConversationSummaryBufferSharedMemory(BaseChatMemory, SummarizerMi
         if not self.conversation.previous_summary_updated_at:
             # 1970年
             self.conversation.previous_summary_updated_at = datetime.datetime(1970, 1, 1)
-        messages = db.session.query(Message).filter(
-            Message.conversation_id == self.conversation.id,
-            Message.updated_at > self.conversation.previous_summary_updated_at,
-            # Message.answer_tokens > 0
-        ).order_by(Message.created_at.desc()).limit(self.message_limit).all()
+        messages = (
+            db.session.query(Message)
+            .filter(
+                Message.conversation_id == self.conversation.id,
+                Message.updated_at > self.conversation.previous_summary_updated_at,
+                # Message.answer_tokens > 0
+            )
+            .order_by(Message.created_at.desc())
+            .limit(self.message_limit)
+            .all()
+        )
 
         messages = list(reversed(messages))
 
         print(f"messages: {messages[-1].updated_at}")
         self.messages = messages.copy()
 
-        chat_messages: list[PromptMessage|ChatMessage] = []
+        chat_messages: list[PromptMessage | ChatMessage] = []
         for message in messages[:-1]:
             if message.role == "Human":
                 chat_messages.append(PromptMessage(content=message.query, type=MessageType.USER))
@@ -115,9 +126,7 @@ class ReadOnlyConversationSummaryBufferSharedMemory(BaseChatMemory, SummarizerMi
         if self.return_messages:
             final_buffer: Any = buffer
         else:
-            final_buffer = get_buffer_string(
-                buffer, human_prefix=self.human_prefix, ai_prefix=self.ai_prefix
-            )
+            final_buffer = get_buffer_string(buffer, human_prefix=self.human_prefix, ai_prefix=self.ai_prefix)
         self.conversation.previous_summary = self.moving_summary_buffer
         self.conversation.previous_summary_updated_at = self.messages[-1].updated_at
         db.session.add(self.conversation)
@@ -127,7 +136,7 @@ class ReadOnlyConversationSummaryBufferSharedMemory(BaseChatMemory, SummarizerMi
         return {self.memory_key: final_buffer}
 
     @root_validator()
-    def validate_prompt_input_variables(cls, values: dict) -> dict:
+    def validate_prompt_input_variables(self, values: dict) -> dict:
         """Validate that prompt input variables are consistent."""
         prompt_variables = values["prompt"].input_variables
         expected_keys = {"summary", "new_lines"}
@@ -156,9 +165,7 @@ class ReadOnlyConversationSummaryBufferSharedMemory(BaseChatMemory, SummarizerMi
             # while curr_buffer_length + len(self.moving_summary_buffer) > self.max_token_limit and buffer:
             #     pruned_memory.append(buffer.pop(0))
             #     curr_buffer_length = self.llm.get_num_tokens_from_messages(buffer)
-            self.moving_summary_buffer = self.predict_new_summary(
-                buffer, self.conversation.previous_summary
-            )
+            self.moving_summary_buffer = self.predict_new_summary(buffer, self.conversation.previous_summary)
             self.chat_memory.messages = buffer
             print(f"Pruned memory: {buffer}")
             print(f"New summary: {self.moving_summary_buffer}")
@@ -176,8 +183,7 @@ if __name__ == "__main__":
     app_model_config = app.app_model_config.copy()
     model_dict = app_model_config.model_dict
     memory_model_instance = ModelFactory.get_text_generation_model_from_model_config(
-        tenant_id=app.tenant_id,
-        model_config=app_model_config.model_dict
+        tenant_id=app.tenant_id, model_config=app_model_config.model_dict
     )
     system_message = PromptBuilder.to_system_message(app_model_config.pre_prompt, {})
     system_instruction = system_message.content
@@ -189,22 +195,23 @@ if __name__ == "__main__":
     system_instruction_tokens = memory_model_instance.get_num_tokens(to_prompt_messages([system_message]))
 
     from langchain.llms import OpenAI
+
     llm = OpenAI(openai_api_key=memory_model_instance.credentials["openai_api_key"])
     end_user = create_or_update_end_user_for_user_id(app, "")
     conversation = Conversation(
         app_id=app.id,
         app_model_config_id=app_model_config.id,
-        model_provider=model_dict.get('provider'),
-        model_id=model_dict.get('name'),
+        model_provider=model_dict.get("provider"),
+        model_id=model_dict.get("name"),
         override_model_configs=None,
         mode=app.mode,
-        name='',
+        name="",
         inputs={},
         introduction=app_model_config.opening_statement,
         system_instruction=system_instruction,
         system_instruction_tokens=system_instruction_tokens,
-        status='normal',
-        from_source='api',
+        status="normal",
+        from_source="api",
         from_end_user_id=end_user.id,
         from_account_id=None,
     )
@@ -222,6 +229,6 @@ if __name__ == "__main__":
         human_prefix="Human",
         ai_prefix="Reagan Ericson",
         moving_summary_buffer="",
-        vebrose=True
+        vebrose=True,
     )
     print(memory.load_memory_variables({}))

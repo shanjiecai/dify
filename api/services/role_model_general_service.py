@@ -2,8 +2,7 @@ import os
 
 import requests
 
-role_model_general_service_url = os.getenv("ROLE_MODEL_GENERAL_SERVICE_URL",
-                                           "http://106.13.33.123:8000")
+role_model_general_service_url = os.getenv("ROLE_MODEL_GENERAL_SERVICE_URL", "http://106.13.33.123:8000")
 
 
 # 1	modelStudentId	模范生编码	String
@@ -11,26 +10,16 @@ role_model_general_service_url = os.getenv("ROLE_MODEL_GENERAL_SERVICE_URL",
 # 3	synonyms	相似词	List
 def role_model_general_chat(model_student_id: str, points: str, synonyms: list[str]):
     url = f"{role_model_general_service_url}/chat/v1"
-    payload = {
-        "modelStudentId": model_student_id,
-        "points": points,
-        "synonyms": synonyms
-    }
-    headers = {
-        'Content-Type': 'application/json'
-    }
+    payload = {"modelStudentId": model_student_id, "points": points, "synonyms": synonyms}
+    headers = {"Content-Type": "application/json"}
     response = requests.request("POST", url, headers=headers, json=payload)
     return response.json()
 
 
 def role_model_general_personality(model_student_id: str):
     url = f"{role_model_general_service_url}/personality/v1"
-    payload = {
-        "modelStudentId": model_student_id
-    }
-    headers = {
-        'Content-Type': 'application/json'
-    }
+    payload = {"modelStudentId": model_student_id}
+    headers = {"Content-Type": "application/json"}
     response = requests.request("POST", url, headers=headers, json=payload)
     return response.json()
 
@@ -47,11 +36,7 @@ def role_model_general_personality(model_student_id: str):
 
 def role_model_general_list(category: str = "RoleModel", page: int = 1, page_size: int = 20):
     url = f"{role_model_general_service_url}/RoleModel/v1"
-    payload = {
-        "category": category,
-        "page": page,
-        "pageSize": page_size
-    }
+    payload = {"category": category, "page": page, "pageSize": page_size}
     response = requests.request("GET", url, json=payload)
     return response.json()
 
@@ -63,8 +48,10 @@ def role_model_general_list(category: str = "RoleModel", page: int = 1, page_siz
 # leadership	领导力	String
 # knowledge	知识边界	List
 
-def role_model_general_update_personality_knowledge(model_student_id: str, personality: str, value_system: str,
-                                                    intelligence: str, leadership: str, knowledge: list[str]):
+
+def role_model_general_update_personality_knowledge(
+    model_student_id: str, personality: str, value_system: str, intelligence: str, leadership: str, knowledge: list[str]
+):
     url = f"{role_model_general_service_url}/updatePersonalityKnowledge/v1"
     payload = {
         "modelStudentId": model_student_id,
@@ -72,10 +59,8 @@ def role_model_general_update_personality_knowledge(model_student_id: str, perso
         "valueSystem": value_system,
         "intelligence": intelligence,
         "leadership": leadership,
-        "knowledge": knowledge
+        "knowledge": knowledge,
     }
-    headers = {
-        'Content-Type': 'application/json'
-    }
+    headers = {"Content-Type": "application/json"}
     response = requests.request("POST", url, headers=headers, json=payload)
     return response.json()

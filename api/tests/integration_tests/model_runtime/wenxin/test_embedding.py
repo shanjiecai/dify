@@ -2,7 +2,9 @@ import os
 from time import sleep
 
 from core.model_runtime.entities.text_embedding_entities import TextEmbeddingResult
-from core.model_runtime.model_providers.wenxin.text_embedding.text_embedding import WenxinTextEmbeddingModel
+from core.model_runtime.model_providers.wenxin.text_embedding.text_embedding import (
+    WenxinTextEmbeddingModel,
+)
 
 
 def test_invoke_embedding_v1():

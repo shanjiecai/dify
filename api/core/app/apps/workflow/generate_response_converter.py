@@ -2,7 +2,9 @@ import json
 from collections.abc import Generator
 from typing import cast
 
-from core.app.apps.base_app_generate_response_converter import AppGenerateResponseConverter
+from core.app.apps.base_app_generate_response_converter import (
+    AppGenerateResponseConverter,
+)
 from core.app.entities.task_entities import (
     ErrorStreamResponse,
     NodeFinishStreamResponse,
@@ -35,8 +37,9 @@ class WorkflowAppGenerateResponseConverter(AppGenerateResponseConverter):
         return cls.convert_blocking_full_response(blocking_response)
 
     @classmethod
-    def convert_stream_full_response(cls, stream_response: Generator[WorkflowAppStreamResponse, None, None]) \
-            -> Generator[str, None, None]:
+    def convert_stream_full_response(
+        cls, stream_response: Generator[WorkflowAppStreamResponse, None, None]
+    ) -> Generator[str, None, None]:
         """
         Convert stream full response.
         :param stream_response: stream response
@@ -47,12 +50,12 @@ class WorkflowAppGenerateResponseConverter(AppGenerateResponseConverter):
             sub_stream_response = chunk.stream_response
 
             if isinstance(sub_stream_response, PingStreamResponse):
-                yield 'ping'
+                yield "ping"
                 continue
 
             response_chunk = {
-                'event': sub_stream_response.event.value,
-                'workflow_run_id': chunk.workflow_run_id,
+                "event": sub_stream_response.event.value,
+                "workflow_run_id": chunk.workflow_run_id,
             }
 
             if isinstance(sub_stream_response, ErrorStreamResponse):
@@ -63,8 +66,9 @@ class WorkflowAppGenerateResponseConverter(AppGenerateResponseConverter):
             yield json.dumps(response_chunk)
 
     @classmethod
-    def convert_stream_simple_response(cls, stream_response: Generator[WorkflowAppStreamResponse, None, None]) \
-            -> Generator[str, None, None]:
+    def convert_stream_simple_response(
+        cls, stream_response: Generator[WorkflowAppStreamResponse, None, None]
+    ) -> Generator[str, None, None]:
         """
         Convert stream simple response.
         :param stream_response: stream response
@@ -75,12 +79,12 @@ class WorkflowAppGenerateResponseConverter(AppGenerateResponseConverter):
             sub_stream_response = chunk.stream_response
 
             if isinstance(sub_stream_response, PingStreamResponse):
-                yield 'ping'
+                yield "ping"
                 continue
 
             response_chunk = {
-                'event': sub_stream_response.event.value,
-                'workflow_run_id': chunk.workflow_run_id,
+                "event": sub_stream_response.event.value,
+                "workflow_run_id": chunk.workflow_run_id,
             }
 
             if isinstance(sub_stream_response, ErrorStreamResponse):

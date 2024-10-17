@@ -9,7 +9,11 @@ from controllers.service_api.app.error import (
     TooManyFilesError,
     UnsupportedFileTypeError,
 )
-from controllers.service_api.wraps import FetchUserArg, WhereisUserArg, validate_app_token
+from controllers.service_api.wraps import (
+    FetchUserArg,
+    WhereisUserArg,
+    validate_app_token,
+)
 from fields.file_fields import file_fields
 from models.model import App, EndUser
 from services.file_service import FileService

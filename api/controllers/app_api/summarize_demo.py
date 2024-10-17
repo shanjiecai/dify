@@ -15,12 +15,10 @@ def get_all_groups():
     url = f"{app_endpoint}/api/sys/groups"
 
     payload = {}
-    headers = {
-        'Authorization': 'Bearer 6520|LyHTtFbuGPxYPNllyTQ5DRu0jIInQt8ZqDeyBG425c19f8cf'
-    }
+    headers = {"Authorization": "Bearer 6520|LyHTtFbuGPxYPNllyTQ5DRu0jIInQt8ZqDeyBG425c19f8cf"}
     response = requests.request("GET", url, headers=headers, data=payload)
     group_id_list = []
-    for i in response.json()['data']:
+    for i in response.json()["data"]:
         # if i["dj_bot_id"]:
         group_id_list.append(i["id"])
     return group_id_list
@@ -30,9 +28,7 @@ def get_triple3v_users_from_ids(ids):
     url = f"{app_endpoint}/api/sys/users?ids=" + ids
 
     payload = {}
-    headers = {
-        'Authorization': 'Bearer 6520|LyHTtFbuGPxYPNllyTQ5DRu0jIInQt8ZqDeyBG425c19f8cf'
-    }
+    headers = {"Authorization": "Bearer 6520|LyHTtFbuGPxYPNllyTQ5DRu0jIInQt8ZqDeyBG425c19f8cf"}
 
     response = requests.request("GET", url, headers=headers, data=payload)
 
@@ -40,13 +36,11 @@ def get_triple3v_users_from_ids(ids):
     return response.json()
 
 
-def get_recent_history(group_id: int = None, last_id: int = None):
+def get_recent_history(group_id: int | None = None, last_id: int | None = None):
     url = f"{app_endpoint}/api/sys/chat_messages"
 
     payload = {}
-    headers = {
-        'Authorization': 'Bearer 6520|LyHTtFbuGPxYPNllyTQ5DRu0jIInQt8ZqDeyBG425c19f8cf'
-    }
+    headers = {"Authorization": "Bearer 6520|LyHTtFbuGPxYPNllyTQ5DRu0jIInQt8ZqDeyBG425c19f8cf"}
     if group_id or last_id:
         url += "?"
     if group_id:
@@ -59,7 +53,10 @@ def get_recent_history(group_id: int = None, last_id: int = None):
     # print(response.text)
     return response.json()
 
+
 # 映射
+
+
 model_name_dict = {
     "DJ Bot": "James Corden",
 }
@@ -74,15 +71,12 @@ def model_name_transform(model_name: str):
 
 def get_summarized_text(prompt, system_prompt, kwargs):
     url = f"{url_base}/backend-api/v1/summarize"
-    headers = {
-        'Authorization': 'Bearer b10dd914-d28d-10b4-11c4-3a8b61d8a77f',
-        'Content-Type': 'application/json'
-    }
+    headers = {"Authorization": "Bearer b10dd914-d28d-10b4-11c4-3a8b61d8a77f", "Content-Type": "application/json"}
     data = {
         # "text": text
         "prompt": prompt,
         "system_prompt": system_prompt,
-        "kwargs": {"max_tokens": 100}
+        "kwargs": {"max_tokens": 100},
     }
     data = json.dumps(data)
     response = requests.post(url, headers=headers, data=data)
@@ -94,14 +88,14 @@ group_id = st.sidebar.selectbox("Select group", get_all_groups())
 if group_id:
     st.session_state.group_id = group_id
     recent_history = get_recent_history(group_id=group_id)
-    recent_history['data'].reverse()
+    recent_history["data"].reverse()
     history_str = ""
-    for message in recent_history['data'][:min(50, len(recent_history['data']))]:
+    for message in recent_history["data"][: min(50, len(recent_history["data"]))]:
         # outer_memory.append({"role": model_name_transform(message["from_user"]["name"]), "message": message['chat_text']})
         # role:content\n
         # print(message)
-        if message['chat_text']:
-            message['chat_text'].replace("\n", " ")
+        if message["chat_text"]:
+            message["chat_text"].replace("\n", " ")
         history_str += f"{model_name_transform(message['from_user']['name'])}:{message['chat_text']}\n\n"
     print(json.dumps(history_str, ensure_ascii=False))
     st.text(history_str)
@@ -131,11 +125,7 @@ if st.button("Summarize") and st.session_state.history_str:
     st.session_state.summarized_text = get_summarized_text(
         prompt=st.session_state.prompt.format(text=st.session_state.history_str),
         system_prompt=st.session_state.system_prompt,
-        kwargs=st.session_state.kwargs
+        kwargs=st.session_state.kwargs,
     )
     st.write(st.session_state.summarized_text)
     st.write("Summarized!")
-
-
-
-

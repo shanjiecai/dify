@@ -4,7 +4,9 @@ import pytest
 
 from core.model_runtime.entities.rerank_entities import RerankResult
 from core.model_runtime.errors.validate import CredentialsValidateFailedError
-from core.model_runtime.model_providers.siliconflow.rerank.rerank import SiliconflowRerankModel
+from core.model_runtime.model_providers.siliconflow.rerank.rerank import (
+    SiliconflowRerankModel,
+)
 
 
 def test_validate_credentials():

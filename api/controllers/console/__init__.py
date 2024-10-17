@@ -31,13 +31,29 @@ from .app import (
 )
 
 # Import auth controllers
-from .auth import activate, data_source_bearer_auth, data_source_oauth, forgot_password, login, oauth
+from .auth import (
+    activate,
+    data_source_bearer_auth,
+    data_source_oauth,
+    forgot_password,
+    login,
+    oauth,
+)
 
 # Import billing controllers
 from .billing import billing
 
 # Import datasets controllers
-from .datasets import data_source, datasets, datasets_document, datasets_segments, file, hit_testing, website
+from .datasets import (
+    data_source,
+    datasets,
+    datasets_document,
+    datasets_segments,
+    external,
+    file,
+    hit_testing,
+    website,
+)
 
 # Import explore controllers
 from .explore import (
@@ -56,4 +72,12 @@ from .explore import (
 from .tag import tags
 
 # Import workspace controllers
-from .workspace import account, load_balancing_config, members, model_providers, models, tool_providers, workspace
+from .workspace import (
+    account,
+    load_balancing_config,
+    members,
+    model_providers,
+    models,
+    tool_providers,
+    workspace,
+)

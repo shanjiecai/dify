@@ -16,7 +16,10 @@ from controllers.console.datasets.error import (
 )
 from controllers.console.error import AccountNotLinkTenantError
 from controllers.console.setup import setup_required
-from controllers.console.wraps import account_initialization_required, cloud_edition_billing_resource_check
+from controllers.console.wraps import (
+    account_initialization_required,
+    cloud_edition_billing_resource_check,
+)
 from extensions.ext_database import db
 from libs.helper import TimestampField
 from libs.login import login_required
@@ -166,9 +169,11 @@ class CustomConfigWorkspaceApi(Resource):
 
         custom_config_dict = {
             "remove_webapp_brand": args["remove_webapp_brand"],
-            "replace_webapp_logo": args["replace_webapp_logo"]
-            if args["replace_webapp_logo"] is not None
-            else tenant.custom_config_dict.get("replace_webapp_logo"),
+            "replace_webapp_logo": (
+                args["replace_webapp_logo"]
+                if args["replace_webapp_logo"] is not None
+                else tenant.custom_config_dict.get("replace_webapp_logo")
+            ),
         }
 
         tenant.custom_config_dict = custom_config_dict
@@ -194,7 +199,7 @@ class WebappLogoWorkspaceApi(Resource):
             raise TooManyFilesError()
 
         extension = file.filename.split(".")[-1]
-        if extension.lower() not in ["svg", "png"]:
+        if extension.lower() not in {"svg", "png"}:
             raise UnsupportedFileTypeError()
 
         try:

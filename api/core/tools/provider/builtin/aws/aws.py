@@ -1,5 +1,7 @@
 from core.tools.errors import ToolProviderCredentialValidationError
-from core.tools.provider.builtin.aws.tools.sagemaker_text_rerank import SageMakerReRankTool
+from core.tools.provider.builtin.aws.tools.sagemaker_text_rerank import (
+    SageMakerReRankTool,
+)
 from core.tools.provider.builtin_tool_provider import BuiltinToolProviderController
 
 
@@ -11,15 +13,14 @@ class SageMakerProvider(BuiltinToolProviderController):
                     "credentials": credentials,
                 }
             ).invoke(
-                user_id='',
+                user_id="",
                 tool_parameters={
-                    "sagemaker_endpoint" : "",
+                    "sagemaker_endpoint": "",
                     "query": "misaka mikoto",
-                    "candidate_texts" : "hello$$$hello world",
-                    "topk" : 5,
-                    "aws_region" : ""
+                    "candidate_texts": "hello$$$hello world",
+                    "topk": 5,
+                    "aws_region": "",
                 },
             )
         except Exception as e:
             raise ToolProviderCredentialValidationError(str(e))
-        

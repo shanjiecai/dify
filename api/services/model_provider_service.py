@@ -1,5 +1,6 @@
 import mimetypes
 import os
+from pathlib import Path
 from typing import Optional, cast
 
 import requests
@@ -8,7 +9,9 @@ from flask import current_app
 from core.entities.model_entities import ModelStatus, ProviderModelWithStatusEntity
 from core.model_runtime.entities.model_entities import ModelType, ParameterRule
 from core.model_runtime.model_providers import model_provider_factory
-from core.model_runtime.model_providers.__base.large_language_model import LargeLanguageModel
+from core.model_runtime.model_providers.__base.large_language_model import (
+    LargeLanguageModel,
+)
 from core.provider_manager import ProviderManager
 from models.provider import ProviderType
 
@@ -66,9 +69,11 @@ class ModelProviderService:
                 model_credential_schema=provider_configuration.provider.model_credential_schema,
                 preferred_provider_type=provider_configuration.preferred_provider_type,
                 custom_configuration=CustomConfigurationResponse(
-                    status=CustomConfigurationStatus.ACTIVE
-                    if provider_configuration.is_custom_configuration_available()
-                    else CustomConfigurationStatus.NO_CONFIGURE
+                    status=(
+                        CustomConfigurationStatus.ACTIVE
+                        if provider_configuration.is_custom_configuration_available()
+                        else CustomConfigurationStatus.NO_CONFIGURE
+                    )
                 ),
                 system_configuration=SystemConfigurationResponse(
                     enabled=provider_configuration.system_configuration.enabled,
@@ -453,9 +458,8 @@ class ModelProviderService:
         mimetype = mimetype or "application/octet-stream"
 
         # read binary from file
-        with open(file_path, "rb") as f:
-            byte_data = f.read()
-            return byte_data, mimetype
+        byte_data = Path(file_path).read_bytes()
+        return byte_data, mimetype
 
     def switch_preferred_provider(self, tenant_id: str, provider: str, preferred_provider_type: str) -> None:
         """

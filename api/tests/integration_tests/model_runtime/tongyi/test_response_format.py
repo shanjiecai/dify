@@ -3,7 +3,10 @@ import os
 from collections.abc import Generator
 
 from core.model_runtime.entities.llm_entities import LLMResultChunk, LLMResultChunkDelta
-from core.model_runtime.entities.message_entities import AssistantPromptMessage, UserPromptMessage
+from core.model_runtime.entities.message_entities import (
+    AssistantPromptMessage,
+    UserPromptMessage,
+)
 from core.model_runtime.model_providers.tongyi.llm.llm import TongyiLargeLanguageModel
 
 

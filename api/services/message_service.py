@@ -16,7 +16,10 @@ from libs.infinite_scroll_pagination import InfiniteScrollPagination
 from models.account import Account
 from models.model import App, AppMode, AppModelConfig, EndUser, Message, MessageFeedback
 from services.conversation_service import ConversationService
-from services.errors.conversation import ConversationCompletedError, ConversationNotExistsError
+from services.errors.conversation import (
+    ConversationCompletedError,
+    ConversationNotExistsError,
+)
 from services.errors.message import (
     FirstMessageNotExistsError,
     LastMessageNotExistsError,
@@ -35,6 +38,7 @@ class MessageService:
         conversation_id: str,
         first_id: Optional[str],
         limit: int,
+        order: str = "asc",
     ) -> InfiniteScrollPagination:
         # if not user:
         #     return InfiniteScrollPagination(data=[], limit=limit, has_more=False)
@@ -46,7 +50,7 @@ class MessageService:
             # app_model=app_model,
             app_model=None,
             # user=user,
-            conversation_id=conversation_id
+            conversation_id=conversation_id,
         )
 
         if first_id:
@@ -95,7 +99,8 @@ class MessageService:
             if rest_count > 0:
                 has_more = True
 
-        history_messages = list(reversed(history_messages))
+        if order == "asc":
+            history_messages = list(reversed(history_messages))
 
         return InfiniteScrollPagination(data=history_messages, limit=limit, has_more=has_more)
 
@@ -119,7 +124,7 @@ class MessageService:
                 # app_model=app_model,
                 app_model=None,
                 # user=user,
-                conversation_id=conversation_id
+                conversation_id=conversation_id,
             )
 
             base_query = base_query.filter(Message.conversation_id == conversation.id)
@@ -155,9 +160,15 @@ class MessageService:
         return InfiniteScrollPagination(data=history_messages, limit=limit, has_more=has_more)
 
     @classmethod
-    def pagination_by_more_than_last_id(cls, app_model: Optional[App], user: Optional[Union[Account, EndUser]],
-                              last_id: Optional[str], limit: int, conversation_id: Optional[str] = None,
-                              include_ids: Optional[list] = None) -> InfiniteScrollPagination:
+    def pagination_by_more_than_last_id(
+        cls,
+        app_model: Optional[App],
+        user: Optional[Union[Account, EndUser]],
+        last_id: Optional[str],
+        limit: int,
+        conversation_id: Optional[str] = None,
+        include_ids: Optional[list] = None,
+    ) -> InfiniteScrollPagination:
         # if not user:
         #     return InfiniteScrollPagination(data=[], limit=limit, has_more=False)
 
@@ -168,7 +179,7 @@ class MessageService:
                 # app_model=app_model,
                 app_model=None,
                 # user=user,
-                conversation_id=conversation_id
+                conversation_id=conversation_id,
             )
 
             base_query = base_query.filter(Message.conversation_id == conversation.id)
@@ -182,10 +193,12 @@ class MessageService:
             if not last_message:
                 raise LastMessageNotExistsError()
 
-            history_messages = base_query.filter(
-                Message.created_at > last_message.created_at,
-                Message.id != last_message.id
-            ).order_by(Message.created_at.asc()).limit(limit).all()
+            history_messages = (
+                base_query.filter(Message.created_at > last_message.created_at, Message.id != last_message.id)
+                .order_by(Message.created_at.asc())
+                .limit(limit)
+                .all()
+            )
         else:
             history_messages = base_query.order_by(Message.created_at.asc()).limit(limit).all()
 
@@ -193,29 +206,25 @@ class MessageService:
         if len(history_messages) == limit:
             current_page_first_message = history_messages[-1]
             rest_count = base_query.filter(
-                Message.created_at < current_page_first_message.created_at,
-                Message.id != current_page_first_message.id
+                Message.created_at < current_page_first_message.created_at, Message.id != current_page_first_message.id
             ).count()
 
             if rest_count > 0:
                 has_more = True
 
-        return InfiniteScrollPagination(
-            data=history_messages,
-            limit=limit,
-            has_more=has_more
-        )
+        return InfiniteScrollPagination(data=history_messages, limit=limit, has_more=has_more)
 
     @classmethod
-    def pagination_by_more_than_updated_at(cls, updated_at: Optional[datetime], conversation_id: Optional[str] = None,
-                                           limit: int = None,
-                                           include_ids: Optional[list] = None) -> InfiniteScrollPagination:
+    def pagination_by_more_than_updated_at(
+        cls,
+        updated_at: Optional[datetime],
+        conversation_id: Optional[str] = None,
+        limit: int | None = None,
+        include_ids: Optional[list] = None,
+    ) -> InfiniteScrollPagination:
         base_query = db.session.query(Message)
         if conversation_id is not None:
-            conversation = ConversationService.get_conversation(
-                app_model=None,
-                conversation_id=conversation_id
-            )
+            conversation = ConversationService.get_conversation(app_model=None, conversation_id=conversation_id)
 
             base_query = base_query.filter(Message.conversation_id == conversation.id)
 
@@ -223,27 +232,21 @@ class MessageService:
             base_query = base_query.filter(Message.id.in_(include_ids))
 
         if updated_at:
-            history_messages = base_query.filter(
-                Message.updated_at > updated_at
-            ).order_by(Message.updated_at.asc()).limit(limit).all()
+            history_messages = (
+                base_query.filter(Message.updated_at > updated_at).order_by(Message.updated_at.asc()).limit(limit).all()
+            )
         else:
             history_messages = base_query.order_by(Message.updated_at.asc()).limit(limit).all()
 
         has_more = False
         if len(history_messages) == limit:
             current_page_first_message = history_messages[-1]
-            rest_count = base_query.filter(
-                Message.updated_at > current_page_first_message.updated_at
-            ).count()
+            rest_count = base_query.filter(Message.updated_at > current_page_first_message.updated_at).count()
 
             if rest_count > 0:
                 has_more = True
 
-        return InfiniteScrollPagination(
-            data=history_messages,
-            limit=limit,
-            has_more=has_more
-        )
+        return InfiniteScrollPagination(data=history_messages, limit=limit, has_more=has_more)
 
     @classmethod
     def create_feedback(

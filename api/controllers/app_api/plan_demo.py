@@ -7,11 +7,7 @@ from streamlit.runtime.scriptrunner import add_script_run_ctx, get_script_run_ct
 
 # url_base = "http://54.193.59.10"
 url_base = "http://127.0.0.1:5001"
-st.set_page_config(
-    page_title="Demo",
-    page_icon=":robot:",
-    layout="wide"
-)
+st.set_page_config(page_title="Demo", page_icon=":robot:", layout="wide")
 # url_base = "http://13.56.164.188"
 
 # from mylogger import logger
@@ -150,13 +146,8 @@ dj_app_id = "a756e5d2-c735-4f68-8db0-1de49333501c"
 def create_conversation():
     url = f"{url_base}/backend-api/v1/conversations"
 
-    payload = json.dumps({
-        "app_id": dj_app_id
-    })
-    headers = {
-        'Authorization': 'Bearer b10dd914-d28d-10b4-11c4-3a8b61d8a77f',
-        'Content-Type': 'application/json'
-    }
+    payload = json.dumps({"app_id": dj_app_id})
+    headers = {"Authorization": "Bearer b10dd914-d28d-10b4-11c4-3a8b61d8a77f", "Content-Type": "application/json"}
 
     response = requests.request("POST", url, headers=headers, data=payload)
     print(response.text)
@@ -169,16 +160,8 @@ def chat_message_active(app_id, conversation_id, force=True, query=None):
     else:
         url = f"{url_base}/backend-api/v1/chat-messages"
 
-    payload = json.dumps({
-        "app_id": app_id,
-        "conversation_id": conversation_id,
-        "query": query,
-        "user": "user"
-    })
-    headers = {
-        'Authorization': 'Bearer b10dd914-d28d-10b4-11c4-3a8b61d8a77f',
-        'Content-Type': 'application/json'
-    }
+    payload = json.dumps({"app_id": app_id, "conversation_id": conversation_id, "query": query, "user": "user"})
+    headers = {"Authorization": "Bearer b10dd914-d28d-10b4-11c4-3a8b61d8a77f", "Content-Type": "application/json"}
 
     response = requests.request("POST", url, headers=headers, data=payload)
     print(f"chat {app_id} {response.text}")
@@ -197,9 +180,7 @@ def get_app_list():
     url = f"{url_base}/backend-api/v1/app/list"
 
     payload = {}
-    headers = {
-        'Authorization': 'Bearer b10dd914-d28d-10b4-11c4-3a8b61d8a77f'
-    }
+    headers = {"Authorization": "Bearer b10dd914-d28d-10b4-11c4-3a8b61d8a77f"}
 
     response = requests.request("GET", url, headers=headers, data=payload)
     # print(response.text)
@@ -220,9 +201,7 @@ def get_conversation_plan_detail(conversation_id):
     url = f"{url_base}/backend-api/v1/conversations/plan/detail/{conversation_id}"
 
     payload = {}
-    headers = {
-        'Authorization': 'Bearer b10dd914-d28d-10b4-11c4-3a8b61d8a77f'
-    }
+    headers = {"Authorization": "Bearer b10dd914-d28d-10b4-11c4-3a8b61d8a77f"}
 
     response = requests.request("GET", url, headers=headers, data=payload)
 
@@ -318,8 +297,9 @@ if prompt_text:
     #         return_past_key_values=True,
     # ):
     #     message_placeholder.markdown(response)
-    response = chat_message_active(st.session_state.app_id, st.session_state.conversation_id, force=True,
-                                   query=prompt_text)
+    response = chat_message_active(
+        st.session_state.app_id, st.session_state.conversation_id, force=True, query=prompt_text
+    )
     st.session_state.history.append({"role": "user", "content": prompt_text})
     st.session_state.history.append({"role": "assistant", "content": response})
     for i in st.session_state.history:

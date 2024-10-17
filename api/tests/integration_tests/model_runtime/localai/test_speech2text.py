@@ -3,7 +3,9 @@ import os
 import pytest
 
 from core.model_runtime.errors.validate import CredentialsValidateFailedError
-from core.model_runtime.model_providers.localai.speech2text.speech2text import LocalAISpeech2text
+from core.model_runtime.model_providers.localai.speech2text.speech2text import (
+    LocalAISpeech2text,
+)
 
 
 def test_validate_credentials():
