@@ -7,7 +7,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.ruff]
 exclude=[
-    "migrations/*", "runs/*", "core/*", "controllers/*", "auto_process/*"
+    "migrations/*", "runs/*", "core/*", "controllers/*", "auto_process/*", "mylogger.py"
 ]
 line-length = 120
 

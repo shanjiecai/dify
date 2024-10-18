@@ -241,7 +241,7 @@ def register_blueprints(app):
         allow_headers=["Content-Type", "Authorization"],
         methods=["GET", "PUT", "POST", "DELETE", "OPTIONS", "PATCH"],
         supports_credentials=True,
-        resources={r"/*": {"origins": app.config["APP_API_CORS_ALLOW_ORIGINS"]}},
+        resources={r"/*": {"origins": app.config.get("APP_API_CORS_ALLOW_ORIGINS", "*")}},
         expose_headers=["X-Version", "X-Env"],
     )
     app.register_blueprint(social_agent_api_bp)

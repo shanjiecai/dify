@@ -31,7 +31,7 @@ from services.message_service import MessageService
 api_key = os.environ.get("OPENAI_API_KEY")
 
 
-def get_conversation_message_str(conversation_id: str | None = None, last_message_updated_at: datetime | None = None):
+def get_conversation_message_str(conversation_id: str | None = None, last_message_updated_at: datetime = None):
     conversation_messages_str = ""
     if conversation_id:
         messages = MessageService.pagination_by_more_than_updated_at(

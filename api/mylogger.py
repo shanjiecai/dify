@@ -26,7 +26,7 @@ def add_req_id(record):
 
 def serialize(record):
     subset = {
-        "time": record["time"].format("YYYY-MM-DD HH:mm:ss.SSS"),
+        "time": record["time"].__format__("YYYY-MM-DD HH:mm:ss.SSS"),
         "level": record["level"].name,
         "message": record["message"],
         "req_id": get_request_id() if flask.has_request_context() else "          ",
