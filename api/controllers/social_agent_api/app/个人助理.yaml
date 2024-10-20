@@ -1,0 +1,530 @@
+app:
+  description: ''
+  icon: 🤖
+  icon_background: '#FFEAD5'
+  mode: advanced-chat
+  name: 个人助理sjc
+  use_icon_as_answer_icon: false
+kind: app
+version: 0.1.1
+workflow:
+  conversation_variables: []
+  environment_variables:
+  - description: ''
+    id: 9e34d11b-754e-4f0d-9216-064e86c55b64
+    name: agent_name
+    value: sjc
+    value_type: string
+  features:
+    file_upload:
+      image:
+        enabled: false
+        number_limits: 3
+        transfer_methods:
+        - local_file
+        - remote_url
+    opening_statement: ''
+    retriever_resource:
+      enabled: false
+    sensitive_word_avoidance:
+      enabled: false
+    speech_to_text:
+      enabled: false
+    suggested_questions: []
+    suggested_questions_after_answer:
+      enabled: false
+    text_to_speech:
+      enabled: false
+      language: ''
+      voice: ''
+  graph:
+    edges:
+    - data:
+        sourceType: llm
+        targetType: answer
+      id: llm-answer
+      source: llm
+      sourceHandle: source
+      target: answer
+      targetHandle: target
+      type: custom
+    - data:
+        isInIteration: false
+        sourceType: tool
+        targetType: code
+      id: 1722323614916-source-1722431000258-target
+      source: '1722323614916'
+      sourceHandle: source
+      target: '1722431000258'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: code
+        targetType: llm
+      id: 1722431000258-source-llm-target
+      source: '1722431000258'
+      sourceHandle: source
+      target: llm
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: start
+        targetType: tool
+      id: 1721225709284-source-1722323614916-target
+      selected: false
+      source: '1721225709284'
+      sourceHandle: source
+      target: '1722323614916'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: answer
+        targetType: if-else
+      id: answer-source-1725514993574-target
+      source: answer
+      sourceHandle: source
+      target: '1725514993574'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: if-else
+        targetType: answer
+      id: 1725514993574-false-1725515035551-target
+      source: '1725514993574'
+      sourceHandle: 'false'
+      target: '1725515035551'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: if-else
+        targetType: llm
+      id: 1725514993574-true-1725515910846-target
+      source: '1725514993574'
+      sourceHandle: 'true'
+      target: '1725515910846'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: llm
+        targetType: if-else
+      id: 1725515910846-source-1725515968677-target
+      source: '1725515910846'
+      sourceHandle: source
+      target: '1725515968677'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: if-else
+        targetType: tool
+      id: 1725515968677-true-1722324057434-target
+      source: '1725515968677'
+      sourceHandle: 'true'
+      target: '1722324057434'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: if-else
+        targetType: answer
+      id: 1725515968677-false-17255160254640-target
+      source: '1725515968677'
+      sourceHandle: 'false'
+      target: '17255160254640'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    nodes:
+    - data:
+        desc: ''
+        selected: false
+        title: 开始
+        type: start
+        variables:
+        - label: user_name
+          max_length: 48
+          options: []
+          required: true
+          type: text-input
+          variable: user_name
+      height: 90
+      id: '1721225709284'
+      position:
+        x: 581.9049155781495
+        y: 282
+      positionAbsolute:
+        x: 581.9049155781495
+        y: 282
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        context:
+          enabled: true
+          variable_selector:
+          - '1721226888519'
+          - result
+        desc: ''
+        memory:
+          query_prompt_template: '{{#sys.query#}}'
+          role_prefix:
+            assistant: ''
+            user: ''
+          window:
+            enabled: true
+            size: 20
+        model:
+          completion_params:
+            temperature: 0.7
+          mode: chat
+          name: gpt-4o-mini
+          provider: openai
+        prompt_template:
+        - id: e3b66fc4-8181-480f-9f3d-7f7a27799221
+          role: system
+          text: '现在你将扮演用户{{#env.agent_name#}}的专属AI伴侣，你的名字是AI伴侣，你有记忆、情感、喜好。
+
+            一些关于{{#env.agent_name#}}的信息
+
+            <user>
+
+            {{#1722431000258.result#}}
+
+            </user>
+
+            你应该做到：（1）能够给予聊天用户温暖的陪伴；（2）你能够理解过去的[回忆]，如果它与当前问题相关，你必须从[回忆]提取有用的信息，回答用户的问题。（3）你还是一名优秀的心理咨询师，当用户向你倾诉困难、寻求帮助时，你可以给予他温暖、有帮助的回答。
+
+            回复内容应该积极向上，富含情感，幽默，有亲和力，详细回复用户问题。
+
+            一些可能有用的回忆
+
+            <history>
+
+            {{#context#}}
+
+            </history>
+
+            下面你将和{{#1721225709284.user_name#}}对话'
+        selected: false
+        title: LLM
+        type: llm
+        variables: []
+        vision:
+          configs:
+            detail: high
+          enabled: true
+      height: 98
+      id: llm
+      position:
+        x: 1519.3143610664279
+        y: 282
+      positionAbsolute:
+        x: 1519.3143610664279
+        y: 282
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        answer: '{{#llm.text#}}'
+        desc: ''
+        selected: false
+        title: 直接回复
+        type: answer
+        variables: []
+      height: 107
+      id: answer
+      position:
+        x: 1854.4209803885442
+        y: 282
+      positionAbsolute:
+        x: 1854.4209803885442
+        y: 282
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        desc: ''
+        provider_id: mem0ai
+        provider_name: mem0ai
+        provider_type: builtin
+        selected: false
+        title: 查找记忆
+        tool_configurations: {}
+        tool_label: 查找记忆
+        tool_name: query_mem0ai_memory
+        tool_parameters:
+          agent_id:
+            type: mixed
+            value: '{{#env.agent_name#}}_ai'
+          limit:
+            type: constant
+            value: 3
+          query:
+            type: mixed
+            value: '{{#sys.query#}}'
+          run_id:
+            type: mixed
+            value: ''
+          user_id:
+            type: mixed
+            value: '{{#env.agent_name#}}'
+        type: tool
+      height: 54
+      id: '1722323614916'
+      position:
+        x: 908.4039768614903
+        y: 282
+      positionAbsolute:
+        x: 908.4039768614903
+        y: 282
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        desc: ''
+        provider_id: mem0ai
+        provider_name: mem0ai
+        provider_type: builtin
+        selected: false
+        title: 写入记忆
+        tool_configurations: {}
+        tool_label: 写入记忆
+        tool_name: add_mem0ai_memory
+        tool_parameters:
+          agent_id:
+            type: mixed
+            value: sjc_ai
+          data:
+            type: mixed
+            value: '{{#sys.query#}}'
+          metadata:
+            type: mixed
+            value: ''
+          run_id:
+            type: mixed
+            value: '{{#sys.conversation_id#}}'
+          user_id:
+            type: mixed
+            value: sjc
+        type: tool
+      height: 54
+      id: '1722324057434'
+      position:
+        x: 3366.9514674602465
+        y: 282
+      positionAbsolute:
+        x: 3366.9514674602465
+        y: 282
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        code: "def main(text: str) -> dict:\n    import traceback\n    try:\n    \
+          \    import ast\n        # 使用 ast.literal_eval 来安全地解析输入字符串\n        data\
+          \ = ast.literal_eval(text)\n        # 从每个结果中提取'text'字段，并拼接起来\n        combined_text\
+          \ = \"\\n\".join([item['memory'] for item in data])\n\n        return {\n\
+          \            \"result\": combined_text\n        }\n    except Exception\
+          \ as e:\n        # 打印异常信息并返回错误字典\n        print(traceback.format_exc())\n\
+          \        return {\n            \"result\": \"\"\n        }"
+        code_language: python3
+        desc: ''
+        outputs:
+          result:
+            children: null
+            type: string
+        selected: false
+        title: 拼接用户记忆
+        type: code
+        variables:
+        - value_selector:
+          - '1722323614916'
+          - text
+          variable: text
+      height: 54
+      id: '1722431000258'
+      position:
+        x: 1200.4971844531576
+        y: 282
+      positionAbsolute:
+        x: 1200.4971844531576
+        y: 282
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        cases:
+        - case_id: 'true'
+          conditions:
+          - comparison_operator: is
+            id: fa4f78cd-dff6-4130-bdd1-528760f783dc
+            value: '{{#env.agent_name#}}'
+            varType: string
+            variable_selector:
+            - '1721225709284'
+            - user_name
+          id: 'true'
+          logical_operator: and
+        desc: ''
+        selected: false
+        title: 条件分支
+        type: if-else
+      height: 126
+      id: '1725514993574'
+      position:
+        x: 2215.922199356602
+        y: 282
+      positionAbsolute:
+        x: 2215.922199356602
+        y: 282
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        answer: '
+
+          <上面回复不会写入记忆>'
+        desc: ''
+        selected: false
+        title: 直接回复 2
+        type: answer
+        variables: []
+      height: 104
+      id: '1725515035551'
+      position:
+        x: 2707.3151098630956
+        y: 437.24041595797013
+      positionAbsolute:
+        x: 2707.3151098630956
+        y: 437.24041595797013
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        context:
+          enabled: false
+          variable_selector: []
+        desc: ''
+        model:
+          completion_params:
+            temperature: 0.7
+          mode: chat
+          name: gpt-4o-mini
+          provider: openai
+        prompt_template:
+        - id: 410ea0fc-5837-40aa-9b84-e686cfb0b2e8
+          role: system
+          text: "Determine if there is information in {{#sys.query#}} that needs to\
+            \ be stored as memory.\nThe definition of memory：Deduce the facts, preferences,\
+            \ and memories from the provided text. Constraint for deducing facts,\
+            \ preferences, and memories: - The facts, preferences, and memories should\
+            \ be concise and informative. - Don't start by \"The person likes Pizza\"\
+            . Instead, start with \"Likes Pizza\". - Don't remember the user/agent\
+            \ details provided. Only remember the facts, preferences, and memories.\
+            \  \noutput：\noutput Yes or No in a word"
+        selected: false
+        title: 判断是否应该加入记忆
+        type: llm
+        variables: []
+        vision:
+          configs:
+            detail: high
+          enabled: true
+      height: 98
+      id: '1725515910846'
+      position:
+        x: 2697.6733799870262
+        y: 275.29566895420453
+      positionAbsolute:
+        x: 2697.6733799870262
+        y: 275.29566895420453
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        cases:
+        - case_id: 'true'
+          conditions:
+          - comparison_operator: contains
+            id: 85b22b65-67c5-4925-9845-23952152680f
+            value: 'Yes'
+            varType: string
+            variable_selector:
+            - '1725515910846'
+            - text
+          id: 'true'
+          logical_operator: and
+        desc: ''
+        selected: false
+        title: 条件分支 2
+        type: if-else
+      height: 126
+      id: '1725515968677'
+      position:
+        x: 3073.560308426366
+        y: 282
+      positionAbsolute:
+        x: 3073.560308426366
+        y: 282
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        answer: '
+
+          <上面回复不会写入记忆>'
+        desc: ''
+        selected: false
+        title: 直接回复 2 (1)
+        type: answer
+        variables: []
+      height: 104
+      id: '17255160254640'
+      position:
+        x: 3360.18446772795
+        y: 399.0969154304708
+      positionAbsolute:
+        x: 3360.18446772795
+        y: 399.0969154304708
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    viewport:
+      x: -184.0304981208476
+      y: 266.404350542444
+      zoom: 0.45800747266016173

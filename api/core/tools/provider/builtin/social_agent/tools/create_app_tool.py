@@ -4,6 +4,29 @@ import requests
 
 from core.tools.entities.tool_entities import ToolInvokeMessage
 from core.tools.tool.builtin_tool import BuiltinTool
+from extensions.ext_database import db
+from models.model import ApiToken, App
+from services.account_service import TenantService
+
+
+def _get_resource(resource_id, tenant_id):
+    resource = App.query.filter_by(id=resource_id, tenant_id=tenant_id).first()
+    return resource
+
+
+def create_app_api_key(resource_id: str):
+    tenant = TenantService.get_first_tenant()
+    tenant_id = tenant.id
+    resource_id = str(resource_id)
+    _get_resource(resource_id, tenant_id)
+    key = ApiToken.generate_api_key("app-", 24)
+    api_token = ApiToken()
+    setattr(api_token, "app_id", resource_id)
+    api_token.tenant_id = tenant_id
+    api_token.token = key
+    api_token.type = "app"
+    db.session.add(api_token)
+    db.session.commit()
 
 
 class CreateAppTool(BuiltinTool):
@@ -20,6 +43,7 @@ class CreateAppTool(BuiltinTool):
         response = requests.post(url, json=payload, headers=headers)
         if response.status_code == 200:
             result = response.json()
+            create_app_api_key(result['id'])
             return self.create_text_message(text=f"App created: ID = {result['id']}, Name = {result['name']}")
         else:
             return self.create_text_message(text="Error creating app")
