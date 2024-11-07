@@ -13,12 +13,12 @@ from core.app.app_config.entities import (
 from core.app.apps.agent_chat.app_config_manager import AgentChatAppConfigManager
 from core.app.apps.chat.app_config_manager import ChatAppConfigManager
 from core.app.apps.completion.app_config_manager import CompletionAppConfigManager
-from core.file.file_obj import FileExtraConfig
+from core.file.models import FileExtraConfig
 from core.helper import encrypter
 from core.model_runtime.entities.llm_entities import LLMMode
 from core.model_runtime.utils.encoders import jsonable_encoder
 from core.prompt.simple_prompt_transform import SimplePromptTransform
-from core.workflow.entities.node_entities import NodeType
+from core.workflow.nodes import NodeType
 from events.app_event import app_was_created
 from extensions.ext_database import db
 from models.account import Account
@@ -351,30 +351,26 @@ class WorkflowConverter:
                 "query_variable_selector": query_variable_selector,
                 "dataset_ids": dataset_config.dataset_ids,
                 "retrieval_mode": retrieve_config.retrieve_strategy.value,
-                "single_retrieval_config": (
-                    {
-                        "model": {
-                            "provider": model_config.provider,
-                            "name": model_config.model,
-                            "mode": model_config.mode,
-                            "completion_params": {
-                                **model_config.parameters,
-                                "stop": model_config.stop,
-                            },
-                        }
+                "single_retrieval_config": {
+                    "model": {
+                        "provider": model_config.provider,
+                        "name": model_config.model,
+                        "mode": model_config.mode,
+                        "completion_params": {
+                            **model_config.parameters,
+                            "stop": model_config.stop,
+                        },
                     }
-                    if retrieve_config.retrieve_strategy == DatasetRetrieveConfigEntity.RetrieveStrategy.SINGLE
-                    else None
-                ),
-                "multiple_retrieval_config": (
-                    {
-                        "top_k": retrieve_config.top_k,
-                        "score_threshold": retrieve_config.score_threshold,
-                        "reranking_model": retrieve_config.reranking_model,
-                    }
-                    if retrieve_config.retrieve_strategy == DatasetRetrieveConfigEntity.RetrieveStrategy.MULTIPLE
-                    else None
-                ),
+                }
+                if retrieve_config.retrieve_strategy == DatasetRetrieveConfigEntity.RetrieveStrategy.SINGLE
+                else None,
+                "multiple_retrieval_config": {
+                    "top_k": retrieve_config.top_k,
+                    "score_threshold": retrieve_config.score_threshold,
+                    "reranking_model": retrieve_config.reranking_model,
+                }
+                if retrieve_config.retrieve_strategy == DatasetRetrieveConfigEntity.RetrieveStrategy.MULTIPLE
+                else None,
             },
         }
 
@@ -519,18 +515,16 @@ class WorkflowConverter:
                 "memory": memory,
                 "context": {
                     "enabled": knowledge_retrieval_node is not None,
-                    "variable_selector": (
-                        ["knowledge_retrieval", "result"] if knowledge_retrieval_node is not None else None
-                    ),
+                    "variable_selector": ["knowledge_retrieval", "result"]
+                    if knowledge_retrieval_node is not None
+                    else None,
                 },
                 "vision": {
                     "enabled": file_upload is not None,
                     "variable_selector": ["sys", "files"] if file_upload is not None else None,
-                    "configs": (
-                        {"detail": file_upload.image_config["detail"]}
-                        if file_upload is not None and file_upload.image_config is not None
-                        else None
-                    ),
+                    "configs": {"detail": file_upload.image_config.detail}
+                    if file_upload is not None and file_upload.image_config is not None
+                    else None,
                 },
             },
         }

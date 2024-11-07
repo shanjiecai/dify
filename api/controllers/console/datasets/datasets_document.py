@@ -24,10 +24,10 @@ from controllers.console.datasets.error import (
     InvalidActionError,
     InvalidMetadataError,
 )
-from controllers.console.setup import setup_required
 from controllers.console.wraps import (
     account_initialization_required,
     cloud_edition_billing_resource_check,
+    setup_required,
 )
 from core.errors.error import (
     LLMBadRequestError,
@@ -49,8 +49,7 @@ from fields.document_fields import (
     document_with_segments_fields,
 )
 from libs.login import login_required
-from models.dataset import Dataset, DatasetProcessRule, Document, DocumentSegment
-from models.model import UploadFile
+from models import Dataset, DatasetProcessRule, Document, DocumentSegment, UploadFile
 from services.dataset_service import DatasetService, DocumentService
 from tasks.add_document_to_index_task import add_document_to_index_task
 from tasks.remove_document_from_index_task import remove_document_from_index_task
@@ -225,7 +224,7 @@ class DatasetDocumentListApi(Resource):
 
     @setup_required
     @login_required
-    # @account_initialization_required
+    @account_initialization_required
     @marshal_with(documents_and_batch_fields)
     @cloud_edition_billing_resource_check("vector_space")
     def post(self, dataset_id):

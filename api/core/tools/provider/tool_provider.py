@@ -15,7 +15,6 @@ from core.tools.errors import (
     ToolProviderCredentialValidationError,
 )
 from core.tools.tool.tool import Tool
-from core.tools.utils.tool_parameter_converter import ToolParameterConverter
 
 
 class ToolProviderController(BaseModel, ABC):
@@ -131,9 +130,7 @@ class ToolProviderController(BaseModel, ABC):
 
             # the parameter is not set currently, set the default value if needed
             if parameter_schema.default is not None:
-                tool_parameters[parameter] = ToolParameterConverter.cast_parameter_by_type(
-                    parameter_schema.default, parameter_schema.type
-                )
+                tool_parameters[parameter] = parameter_schema.type.cast_value(parameter_schema.default)
 
     def validate_credentials_format(self, credentials: dict[str, Any]) -> None:
         """

@@ -6,6 +6,7 @@ from sqlalchemy import desc
 from werkzeug.exceptions import NotFound
 
 import services.dataset_service
+from controllers.common.errors import FilenameNotExistsError
 from controllers.service_api import api
 from controllers.service_api.app.error import ProviderNotInitializeError
 from controllers.service_api.dataset.error import (
@@ -58,7 +59,12 @@ class DocumentAddByTextApi(DatasetApiResource):
         if not dataset.indexing_technique and not args["indexing_technique"]:
             raise ValueError("indexing_technique is required.")
 
-        upload_file = FileService.upload_text(args.get("text"), args.get("name"))
+        text = args.get("text")
+        name = args.get("name")
+        if text is None or name is None:
+            raise ValueError("Both 'text' and 'name' must be non-null values.")
+
+        upload_file = FileService.upload_text(text=str(text), text_name=str(name))
         data_source = {
             "type": "upload_file",
             "info_list": {"data_source_type": "upload_file", "file_info_list": {"file_ids": [upload_file.id]}},
@@ -107,7 +113,11 @@ class DocumentUpdateByTextApi(DatasetApiResource):
             raise ValueError("Dataset is not exist.")
 
         if args["text"]:
-            upload_file = FileService.upload_text(args.get("text"), args.get("name"))
+            text = args.get("text")
+            name = args.get("name")
+            if text is None or name is None:
+                raise ValueError("Both text and name must be strings.")
+            upload_file = FileService.upload_text(text=str(text), text_name=str(name))
             data_source = {
                 "type": "upload_file",
                 "info_list": {"data_source_type": "upload_file", "file_info_list": {"file_ids": [upload_file.id]}},
@@ -166,7 +176,16 @@ class DocumentAddByFileApi(DatasetApiResource):
         if len(request.files) > 1:
             raise TooManyFilesError()
 
-        upload_file = FileService.upload_file(file, current_user)
+        if not file.filename:
+            raise FilenameNotExistsError
+
+        upload_file = FileService.upload_file(
+            filename=file.filename,
+            content=file.read(),
+            mimetype=file.mimetype,
+            user=current_user,
+            source="datasets",
+        )
         data_source = {"type": "upload_file", "info_list": {"file_info_list": {"file_ids": [upload_file.id]}}}
         args["data_source"] = data_source
         # validate args
@@ -215,7 +234,16 @@ class DocumentUpdateByFileApi(DatasetApiResource):
             if len(request.files) > 1:
                 raise TooManyFilesError()
 
-            upload_file = FileService.upload_file(file, current_user)
+            if not file.filename:
+                raise FilenameNotExistsError
+
+            upload_file = FileService.upload_file(
+                filename=file.filename,
+                content=file.read(),
+                mimetype=file.mimetype,
+                user=current_user,
+                source="datasets",
+            )
             data_source = {"type": "upload_file", "info_list": {"file_info_list": {"file_ids": [upload_file.id]}}}
             args["data_source"] = data_source
         # validate args
@@ -233,7 +261,7 @@ class DocumentUpdateByFileApi(DatasetApiResource):
         except ProviderTokenNotInitError as ex:
             raise ProviderNotInitializeError(ex.description)
         document = documents[0]
-        documents_and_batch_fields = {"document": marshal(document, document_fields), "batch": batch}
+        documents_and_batch_fields = {"document": marshal(document, document_fields), "batch": document.batch}
         return documents_and_batch_fields, 200
 
 
@@ -334,10 +362,26 @@ class DocumentIndexingStatusApi(DatasetApiResource):
         return data
 
 
-api.add_resource(DocumentAddByTextApi, "/datasets/<uuid:dataset_id>/document/create_by_text")
-api.add_resource(DocumentAddByFileApi, "/datasets/<uuid:dataset_id>/document/create_by_file")
-api.add_resource(DocumentUpdateByTextApi, "/datasets/<uuid:dataset_id>/documents/<uuid:document_id>/update_by_text")
-api.add_resource(DocumentUpdateByFileApi, "/datasets/<uuid:dataset_id>/documents/<uuid:document_id>/update_by_file")
+api.add_resource(
+    DocumentAddByTextApi,
+    "/datasets/<uuid:dataset_id>/document/create_by_text",
+    "/datasets/<uuid:dataset_id>/document/create-by-text",
+)
+api.add_resource(
+    DocumentAddByFileApi,
+    "/datasets/<uuid:dataset_id>/document/create_by_file",
+    "/datasets/<uuid:dataset_id>/document/create-by-file",
+)
+api.add_resource(
+    DocumentUpdateByTextApi,
+    "/datasets/<uuid:dataset_id>/documents/<uuid:document_id>/update_by_text",
+    "/datasets/<uuid:dataset_id>/documents/<uuid:document_id>/update-by-text",
+)
+api.add_resource(
+    DocumentUpdateByFileApi,
+    "/datasets/<uuid:dataset_id>/documents/<uuid:document_id>/update_by_file",
+    "/datasets/<uuid:dataset_id>/documents/<uuid:document_id>/update-by-file",
+)
 api.add_resource(DocumentDeleteApi, "/datasets/<uuid:dataset_id>/documents/<uuid:document_id>")
 api.add_resource(DocumentListApi, "/datasets/<uuid:dataset_id>/documents")
 api.add_resource(DocumentIndexingStatusApi, "/datasets/<uuid:dataset_id>/documents/<string:batch>/indexing-status")

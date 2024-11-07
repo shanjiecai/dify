@@ -1,8 +1,9 @@
 import json
+import logging
 import mimetypes
 from collections.abc import Generator
 from os import listdir, path
-from threading import Lock
+from threading import Lock, Thread
 from typing import Any, Optional, Union
 
 from configs import dify_config
@@ -11,16 +12,9 @@ from core.app.entities.app_invoke_entities import InvokeFrom
 from core.helper.module_import_helper import load_single_subclass_from_source
 from core.helper.position_helper import is_filtered
 from core.model_runtime.utils.encoders import jsonable_encoder
-from core.tools.entities.api_entities import (
-    UserToolProvider,
-    UserToolProviderTypeLiteral,
-)
+from core.tools.entities.api_entities import UserToolProvider, UserToolProviderTypeLiteral
 from core.tools.entities.common_entities import I18nObject
-from core.tools.entities.tool_entities import (
-    ApiProviderAuthType,
-    ToolInvokeFrom,
-    ToolParameter,
-)
+from core.tools.entities.tool_entities import ApiProviderAuthType, ToolInvokeFrom, ToolParameter
 from core.tools.errors import ToolProviderNotFoundError
 from core.tools.provider.api_tool_provider import ApiToolProviderController
 from core.tools.provider.builtin._positions import BuiltinToolProviderSort
@@ -29,17 +23,12 @@ from core.tools.tool.api_tool import ApiTool
 from core.tools.tool.builtin_tool import BuiltinTool
 from core.tools.tool.tool import Tool
 from core.tools.tool_label_manager import ToolLabelManager
-from core.tools.utils.configuration import (
-    ToolConfigurationManager,
-    ToolParameterConfigurationManager,
-)
-from core.tools.utils.tool_parameter_converter import ToolParameterConverter
+from core.tools.utils.configuration import ToolConfigurationManager, ToolParameterConfigurationManager
 from extensions.ext_database import db
 from models.tools import ApiToolProvider, BuiltinToolProvider, WorkflowToolProvider
-
-# logger = logging.getLogger(__name__)
-from mylogger import logger
 from services.tools.tools_transform_service import ToolTransformService
+
+logger = logging.getLogger(__name__)
 
 
 class ToolManager:
@@ -213,7 +202,7 @@ class ToolManager:
             raise ToolProviderNotFoundError(f"provider type {provider_type} not found")
 
     @classmethod
-    def _init_runtime_parameter(cls, parameter_rule: ToolParameter, parameters: dict) -> Union[str, int, float, bool]:
+    def _init_runtime_parameter(cls, parameter_rule: ToolParameter, parameters: dict):
         """
         init runtime parameter
         """
@@ -232,7 +221,7 @@ class ToolManager:
                     f"tool parameter {parameter_rule.name} value {parameter_value} not in options {options}"
                 )
 
-        return ToolParameterConverter.cast_parameter_by_type(parameter_value, parameter_rule.type)
+        return parameter_rule.type.cast_value(parameter_value)
 
     @classmethod
     def get_agent_tool_runtime(
@@ -253,7 +242,15 @@ class ToolManager:
         parameters = tool_entity.get_all_runtime_parameters()
         for parameter in parameters:
             # check file types
-            if parameter.type == ToolParameter.ToolParameterType.FILE:
+            if (
+                parameter.type
+                in {
+                    ToolParameter.ToolParameterType.SYSTEM_FILES,
+                    ToolParameter.ToolParameterType.FILE,
+                    ToolParameter.ToolParameterType.FILES,
+                }
+                and parameter.required
+            ):
                 raise ValueError(f"file type parameter {parameter.name} not supported in agent")
 
             if parameter.form == ToolParameter.ToolParameterForm.FORM:
@@ -650,4 +647,5 @@ class ToolManager:
             raise ValueError(f"provider type {provider_type} not found")
 
 
-ToolManager.load_builtin_providers_cache()
+# preload builtin tool providers
+Thread(target=ToolManager.load_builtin_providers_cache, name="pre_load_builtin_providers_cache", daemon=True).start()

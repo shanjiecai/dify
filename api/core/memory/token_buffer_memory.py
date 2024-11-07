@@ -1,19 +1,21 @@
 from typing import Optional
 
 from core.app.app_config.features.file_upload.manager import FileUploadConfigManager
-from core.file.message_file_parser import MessageFileParser
-from core.helper.openai_name_convert import correct_name_field
+from core.file import file_manager
+from core.file.models import FileType
 from core.model_manager import ModelInstance
-from core.model_runtime.entities.message_entities import (
+from core.model_runtime.entities import (
     AssistantPromptMessage,
     ImagePromptMessageContent,
     PromptMessage,
+    PromptMessageContent,
     PromptMessageRole,
     TextPromptMessageContent,
     UserPromptMessage,
 )
 from core.prompt.utils.extract_thread_messages import extract_thread_messages
 from extensions.ext_database import db
+from factories import file_factory
 from models.model import AppMode, Conversation, Message, MessageFile
 from models.workflow import WorkflowRun
 
@@ -24,18 +26,12 @@ class TokenBufferMemory:
         self.model_instance = model_instance
 
     def get_history_prompt_messages(
-        self,
-        max_token_limit: int = 2000,
-        message_limit: Optional[int] = None,
-        assistant_name: Optional[str] = None,
-        user_name: Optional[str] = None,
+        self, max_token_limit: int = 2000, message_limit: Optional[int] = None
     ) -> list[PromptMessage]:
         """
         Get history prompt messages.
         :param max_token_limit: max token limit
         :param message_limit: message limit
-        :param assistant_name: assistant name
-        :param user_name: user name
         """
         app_record = self.conversation.app
 
@@ -48,8 +44,6 @@ class TokenBufferMemory:
                 Message.created_at,
                 Message.workflow_run_id,
                 Message.parent_message_id,
-                Message.role,
-                Message.assistant_name,
             )
             .filter(
                 Message.conversation_id == self.conversation.id,
@@ -74,24 +68,12 @@ class TokenBufferMemory:
 
         messages = list(reversed(thread_messages))
 
-        message_file_parser = MessageFileParser(tenant_id=app_record.tenant_id, app_id=app_record.id)
         prompt_messages = []
         for message in messages:
-            if messages.index(message) + 1 < len(messages):
-                next_message = messages[messages.index(message) + 1]
-                # print(f"message: {message.answer}, next_message: {next_message.answer}")
-                if (
-                    (message.answer is None or message.answer == "")
-                    and message.query == next_message.query
-                    and message.role == next_message.role
-                    and next_message.answer is not None
-                    and next_message.answer != ""
-                ):
-                    continue
             files = db.session.query(MessageFile).filter(MessageFile.message_id == message.id).all()
             if files:
                 file_extra_config = None
-                if self.conversation.mode not in {AppMode.ADVANCED_CHAT.value, AppMode.WORKFLOW.value}:
+                if self.conversation.mode not in {AppMode.ADVANCED_CHAT, AppMode.WORKFLOW}:
                     file_extra_config = FileUploadConfigManager.convert(self.conversation.model_config)
                 else:
                     if message.workflow_run_id:
@@ -104,52 +86,28 @@ class TokenBufferMemory:
                                 workflow_run.workflow.features_dict, is_vision=False
                             )
 
-                if file_extra_config:
-                    file_objs = message_file_parser.transform_message_files(files, file_extra_config)
+                if file_extra_config and app_record:
+                    file_objs = file_factory.build_from_message_files(
+                        message_files=files, tenant_id=app_record.tenant_id, config=file_extra_config
+                    )
                 else:
                     file_objs = []
 
                 if not file_objs:
                     prompt_messages.append(UserPromptMessage(content=message.query))
                 else:
-                    prompt_message_contents = [TextPromptMessageContent(data=message.query)]
+                    prompt_message_contents: list[PromptMessageContent] = []
+                    prompt_message_contents.append(TextPromptMessageContent(data=message.query))
                     for file_obj in file_objs:
-                        prompt_message_contents.append(file_obj.prompt_message_content)
+                        if file_obj.type in {FileType.IMAGE, FileType.AUDIO}:
+                            prompt_message = file_manager.to_prompt_message_content(file_obj)
+                            prompt_message_contents.append(prompt_message)
 
                     prompt_messages.append(UserPromptMessage(content=prompt_message_contents))
             else:
-                if not message.query:
-                    continue
-                if not message.role or message.role == "Human":
-                    if user_name:
-                        prompt_messages.append(
-                            UserPromptMessage(content=message.query, name=correct_name_field(user_name))
-                        )
-                    else:
-                        prompt_messages.append(
-                            UserPromptMessage(
-                                content=message.query,
-                            )
-                        )
-                else:
-                    prompt_messages.append(
-                        UserPromptMessage(content=message.query, name=correct_name_field(message.role))
-                    )
+                prompt_messages.append(UserPromptMessage(content=message.query))
 
-            # prompt_messages.append(AssistantPromptMessage(content=message.answer))
-            if not message.answer:
-                continue
-            else:
-                if message.assistant_name:
-                    prompt_messages.append(
-                        UserPromptMessage(content=message.answer, name=correct_name_field(message.assistant_name))
-                    )
-                elif assistant_name:
-                    prompt_messages.append(
-                        AssistantPromptMessage(content=message.answer, name=correct_name_field(assistant_name))
-                    )
-                else:
-                    prompt_messages.append(AssistantPromptMessage(content=message.answer))
+            prompt_messages.append(AssistantPromptMessage(content=message.answer))
 
         if not prompt_messages:
             return []
@@ -189,10 +147,7 @@ class TokenBufferMemory:
             elif m.role == PromptMessageRole.ASSISTANT:
                 role = ai_prefix
             else:
-                if m.role:
-                    role = m.role
-                else:
-                    continue
+                continue
 
             if isinstance(m.content, list):
                 inner_msg = ""

@@ -6,34 +6,20 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from core.app.entities.app_invoke_entities import (
-    InvokeFrom,
-    ModelConfigWithCredentialsEntity,
-)
-from core.entities.provider_configuration import (
-    ProviderConfiguration,
-    ProviderModelBundle,
-)
-from core.entities.provider_entities import (
-    CustomConfiguration,
-    CustomProviderConfiguration,
-    SystemConfiguration,
-)
+from core.app.entities.app_invoke_entities import InvokeFrom, ModelConfigWithCredentialsEntity
+from core.entities.provider_configuration import ProviderConfiguration, ProviderModelBundle
+from core.entities.provider_entities import CustomConfiguration, CustomProviderConfiguration, SystemConfiguration
 from core.model_manager import ModelInstance
 from core.model_runtime.entities.model_entities import ModelType
-from core.model_runtime.model_providers.model_provider_factory import (
-    ModelProviderFactory,
-)
-from core.workflow.entities.node_entities import UserFrom
+from core.model_runtime.model_providers.model_provider_factory import ModelProviderFactory
 from core.workflow.entities.variable_pool import VariablePool
 from core.workflow.enums import SystemVariableKey
 from core.workflow.graph_engine.entities.graph import Graph
 from core.workflow.graph_engine.entities.graph_init_params import GraphInitParams
 from core.workflow.graph_engine.entities.graph_runtime_state import GraphRuntimeState
-from core.workflow.nodes.parameter_extractor.parameter_extractor_node import (
-    ParameterExtractorNode,
-)
+from core.workflow.nodes.parameter_extractor.parameter_extractor_node import ParameterExtractorNode
 from extensions.ext_database import db
+from models.enums import UserFrom
 from models.provider import ProviderType
 
 """FOR MOCK FIXTURES, DO NOT REMOVE"""
@@ -359,15 +345,13 @@ def test_extract_json_response():
         },
     )
 
-    result = node._extract_complete_json_response(
-        """
+    result = node._extract_complete_json_response("""
         uwu{ovo}
         {
             "location": "kawaii"
         }
         hello world.
-    """
-    )
+    """)
 
     assert result is not None
     assert result["location"] == "kawaii"

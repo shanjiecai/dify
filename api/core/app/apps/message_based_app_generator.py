@@ -8,10 +8,7 @@ from sqlalchemy import and_
 
 from core.app.app_config.entities import EasyUIBasedAppModelConfigFrom
 from core.app.apps.base_app_generator import BaseAppGenerator
-from core.app.apps.base_app_queue_manager import (
-    AppQueueManager,
-    GenerateTaskStoppedError,
-)
+from core.app.apps.base_app_queue_manager import AppQueueManager, GenerateTaskStoppedError
 from core.app.entities.app_invoke_entities import (
     AdvancedChatAppGenerateEntity,
     AgentChatAppGenerateEntity,
@@ -26,23 +23,14 @@ from core.app.entities.task_entities import (
     CompletionAppBlockingResponse,
     CompletionAppStreamResponse,
 )
-from core.app.task_pipeline.easy_ui_based_generate_task_pipeline import (
-    EasyUIBasedGenerateTaskPipeline,
-)
+from core.app.task_pipeline.easy_ui_based_generate_task_pipeline import EasyUIBasedGenerateTaskPipeline
 from core.prompt.utils.prompt_template_parser import PromptTemplateParser
 from extensions.ext_database import db
-from models.account import Account
-from models.model import (
-    App,
-    AppMode,
-    AppModelConfig,
-    Conversation,
-    EndUser,
-    Message,
-    MessageFile,
-)
+from models import Account
+from models.enums import CreatedByRole
+from models.model import App, AppMode, AppModelConfig, Conversation, EndUser, Message, MessageFile
 from services.errors.app_model_config import AppModelConfigBrokenError
-from services.errors.conversation import ConversationNotExistsError
+from services.errors.conversation import ConversationCompletedError, ConversationNotExistsError
 
 logger = logging.getLogger(__name__)
 
@@ -267,13 +255,13 @@ class MessageBasedAppGenerator(BaseAppGenerator):
         for file in application_generate_entity.files:
             message_file = MessageFile(
                 message_id=message.id,
-                type=file.type.value,
-                transfer_method=file.transfer_method.value,
+                type=file.type,
+                transfer_method=file.transfer_method,
                 belongs_to="user",
-                url=file.url,
+                url=file.remote_url,
                 upload_file_id=file.related_id,
-                created_by_role=("account" if account_id else "end_user"),
-                created_by=account_id or end_user_id,
+                created_by_role=(CreatedByRole.ACCOUNT if account_id else CreatedByRole.END_USER),
+                created_by=account_id or end_user_id or "",
             )
             db.session.add(message_file)
             db.session.commit()

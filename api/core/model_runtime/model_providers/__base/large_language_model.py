@@ -1,4 +1,4 @@
-import os
+import logging
 import re
 import time
 from abc import abstractmethod
@@ -7,15 +7,10 @@ from typing import Optional, Union
 
 from pydantic import ConfigDict
 
+from configs import dify_config
 from core.model_runtime.callbacks.base_callback import Callback
 from core.model_runtime.callbacks.logging_callback import LoggingCallback
-from core.model_runtime.entities.llm_entities import (
-    LLMMode,
-    LLMResult,
-    LLMResultChunk,
-    LLMResultChunkDelta,
-    LLMUsage,
-)
+from core.model_runtime.entities.llm_entities import LLMMode, LLMResult, LLMResultChunk, LLMResultChunkDelta, LLMUsage
 from core.model_runtime.entities.message_entities import (
     AssistantPromptMessage,
     PromptMessage,
@@ -33,8 +28,7 @@ from core.model_runtime.entities.model_entities import (
 )
 from core.model_runtime.model_providers.__base.ai_model import AIModel
 
-# logger = logging.getLogger(__name__)
-from mylogger import logger
+logger = logging.getLogger(__name__)
 
 
 class LargeLanguageModel(AIModel):
@@ -83,7 +77,7 @@ class LargeLanguageModel(AIModel):
 
         callbacks = callbacks or []
 
-        if bool(os.environ.get("DEBUG", "False").lower() == "true"):
+        if dify_config.DEBUG:
             callbacks.append(LoggingCallback())
 
         # trigger before invoke callbacks
@@ -113,7 +107,16 @@ class LargeLanguageModel(AIModel):
                     callbacks=callbacks,
                 )
             else:
-                result = self._invoke(model, credentials, prompt_messages, model_parameters, tools, stop, stream, user)
+                result = self._invoke(
+                    model=model,
+                    credentials=credentials,
+                    prompt_messages=prompt_messages,
+                    model_parameters=model_parameters,
+                    tools=tools,
+                    stop=stop,
+                    stream=stream,
+                    user=user,
+                )
         except Exception as e:
             self._trigger_invoke_error_callbacks(
                 model=model,

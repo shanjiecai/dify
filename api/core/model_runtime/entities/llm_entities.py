@@ -108,6 +108,7 @@ class LLMResult(BaseModel):
     Model class for llm result.
     """
 
+    id: Optional[str] = None
     model: str
     prompt_messages: list[PromptMessage]
     message: AssistantPromptMessage

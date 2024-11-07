@@ -1,17 +1,10 @@
-import json
 import logging
 import time
 from collections.abc import Generator
 from typing import Any, Optional, Union
 
-from constants.tts_auto_play_timeout import (
-    TTS_AUTO_PLAY_TIMEOUT,
-    TTS_AUTO_PLAY_YIELD_CPU_TIME,
-)
-from core.app.apps.advanced_chat.app_generator_tts_publisher import (
-    AppGeneratorTTSPublisher,
-    AudioTrunk,
-)
+from constants.tts_auto_play_timeout import TTS_AUTO_PLAY_TIMEOUT, TTS_AUTO_PLAY_YIELD_CPU_TIME
+from core.app.apps.advanced_chat.app_generator_tts_publisher import AppGeneratorTTSPublisher, AudioTrunk
 from core.app.apps.base_app_queue_manager import AppQueueManager
 from core.app.entities.app_invoke_entities import (
     InvokeFrom,
@@ -23,6 +16,7 @@ from core.app.entities.queue_entities import (
     QueueIterationNextEvent,
     QueueIterationStartEvent,
     QueueNodeFailedEvent,
+    QueueNodeInIterationFailedEvent,
     QueueNodeStartedEvent,
     QueueNodeSucceededEvent,
     QueueParallelBranchRunFailedEvent,
@@ -47,9 +41,7 @@ from core.app.entities.task_entities import (
     WorkflowStartStreamResponse,
     WorkflowTaskState,
 )
-from core.app.task_pipeline.based_generate_task_pipeline import (
-    BasedGenerateTaskPipeline,
-)
+from core.app.task_pipeline.based_generate_task_pipeline import BasedGenerateTaskPipeline
 from core.app.task_pipeline.workflow_cycle_manage import WorkflowCycleManage
 from core.ops.ops_trace_manager import TraceQueueManager
 from core.workflow.enums import SystemVariableKey
@@ -284,7 +276,7 @@ class WorkflowAppGenerateTaskPipeline(BasedGenerateTaskPipeline, WorkflowCycleMa
 
                 if response:
                     yield response
-            elif isinstance(event, QueueNodeFailedEvent):
+            elif isinstance(event, QueueNodeFailedEvent | QueueNodeInIterationFailedEvent):
                 workflow_node_execution = self._handle_workflow_node_execution_failed(event)
 
                 response = self._workflow_node_finish_to_stream_response(
@@ -342,11 +334,7 @@ class WorkflowAppGenerateTaskPipeline(BasedGenerateTaskPipeline, WorkflowCycleMa
                     start_at=graph_runtime_state.start_at,
                     total_tokens=graph_runtime_state.total_tokens,
                     total_steps=graph_runtime_state.node_run_steps,
-                    outputs=(
-                        json.dumps(event.outputs)
-                        if isinstance(event, QueueWorkflowSucceededEvent) and event.outputs
-                        else None
-                    ),
+                    outputs=event.outputs,
                     conversation_id=None,
                     trace_manager=trace_manager,
                 )
@@ -369,11 +357,9 @@ class WorkflowAppGenerateTaskPipeline(BasedGenerateTaskPipeline, WorkflowCycleMa
                     start_at=graph_runtime_state.start_at,
                     total_tokens=graph_runtime_state.total_tokens,
                     total_steps=graph_runtime_state.node_run_steps,
-                    status=(
-                        WorkflowRunStatus.FAILED
-                        if isinstance(event, QueueWorkflowFailedEvent)
-                        else WorkflowRunStatus.STOPPED
-                    ),
+                    status=WorkflowRunStatus.FAILED
+                    if isinstance(event, QueueWorkflowFailedEvent)
+                    else WorkflowRunStatus.STOPPED,
                     error=event.error if isinstance(event, QueueWorkflowFailedEvent) else event.get_stop_reason(),
                     conversation_id=None,
                     trace_manager=trace_manager,

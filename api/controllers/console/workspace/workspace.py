@@ -6,6 +6,7 @@ from flask_restful import Resource, fields, inputs, marshal, marshal_with, reqpa
 from werkzeug.exceptions import Unauthorized
 
 import services
+from controllers.common.errors import FilenameNotExistsError
 from controllers.console import api
 from controllers.console.admin import admin_required
 from controllers.console.datasets.error import (
@@ -15,10 +16,10 @@ from controllers.console.datasets.error import (
     UnsupportedFileTypeError,
 )
 from controllers.console.error import AccountNotLinkTenantError
-from controllers.console.setup import setup_required
 from controllers.console.wraps import (
     account_initialization_required,
     cloud_edition_billing_resource_check,
+    setup_required,
 )
 from extensions.ext_database import db
 from libs.helper import TimestampField
@@ -169,11 +170,9 @@ class CustomConfigWorkspaceApi(Resource):
 
         custom_config_dict = {
             "remove_webapp_brand": args["remove_webapp_brand"],
-            "replace_webapp_logo": (
-                args["replace_webapp_logo"]
-                if args["replace_webapp_logo"] is not None
-                else tenant.custom_config_dict.get("replace_webapp_logo")
-            ),
+            "replace_webapp_logo": args["replace_webapp_logo"]
+            if args["replace_webapp_logo"] is not None
+            else tenant.custom_config_dict.get("replace_webapp_logo"),
         }
 
         tenant.custom_config_dict = custom_config_dict
@@ -198,12 +197,20 @@ class WebappLogoWorkspaceApi(Resource):
         if len(request.files) > 1:
             raise TooManyFilesError()
 
+        if not file.filename:
+            raise FilenameNotExistsError
+
         extension = file.filename.split(".")[-1]
         if extension.lower() not in {"svg", "png"}:
             raise UnsupportedFileTypeError()
 
         try:
-            upload_file = FileService.upload_file(file, current_user, True)
+            upload_file = FileService.upload_file(
+                filename=file.filename,
+                content=file.read(),
+                mimetype=file.mimetype,
+                user=current_user,
+            )
 
         except services.errors.file.FileTooLargeError as file_too_large_error:
             raise FileTooLargeError(file_too_large_error.description)

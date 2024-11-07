@@ -8,9 +8,6 @@ from tests.integration_tests.vdb.test_vector_store import (
     setup_mock_redis,
 )
 
-mock_client = MagicMock()
-mock_client.list_databases.return_value = [{"name": "test"}]
-
 
 class BaiduVectorTest(AbstractVectorTest):
     def __init__(self):

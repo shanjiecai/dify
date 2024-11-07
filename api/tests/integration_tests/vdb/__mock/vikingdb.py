@@ -193,7 +193,7 @@ class MockVikingDBClass:
 MOCK = os.getenv("MOCK_SWITCH", "false").lower() == "true"
 
 
-@pytest.fixture
+@pytest.fixture()
 def setup_vikingdb_mock(monkeypatch: MonkeyPatch):
     if MOCK:
         monkeypatch.setattr(VikingDBService, "__init__", MockVikingDBClass.__init__)

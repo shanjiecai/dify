@@ -1,5 +1,5 @@
-from collections.abc import Generator
-from typing import Any, Optional, Union
+from collections.abc import Generator, Mapping
+from typing import Any, Union
 
 from openai._exceptions import RateLimitError
 
@@ -23,7 +23,7 @@ class AppGenerateService:
         cls,
         app_model: App,
         user: Union[Account, EndUser],
-        args: Any,
+        args: Mapping[str, Any],
         invoke_from: InvokeFrom,
         streaming: bool = True,
         outer_memory: Optional[list] = None,

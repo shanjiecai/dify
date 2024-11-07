@@ -1,31 +1,19 @@
 import json
 import logging
 from collections.abc import Generator
-from typing import Optional, Union, cast
+from typing import Any, Optional, Union, cast
 
 import tiktoken
 from openai import OpenAI, Stream
 from openai.types import Completion
-from openai.types.chat import (
-    ChatCompletion,
-    ChatCompletionChunk,
-    ChatCompletionMessageToolCall,
-)
-from openai.types.chat.chat_completion_chunk import (
-    ChoiceDeltaFunctionCall,
-    ChoiceDeltaToolCall,
-)
+from openai.types.chat import ChatCompletion, ChatCompletionChunk, ChatCompletionMessageToolCall
+from openai.types.chat.chat_completion_chunk import ChoiceDeltaFunctionCall, ChoiceDeltaToolCall
 from openai.types.chat.chat_completion_message import FunctionCall
 
 from core.model_runtime.callbacks.base_callback import Callback
-from core.model_runtime.entities.llm_entities import (
-    LLMMode,
-    LLMResult,
-    LLMResultChunk,
-    LLMResultChunkDelta,
-)
-from core.model_runtime.entities.message_entities import (
+from core.model_runtime.entities import (
     AssistantPromptMessage,
+    AudioPromptMessageContent,
     ImagePromptMessageContent,
     PromptMessage,
     PromptMessageContentType,
@@ -35,17 +23,10 @@ from core.model_runtime.entities.message_entities import (
     ToolPromptMessage,
     UserPromptMessage,
 )
-from core.model_runtime.entities.model_entities import (
-    AIModelEntity,
-    FetchFrom,
-    I18nObject,
-    ModelType,
-    PriceConfig,
-)
+from core.model_runtime.entities.llm_entities import LLMMode, LLMResult, LLMResultChunk, LLMResultChunkDelta
+from core.model_runtime.entities.model_entities import AIModelEntity, FetchFrom, I18nObject, ModelType, PriceConfig
 from core.model_runtime.errors.validate import CredentialsValidateFailedError
-from core.model_runtime.model_providers.__base.large_language_model import (
-    LargeLanguageModel,
-)
+from core.model_runtime.model_providers.__base.large_language_model import LargeLanguageModel
 from core.model_runtime.model_providers.openai._common import _CommonOpenAI
 
 logger = logging.getLogger(__name__)
@@ -633,6 +614,7 @@ class OpenAILargeLanguageModel(_CommonOpenAI, LargeLanguageModel):
         # clear illegal prompt messages
         prompt_messages = self._clear_illegal_prompt_messages(model, prompt_messages)
 
+        # o1 compatibility
         block_as_stream = False
         if model.startswith("o1"):
             if stream:
@@ -646,8 +628,9 @@ class OpenAILargeLanguageModel(_CommonOpenAI, LargeLanguageModel):
                 del extra_model_kwargs["stop"]
 
         # chat model
+        messages: Any = [self._convert_prompt_message_to_dict(m) for m in prompt_messages]
         response = client.chat.completions.create(
-            messages=[self._convert_prompt_message_to_dict(m) for m in prompt_messages],
+            messages=messages,
             model=model,
             stream=stream,
             **model_parameters,
@@ -936,11 +919,11 @@ class OpenAILargeLanguageModel(_CommonOpenAI, LargeLanguageModel):
                         if isinstance(prompt_message.content, list):
                             prompt_message.content = "\n".join(
                                 [
-                                    (
-                                        item.data
-                                        if item.type == PromptMessageContentType.TEXT
-                                        else "[IMAGE]" if item.type == PromptMessageContentType.IMAGE else ""
-                                    )
+                                    item.data
+                                    if item.type == PromptMessageContentType.TEXT
+                                    else "[IMAGE]"
+                                    if item.type == PromptMessageContentType.IMAGE
+                                    else ""
                                     for item in prompt_message.content
                                 ]
                             )
@@ -966,21 +949,27 @@ class OpenAILargeLanguageModel(_CommonOpenAI, LargeLanguageModel):
         Convert PromptMessage to dict for OpenAI API
         """
         if isinstance(message, UserPromptMessage):
-            message = cast(UserPromptMessage, message)
             if isinstance(message.content, str):
                 message_dict = {"role": "user", "content": message.content}
-            else:
+            elif isinstance(message.content, list):
                 sub_messages = []
                 for message_content in message.content:
-                    if message_content.type == PromptMessageContentType.TEXT:
-                        message_content = cast(TextPromptMessageContent, message_content)
+                    if isinstance(message_content, TextPromptMessageContent):
                         sub_message_dict = {"type": "text", "text": message_content.data}
                         sub_messages.append(sub_message_dict)
-                    elif message_content.type == PromptMessageContentType.IMAGE:
-                        message_content = cast(ImagePromptMessageContent, message_content)
+                    elif isinstance(message_content, ImagePromptMessageContent):
                         sub_message_dict = {
                             "type": "image_url",
                             "image_url": {"url": message_content.data, "detail": message_content.detail.value},
+                        }
+                        sub_messages.append(sub_message_dict)
+                    elif isinstance(message_content, AudioPromptMessageContent):
+                        sub_message_dict = {
+                            "type": "input_audio",
+                            "input_audio": {
+                                "data": message_content.data,
+                                "format": message_content.format,
+                            },
                         }
                         sub_messages.append(sub_message_dict)
 
@@ -1041,8 +1030,7 @@ class OpenAILargeLanguageModel(_CommonOpenAI, LargeLanguageModel):
     ) -> int:
         """Calculate num tokens for gpt-3.5-turbo and gpt-4 with tiktoken package.
 
-        Official documentation: https://github.com/openai/openai-cookbook/blob/main/examples/How_to_format_inputs_to_ChatGPT_models.ipynb
-        """
+        Official documentation: https://github.com/openai/openai-cookbook/blob/main/examples/How_to_format_inputs_to_ChatGPT_models.ipynb"""
         if model.startswith("ft:"):
             model = model.split(":")[1]
 
