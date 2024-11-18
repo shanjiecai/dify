@@ -26,12 +26,16 @@ class TokenBufferMemory:
         self.model_instance = model_instance
 
     def get_history_prompt_messages(
-        self, max_token_limit: int = 2000, message_limit: Optional[int] = None
+        self, max_token_limit: int = 2000, message_limit: Optional[int] = None,
+        assistant_name: Optional[str] = None,
+        user_name: Optional[str] = None,
     ) -> list[PromptMessage]:
         """
         Get history prompt messages.
         :param max_token_limit: max token limit
         :param message_limit: message limit
+        :param assistant_name: assistant name
+        :param user_name: user name
         """
         app_record = self.conversation.app
 

@@ -90,6 +90,7 @@ class App(db.Model):
     updated_by = db.Column(StringUUID, nullable=True)
     updated_at = db.Column(db.DateTime, nullable=False, server_default=db.text("CURRENT_TIMESTAMP(0)"))
     use_icon_as_answer_icon = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
+    memory_metadata = db.Column(db.JSON, nullable=True)  # 存储记忆相关信息，比如人格，回答过的问题等
 
     @property
     def desc_or_prompt(self):

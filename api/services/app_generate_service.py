@@ -1,5 +1,5 @@
 from collections.abc import Generator, Mapping
-from typing import Any, Union
+from typing import Any, Optional, Union
 
 from openai._exceptions import RateLimitError
 

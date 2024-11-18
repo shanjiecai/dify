@@ -1,0 +1,78 @@
+identity:
+  name: update_mem0ai_memory
+  author: dify
+  label:
+    en_US: Update mem0ai memory
+    zh_Hans: 更新记忆
+description:
+  human:
+    en_US: Update an existing memory in mem0ai
+    zh_Hans: 在 mem0ai 中更新现有记忆
+  llm: Update an existing memory in mem0ai.
+parameters:
+  - name: memory_id
+    required: true
+    type: string
+    label:
+      en_US: Memory ID
+      zh_Hans: 记忆 ID
+    human_description:
+      en_US: The unique identifier of the memory to update
+      zh_Hans: 要更新的记忆的唯一标识符
+    llm_description: The unique identifier of the memory to update
+    form: llm
+  - name: text
+    required: true
+    type: string
+    label:
+      en_US: Memory content
+      zh_Hans: 记忆内容
+    human_description:
+      en_US: Updated memory content
+      zh_Hans: 更新后的记忆内容
+    llm_description: Updated memory content
+    form: llm
+  - name: user_id
+    type: string
+    required: false
+    label:
+      en_US: User ID
+      zh_Hans: 用户 ID
+    human_description:
+      en_US: User ID associated with the memory
+      zh_Hans: 与记忆关联的用户 ID
+    llm_description: User ID associated with the memory
+    form: llm
+  - name: agent_id
+    type: string
+    required: false
+    label:
+      en_US: Agent ID
+      zh_Hans: Agent ID
+    human_description:
+      en_US: Agent ID associated with the memory
+      zh_Hans: 与记忆关联的 Agent ID
+    llm_description: Agent ID associated with the memory
+    form: llm
+  - name: run_id
+    type: string
+    required: false
+    label:
+      en_US: Run ID
+      zh_Hans: Run ID
+    human_description:
+      en_US: Run ID associated with the memory
+      zh_Hans: 与记忆关联的 Run ID
+    llm_description: Run ID associated with the memory
+    form: llm
+  - name: metadata
+    type: string
+    required: false
+    label:
+      en_US: Metadata
+      zh_Hans: 元数据
+    human_description:
+      en_US: Additional metadata for the memory
+      zh_Hans: 记忆的附加元数据
+    llm_description: Additional metadata for the memory
+    form: llm

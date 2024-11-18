@@ -1,0 +1,79 @@
+identity: # 工具的基本信息
+  name: get_all_memory # 工具名称，唯一，不允许和其他工具重名
+  author: dify # 作者
+  label: # 标签，用于前端展示
+    en_US: Get All Memories # 英文标签
+    zh_Hans: 获取所有记忆 # 中文标签
+description: # 描述，用于前端展示
+  human: # 用于前端展示的介绍，支持多语言
+    en_US: Retrieve all memories using the Mem0 client with optional filters
+    zh_Hans: 使用 Mem0 客户端和可选过滤条件获取所有记忆
+  llm: Retrieve all memories using the Mem0 client with optional filters. # 传递给 LLM 的介绍
+parameters: # 参数列表
+  - name: user_id
+    type: string # 参数类型
+    required: true
+    label: # 参数标签
+      en_US: User ID # 英文标签
+      zh_Hans: 用户 ID # 中文标签
+    human_description: # 用于前端展示的介绍，支持多语言
+      en_US: User ID
+      zh_Hans: 用户 ID
+    llm_description: User ID # 传递给LLM的介绍
+    form: llm # 表单类型
+  - name: agent_id
+    type: string # 参数类型
+    required: false
+    label: # 参数标签
+      en_US: Agent ID # 英文标签
+      zh_Hans: Agent ID # 中文标签
+    human_description: # 用于前端展示的介绍，支持多语言
+      en_US: Agent ID (optional)
+      zh_Hans: Agent ID（可选）
+    llm_description: Agent ID (optional) # 传递给LLM的介绍
+    form: llm # 表单类型
+  - name: start_date
+    type: string # 参数类型
+    required: false
+    label: # 参数标签
+      en_US: Start Date # 英文标签
+      zh_Hans: 开始日期 # 中文标签
+    human_description: # 用于前端展示的介绍，支持多语言
+      en_US: Start date for filtering memories (optional)
+      zh_Hans: 用于过滤记忆的开始日期（可选）
+    llm_description: Start date for filtering memories (optional) # 传递给LLM的介绍
+    form: llm # 表单类型
+  - name: end_date
+    type: string # 参数类型
+    required: false
+    label: # 参数标签
+      en_US: End Date # 英文标签
+      zh_Hans: 结束日期 # 中文标签
+    human_description: # 用于前端展示的介绍，支持多语言
+      en_US: End date for filtering memories (optional)
+      zh_Hans: 用于过滤记忆的结束日期（可选）
+    llm_description: End date for filtering memories (optional) # 传递给LLM的介绍
+    form: llm # 表单类型
+  - name: filters
+    type: string # 参数类型
+    required: false
+    label: # 参数标签
+      en_US: Filters # 英文标签
+      zh_Hans: 过滤条件 # 中文标签
+    human_description: # 用于前端展示的介绍，支持多语言
+      en_US: Filter condition (optional)
+      zh_Hans: 过滤条件（可选）
+    llm_description: The filter condition of returned query results (optional) # 传递给LLM的介绍
+    form: llm # 表单类型
+  - name: limit
+    type: number # 参数类型
+    required: false
+    default: 100
+    label: # 参数标签
+      en_US: Limit # 英文标签
+      zh_Hans: 查询结果数量限制 # 中文标签
+    human_description: # 用于前端展示的介绍，支持多语言
+      en_US: The limit on the number of returned query results
+      zh_Hans: 查询结果的返回数量限制
+    llm_description: The limit on the number of returned query results # 传递给LLM的介绍
+    form: llm # 表单类型
