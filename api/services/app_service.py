@@ -369,3 +369,6 @@ class AppService:
                         meta["tool_icons"][tool_name] = {"background": "#252525", "content": "\ud83d\ude01"}
 
         return meta
+    
+    def get_app_by_app_id(self, app_id: str) -> App:
+        return db.session.query(App).filter(App.id == app_id).first()

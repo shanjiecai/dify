@@ -10,8 +10,10 @@ from controllers.console.app.error import ProviderNotInitializeError
 # from constants.model_template import model_templates
 from controllers.social_agent_api import api
 from controllers.social_agent_api.wraps import AppApiResource
+from core import model_manager
 from core.errors.error import LLMBadRequestError, ProviderTokenNotInitError
-from core.model_manager import ModelManager
+from core.memory.token_buffer_memory import TokenBufferMemory
+from core.model_manager import ModelManager, ModelInstance
 from core.model_runtime.entities.model_entities import ModelType
 from core.provider_manager import ProviderManager
 from extensions.ext_database import db
@@ -23,6 +25,8 @@ from services.account_service import AccountService, TenantService
 from services.app_dsl_service import AppDslService
 from services.app_model_config_service import AppModelConfigService
 from services.app_model_service import AppModelService
+from services.conversation_service import ConversationService
+from services.errors.conversation import ConversationNotExistsError
 
 
 class AppListApi(AppApiResource):
@@ -311,179 +315,6 @@ class AppCreateApi(AppApiResource):
         return app, 201
 
 
-"""
-{
-  "opening_statement": "",
-  "suggested_questions": [],
-  "suggested_questions_after_answer": {
-    "enabled": false
-  },
-  "speech_to_text": {
-    "enabled": false
-  },
-  "text_to_speech": {
-    "enabled": false,
-    "voice": "",
-    "language": ""
-  },
-  "retriever_resource": {
-    "enabled": false
-  },
-  "annotation_reply": {
-    "enabled": false
-  },
-  "more_like_this": {
-    "enabled": false
-  },
-  "sensitive_word_avoidance": {
-    "enabled": false,
-    "type": "",
-    "configs": []
-  },
-  "external_data_tools": [],
-  "model": {
-    "provider": "openai",
-    "name": "gpt-4-turbo-preview",
-    "mode": "chat",
-    "completion_params": {
-      "temperature": 0,
-      "top_p": 1,
-      "presence_penalty": 0,
-      "frequency_penalty": 0,
-      "max_tokens": 512,
-      "stop": []
-    }
-  },
-  "user_input_form": [],
-  "dataset_query_variable": "",
-  "pre_prompt": "Use the following context as your learned knowledge, inside <context></context> XML tags.\n<context>\n{{#context#}}\n</context>\nWhen answer to user:\n- If you don't know, just say that you don't know.\n- If you don't know when you are not sure, ask for clarification.\nAvoid mentioning that you obtained the information from the context.\ncharacter information:\nMargarita Zmievskaya appears to be a family-oriented and responsible individual, valuing her close relationships with her siblings and cherishing childhood memories with her grandparents. She is focused and goal-driven, prioritizing her education with aspirations to pursue a master's degree in Korea, and shows a strong interest in maritime transportation. Her part-time work assisting her mother's entrepreneurial endeavors indicates adaptability and a practical approach to balancing work with her studies.Her speaking style is Reflective, familial, casual, narrative-driven.\nNow I want you to act as Margarita Zmievskaya to answer user's question based on the above learned knowledge and character information. you must always remember that you are only assigned one personality role. Don’t be verbose or too formal or polite when speaking.",
-  "agent_mode": {
-    "enabled": false,
-    "max_iteration": 5,
-    "strategy": "function_call",
-    "tools": []
-  },
-  "prompt_type": "simple",
-  "chat_prompt_config": {},
-  "completion_prompt_config": {},
-  "dataset_configs": {
-    "retrieval_model": "single",
-    "datasets": {
-      "datasets": [
-        {
-          "dataset": {
-            "enabled": true,
-            "id": "0be5bdbf-e431-4ffa-b45b-89dc4230608c"
-          }
-        }
-      ]
-    }
-  },
-  "file_upload": {
-    "image": {
-      "enabled": false,
-      "number_limits": 3,
-      "detail": "high",
-      "transfer_methods": [
-        "remote_url",
-        "local_file"
-      ]
-    }
-  }
-}
-"""
-
-"""
-{
-  "opening_statement": "",
-  "suggested_questions": [],
-  "suggested_questions_after_answer": {
-    "enabled": false
-  },
-  "speech_to_text": {
-    "enabled": false
-  },
-  "text_to_speech": {
-    "enabled": false,
-    "voice": "",
-    "language": ""
-  },
-  "retriever_resource": {
-    "enabled": false
-  },
-  "annotation_reply": {
-    "enabled": false
-  },
-  "more_like_this": {
-    "enabled": false
-  },
-  "sensitive_word_avoidance": {
-    "enabled": false,
-    "type": "",
-    "configs": []
-  },
-  "external_data_tools": [],
-  "model": {
-    "provider": "openai",
-    "name": "gpt-4-turbo-preview",
-    "mode": "chat",
-    "completion_params": {
-      "temperature": 0,
-      "top_p": 1,
-      "presence_penalty": 0,
-      "frequency_penalty": 0,
-      "max_tokens": 512,
-      "stop": []
-    }
-  },
-  "user_input_form": [],
-  "dataset_query_variable": "",
-  "pre_prompt": "",
-  "agent_mode": {
-    "enabled": false,
-    "max_iteration": 5,
-    "strategy": "function_call",
-    "tools": []
-  },
-  "prompt_type": "advanced",
-  "chat_prompt_config": {
-    "prompt": [
-      {
-        "role": "system",
-        "text": "Use the following context as your learned knowledge, inside <context></context> XML tags.\n<context>\n{{#context#}}\n</context>\nWhen answer to user:\n- If you don't know, just say that you don't know.\n- If you don't know when you are not sure, ask for clarification.\nAvoid mentioning that you obtained the information from the context.\ncharacter information:\nMargarita Zmievskaya appears to be a family-oriented and responsible individual, valuing her close relationships with her siblings and cherishing childhood memories with her grandparents. She is focused and goal-driven, prioritizing her education with aspirations to pursue a master's degree in Korea, and shows a strong interest in maritime transportation. Her part-time work assisting her mother's entrepreneurial endeavors indicates adaptability and a practical approach to balancing work with her studies.Her speaking style is Reflective, familial, casual, narrative-driven.\nNow I want you to act as Margarita Zmievskaya to answer user's question based on the above learned knowledge and character information. you must always remember that you are only assigned one personality role. Don’t be verbose or too formal or polite when speaking."
-      }
-    ]
-  },
-  "completion_prompt_config": {
-    "prompt": {
-      "text": ""
-    },
-    "conversation_histories_role": {
-      "user_prefix": "",
-      "assistant_prefix": ""
-    }
-  },
-  "dataset_configs": {
-    "retrieval_model": "single",
-    "datasets": {
-      "datasets": []
-    }
-  },
-  "file_upload": {
-    "image": {
-      "enabled": false,
-      "number_limits": 3,
-      "detail": "high",
-      "transfer_methods": [
-        "remote_url",
-        "local_file"
-      ]
-    }
-  }
-}
-"""
-
-
 class AppUpdateDataset(AppApiResource):
 
     def post(self, app_model: App):
@@ -504,9 +335,230 @@ class AppUpdateDataset(AppApiResource):
         return {"result": "success"}, 200
 
 
+# 获取当前文件所在的绝对路径
+current_dir = os.path.dirname(os.path.abspath(__file__))
+personality_questions_v1_list = open(os.path.join(current_dir, "personality_questions_v1.txt"), "r").readlines()
+personality_questions_v1_list = [question.strip() for question in personality_questions_v1_list]
+
+
+from controllers.social_agent_api.app.openai_base_request import llm_generate_response
+
+
+# 从app.memory_metadata里获取
+# memory_metadata中存personality和answered_questions，answered_questions是一个list，里面存的是已经回答过的问题
+# 两种修改方式，用户直接修改和大模型根据对话信息
+class AppPersonality(AppApiResource):
+    def get(self, app_model: App):
+        return app_model.memory_metadata.get("personality", "")
+    
+    # def patch(self, app_model: App):
+    #     parser = reqparse.RequestParser()
+    #     parser.add_argument("personality", type=str, required=True, location="json")
+    #     parser.add_argument("conversation_id", type=str, required=True, location="json")
+    #     args = parser.parse_args()
+    #     model_manager = ModelManager()
+    #     model_instance = model_manager.get_model_instance(
+    #         tenant_id=app_model.tenant_id,
+    #         provider="openai",
+    #         model_type=ModelType.LLM,
+    #         model="gpt-4o-mini",
+    #     )
+    #     conversation = ConversationService.get_conversation(
+    #         app_model=app_model, conversation_id=args["conversation_id"]
+    #     )
+    #     if not conversation:
+    #         raise ConversationNotExistsError()
+    #     # get memory of conversation (read-only)
+    #     memory = TokenBufferMemory(conversation=conversation, model_instance=model_instance)
+    #
+    #     histories = memory.get_history_prompt_messages(
+    #         max_token_limit=3000,
+    #         message_limit=50,
+    #     )
+    #     histories = [{"role": history.role, "content": history.content} for history in histories]
+    #     # 根据对话历史和已存的personality，生成新的personality
+    #     new_personality = llm_generate_response(
+    #         prompt=None,
+    #         system_prompt="请根据以下对话历史微调个性。确保在更新个性时保留所有重要信息，并仅在必要时进行细微调整。目标是保持个性的完整性和一致性。",
+    #         history_messages=histories,
+    #     )
+    #     # 更新个性
+    #     app_model.memory_metadata["personality"] = new_personality
+    #     db.session.commit()
+    #     return {"result": "success"}, 200
+
+    def post(self, app_model: App):
+        parser = reqparse.RequestParser()
+        parser.add_argument("conversation_id", type=str, required=True, location="json")
+        args = parser.parse_args()
+
+        # 从 memory_metadata 中获取已回答的问题列表
+        answered_questions = app_model.memory_metadata.get("answered_questions", [])
+
+        # 获取对话
+        conversation = ConversationService.get_conversation(
+            app_model=app_model, conversation_id=args["conversation_id"]
+        )
+        if not conversation:
+            raise ConversationNotExistsError()
+
+        model_manager = ModelManager()
+        model_instance = model_manager.get_model_instance(
+            tenant_id=app_model.tenant_id,
+            provider="openai",
+            model_type=ModelType.LLM,
+            model="gpt-4o-mini",
+        )
+
+        # 获取对话历史
+        memory = TokenBufferMemory(conversation=conversation, model_instance=model_instance)
+        histories = memory.get_history_prompt_messages(
+            max_token_limit=3000,
+            message_limit=50,
+        )
+        histories = [f"{history.role}:{history.content}" for history in histories]
+
+        # 获取之前存储的个性
+        previous_personality = app_model.memory_metadata.get("personality", "")
+
+        # 使用优化后的 prompt 进行人格更新
+        prompt = (
+                "请根据以下对话历史和已回答的问题列表更新个性。\n"
+                "确保在更新个性时保留所有重要信息，并仅在必要时进行细微调整。\n"
+                "对话历史：\n" + "\n".join(histories) + "\n\n" +
+                "已回答的问题列表：\n" + "\n".join(
+            [f"- {q['question']}" for q in answered_questions]
+        ) + "\n\n"
+            "之前的个性：\n" + previous_personality + "\n\n" +
+                "请直接开始生成更新后的人格描述："
+        )
+        # 调用模型生成新的个性描述
+        new_personality = llm_generate_response(
+            prompt=prompt,
+            model="gpt-4o-mini"
+        )
+
+        # 更新个性
+        app_model.memory_metadata["personality"] = new_personality
+        db.session.commit()
+
+        return {"result": "success", "new_personality": new_personality}, 200
+    
+    def put(self, app_model: App):
+        parser = reqparse.RequestParser()
+        parser.add_argument("personality", type=str, required=True, location="json")
+        args = parser.parse_args()
+        
+        # 强制覆盖个性
+        app_model.memory_metadata["personality"] = args["personality"]
+        db.session.commit()
+        return {"result": "success"}, 200
+
+
+class AppAnsweredQuestions(AppApiResource):
+    def get(self, app_model: App):
+        # 获取已回答的问题列表
+        answered_questions = app_model.memory_metadata.get("answered_questions", [])
+        answered_question_set = {q["question"] for q in answered_questions}  # 已回答问题的集合
+
+        # 获取所有问题列表
+        all_questions = personality_questions_v1_list  # 假设这是所有问题的列表
+
+        # 构建已完成和未完成的问题列表
+        completed_questions = [question for question in all_questions if question in answered_question_set]
+        incomplete_questions = [question for question in all_questions if question not in answered_question_set]
+
+        # 检查是否所有问题都已完成
+        all_completed = len(incomplete_questions) == 0
+
+        return {
+            "all_completed": all_completed,
+            "completed_questions": completed_questions,
+            "incomplete_questions": incomplete_questions
+        }
+
+    def patch(self, app_model: App):
+        parser = reqparse.RequestParser()
+        parser.add_argument("conversation_id", type=str, required=True, location="json")
+        args = parser.parse_args()
+
+        # 获取对话
+        conversation = ConversationService.get_conversation(
+            app_model=app_model, conversation_id=args["conversation_id"]
+        )
+        if not conversation:
+            raise ConversationNotExistsError()
+
+        model_manager = ModelManager()
+        model_instance = model_manager.get_model_instance(
+            tenant_id=app_model.tenant_id,
+            provider="openai",
+            model_type=ModelType.LLM,
+            model="gpt-4o-mini",
+        )
+
+        # 获取对话历史
+        memory = TokenBufferMemory(conversation=conversation, model_instance=model_instance)
+        histories = memory.get_history_prompt_messages(
+            max_token_limit=3000,
+            message_limit=50,
+        )
+        histories = [f"{history.role}:{history.content}" for history in histories]
+
+        # 从 memory_metadata 中获取已回答的问题列表
+        answered_questions = app_model.memory_metadata.get("answered_questions", [])
+        answered_question_set = {q["question"] for q in answered_questions}  # 已回答问题的集合
+
+        # 生成尚未回答的问题列表
+        unanswered_questions = [
+            question for question in personality_questions_v1_list
+            if question not in answered_question_set
+        ]
+
+        # 使用优化后的 prompt 进行问题提取
+        prompt = (
+                "请根据以下步骤完成指定的任务：\n\n"
+                "1. 从提供的对话历史中提取用户针对问题列表中的问题的回答。\n"
+                "2. 检查用户回答的问题是否与问题列表中的问题相匹配。\n"
+                "3. 对于每个匹配的问题，整理出问题及其对应的用户回答。\n"
+                "4. 确保按照以下格式输出每个已回答的问题和对应的回答，只输出已回答的问题和对应用户回答，多个问题回答需要换行：\n"
+                "   - 格式为：“已回答的问题,用户回答”。\n"
+                "5. 如果用户没有回答任何问题，直接输出“用户没有回答任何问题”。\n"
+                "6. 在输出时，确保不要包含任何XML标签。\n\n"
+                "对话历史：\n" + "\n".join(histories) + "\n\n" +
+                "问题列表：\n" + "\n".join(unanswered_questions)  # 使用未回答的问题列表
+        )
+
+        # 调用模型生成回答
+        response = llm_generate_response(prompt=prompt, model="gpt-4o-mini")
+
+        # 处理模型返回的结果
+        new_answered_questions = []
+        if response:
+            if response == "用户没有回答任何问题" or response.startswith("用户没有回答任何问题"):
+                return {"result": "success", "answered_questions": answered_questions}, 200
+            for line in response.splitlines():
+                if line.strip():
+                    question, answer = line.split(",", 1)
+                    question = question.strip()
+                    answer = answer.strip()
+
+                    # 检查问题是否已经回答过
+                    if question not in [q["question"] for q in answered_questions]:
+                        new_answered_questions.append({"question": question, "answer": answer})
+
+        # 更新 memory_metadata
+        app_model.memory_metadata["answered_questions"].extend(new_answered_questions)
+        db.session.commit()
+
+        return {"result": "success", "answered_questions": new_answered_questions}, 200
+
+
 api.add_resource(AppCreateApi, "/app/create")
 api.add_resource(AppListApi, "/app/list")
 api.add_resource(AppGet, "/app/check")
 api.add_resource(PersonListApi, "/person/list")
 api.add_resource(AppUpdateDataset, "/app/update_dataset")
 api.add_resource(AppImportApi, "/app/import")
+api.add_resource(AppPersonality, "/app/personality")
+api.add_resource(AppAnsweredQuestions, "/app/answered_questions")

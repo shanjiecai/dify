@@ -139,6 +139,7 @@ def register_blueprints(app):
     from controllers.files import bp as files_bp
     from controllers.inner_api import bp as inner_api_bp
     from controllers.service_api import bp as service_api_bp
+    from controllers.social_agent_api import bp as social_agent_api_bp
     from controllers.web import bp as web_bp
 
     CORS(
@@ -147,6 +148,13 @@ def register_blueprints(app):
         methods=["GET", "PUT", "POST", "DELETE", "OPTIONS", "PATCH"],
     )
     app.register_blueprint(service_api_bp)
+
+    CORS(
+        social_agent_api_bp,
+        allow_headers=["Content-Type", "Authorization", "X-App-Code"],
+        methods=["GET", "PUT", "POST", "DELETE", "OPTIONS", "PATCH"],
+    )
+    app.register_blueprint(social_agent_api_bp)
 
     CORS(
         web_bp,
