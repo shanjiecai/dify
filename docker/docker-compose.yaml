@@ -19,6 +19,7 @@ x-shared-env: &shared-api-worker-env
   SECRET_KEY: ${SECRET_KEY:-sk-9f73s3ljTXVcMT3Blb3ljTqtsKiGHXVcMT3BlbkFJLK7U}
   # Customize
   OPENAI_API_KEY: ${OPENAI_API_KEY}
+  OPENAI_BASE_URL: ${OPENAI_BASE_URL:-https://api.openai.com/v1}
   LOGIN_DISABLED: False
   NEWS_API_KEY: ${NEWS_API_KEY}
   FEISHU_ALERT_URL: ${FEISHU_ALERT_URL}
@@ -320,6 +321,7 @@ services:
       # Mount the storage directory to the container, for storing user files.
       - ./volumes/app/storage:/app/api/storage
       - ./log:/app/api/log
+      - ../api:/app/api  # 挂载上一级目录的 api 文件夹到容器中
     # uncomment to expose dify-api port to host
     # ports:
     #   - "5001:5001"
