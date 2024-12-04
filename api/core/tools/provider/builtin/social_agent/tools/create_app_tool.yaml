@@ -21,3 +21,14 @@ parameters: # 参数列表
       zh_Hans: 与应用关联的用户名
     llm_description: The user name to be used for creating the app
     form: llm
+  - name: user_nick
+    type: string
+    required: true
+    label:
+      en_US: User Nick
+      zh_Hans: 用户昵称
+    human_description:
+      en_US: The user nick  associated with the app
+      zh_Hans: 与应用关联的用户昵称
+    llm_description: The user nick name to be used for creating the app
+    form: llm

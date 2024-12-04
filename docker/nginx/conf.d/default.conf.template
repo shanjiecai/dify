@@ -29,21 +29,13 @@ server {
       include proxy.conf;
     }
 
-    # es
-    #location /es {
-    #  proxy_pass http://es:9200;
-    #  include proxy.conf;
-    #}
-
-    # kibana
-    location /kibana {
-      proxy_pass http://kibana:5601;
-      include proxy.conf;
-    }
-
     location / {
       proxy_pass http://web:3000;
       include proxy.conf;
+    }
+
+    location /GOS7Kj0j5n.txt {
+      root /etc/nginx/conf.d;
     }
 
     # placeholder for acme challenge location

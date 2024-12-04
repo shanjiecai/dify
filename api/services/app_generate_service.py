@@ -183,7 +183,7 @@ class AppGenerateService:
         :return:
         """
         workflow_service = WorkflowService()
-        if invoke_from == InvokeFrom.DEBUGGER:
+        if invoke_from in [InvokeFrom.DEBUGGER, InvokeFrom.SERVICE_API]:
             # fetch draft workflow by app_model
             workflow = workflow_service.get_draft_workflow(app_model=app_model)
 

@@ -1,6 +1,7 @@
 import datetime
 import json
 import os
+from typing import cast
 
 from flask_restful import abort, fields, marshal_with, reqparse
 
@@ -17,15 +18,17 @@ from core.model_runtime.entities.model_entities import ModelType
 from core.provider_manager import ProviderManager
 from extensions.ext_database import db
 from fields.app_fields import model_config_fields
+from models import Account
 from models.dataset import DatasetUpdateRealTimeSocialAgent
 from models.model import App, AppModelConfig, Site
 from mylogger import logger
 from services.account_service import AccountService, TenantService
-from services.app_dsl_service import AppDslService
+from services.app_dsl_service import AppDslService, ImportStatus
 from services.app_model_config_service import AppModelConfigService
 from services.app_model_service import AppModelService
 from services.conversation_service import ConversationService
 from services.errors.conversation import ConversationNotExistsError
+from sqlalchemy.orm import Session
 
 
 class AppListApi(AppApiResource):
@@ -99,6 +102,7 @@ class AppImportApi(AppApiResource):
 
         parser = reqparse.RequestParser()
         parser.add_argument("user_name", type=str, required=True, location="json")
+        parser.add_argument("user_nick", type=str, required=False, location="json")
         args = parser.parse_args()
         # 读取当前目录下个人助理.yaml文件
         cur_path = os.path.dirname(__file__)
@@ -117,15 +121,29 @@ class AppImportApi(AppApiResource):
 
         first_user = AccountService.get_first_user()
         tenant = TenantService.get_first_tenant()
+        first_user.current_tenant = tenant
+        # account = cast(Account, first_user)
+        with Session(db.engine) as session:
+            import_service = AppDslService(session)
+            result = import_service.import_app(
+                account=first_user,
+                import_mode="yaml-content",
+                yaml_content=data,
+            )
+            session.commit()
 
-        app = AppDslService.import_and_create_new_app(
-            tenant_id=tenant.id, data=args["data"], args=args, account=first_user
-        )
+        status = result.status
 
-        return {
-            "id": app.id,
-            "name": app.name,
-        }
+        if status == ImportStatus.FAILED.value:
+            return result.model_dump(mode="json"), 400
+        elif status == ImportStatus.PENDING.value:
+            return result.model_dump(mode="json"), 202
+        result_data = result.model_dump(mode="json")
+        app_id = result_data["app_id"]
+        result_data["id"] = app_id
+        app = AppModelService.get_app_model_by_app_id(app_id)
+        result_data["name"] = app.name
+        return result_data, 200
 
 
 class PersonListApi(AppApiResource):
