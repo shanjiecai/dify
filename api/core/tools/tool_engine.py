@@ -2,7 +2,7 @@ import json
 import traceback
 from collections.abc import Mapping
 from copy import deepcopy
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from mimetypes import guess_type
 from typing import Any, Optional, Union
 
@@ -56,13 +56,18 @@ class ToolEngine:
             # check if this tool has only one parameter
             parameters = [
                 parameter
-                for parameter in tool.get_runtime_parameters() or []
+                for parameter in tool.get_runtime_parameters()
                 if parameter.form == ToolParameter.ToolParameterForm.LLM
             ]
             if parameters and len(parameters) == 1:
                 tool_parameters = {parameters[0].name: tool_parameters}
             else:
-                raise ValueError(f"tool_parameters should be a dict, but got a string: {tool_parameters}")
+                try:
+                    tool_parameters = json.loads(tool_parameters)
+                except Exception as e:
+                    pass
+                if not isinstance(tool_parameters, dict):
+                    raise ValueError(f"tool_parameters should be a dict, but got a string: {tool_parameters}")
 
         # invoke the tool
         try:
@@ -160,7 +165,7 @@ class ToolEngine:
         """
         Invoke the tool with the given arguments.
         """
-        started_at = datetime.now(timezone.utc)
+        started_at = datetime.now(UTC)
         meta = ToolInvokeMeta(
             time_cost=0.0,
             error=None,
@@ -178,7 +183,7 @@ class ToolEngine:
             meta.error = str(e)
             raise ToolEngineInvokeError(meta)
         finally:
-            ended_at = datetime.now(timezone.utc)
+            ended_at = datetime.now(UTC)
             meta.time_cost = (ended_at - started_at).total_seconds()
 
         return meta, response

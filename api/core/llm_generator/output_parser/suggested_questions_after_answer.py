@@ -17,6 +17,5 @@ class SuggestedQuestionsAfterAnswerOutputParser:
             json_obj = json.loads(action_match.group(0).strip())
         else:
             json_obj = []
-            print(f"Could not parse LLM output: {text}")
 
         return json_obj

@@ -1,9 +1,10 @@
-import json
 import os
-import numpy as np
-from openai.types.chat import ChatCompletion, ChatCompletionChunk
-from mylogger import logger
+
 from openai import OpenAI, Stream
+from openai.types.chat import ChatCompletion, ChatCompletionChunk
+
+from mylogger import logger
+
 api_key = os.environ.get('OPENAI_API_KEY')
 base_url = os.environ.get('OPENAI_BASE_URL')
 client = OpenAI(api_key=api_key, base_url=base_url)

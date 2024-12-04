@@ -21,7 +21,7 @@ def create_app_api_key(resource_id: str):
     _get_resource(resource_id, tenant_id)
     key = ApiToken.generate_api_key("app-", 24)
     api_token = ApiToken()
-    setattr(api_token, "app_id", resource_id)
+    api_token.app_id = resource_id
     api_token.tenant_id = tenant_id
     api_token.token = key
     api_token.type = "app"

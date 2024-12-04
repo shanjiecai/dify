@@ -10,10 +10,9 @@ from controllers.console.app.error import ProviderNotInitializeError
 # from constants.model_template import model_templates
 from controllers.social_agent_api import api
 from controllers.social_agent_api.wraps import AppApiResource
-from core import model_manager
 from core.errors.error import LLMBadRequestError, ProviderTokenNotInitError
 from core.memory.token_buffer_memory import TokenBufferMemory
-from core.model_manager import ModelManager, ModelInstance
+from core.model_manager import ModelManager
 from core.model_runtime.entities.model_entities import ModelType
 from core.provider_manager import ProviderManager
 from extensions.ext_database import db
@@ -337,7 +336,7 @@ class AppUpdateDataset(AppApiResource):
 
 # 获取当前文件所在的绝对路径
 current_dir = os.path.dirname(os.path.abspath(__file__))
-personality_questions_v1_list = open(os.path.join(current_dir, "personality_questions_v1.txt"), "r").readlines()
+personality_questions_v1_list = open(os.path.join(current_dir, "personality_questions_v1.txt")).readlines()
 personality_questions_v1_list = [question.strip() for question in personality_questions_v1_list]
 
 

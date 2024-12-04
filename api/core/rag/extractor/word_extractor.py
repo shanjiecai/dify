@@ -28,7 +28,6 @@ logger = logging.getLogger(__name__)
 class WordExtractor(BaseExtractor):
     """Load docx files.
 
-
     Args:
         file_path: Path to the file to load.
     """
@@ -51,7 +50,7 @@ class WordExtractor(BaseExtractor):
 
             self.web_path = self.file_path
             # TODO: use a better way to handle the file
-            self.temp_file = tempfile.NamedTemporaryFile()  # noqa: SIM115
+            self.temp_file = tempfile.NamedTemporaryFile()
             self.temp_file.write(r.content)
             self.file_path = self.temp_file.name
         elif not os.path.isfile(self.file_path):
@@ -87,7 +86,7 @@ class WordExtractor(BaseExtractor):
                 image_count += 1
                 if rel.is_external:
                     url = rel.reltype
-                    response = ssrf_proxy.get(url, stream=True)
+                    response = ssrf_proxy.get(url)
                     if response.status_code == 200:
                         image_ext = mimetypes.guess_extension(response.headers["Content-Type"])
                         file_uuid = str(uuid.uuid4())
@@ -115,10 +114,10 @@ class WordExtractor(BaseExtractor):
                     mime_type=mime_type or "",
                     created_by=self.user_id,
                     created_by_role=CreatedByRole.ACCOUNT,
-                    created_at=datetime.datetime.now(datetime.timezone.utc).replace(tzinfo=None),
+                    created_at=datetime.datetime.now(datetime.UTC).replace(tzinfo=None),
                     used=True,
                     used_by=self.user_id,
-                    used_at=datetime.datetime.now(datetime.timezone.utc).replace(tzinfo=None),
+                    used_at=datetime.datetime.now(datetime.UTC).replace(tzinfo=None),
                 )
 
                 db.session.add(upload_file)
@@ -230,7 +229,7 @@ class WordExtractor(BaseExtractor):
                                 for i in url_pattern.findall(x.text):
                                     hyperlinks_url = str(i)
                     except Exception as e:
-                        logger.error(e)
+                        logger.exception("Failed to parse HYPERLINK xml")
 
         def parse_paragraph(paragraph):
             paragraph_content = []

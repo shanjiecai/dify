@@ -5,10 +5,9 @@ from werkzeug.exceptions import Forbidden
 
 from extensions.ext_database import db
 from libs.helper import TimestampField
-from libs.login import login_required
 from models.dataset import Dataset
 from models.model import ApiToken, App
-from services.account_service import AccountService, TenantService
+from services.account_service import TenantService
 
 from . import api
 

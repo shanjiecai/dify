@@ -3,7 +3,6 @@ import os
 from mem0.embeddings.configs import EmbedderConfig
 from mem0.llms.configs import LlmConfig
 from mem0.vector_stores.configs import VectorStoreConfig
-from mem0 import Memory
 
 vector_config = VectorStoreConfig(
     provider="qdrant", config={"host": os.getenv("QDRANT_HOST", "qdrant"), "port": os.getenv("QDRANT_PORT", "6333")}

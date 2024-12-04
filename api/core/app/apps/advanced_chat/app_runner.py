@@ -21,8 +21,8 @@ from core.workflow.entities.variable_pool import VariablePool
 from core.workflow.enums import SystemVariableKey
 from core.workflow.workflow_entry import WorkflowEntry
 from extensions.ext_database import db
-from models.enums import UserFrom
 from models import App, Message
+from models.enums import UserFrom
 from models.model import App, Conversation, EndUser, Message
 from models.workflow import ConversationVariable, WorkflowType
 
@@ -40,12 +40,14 @@ class AdvancedChatAppRunner(WorkflowBasedAppRunner):
         queue_manager: AppQueueManager,
         conversation: Conversation,
         message: Message,
+        dialogue_count: int,
     ) -> None:
         super().__init__(queue_manager)
 
         self.application_generate_entity = application_generate_entity
         self.conversation = conversation
         self.message = message
+        self._dialogue_count = dialogue_count
 
     def run(self) -> None:
         app_config = self.application_generate_entity.app_config
@@ -123,19 +125,13 @@ class AdvancedChatAppRunner(WorkflowBasedAppRunner):
 
                 session.commit()
 
-            # Increment dialogue count.
-            self.conversation.dialogue_count += 1
-
-            conversation_dialogue_count = self.conversation.dialogue_count
-            db.session.commit()
-
             # Create a variable pool.
             system_inputs = {
                 SystemVariableKey.QUERY: query,
                 SystemVariableKey.FILES: files,
                 SystemVariableKey.CONVERSATION_ID: self.conversation.id,
                 SystemVariableKey.USER_ID: user_id,
-                SystemVariableKey.DIALOGUE_COUNT: conversation_dialogue_count,
+                SystemVariableKey.DIALOGUE_COUNT: self._dialogue_count,
                 SystemVariableKey.APP_ID: app_config.app_id,
                 SystemVariableKey.WORKFLOW_ID: app_config.workflow_id,
                 SystemVariableKey.WORKFLOW_RUN_ID: self.application_generate_entity.workflow_run_id,

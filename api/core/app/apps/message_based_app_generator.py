@@ -1,7 +1,7 @@
 import json
 import logging
 from collections.abc import Generator
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Optional, Union
 
 from sqlalchemy import and_
@@ -30,7 +30,7 @@ from models import Account
 from models.enums import CreatedByRole
 from models.model import App, AppMode, AppModelConfig, Conversation, EndUser, Message, MessageFile
 from services.errors.app_model_config import AppModelConfigBrokenError
-from services.errors.conversation import ConversationCompletedError, ConversationNotExistsError
+from services.errors.conversation import ConversationNotExistsError
 
 logger = logging.getLogger(__name__)
 
@@ -80,7 +80,7 @@ class MessageBasedAppGenerator(BaseAppGenerator):
             if e.args[0] == "I/O operation on closed file.":  # ignore this error
                 raise GenerateTaskStoppedError()
             else:
-                logger.exception(e)
+                logger.exception(f"Failed to handle response, conversation_id: {conversation.id}")
                 raise e
 
     def _get_conversation_by_user(
@@ -205,7 +205,7 @@ class MessageBasedAppGenerator(BaseAppGenerator):
             db.session.commit()
             db.session.refresh(conversation)
         else:
-            conversation.updated_at = datetime.now(timezone.utc).replace(tzinfo=None)
+            conversation.updated_at = datetime.now(UTC).replace(tzinfo=None)
             db.session.commit()
 
         if application_generate_entity.is_new_message:

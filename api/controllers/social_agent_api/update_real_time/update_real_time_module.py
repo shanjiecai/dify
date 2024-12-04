@@ -10,6 +10,7 @@ from flask.ctx import AppContext
 from werkzeug.datastructures import FileStorage
 
 from controllers.service_api.app.error import ProviderNotInitializeError
+
 # from controllers.social_agent_api.app.utils import *
 from core.errors.error import ProviderTokenNotInitError
 from extensions.ext_database import db
