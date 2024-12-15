@@ -1,0 +1,34 @@
+identity:
+  name: update_persona_tool
+  author: Dify
+  label:
+    en_US: Update Persona Tool
+    zh_Hans: 更新人设工具
+description:
+  human:
+    en_US: A tool to update personas in the app using a conversation
+    zh_Hans: 用于通过对话更新应用中人设的工具
+  llm: A tool to update personas in the app via a conversation
+parameters:
+  - name: app_id
+    type: string
+    required: true
+    label:
+      en_US: App ID
+      zh_Hans: 应用 ID
+    human_description:
+      en_US: The ID of the app whose persona will be updated
+      zh_Hans: 要更新人设的应用 ID
+    llm_description: The app ID for which persona should be updated
+    form: llm
+  - name: conversation_id
+    type: string
+    required: true
+    label:
+      en_US: Conversation ID
+      zh_Hans: 对话 ID
+    human_description:
+      en_US: The conversation ID from which to extract and update the persona
+      zh_Hans: 用于从中提取并更新人设的对话 ID
+    llm_description: The conversation ID used to identify and update the persona
+    form: llm

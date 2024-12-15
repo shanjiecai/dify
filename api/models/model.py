@@ -217,6 +217,12 @@ class App(db.Model):
 
         return tags or []
 
+    @property
+    def memory_metadata_dict(self):
+        return self.memory_metadata if self.memory_metadata else {
+            "answered_questions": []
+        }
+
 
 class AppModelConfig(db.Model):
     __tablename__ = "app_model_configs"

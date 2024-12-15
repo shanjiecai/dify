@@ -18,7 +18,7 @@ def validate_app_token(func):
             "/backend-api/v1/app/create",
             "/backend-api/v1/app/import",
             "/backend-api/v1/app/check",
-        ] or request.path.startswith("/backend-api/v1/app"):
+        ] or request.path.startswith("/backend-api/v1/apps"):
             return func(*args, **kwargs)
         if request.method == "GET":
             app_id = request.args.get("app_id")

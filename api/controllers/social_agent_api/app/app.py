@@ -1,6 +1,8 @@
 import datetime
 import json
 import os
+import re
+import copy
 from typing import cast
 
 from flask_restful import abort, fields, marshal_with, reqparse
@@ -354,63 +356,28 @@ class AppUpdateDataset(AppApiResource):
 
 # 获取当前文件所在的绝对路径
 current_dir = os.path.dirname(os.path.abspath(__file__))
-personality_questions_v1_list = open(os.path.join(current_dir, "personality_questions_v1.txt")).readlines()
+personality_questions_v1_list = open(os.path.join(current_dir, "personality_questions_v1_small.txt")).readlines()
 personality_questions_v1_list = [question.strip() for question in personality_questions_v1_list]
 
 
 from controllers.social_agent_api.app.openai_base_request import llm_generate_response
 
 
-# 从app.memory_metadata里获取
-# memory_metadata中存personality和answered_questions，answered_questions是一个list，里面存的是已经回答过的问题
+# 从app.memory_metadata_dict里获取
+# memory_metadata_dict中存personality和answered_questions，answered_questions是一个list，里面存的是已经回答过的问题
 # 两种修改方式，用户直接修改和大模型根据对话信息
 class AppPersonality(AppApiResource):
     def get(self, app_model: App):
-        return app_model.memory_metadata.get("personality", "")
-    
-    # def patch(self, app_model: App):
-    #     parser = reqparse.RequestParser()
-    #     parser.add_argument("personality", type=str, required=True, location="json")
-    #     parser.add_argument("conversation_id", type=str, required=True, location="json")
-    #     args = parser.parse_args()
-    #     model_manager = ModelManager()
-    #     model_instance = model_manager.get_model_instance(
-    #         tenant_id=app_model.tenant_id,
-    #         provider="openai",
-    #         model_type=ModelType.LLM,
-    #         model="gpt-4o-mini",
-    #     )
-    #     conversation = ConversationService.get_conversation(
-    #         app_model=app_model, conversation_id=args["conversation_id"]
-    #     )
-    #     if not conversation:
-    #         raise ConversationNotExistsError()
-    #     # get memory of conversation (read-only)
-    #     memory = TokenBufferMemory(conversation=conversation, model_instance=model_instance)
-    #
-    #     histories = memory.get_history_prompt_messages(
-    #         max_token_limit=3000,
-    #         message_limit=50,
-    #     )
-    #     histories = [{"role": history.role, "content": history.content} for history in histories]
-    #     # 根据对话历史和已存的personality，生成新的personality
-    #     new_personality = llm_generate_response(
-    #         prompt=None,
-    #         system_prompt="请根据以下对话历史微调个性。确保在更新个性时保留所有重要信息，并仅在必要时进行细微调整。目标是保持个性的完整性和一致性。",
-    #         history_messages=histories,
-    #     )
-    #     # 更新个性
-    #     app_model.memory_metadata["personality"] = new_personality
-    #     db.session.commit()
-    #     return {"result": "success"}, 200
+        personality = app_model.memory_metadata_dict.get("personality", "")
+        return {"result": "success", "personality": personality}, 200
 
     def post(self, app_model: App):
         parser = reqparse.RequestParser()
         parser.add_argument("conversation_id", type=str, required=True, location="json")
         args = parser.parse_args()
 
-        # 从 memory_metadata 中获取已回答的问题列表
-        answered_questions = app_model.memory_metadata.get("answered_questions", [])
+        # 从 memory_metadata_dict 中获取已回答的问题列表
+        answered_questions = app_model.memory_metadata_dict.get("answered_questions", [])
 
         # 获取对话
         conversation = ConversationService.get_conversation(
@@ -436,7 +403,7 @@ class AppPersonality(AppApiResource):
         histories = [f"{history.role}:{history.content}" for history in histories]
 
         # 获取之前存储的个性
-        previous_personality = app_model.memory_metadata.get("personality", "")
+        previous_personality = app_model.memory_metadata_dict.get("personality", "")
 
         # 使用优化后的 prompt 进行人格更新
         prompt = (
@@ -455,8 +422,10 @@ class AppPersonality(AppApiResource):
             model="gpt-4o-mini"
         )
 
+        memory_metadata = app_model.memory_metadata_dict
+        memory_metadata["personality"] = new_personality
         # 更新个性
-        app_model.memory_metadata["personality"] = new_personality
+        app_model.memory_metadata = memory_metadata
         db.session.commit()
 
         return {"result": "success", "new_personality": new_personality}, 200
@@ -467,15 +436,23 @@ class AppPersonality(AppApiResource):
         args = parser.parse_args()
         
         # 强制覆盖个性
-        app_model.memory_metadata["personality"] = args["personality"]
+        if not app_model.memory_metadata:
+            app_model.memory_metadata = {}
+        new_memory_metadata = copy.deepcopy(app_model.memory_metadata)
+        new_memory_metadata["personality"] = args["personality"]
+        print("Before commit:", app_model.memory_metadata)
+        app_model.memory_metadata = new_memory_metadata
+        print("After commit:", app_model.memory_metadata)
         db.session.commit()
         return {"result": "success"}, 200
 
 
 class AppAnsweredQuestions(AppApiResource):
     def get(self, app_model: App):
-        # 获取已回答的问题列表
-        answered_questions = app_model.memory_metadata.get("answered_questions", [])
+        if app_model.memory_metadata_dict:
+            answered_questions = app_model.memory_metadata_dict.get("answered_questions", [])
+        else:
+            answered_questions = []
         answered_question_set = {q["question"] for q in answered_questions}  # 已回答问题的集合
 
         # 获取所有问题列表
@@ -491,39 +468,53 @@ class AppAnsweredQuestions(AppApiResource):
         return {
             "all_completed": all_completed,
             "completed_questions": completed_questions,
-            "incomplete_questions": incomplete_questions
+            "incomplete_questions": incomplete_questions,
+            "answered_questions": answered_questions,
         }
 
     def patch(self, app_model: App):
         parser = reqparse.RequestParser()
-        parser.add_argument("conversation_id", type=str, required=True, location="json")
+        parser.add_argument("conversation_id", type=str, required=False, location="json")
+        parser.add_argument("histories", type=str, required=False, location="json")
         args = parser.parse_args()
 
-        # 获取对话
-        conversation = ConversationService.get_conversation(
-            app_model=app_model, conversation_id=args["conversation_id"]
-        )
-        if not conversation:
-            raise ConversationNotExistsError()
+        if not args["conversation_id"] and not args["histories"]:
+            raise ("conversation_id or histories is required")
+        if args.get("histories"):
+            histories = args["histories"]
+        else:
+            # 获取对话
+            conversation = ConversationService.get_conversation(
+                app_model=app_model, conversation_id=args["conversation_id"]
+            )
+            if not conversation:
+                raise ConversationNotExistsError()
 
-        model_manager = ModelManager()
-        model_instance = model_manager.get_model_instance(
-            tenant_id=app_model.tenant_id,
-            provider="openai",
-            model_type=ModelType.LLM,
-            model="gpt-4o-mini",
-        )
+            model_manager = ModelManager()
+            model_instance = model_manager.get_model_instance(
+                tenant_id=app_model.tenant_id,
+                provider="openai",
+                model_type=ModelType.LLM,
+                model="gpt-4o-mini",
+            )
 
-        # 获取对话历史
-        memory = TokenBufferMemory(conversation=conversation, model_instance=model_instance)
-        histories = memory.get_history_prompt_messages(
-            max_token_limit=3000,
-            message_limit=50,
-        )
-        histories = [f"{history.role}:{history.content}" for history in histories]
+            # 获取对话历史
+            memory = TokenBufferMemory(conversation=conversation, model_instance=model_instance)
+            histories = memory.get_history_prompt_messages(
+                max_token_limit=3000,
+                message_limit=50,
+                with_current_query=True,
+            )
+            if len(histories) <= 2:
+                return {"result": "success"}, 200
+            histories = "\n".join([f"{history.role.value}:{history.content}" for history in histories])
 
-        # 从 memory_metadata 中获取已回答的问题列表
-        answered_questions = app_model.memory_metadata.get("answered_questions", [])
+
+        # 从 memory_metadata_dict 中获取已回答的问题列表
+        if app_model.memory_metadata:
+            answered_questions = app_model.memory_metadata.get("answered_questions", [])
+        else:
+            answered_questions = []
         answered_question_set = {q["question"] for q in answered_questions}  # 已回答问题的集合
 
         # 生成尚未回答的问题列表
@@ -534,39 +525,83 @@ class AppAnsweredQuestions(AppApiResource):
 
         # 使用优化后的 prompt 进行问题提取
         prompt = (
-                "请根据以下步骤完成指定的任务：\n\n"
+                "您的任务是作为一位对比专家，来检查用户是否已经回答了所有未回答的问题。请根据以下步骤完成指定的任务：\n\n"
                 "1. 从提供的对话历史中提取用户针对问题列表中的问题的回答。\n"
                 "2. 检查用户回答的问题是否与问题列表中的问题相匹配。\n"
-                "3. 对于每个匹配的问题，整理出问题及其对应的用户回答。\n"
-                "4. 确保按照以下格式输出每个已回答的问题和对应的回答，只输出已回答的问题和对应用户回答，多个问题回答需要换行：\n"
-                "   - 格式为：“已回答的问题,用户回答”。\n"
+                "3. 对于每个匹配的问题，整理出问题及其对应的用户回答，\n"
+                "4. 请确保按照以下格式输出每个已回答的问题和对应的回答，多个已回答问题需要换行，如果同一问题回答多次，请只返回最新的一次。：\n"
+                "   - 格式为：“问题：用户回答”。\n"
+                "   - 例如：问题：你更喜欢直接表达想法还是委婉地表达？\n用户回答：更喜欢直接表达想法。\n"
                 "5. 如果用户没有回答任何问题，直接输出“用户没有回答任何问题”。\n"
                 "6. 在输出时，确保不要包含任何XML标签。\n\n"
-                "对话历史：\n" + "\n".join(histories) + "\n\n" +
+                "对话历史：\n" + histories + "\n\n" +
                 "问题列表：\n" + "\n".join(unanswered_questions)  # 使用未回答的问题列表
         )
 
         # 调用模型生成回答
         response = llm_generate_response(prompt=prompt, model="gpt-4o-mini")
+        response = response.choices[0].message.content
 
         # 处理模型返回的结果
         new_answered_questions = []
         if response:
-            if response == "用户没有回答任何问题" or response.startswith("用户没有回答任何问题"):
+            response = response.strip()
+            # 检查是否用户没有回答任何问题
+            if response.startswith("用户没有回答任何问题"):
                 return {"result": "success", "answered_questions": answered_questions}, 200
-            for line in response.splitlines():
-                if line.strip():
-                    question, answer = line.split(",", 1)
-                    question = question.strip()
-                    answer = answer.strip()
 
-                    # 检查问题是否已经回答过
-                    if question not in [q["question"] for q in answered_questions]:
+            # 使用正则表达式匹配“问题”和“用户回答”
+            # 支持以下格式：
+            # 1. 问题: ...\n用户回答: ...
+            # 2. 问题: ... 用户回答: ...
+            pattern = re.compile(r"问题[:：]\s*(.*?)\s*用户回答[:：]\s*(.*)")
+
+            # 分割响应内容为行
+            lines = response.splitlines()
+            buffer = ""
+            for line in lines:
+                line = line.strip()
+                if not line:
+                    continue  # 跳过空行
+
+                buffer += " " + line  # 累积行内容
+
+                match = pattern.search(buffer)
+                if match:
+                    question = match.group(1).strip()
+                    answer = match.group(2).strip()
+
+                    # 检查问题是否已经在已回答列表中
+                    if question not in [q["question"] for q in answered_questions] and \
+                            question not in [q["question"] for q in new_answered_questions]:
                         new_answered_questions.append({"question": question, "answer": answer})
 
-        # 更新 memory_metadata
-        app_model.memory_metadata["answered_questions"].extend(new_answered_questions)
+                    buffer = ""  # 清空缓冲区
+                else:
+                    # 如果当前缓冲区没有匹配到完整的“问题”和“用户回答”，继续累积
+                    continue
+
+            # 处理那些没有换行但包含多个“问题”和“用户回答”的情况
+            # 例如：问题: ... 用户回答: ... 问题: ... 用户回答: ...
+            multiple_matches = pattern.findall(response)
+            for question, answer in multiple_matches:
+                question = question.strip()
+                answer = answer.strip()
+                if question not in [q["question"] for q in answered_questions] and \
+                        question not in [q["question"] for q in new_answered_questions]:
+                    new_answered_questions.append({"question": question, "answer": answer})
+
+        # 更新 memory_metadata_dict
+        if not app_model.memory_metadata:
+            app_model.memory_metadata = {}
+        answered_questions = copy.deepcopy(app_model.memory_metadata.get("answered_questions", []))
+        answered_questions.extend(new_answered_questions)
+        new_memory_metadata = copy.deepcopy(app_model.memory_metadata)
+        new_memory_metadata["answered_questions"] = answered_questions
+        app_model.memory_metadata = new_memory_metadata
+        # print("Before commit:", app_model.memory_metadata)
         db.session.commit()
+        # print("After commit:", app_model.memory_metadata)
 
         return {"result": "success", "answered_questions": new_answered_questions}, 200
 

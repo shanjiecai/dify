@@ -136,7 +136,7 @@ def upload_file(file_path: str, file_name: str):
 
 
 feishu_alert_url = os.environ.get("FEISHU_ALERT_URL")
-print(f"FEISHU_ALERT_URL: {feishu_alert_url}")
+# print(f"FEISHU_ALERT_URL: {feishu_alert_url}")
 
 
 def send_feishu_bot(message):

@@ -1,0 +1,23 @@
+identity: # 工具的基本信息
+  name: view_persona_tool # 工具名称，唯一，不允许和其他工具重名
+  author: Dify # 作者
+  label: # 标签，用于前端展示
+    en_US: View Persona Tool # 英文标签
+    zh_Hans: 查看个性工具 # 中文标签
+description: # 描述，用于前端展示
+  human: # 用于前端展示的介绍，支持多语言
+    en_US: A tool to view personas using Social Agent API # 英文描述
+    zh_Hans: 用于通过 Social Agent API 查看个性的工具 # 中文描述
+  llm: A tool to view personas in Social Agent API # 传递给 LLM 的描述
+parameters: # 参数列表
+  - name: app_id
+    type: string
+    required: true
+    label:
+      en_US: app_id
+      zh_Hans: app_id
+    human_description:
+      en_US: Tool to view personas using the specified app_id via Social Agent API
+      zh_Hans: 通过指定的 app_id 使用 Social Agent API 查看个性的工具
+    llm_description: The name of the persona to be checked in Social Agent API
+    form: llm

@@ -29,6 +29,7 @@ class TokenBufferMemory:
         self, max_token_limit: int = 2000, message_limit: Optional[int] = None,
             assistant_name: Optional[str] = None,
             user_name: Optional[str] = None,
+            with_current_query: bool = False,
     ) -> Sequence[PromptMessage]:
         """
         Get history prompt messages.
@@ -36,6 +37,7 @@ class TokenBufferMemory:
         :param message_limit: message limit
         :param assistant_name: assistant name
         :param user_name: user name
+        :param with_current_query: with current query
         """
         app_record = self.conversation.app
 
@@ -67,7 +69,7 @@ class TokenBufferMemory:
         thread_messages = extract_thread_messages(messages)
 
         # for newly created message, its answer is temporarily empty, we don't need to add it to memory
-        if thread_messages and not thread_messages[0].answer:
+        if not with_current_query and thread_messages and not thread_messages[0].answer:
             thread_messages.pop(0)
 
         messages = list(reversed(thread_messages))

@@ -1,0 +1,23 @@
+identity: # 工具的基本信息
+  name: manage_answered_questions_tool # 工具名称，唯一，不允许和其他工具重名
+  author: Dify # 作者
+  label: # 标签，用于前端展示
+    en_US: Manage Answered Questions Tool # 英文标签
+    zh_Hans: 查看已回答问题工具 # 中文标签
+description: # 描述，用于前端展示
+  human: # 用于前端展示的介绍，支持多语言
+    en_US: A tool to view answered questions # 英文描述
+    zh_Hans: 用于查看已回答问题的工具 # 中文描述
+  llm: A tool to view answered questions in the app # 传递给 LLM 的描述
+parameters: # 参数列表
+  - name: app_id
+    type: string
+    required: true
+    label:
+      en_US: App ID
+      zh_Hans: 应用 ID
+    human_description:
+      en_US: The ID of the app to view answered questions
+      zh_Hans: 要查看已回答问题的应用 ID
+    llm_description: The app ID for viewing answered questions
+    form: llm

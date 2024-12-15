@@ -1,0 +1,34 @@
+identity:
+  name: override_persona_tool
+  author: Dify
+  label:
+    en_US: Override Persona Tool
+    zh_Hans: 覆盖人设工具
+description:
+  human:
+    en_US: A tool to override personas in the app using a conversation
+    zh_Hans: 用于通过对话覆盖应用中人设的工具
+  llm: A tool to override personas in the app via a conversation
+parameters:
+  - name: app_id
+    type: string
+    required: true
+    label:
+      en_US: App ID
+      zh_Hans: 应用 ID
+    human_description:
+      en_US: The ID of the app whose persona will be overridden
+      zh_Hans: 要覆盖人设的应用 ID
+    llm_description: The app ID for which the persona should be overridden
+    form: llm
+  - name: personality
+    type: string
+    required: true
+    label:
+      en_US: Personality
+      zh_Hans: 人设
+    human_description:
+      en_US: The new persona details to override the existing one
+      zh_Hans: 用于覆盖现有人设的新人设详细信息
+    llm_description: The new persona details to override the existing persona in the app
+    form: llm
