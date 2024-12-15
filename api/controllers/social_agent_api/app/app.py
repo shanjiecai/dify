@@ -356,7 +356,7 @@ class AppUpdateDataset(AppApiResource):
 
 # 获取当前文件所在的绝对路径
 current_dir = os.path.dirname(os.path.abspath(__file__))
-personality_questions_v1_list = open(os.path.join(current_dir, "personality_questions_v1_small.txt")).readlines()
+personality_questions_v1_list = open(os.path.join(current_dir, "personality_questions_v1.txt")).readlines()
 personality_questions_v1_list = [question.strip() for question in personality_questions_v1_list]
 
 
