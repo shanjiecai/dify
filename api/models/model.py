@@ -219,7 +219,7 @@ class App(db.Model):
 
     @property
     def memory_metadata_dict(self):
-        return self.memory_metadata if self.memory_metadata else {
+        return self.memory_metadata or {
             "answered_questions": []
         }
 
