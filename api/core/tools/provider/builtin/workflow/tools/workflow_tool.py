@@ -19,8 +19,9 @@ class WorkflowAPITool(BuiltinTool):
         files = tool_parameters.get("files", [])
         user_name = tool_parameters["user_name"]
         agent_name = tool_parameters["agent_name"]
+        user_nick = tool_parameters["user_nick"]
         print(
-            f"user_name: {user_name}, agent_name: {agent_name}, query: {query}, response_mode: {response_mode}, "
+            f"user_name: {user_name},user_nick:{user_nick}, agent_name: {agent_name}, query: {query}, response_mode: {response_mode}, "
             f"files: {files}"
         )
         api_token = APITokensService.get_api_tokens_from_app_name("个人助理" + agent_name)
@@ -36,6 +37,7 @@ class WorkflowAPITool(BuiltinTool):
         payload = {
             "inputs": {
                 "user_name": user_name,
+                "user_nick": user_nick,
                 "agent_name": agent_name,
             },
             "query": query,

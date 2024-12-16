@@ -117,6 +117,8 @@ class AppImportApi(AppApiResource):
 
         with open(os.path.join(cur_path, "个人助理.yaml"), encoding="utf-8") as f:
             data = f.read().replace("sjc", args["user_name"])
+            data = data.replace("temp_nick", args["user_nick"])
+            print("brenbren:" + data)
         args.update(
             {"name": None, "description": None, "icon_type": None, "icon": None, "icon_background": None, "data": data}
         )

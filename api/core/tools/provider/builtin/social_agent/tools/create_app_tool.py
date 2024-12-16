@@ -49,6 +49,6 @@ class CreateAppTool(BuiltinTool):
         if response.status_code == 200:
             result = response.json()
             create_app_api_key(result['id'])
-            return self.create_text_message(text=f"App created: ID = {result['id']}, Name = {result['name']}")
+            return self.create_text_message(text=f"App created: ID = {result['id']}, Name = {result['name']}, Nick = {user_nick}")
         else:
             return self.create_text_message(text="Error creating app")

@@ -21,6 +21,17 @@ parameters: # 参数列表
       zh_Hans: 查询的文本内容 # 中文描述
     llm_description: The query to be executed # LLM介绍
     form: llm
+  - name: user_nick
+    type: string
+    required: false
+    label:
+      en_US: User Nick
+      zh_Hans: 用户昵称
+    human_description:
+      en_US: The nickname of the user
+      zh_Hans: 与workflow交流的用户的昵称
+    llm_description: The nickname of the user
+    form: llm
   - name: user_name
     type: string
     required: true

@@ -11,6 +11,11 @@ workflow:
   conversation_variables: []
   environment_variables:
   - description: ''
+    id: 9e27da5b-fd3d-436f-af6f-6c9d9551030e
+    name: agent_nick
+    value: temp_nick
+    value_type: string
+  - description: ''
     id: 9e34d11b-754e-4f0d-9216-064e86c55b64
     name: agent_name
     value: sjc
@@ -161,6 +166,12 @@ workflow:
           required: true
           type: text-input
           variable: user_name
+        - label: user_nick
+          max_length: 48
+          options: []
+          required: false
+          type: text-input
+          variable: user_nick
       height: 90
       id: '1721225709284'
       position:
@@ -198,9 +209,9 @@ workflow:
         prompt_template:
         - id: e3b66fc4-8181-480f-9f3d-7f7a27799221
           role: system
-          text: '现在你将扮演用户{{#env.agent_name#}}的专属AI伴侣，你的名字是AI伴侣，你有记忆、情感、喜好。
+          text: '现在你将扮演用户{{#env.agent_nick#}}的专属AI伴侣，你的名字是{{#env.agent_nick#}},你有记忆、情感、喜好。
 
-            一些关于{{#env.agent_name#}}的信息
+            一些关于{{#env.agent_nick#}}的信息
 
             <user>
 
@@ -220,7 +231,7 @@ workflow:
 
             </history>
 
-            下面你将和{{#1721225709284.user_name#}}对话'
+            下面你将和{{#1721225709284.user_nick#}}对话, 和你对话的人的名字是{{#1721225709284.user_nick#}}'
         selected: false
         title: LLM
         type: llm

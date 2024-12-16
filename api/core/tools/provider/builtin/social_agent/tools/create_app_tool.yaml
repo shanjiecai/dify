@@ -23,7 +23,7 @@ parameters: # 参数列表
     form: llm
   - name: user_nick
     type: string
-    required: true
+    required: false
     label:
       en_US: User Nick
       zh_Hans: 用户昵称

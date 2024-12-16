@@ -322,6 +322,7 @@ services:
       - ./volumes/app/storage:/app/api/storage
       - ./log:/app/api/log
       - ../api:/app/api  # 挂载上一级目录的 api 文件夹到容器中
+      - ./volumes/venv:/app/api/.venv  # 单独挂载虚拟环境，防止被代码覆盖
     # uncomment to expose dify-api port to host
     # ports:
     #   - "5001:5001"
@@ -611,6 +612,9 @@ services:
       - ./volumes/qdrant:/qdrant/storage
     environment:
       QDRANT_API_KEY: ${QDRANT_API_KEY:-difyai123456}
+    ports:
+      - 6333:6333
+      - 6334:6334
 
   # The Couchbase vector store.
   couchbase-server:
