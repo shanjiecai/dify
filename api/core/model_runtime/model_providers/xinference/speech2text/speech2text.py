@@ -1,16 +1,9 @@
 from typing import IO, Optional
 
-from xinference_client.client.restful.restful_client import (
-    Client,
-    RESTfulAudioModelHandle,
-)
+from xinference_client.client.restful.restful_client import Client, RESTfulAudioModelHandle  # type: ignore
 
 from core.model_runtime.entities.common_entities import I18nObject
-from core.model_runtime.entities.model_entities import (
-    AIModelEntity,
-    FetchFrom,
-    ModelType,
-)
+from core.model_runtime.entities.model_entities import AIModelEntity, FetchFrom, ModelType
 from core.model_runtime.errors.invoke import (
     InvokeAuthorizationError,
     InvokeBadRequestError,
@@ -21,9 +14,7 @@ from core.model_runtime.errors.invoke import (
 )
 from core.model_runtime.errors.validate import CredentialsValidateFailedError
 from core.model_runtime.model_providers.__base.speech2text_model import Speech2TextModel
-from core.model_runtime.model_providers.xinference.xinference_helper import (
-    validate_model_uid,
-)
+from core.model_runtime.model_providers.xinference.xinference_helper import validate_model_uid
 
 
 class XinferenceSpeech2TextModel(Speech2TextModel):

@@ -1,7 +1,7 @@
 import logging
 import threading
 import uuid
-from collections.abc import Generator
+from collections.abc import Generator, Mapping
 from typing import Any, Literal, Union, overload
 
 from flask import Flask, current_app
@@ -23,6 +23,8 @@ from core.ops.ops_trace_manager import TraceQueueManager
 from extensions.ext_database import db
 from factories import file_factory
 from models.account import Account
+from models.model import App, EndUser
+from services.errors.message import MessageNotExistsError
 from models.model import App, EndUser, Message
 
 logger = logging.getLogger(__name__)
@@ -34,9 +36,9 @@ class ChatAppGenerator(MessageBasedAppGenerator):
         self,
         app_model: App,
         user: Union[Account, EndUser],
-        args: Any,
+        args: Mapping[str, Any],
         invoke_from: InvokeFrom,
-        stream: Literal[True] = True,
+        streaming: Literal[True],
         user_name: str | None = None,
         assistant_name: str | None = None,
         user_id: str | None = None,
@@ -47,25 +49,35 @@ class ChatAppGenerator(MessageBasedAppGenerator):
         self,
         app_model: App,
         user: Union[Account, EndUser],
-        args: Any,
+        args: Mapping[str, Any],
         invoke_from: InvokeFrom,
-        stream: Literal[False] = False,
+        streaming: Literal[False],
+    ) -> Mapping[str, Any]: ...
+
+    @overload
+    def generate(
+        self,
+        app_model: App,
+        user: Union[Account, EndUser],
+        args: Mapping[str, Any],
+        invoke_from: InvokeFrom,
+        streaming: bool,
         user_name: str | None = None,
         assistant_name: str | None = None,
         user_id: str | None = None,
-    ) -> dict: ...
+    ) -> Union[Mapping[str, Any], Generator[str, None, None]]: ...
 
     def generate(
         self,
         app_model: App,
         user: Union[Account, EndUser],
-        args: Any,
+        args: Mapping[str, Any],
         invoke_from: InvokeFrom,
         streaming: bool = True,
         user_name: str | None = None,
         assistant_name: str | None = None,
         user_id: str | None = None,
-    ) -> Union[dict, Generator[str, None, None]]:
+    ):
         """
         Generate App response.
 
@@ -73,8 +85,8 @@ class ChatAppGenerator(MessageBasedAppGenerator):
         :param user: account or end user
         :param args: request args
         :param invoke_from: invoke from source
-        :param stream: is stream
-        :param user_name: user name
+        :param streaming: is stream
+        :param user_name: username
         :param assistant_name: assistant name
         :param user_id: user ID
         """
@@ -94,7 +106,7 @@ class ChatAppGenerator(MessageBasedAppGenerator):
         is_new_message = True
         conversation = None
         if args.get("conversation_id"):
-            conversation = self._get_conversation_by_user(app_model, args.get("conversation_id"), user)
+            conversation = self._get_conversation_by_user(app_model, args.get("conversation_id", ""), user)
             if not query:
                 # 选取最后一条message的query作为query
                 message = (
@@ -126,7 +138,7 @@ class ChatAppGenerator(MessageBasedAppGenerator):
 
             # validate config
             override_model_config_dict = ChatAppConfigManager.config_validate(
-                tenant_id=app_model.tenant_id, config=args.get("model_config")
+                tenant_id=app_model.tenant_id, config=args.get("model_config", {})
             )
 
             # always enable retriever resource in debugger mode
@@ -168,7 +180,7 @@ class ChatAppGenerator(MessageBasedAppGenerator):
                 user_inputs=inputs, variables=app_config.variables, tenant_id=app_model.tenant_id
             ),
             query=query,
-            files=file_objs,
+            files=list(file_objs),
             parent_message_id=args.get("parent_message_id") if invoke_from != InvokeFrom.SERVICE_API else UUID_NIL,
             user_id=user.id,
             invoke_from=invoke_from,
@@ -198,7 +210,7 @@ class ChatAppGenerator(MessageBasedAppGenerator):
         worker_thread = threading.Thread(
             target=self._generate_worker,
             kwargs={
-                "flask_app": current_app._get_current_object(),
+                "flask_app": current_app._get_current_object(),  # type: ignore
                 "application_generate_entity": application_generate_entity,
                 "queue_manager": queue_manager,
                 "conversation_id": conversation.id,
@@ -242,6 +254,8 @@ class ChatAppGenerator(MessageBasedAppGenerator):
                 # get conversation and message
                 conversation = self._get_conversation(conversation_id)
                 message = self._get_message(message_id)
+                if message is None:
+                    raise MessageNotExistsError("Message not exists")
 
                 # chatbot app
                 runner = ChatAppRunner()

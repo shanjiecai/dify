@@ -1,6 +1,7 @@
 import json
 import sys
-from typing import Optional
+from collections.abc import Sequence
+from typing import Optional, cast
 
 from core.model_runtime.callbacks.base_callback import Callback
 from core.model_runtime.entities.llm_entities import LLMResult, LLMResultChunk
@@ -23,7 +24,7 @@ class LoggingCallback(Callback):
         prompt_messages: list[PromptMessage],
         model_parameters: dict,
         tools: Optional[list[PromptMessageTool]] = None,
-        stop: Optional[list[str]] = None,
+        stop: Optional[Sequence[str]] = None,
         stream: bool = True,
         user: Optional[str] = None,
     ) -> None:
@@ -79,7 +80,7 @@ class LoggingCallback(Callback):
         prompt_messages: list[PromptMessage],
         model_parameters: dict,
         tools: Optional[list[PromptMessageTool]] = None,
-        stop: Optional[list[str]] = None,
+        stop: Optional[Sequence[str]] = None,
         stream: bool = True,
         user: Optional[str] = None,
     ):
@@ -97,7 +98,7 @@ class LoggingCallback(Callback):
         :param stream: is stream response
         :param user: unique user id
         """
-        sys.stdout.write(chunk.delta.message.content)
+        sys.stdout.write(cast(str, chunk.delta.message.content))
         sys.stdout.flush()
 
     def on_after_invoke(
@@ -109,7 +110,7 @@ class LoggingCallback(Callback):
         prompt_messages: list[PromptMessage],
         model_parameters: dict,
         tools: Optional[list[PromptMessageTool]] = None,
-        stop: Optional[list[str]] = None,
+        stop: Optional[Sequence[str]] = None,
         stream: bool = True,
         user: Optional[str] = None,
     ) -> None:
@@ -150,7 +151,7 @@ class LoggingCallback(Callback):
         prompt_messages: list[PromptMessage],
         model_parameters: dict,
         tools: Optional[list[PromptMessageTool]] = None,
-        stop: Optional[list[str]] = None,
+        stop: Optional[Sequence[str]] = None,
         stream: bool = True,
         user: Optional[str] = None,
     ) -> None:

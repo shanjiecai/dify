@@ -1,12 +1,10 @@
-from typing import Any
+import logging
+from typing import Any, Optional
 
 from core.tools.entities.common_entities import I18nObject
-from core.tools.entities.tool_entities import (
-    ToolParameter,
-    ToolParameterOption,
-    ToolProviderType,
-)
+from core.tools.entities.tool_entities import ToolParameter, ToolParameterOption, ToolProviderType
 from core.tools.provider.tool_provider import ToolProviderController
+from core.tools.tool.api_tool import ApiTool
 from core.tools.tool.tool import Tool
 from extensions.ext_database import db
 from models.model import App, AppModelConfig
@@ -24,10 +22,10 @@ class AppToolProviderEntity(ToolProviderController):
     def _validate_credentials(self, tool_name: str, credentials: dict[str, Any]) -> None:
         pass
 
-    def validate_parameters(self, tool_name: str, tool_parameters: dict[str, Any]) -> None:
+    def validate_parameters(self, tool_id: int, tool_name: str, tool_parameters: dict[str, Any]) -> None:
         pass
 
-    def get_tools(self, user_id: str) -> list[Tool]:
+    def get_tools(self, user_id: str = "", tenant_id: str = "") -> list[Tool]:
         db_tools: list[PublishedAppTool] = (
             db.session.query(PublishedAppTool)
             .filter(
@@ -42,7 +40,7 @@ class AppToolProviderEntity(ToolProviderController):
         tools: list[Tool] = []
 
         for db_tool in db_tools:
-            tool = {
+            tool: dict[str, Any] = {
                 "identity": {
                     "author": db_tool.author,
                     "name": db_tool.tool_name,
@@ -56,7 +54,7 @@ class AppToolProviderEntity(ToolProviderController):
                 "parameters": [],
             }
             # get app from db
-            app: App = db_tool.app
+            app: Optional[App] = db_tool.app
 
             if not app:
                 logger.error(f"app {db_tool.app_id} not found")
@@ -66,7 +64,7 @@ class AppToolProviderEntity(ToolProviderController):
             user_input_form_list = app_model_config.user_input_form_list
             for input_form in user_input_form_list:
                 # get type
-                form_type = input_form.keys()[0]
+                form_type = list(input_form.keys())[0]
                 default = input_form[form_type]["default"]
                 required = input_form[form_type]["required"]
                 label = input_form[form_type]["label"]
@@ -83,6 +81,7 @@ class AppToolProviderEntity(ToolProviderController):
                             type=ToolParameter.ToolParameterType.STRING,
                             required=required,
                             default=default,
+                            placeholder=I18nObject(en_US="", zh_Hans=""),
                         )
                     )
                 elif form_type == "select":
@@ -96,6 +95,7 @@ class AppToolProviderEntity(ToolProviderController):
                             type=ToolParameter.ToolParameterType.SELECT,
                             required=required,
                             default=default,
+                            placeholder=I18nObject(en_US="", zh_Hans=""),
                             options=[
                                 ToolParameterOption(value=option, label=I18nObject(en_US=option, zh_Hans=option))
                                 for option in options
@@ -103,5 +103,5 @@ class AppToolProviderEntity(ToolProviderController):
                         )
                     )
 
-            tools.append(Tool(**tool))
+            tools.append(ApiTool(**tool))
         return tools

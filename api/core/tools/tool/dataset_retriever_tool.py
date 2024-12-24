@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Optional
 
 from core.app.app_config.entities import DatasetRetrieveConfigEntity
 from core.app.entities.app_invoke_entities import InvokeFrom
@@ -27,7 +27,7 @@ class DatasetRetrieverTool(Tool):
     def get_dataset_tools(
         tenant_id: str,
         dataset_ids: list[str],
-        retrieve_config: DatasetRetrieveConfigEntity,
+        retrieve_config: Optional[DatasetRetrieveConfigEntity],
         return_resource: bool,
         invoke_from: InvokeFrom,
         hit_callback: DatasetIndexToolCallbackHandler,
@@ -55,6 +55,8 @@ class DatasetRetrieverTool(Tool):
             invoke_from=invoke_from,
             hit_callback=hit_callback,
         )
+        if retrieval_tools is None:
+            return []
         # restore retrieve strategy
         retrieve_config.retrieve_strategy = original_retriever_mode
 
@@ -87,6 +89,7 @@ class DatasetRetrieverTool(Tool):
                 llm_description="Query for the dataset to be used to retrieve the dataset.",
                 required=True,
                 default="",
+                placeholder=I18nObject(en_US="", zh_Hans=""),
             ),
         ]
 
@@ -106,7 +109,9 @@ class DatasetRetrieverTool(Tool):
 
         return self.create_text_message(text=result)
 
-    def validate_credentials(self, credentials: dict[str, Any], parameters: dict[str, Any]) -> None:
+    def validate_credentials(
+        self, credentials: dict[str, Any], parameters: dict[str, Any], format_only: bool = False
+    ) -> str | None:
         """
         validate the credentials for dataset retriever tool
         """

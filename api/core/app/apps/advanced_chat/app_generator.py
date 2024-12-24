@@ -3,7 +3,7 @@ import logging
 import threading
 import uuid
 from collections.abc import Generator, Mapping
-from typing import Any, Optional, Union
+from typing import Any, Literal, Optional, Union, overload
 
 from flask import Flask, current_app
 from pydantic import ValidationError
@@ -29,12 +29,55 @@ from factories import file_factory
 from models.account import Account
 from models.model import App, Conversation, EndUser, Message
 from models.workflow import Workflow
+from services.errors.message import MessageNotExistsError
 
 logger = logging.getLogger(__name__)
 
 
 class AdvancedChatAppGenerator(MessageBasedAppGenerator):
     _dialogue_count: int
+
+    @overload
+    def generate(
+        self,
+        app_model: App,
+        workflow: Workflow,
+        user: Union[Account, EndUser],
+        args: Mapping[str, Any],
+        invoke_from: InvokeFrom,
+        streaming: Literal[True],
+        user_name: str | None = None,
+        assistant_name: str | None = None,
+        user_id: str | None = None,
+    ) -> Generator[str, None, None]: ...
+
+    @overload
+    def generate(
+        self,
+        app_model: App,
+        workflow: Workflow,
+        user: Union[Account, EndUser],
+        args: Mapping[str, Any],
+        invoke_from: InvokeFrom,
+        streaming: Literal[False],
+        user_name: str | None = None,
+        assistant_name: str | None = None,
+        user_id: str | None = None,
+    ) -> Mapping[str, Any]: ...
+
+    @overload
+    def generate(
+        self,
+        app_model: App,
+        workflow: Workflow,
+        user: Union[Account, EndUser],
+        args: Mapping[str, Any],
+        invoke_from: InvokeFrom,
+        streaming: bool = True,
+        user_name: str | None = None,
+        assistant_name: str | None = None,
+        user_id: str | None = None,
+    ) -> Union[Mapping[str, Any], Generator[str, None, None]]: ...
 
     def generate(
         self,
@@ -44,10 +87,10 @@ class AdvancedChatAppGenerator(MessageBasedAppGenerator):
         args: Mapping[str, Any],
         invoke_from: InvokeFrom,
         streaming: bool = True,
-            user_name: str | None = None,
-            assistant_name: str | None = None,
-            user_id: str | None = None,
-    ) -> Mapping[str, Any] | Generator[str, None, None]:
+        user_name: str | None = None,
+        assistant_name: str | None = None,
+        user_id: str | None = None,
+    ):
         """
         Generate App response.
 
@@ -56,8 +99,8 @@ class AdvancedChatAppGenerator(MessageBasedAppGenerator):
         :param user: account or end user
         :param args: request args
         :param invoke_from: invoke from source
-        :param stream: is stream
-        :param user_name: user name
+        :param streaming: is stream
+        :param user_name: username
         :param assistant_name: assistant name
         :param user_id: user ID
         """
@@ -136,7 +179,7 @@ class AdvancedChatAppGenerator(MessageBasedAppGenerator):
                 user_inputs=inputs, variables=app_config.variables, tenant_id=app_model.tenant_id
             ),
             query=query,
-            files=file_objs,
+            files=list(file_objs),
             parent_message_id=args.get("parent_message_id") if invoke_from != InvokeFrom.SERVICE_API else UUID_NIL,
             user_id=user.id,
             stream=streaming,
@@ -308,6 +351,8 @@ class AdvancedChatAppGenerator(MessageBasedAppGenerator):
                 # get conversation and message
                 conversation = self._get_conversation(conversation_id)
                 message = self._get_message(message_id)
+                if message is None:
+                    raise MessageNotExistsError("Message not exists")
 
                 # chatbot app
                 runner = AdvancedChatAppRunner(

@@ -75,9 +75,13 @@ class ToolConfigurationManager(BaseModel):
 
         return a deep copy of credentials with decrypted values
         """
+        identity_id = ""
+        if self.provider_controller.identity:
+            identity_id = f"{self.provider_controller.provider_type.value}.{self.provider_controller.identity.name}"
+
         cache = ToolProviderCredentialsCache(
             tenant_id=self.tenant_id,
-            identity_id=f"{self.provider_controller.provider_type.value}.{self.provider_controller.identity.name}",
+            identity_id=identity_id,
             cache_type=ToolProviderCredentialsCacheType.PROVIDER,
         )
         cached_credentials = cache.get()
@@ -98,9 +102,13 @@ class ToolConfigurationManager(BaseModel):
         return credentials
 
     def delete_tool_credentials_cache(self):
+        identity_id = ""
+        if self.provider_controller.identity:
+            identity_id = f"{self.provider_controller.provider_type.value}.{self.provider_controller.identity.name}"
+
         cache = ToolProviderCredentialsCache(
             tenant_id=self.tenant_id,
-            identity_id=f"{self.provider_controller.provider_type.value}.{self.provider_controller.identity.name}",
+            identity_id=identity_id,
             cache_type=ToolProviderCredentialsCacheType.PROVIDER,
         )
         cache.delete()
@@ -202,6 +210,9 @@ class ToolParameterConfigurationManager(BaseModel):
 
         return a deep copy of parameters with decrypted values
         """
+        if self.tool_runtime is None or self.tool_runtime.identity is None:
+            raise ValueError("tool_runtime is required")
+
         cache = ToolParameterCache(
             tenant_id=self.tenant_id,
             provider=f"{self.provider_type}.{self.provider_name}",
@@ -235,6 +246,9 @@ class ToolParameterConfigurationManager(BaseModel):
         return parameters
 
     def delete_tool_parameters_cache(self):
+        if self.tool_runtime is None or self.tool_runtime.identity is None:
+            raise ValueError("tool_runtime is required")
+
         cache = ToolParameterCache(
             tenant_id=self.tenant_id,
             provider=f"{self.provider_type}.{self.provider_name}",

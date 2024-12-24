@@ -13,7 +13,7 @@ from openai.types.chat.chat_completion_chunk import (
     ChoiceDeltaToolCall,
 )
 from openai.types.chat.chat_completion_message import FunctionCall
-from tokenizers import Tokenizer
+from tokenizers import Tokenizer  # type: ignore
 
 from core.model_runtime.callbacks.base_callback import Callback
 from core.model_runtime.entities.llm_entities import (

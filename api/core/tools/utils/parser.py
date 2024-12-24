@@ -6,16 +6,12 @@ from json.decoder import JSONDecodeError
 from typing import Optional
 
 from requests import get
-from yaml import YAMLError, safe_load
+from yaml import YAMLError, safe_load  # type: ignore
 
 from core.tools.entities.common_entities import I18nObject
 from core.tools.entities.tool_bundle import ApiToolBundle
 from core.tools.entities.tool_entities import ApiProviderSchemaType, ToolParameter
-from core.tools.errors import (
-    ToolApiSchemaError,
-    ToolNotSupportedError,
-    ToolProviderNotFoundError,
-)
+from core.tools.errors import ToolApiSchemaError, ToolNotSupportedError, ToolProviderNotFoundError
 
 
 class ApiBasedToolSchemaParser:
@@ -65,10 +61,11 @@ class ApiBasedToolSchemaParser:
                         required=parameter.get("required", False),
                         form=ToolParameter.ToolParameterForm.LLM,
                         llm_description=parameter.get("description"),
-                        default=(
-                            parameter["schema"]["default"]
-                            if "schema" in parameter and "default" in parameter["schema"]
-                            else None
+                        default=parameter["schema"]["default"]
+                        if "schema" in parameter and "default" in parameter["schema"]
+                        else None,
+                        placeholder=I18nObject(
+                            en_US=parameter.get("description", ""), zh_Hans=parameter.get("description", "")
                         ),
                     )
 
@@ -114,6 +111,9 @@ class ApiBasedToolSchemaParser:
                                 form=ToolParameter.ToolParameterForm.LLM,
                                 llm_description=property.get("description", ""),
                                 default=property.get("default", None),
+                                placeholder=I18nObject(
+                                    en_US=parameter.get("description", ""), zh_Hans=parameter.get("description", "")
+                                ),
                             )
 
                             # check if there is a type
@@ -150,11 +150,9 @@ class ApiBasedToolSchemaParser:
                 ApiToolBundle(
                     server_url=server_url + interface["path"],
                     method=interface["method"],
-                    summary=(
-                        interface["operation"]["description"]
-                        if "description" in interface["operation"]
-                        else interface["operation"].get("summary", None)
-                    ),
+                    summary=interface["operation"]["description"]
+                    if "description" in interface["operation"]
+                    else interface["operation"].get("summary", None),
                     operation_id=interface["operation"]["operationId"],
                     parameters=parameters,
                     author="",
@@ -166,9 +164,9 @@ class ApiBasedToolSchemaParser:
         return bundles
 
     @staticmethod
-    def _get_tool_parameter_type(parameter: dict) -> ToolParameter.ToolParameterType:
+    def _get_tool_parameter_type(parameter: dict) -> Optional[ToolParameter.ToolParameterType]:
         parameter = parameter or {}
-        typ = None
+        typ: Optional[str] = None
         if parameter.get("format") == "binary":
             return ToolParameter.ToolParameterType.FILE
 
@@ -183,6 +181,8 @@ class ApiBasedToolSchemaParser:
             return ToolParameter.ToolParameterType.BOOLEAN
         elif typ == "string":
             return ToolParameter.ToolParameterType.STRING
+        else:
+            return None
 
     @staticmethod
     def parse_openapi_yaml_to_tool_bundle(
@@ -244,7 +244,8 @@ class ApiBasedToolSchemaParser:
                 if ("summary" not in operation or len(operation["summary"]) == 0) and (
                     "description" not in operation or len(operation["description"]) == 0
                 ):
-                    warning["missing_summary"] = f"No summary or description found in operation {method} {path}."
+                    if warning is not None:
+                        warning["missing_summary"] = f"No summary or description found in operation {method} {path}."
 
                 openapi["paths"][path][method] = {
                     "operationId": operation["operationId"],
@@ -351,12 +352,9 @@ class ApiBasedToolSchemaParser:
                 loaded_content, extra_info=extra_info, warning=warning
             )
             schema_type = ApiProviderSchemaType.SWAGGER.value
-            return (
-                ApiBasedToolSchemaParser.parse_openapi_to_tool_bundle(
-                    converted_swagger, extra_info=extra_info, warning=warning
-                ),
-                schema_type,
-            )
+            return ApiBasedToolSchemaParser.parse_openapi_to_tool_bundle(
+                converted_swagger, extra_info=extra_info, warning=warning
+            ), schema_type
         except ToolApiSchemaError as e:
             swagger_error = e
 

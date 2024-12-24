@@ -24,7 +24,7 @@ from openai.types.chat.chat_completion_chunk import (
 )
 from openai.types.chat.chat_completion_message import FunctionCall
 from openai.types.completion import Completion
-from xinference_client.client.restful.restful_client import (
+from xinference_client.client.restful.restful_client import (  # type: ignore
     Client,
     RESTfulChatModelHandle,
     RESTfulGenerateModelHandle,

@@ -1,24 +1,12 @@
 import time
 from typing import Optional
 
-from xinference_client.client.restful.restful_client import (
-    Client,
-    RESTfulEmbeddingModelHandle,
-)
+from xinference_client.client.restful.restful_client import Client, RESTfulEmbeddingModelHandle  # type: ignore
 
 from core.entities.embedding_type import EmbeddingInputType
 from core.model_runtime.entities.common_entities import I18nObject
-from core.model_runtime.entities.model_entities import (
-    AIModelEntity,
-    FetchFrom,
-    ModelPropertyKey,
-    ModelType,
-    PriceType,
-)
-from core.model_runtime.entities.text_embedding_entities import (
-    EmbeddingUsage,
-    TextEmbeddingResult,
-)
+from core.model_runtime.entities.model_entities import AIModelEntity, FetchFrom, ModelPropertyKey, ModelType, PriceType
+from core.model_runtime.entities.text_embedding_entities import EmbeddingUsage, TextEmbeddingResult
 from core.model_runtime.errors.invoke import (
     InvokeAuthorizationError,
     InvokeBadRequestError,
@@ -28,13 +16,8 @@ from core.model_runtime.errors.invoke import (
     InvokeServerUnavailableError,
 )
 from core.model_runtime.errors.validate import CredentialsValidateFailedError
-from core.model_runtime.model_providers.__base.text_embedding_model import (
-    TextEmbeddingModel,
-)
-from core.model_runtime.model_providers.xinference.xinference_helper import (
-    XinferenceHelper,
-    validate_model_uid,
-)
+from core.model_runtime.model_providers.__base.text_embedding_model import TextEmbeddingModel
+from core.model_runtime.model_providers.xinference.xinference_helper import XinferenceHelper, validate_model_uid
 
 
 class XinferenceTextEmbeddingModel(TextEmbeddingModel):
@@ -151,7 +134,7 @@ class XinferenceTextEmbeddingModel(TextEmbeddingModel):
             try:
                 handle = client.get_model(model_uid=model_uid)
             except RuntimeError as e:
-                raise InvokeAuthorizationError(e)
+                raise InvokeAuthorizationError(str(e))
 
             if not isinstance(handle, RESTfulEmbeddingModelHandle):
                 raise InvokeBadRequestError(

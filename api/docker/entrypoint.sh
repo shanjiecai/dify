@@ -38,7 +38,6 @@ else
       --timeout ${GUNICORN_TIMEOUT:-200} \
       --log-level debug \
       --log-file ./log/gunicorn.log \
-      --preload \
       app:app
   fi
 fi

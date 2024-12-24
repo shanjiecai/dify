@@ -2,7 +2,7 @@ import json
 from collections.abc import Mapping, Sequence
 from datetime import UTC, datetime
 from enum import Enum, StrEnum
-from typing import Any, Optional, Union
+from typing import TYPE_CHECKING, Any, Optional, Union
 
 import sqlalchemy as sa
 from sqlalchemy import func
@@ -12,14 +12,17 @@ import contexts
 from constants import HIDDEN_VALUE
 from core.helper import encrypter
 from core.variables import SecretVariable, Variable
-from extensions.ext_database import db
 from factories import variable_factory
 from libs import helper
 from models.enums import CreatedByRole
 from services.account_service import TenantService
 
 from .account import Account
+from .engine import db
 from .types import StringUUID
+
+if TYPE_CHECKING:
+    from models.model import AppMode, Message
 
 
 class WorkflowType(Enum):
@@ -57,7 +60,7 @@ class WorkflowType(Enum):
         return cls.WORKFLOW if app_mode == AppMode.WORKFLOW else cls.CHAT
 
 
-class Workflow(db.Model):
+class Workflow(db.Model):  # type: ignore[name-defined]
     """
     Workflow, for `Workflow App` and `Chat App workflow mode`.
 
@@ -104,12 +107,13 @@ class Workflow(db.Model):
     graph: Mapped[str] = mapped_column(sa.Text)
     _features: Mapped[str] = mapped_column("features", sa.TEXT)
     created_by: Mapped[str] = mapped_column(StringUUID, nullable=False)
-    created_at: Mapped[datetime] = mapped_column(
-        db.DateTime, nullable=False, server_default=db.text("CURRENT_TIMESTAMP(0)")
-    )
+    created_at: Mapped[datetime] = mapped_column(db.DateTime, nullable=False, server_default=func.current_timestamp())
     updated_by: Mapped[Optional[str]] = mapped_column(StringUUID)
     updated_at: Mapped[datetime] = mapped_column(
-        sa.DateTime, nullable=False, default=datetime.now(tz=UTC), server_onupdate=func.current_timestamp()
+        db.DateTime,
+        nullable=False,
+        default=datetime.now(UTC).replace(tzinfo=None),
+        server_onupdate=func.current_timestamp(),
     )
     _environment_variables: Mapped[str] = mapped_column(
         "environment_variables", db.Text, nullable=False, server_default="{}"
@@ -182,7 +186,7 @@ class Workflow(db.Model):
         self._features = value
 
     @property
-    def features_dict(self) -> Mapping[str, Any]:
+    def features_dict(self) -> dict[str, Any]:
         return json.loads(self.features) if self.features else {}
 
     def user_input_form(self, to_old_structure: bool = False) -> list:
@@ -199,7 +203,7 @@ class Workflow(db.Model):
             return []
 
         # get user_input_form from start node
-        variables = start_node.get("data", {}).get("variables", [])
+        variables: list[Any] = start_node.get("data", {}).get("variables", [])
 
         if to_old_structure:
             old_structure_variables = []
@@ -226,8 +230,10 @@ class Workflow(db.Model):
         from models.tools import WorkflowToolProvider
 
         return (
-            db.session.query(WorkflowToolProvider).filter(WorkflowToolProvider.app_id == self.app_id).first()
-            is not None
+            db.session.query(WorkflowToolProvider)
+            .filter(WorkflowToolProvider.tenant_id == self.tenant_id, WorkflowToolProvider.app_id == self.app_id)
+            .count()
+            > 0
         )
 
     @property
@@ -331,6 +337,7 @@ class WorkflowRunStatus(StrEnum):
     SUCCEEDED = "succeeded"
     FAILED = "failed"
     STOPPED = "stopped"
+    PARTIAL_SUCCESSED = "partial-succeeded"
 
     @classmethod
     def value_of(cls, value: str) -> "WorkflowRunStatus":
@@ -346,7 +353,7 @@ class WorkflowRunStatus(StrEnum):
         raise ValueError(f"invalid workflow run status value {value}")
 
 
-class WorkflowRun(db.Model):
+class WorkflowRun(db.Model):  # type: ignore[name-defined]
     """
     Workflow Run
 
@@ -401,16 +408,17 @@ class WorkflowRun(db.Model):
     version = db.Column(db.String(255), nullable=False)
     graph = db.Column(db.Text)
     inputs = db.Column(db.Text)
-    status = db.Column(db.String(255), nullable=False)  # running, succeeded, failed, stopped
-    outputs: Mapped[str] = mapped_column(sa.Text, default="{}")
+    status = db.Column(db.String(255), nullable=False)  # running, succeeded, failed, stopped, partial-succeeded
+    outputs: Mapped[Optional[str]] = mapped_column(sa.Text, default="{}")
     error = db.Column(db.Text)
     elapsed_time = db.Column(db.Float, nullable=False, server_default=db.text("0"))
     total_tokens = db.Column(db.Integer, nullable=False, server_default=db.text("0"))
     total_steps = db.Column(db.Integer, server_default=db.text("0"))
     created_by_role = db.Column(db.String(255), nullable=False)  # account, end_user
     created_by = db.Column(StringUUID, nullable=False)
-    created_at = db.Column(db.DateTime, nullable=False, server_default=db.text("CURRENT_TIMESTAMP(0)"))
+    created_at = db.Column(db.DateTime, nullable=False, server_default=func.current_timestamp())
     finished_at = db.Column(db.DateTime)
+    exceptions_count = db.Column(db.Integer, server_default=db.text("0"))
 
     @property
     def created_by_account(self):
@@ -470,6 +478,7 @@ class WorkflowRun(db.Model):
             "created_by": self.created_by,
             "created_at": self.created_at,
             "finished_at": self.finished_at,
+            "exceptions_count": self.exceptions_count,
         }
 
     @classmethod
@@ -495,6 +504,7 @@ class WorkflowRun(db.Model):
             created_by=data.get("created_by"),
             created_at=data.get("created_at"),
             finished_at=data.get("finished_at"),
+            exceptions_count=data.get("exceptions_count"),
         )
 
 
@@ -528,6 +538,8 @@ class WorkflowNodeExecutionStatus(Enum):
     RUNNING = "running"
     SUCCEEDED = "succeeded"
     FAILED = "failed"
+    EXCEPTION = "exception"
+    RETRY = "retry"
 
     @classmethod
     def value_of(cls, value: str) -> "WorkflowNodeExecutionStatus":
@@ -543,7 +555,7 @@ class WorkflowNodeExecutionStatus(Enum):
         raise ValueError(f"invalid workflow node execution status value {value}")
 
 
-class WorkflowNodeExecution(db.Model):
+class WorkflowNodeExecution(db.Model):  # type: ignore[name-defined]
     """
     Workflow Node Execution
 
@@ -634,7 +646,7 @@ class WorkflowNodeExecution(db.Model):
     error = db.Column(db.Text)
     elapsed_time = db.Column(db.Float, nullable=False, server_default=db.text("0"))
     execution_metadata = db.Column(db.Text)
-    created_at = db.Column(db.DateTime, nullable=False, server_default=db.text("CURRENT_TIMESTAMP(0)"))
+    created_at = db.Column(db.DateTime, nullable=False, server_default=func.current_timestamp())
     created_by_role = db.Column(db.String(255), nullable=False)
     created_by = db.Column(StringUUID, nullable=False)
     finished_at = db.Column(db.DateTime)
@@ -709,7 +721,7 @@ class WorkflowAppLogCreatedFrom(Enum):
         raise ValueError(f"invalid workflow app log created from value {value}")
 
 
-class WorkflowAppLog(db.Model):
+class WorkflowAppLog(db.Model):  # type: ignore[name-defined]
     """
     Workflow App execution log, excluding workflow debugging records.
 
@@ -752,7 +764,7 @@ class WorkflowAppLog(db.Model):
     created_from = db.Column(db.String(255), nullable=False)
     created_by_role = db.Column(db.String(255), nullable=False)
     created_by = db.Column(StringUUID, nullable=False)
-    created_at = db.Column(db.DateTime, nullable=False, server_default=db.text("CURRENT_TIMESTAMP(0)"))
+    created_at = db.Column(db.DateTime, nullable=False, server_default=func.current_timestamp())
 
     @property
     def workflow_run(self):
@@ -771,14 +783,14 @@ class WorkflowAppLog(db.Model):
         return db.session.get(EndUser, self.created_by) if created_by_role == CreatedByRole.END_USER else None
 
 
-class ConversationVariable(db.Model):
+class ConversationVariable(db.Model):  # type: ignore[name-defined]
     __tablename__ = "workflow_conversation_variables"
 
     id: Mapped[str] = db.Column(StringUUID, primary_key=True)
     conversation_id: Mapped[str] = db.Column(StringUUID, nullable=False, primary_key=True)
     app_id: Mapped[str] = db.Column(StringUUID, nullable=False, index=True)
     data = db.Column(db.Text, nullable=False)
-    created_at = db.Column(db.DateTime, nullable=False, index=True, server_default=db.text("CURRENT_TIMESTAMP(0)"))
+    created_at = db.Column(db.DateTime, nullable=False, index=True, server_default=func.current_timestamp())
     updated_at = db.Column(
         db.DateTime, nullable=False, server_default=func.current_timestamp(), onupdate=func.current_timestamp()
     )
