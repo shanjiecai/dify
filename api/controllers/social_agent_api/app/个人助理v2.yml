@@ -1,0 +1,2231 @@
+app:
+  description: ''
+  icon: 🤖
+  icon_background: '#FFEAD5'
+  mode: advanced-chat
+  name: 个人助理o59
+  use_icon_as_answer_icon: false
+kind: app
+version: 0.1.4
+workflow:
+  conversation_variables:
+  - description: 判断用户意图变量，才模型根据上下文提取意图错误时根据上一轮的意图继续进行对话
+    id: 2602432a-b334-4b6b-b37d-eb5da54ed154
+    name: user_intent_type
+    selector:
+    - conversation
+    - user_intent_type
+    value: ''
+    value_type: string
+  - description: 查询出的用户记忆
+    id: 743646bc-1e91-4b38-9125-7fa2f3ec868b
+    name: user_memroy
+    selector:
+    - conversation
+    - user_memroy
+    value: ''
+    value_type: string
+  - description: 用户已回答问题内容
+    id: 97e85cee-cc19-4616-801d-c0d7084558b1
+    name: answered_questions
+    selector:
+    - conversation
+    - answered_questions
+    value: ''
+    value_type: string
+  - description: 正在答题
+    id: 9e4c18e0-8108-41ef-bb4d-ea584ea3c4d6
+    name: answer_now
+    selector:
+    - conversation
+    - answer_now
+    value: 1
+    value_type: number
+  - description: 答题标志位，默认未开始答题
+    id: 18142aa3-9508-4f9a-9a6e-285b65b01b1c
+    name: answer_start
+    selector:
+    - conversation
+    - answer_start
+    value: 0
+    value_type: number
+  environment_variables:
+  - description: ''
+    id: 9e27da5b-fd3d-436f-af6f-6c9d9551030e
+    name: agent_nick
+    value: temp_nick
+    value_type: string
+  - description: ''
+    id: 37966425-4862-4b50-b55f-0b7c5bef1dcd
+    name: mem_type
+    selector:
+    - env
+    - mem_type
+    value: 日程安排：涉及个人的具体日程、会议、约会等时间管理事项。 工作记录：涵盖工作相关的会议记录、项目进度和职业发展笔记。 学习资料：包括课程笔记、学习计划和学术研究等教育相关的内容。       生活记录：记录日常生活中的事件、习惯和体验，不涉及工作或学习。
+      休息娱乐：涉及休闲活动、娱乐体验和兴趣爱好等放松相关的活动。 家庭管理：包括家庭物品管理、成员互动和家务安排等家庭相关事务。       商品信息：涉及个人销售或购买的商品信息，包括库存、描述、价格等。
+      客户需求：记录客户对商品或服务的具体需求和偏好。 个人信息：涉及个人身份信息、联系方式和个人背景资料等私密信息。       他人信息：记录关于非个人信息的其他人的基本信息和特征。
+      个人记忆：个人在不同场合和时间点的美好记忆，如学校回忆、旅行经历等。 工作回忆：与工作相关的记忆，包括职业成就、同事互动和工作环境。       学习回忆：与学习相关的记忆，包括学校生活、考试经历和学术活动。
+    value_type: string
+  - description: ''
+    id: 9e34d11b-754e-4f0d-9216-064e86c55b64
+    name: agent_name
+    selector:
+    - env
+    - agent_name
+    value: o59
+    value_type: string
+  features:
+    file_upload:
+      allowed_file_extensions:
+      - .JPG
+      - .JPEG
+      - .PNG
+      - .GIF
+      - .WEBP
+      - .SVG
+      allowed_file_types:
+      - image
+      allowed_file_upload_methods:
+      - local_file
+      - remote_url
+      enabled: false
+      fileUploadConfig:
+        audio_file_size_limit: 50
+        batch_count_limit: 5
+        file_size_limit: 15
+        image_file_size_limit: 10
+        video_file_size_limit: 100
+        workflow_file_upload_limit: 10
+      image:
+        enabled: false
+        number_limits: 3
+        transfer_methods:
+        - local_file
+        - remote_url
+      number_limits: 3
+    opening_statement: ''
+    retriever_resource:
+      enabled: false
+    sensitive_word_avoidance:
+      enabled: false
+    speech_to_text:
+      enabled: false
+    suggested_questions: []
+    suggested_questions_after_answer:
+      enabled: false
+    text_to_speech:
+      enabled: false
+      language: ''
+      voice: ''
+  graph:
+    edges:
+    - data:
+        sourceType: llm
+        targetType: answer
+      id: llm-answer
+      selected: false
+      source: llm
+      sourceHandle: source
+      target: answer
+      targetHandle: target
+      type: custom
+    - data:
+        isInIteration: false
+        sourceType: tool
+        targetType: code
+      id: 1722323614916-source-1722431000258-target
+      selected: false
+      source: '1722323614916'
+      sourceHandle: source
+      target: '1722431000258'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: llm
+        targetType: if-else
+      id: 1725515910846-source-1725515968677-target
+      selected: false
+      source: '1725515910846'
+      sourceHandle: source
+      target: '1725515968677'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: tool
+        targetType: code
+      id: 17302819315810-source-17302819444330-target
+      selected: false
+      source: '17302819315810'
+      sourceHandle: source
+      target: '17302819444330'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: code
+        targetType: llm
+      id: 17302819444330-source-17302819559400-target
+      selected: false
+      source: '17302819444330'
+      sourceHandle: source
+      target: '17302819559400'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: llm
+        targetType: answer
+      id: 17302819559400-source-17302819720370-target
+      selected: false
+      source: '17302819559400'
+      sourceHandle: source
+      target: '17302819720370'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: llm
+        targetType: answer
+      id: 17304559333070-source-1730456232582-target
+      selected: false
+      source: '17304559333070'
+      sourceHandle: source
+      target: '1730456232582'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: llm
+        targetType: if-else
+      id: 1730707903432-source-1730708146606-target
+      selected: false
+      source: '1730707903432'
+      sourceHandle: source
+      target: '1730708146606'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: llm
+        targetType: answer
+      id: 17304420896530-source-1730442281533-target
+      selected: false
+      source: '17304420896530'
+      sourceHandle: source
+      target: '1730442281533'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: if-else
+        targetType: llm
+      id: 1725515968677-false-1732612417468-target
+      selected: false
+      source: '1725515968677'
+      sourceHandle: 'false'
+      target: '1732612417468'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: if-else
+        targetType: llm
+      id: 1725515968677-true-llm-target
+      selected: false
+      source: '1725515968677'
+      sourceHandle: 'true'
+      target: llm
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: llm
+        targetType: answer
+      id: 1732612417468-source-17326910143220-target
+      selected: false
+      source: '1732612417468'
+      sourceHandle: source
+      target: '17326910143220'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: code
+        targetType: llm
+      id: 1722431000258-source-1725515910846-target
+      selected: false
+      source: '1722431000258'
+      sourceHandle: source
+      target: '1725515910846'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: start
+        targetType: if-else
+      id: 1721225709284-source-17302789708320-target
+      selected: false
+      source: '1721225709284'
+      sourceHandle: source
+      target: '17302789708320'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: if-else
+        targetType: tool
+      id: 17302789708320-false-1732780957043-target
+      selected: false
+      source: '17302789708320'
+      sourceHandle: 'false'
+      target: '1732780957043'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: tool
+        targetType: llm
+      id: 1732780957043-source-1732783190572-target
+      selected: false
+      source: '1732780957043'
+      sourceHandle: source
+      target: '1732783190572'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: llm
+        targetType: tool
+      id: 1732783190572-source-17302819315810-target
+      selected: false
+      source: '1732783190572'
+      sourceHandle: source
+      target: '17302819315810'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: tool
+        targetType: llm
+      id: 17332885803860-source-17332885923350-target
+      selected: false
+      source: '17332885803860'
+      sourceHandle: source
+      target: '17332885923350'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: llm
+        targetType: tool
+      id: 17332885923350-source-1722323614916-target
+      selected: false
+      source: '17332885923350'
+      sourceHandle: source
+      target: '1722323614916'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: llm
+        targetType: tool
+      id: 1732612417468-source-17332963447080-target
+      selected: false
+      source: '1732612417468'
+      sourceHandle: source
+      target: '17332963447080'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: llm
+        targetType: answer
+      id: 17339752357050-source-17345135774110-target
+      selected: false
+      source: '17339752357050'
+      sourceHandle: source
+      target: '17345135774110'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: llm
+        targetType: llm
+      id: 17345136611940-source-17304420896530-target
+      selected: false
+      source: '17345136611940'
+      sourceHandle: source
+      target: '17304420896530'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: if-else
+        targetType: tool
+      id: 17302789708320-false-1734941912596-target
+      source: '17302789708320'
+      sourceHandle: 'false'
+      target: '1734941912596'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: tool
+        targetType: llm
+      id: 1734941912596-source-17302819559400-target
+      source: '1734941912596'
+      sourceHandle: source
+      target: '17302819559400'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: if-else
+        targetType: tool
+      id: 17302789708320-true-1734942055590-target
+      source: '17302789708320'
+      sourceHandle: 'true'
+      target: '1734942055590'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: tool
+        targetType: tool
+      id: 1734942055590-source-1734942005208-target
+      source: '1734942055590'
+      sourceHandle: source
+      target: '1734942005208'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: tool
+        targetType: code
+      id: 1734942005208-source-1734942075679-target
+      source: '1734942005208'
+      sourceHandle: source
+      target: '1734942075679'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: code
+        targetType: llm
+      id: 1734942075679-source-1730707903432-target
+      source: '1734942075679'
+      sourceHandle: source
+      target: '1730707903432'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: if-else
+        targetType: tool
+      id: 17302789708320-true-17349421250440-target
+      source: '17302789708320'
+      sourceHandle: 'true'
+      target: '17349421250440'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: tool
+        targetType: llm
+      id: 17349421250440-source-1730707903432-target
+      source: '17349421250440'
+      sourceHandle: source
+      target: '1730707903432'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: if-else
+        targetType: llm
+      id: 1734942286688-false-17304559333070-target
+      selected: false
+      source: '1734942286688'
+      sourceHandle: 'false'
+      target: '17304559333070'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: if-else
+        targetType: llm
+      id: 1734942286688-true-17339752357050-target
+      source: '1734942286688'
+      sourceHandle: 'true'
+      target: '17339752357050'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: if-else
+        targetType: llm
+      id: 1734942286688-29d8b184-73e6-47d0-9ff5-adf6022cc8a4-17345136611940-target
+      source: '1734942286688'
+      sourceHandle: 29d8b184-73e6-47d0-9ff5-adf6022cc8a4
+      target: '17345136611940'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: llm
+        targetType: parameter-extractor
+      id: 17304559333070-source-1734944137110-target
+      source: '17304559333070'
+      sourceHandle: source
+      target: '1734944137110'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: parameter-extractor
+        targetType: tool
+      id: 1734944137110-source-1734944223000-target
+      source: '1734944137110'
+      sourceHandle: source
+      target: '1734944223000'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: if-else
+        targetType: assigner
+      id: 1730708146606-true-1735054475056-target
+      source: '1730708146606'
+      sourceHandle: 'true'
+      target: '1735054475056'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: assigner
+        targetType: tool
+      id: 1735054475056-source-17332885803860-target
+      source: '1735054475056'
+      sourceHandle: source
+      target: '17332885803860'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: if-else
+        targetType: assigner
+      id: 1730708146606-de853d81-4f03-4e80-b756-aad421f1108a-1735054515541-target
+      source: '1730708146606'
+      sourceHandle: de853d81-4f03-4e80-b756-aad421f1108a
+      target: '1735054515541'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: assigner
+        targetType: if-else
+      id: 1735054515541-source-1734942286688-target
+      source: '1735054515541'
+      sourceHandle: source
+      target: '1734942286688'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: if-else
+        targetType: if-else
+      id: 1730708146606-false-1735054574123-target
+      source: '1730708146606'
+      sourceHandle: 'false'
+      target: '1735054574123'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: if-else
+        targetType: tool
+      id: 1735054574123-true-17332885803860-target
+      source: '1735054574123'
+      sourceHandle: 'true'
+      target: '17332885803860'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: if-else
+        targetType: if-else
+      id: 1735054574123-694853c0-9fc6-4efa-a97c-00493e0adada-1734942286688-target
+      source: '1735054574123'
+      sourceHandle: 694853c0-9fc6-4efa-a97c-00493e0adada
+      target: '1734942286688'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: if-else
+        targetType: tool
+      id: 1735054574123-false-17332885803860-target
+      source: '1735054574123'
+      sourceHandle: 'false'
+      target: '17332885803860'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    nodes:
+    - data:
+        desc: ''
+        selected: false
+        title: 开始
+        type: start
+        variables:
+        - label: user_name
+          max_length: 48
+          options: []
+          required: true
+          type: text-input
+          variable: user_name
+      height: 90
+      id: '1721225709284'
+      position:
+        x: -483.24388123335405
+        y: 627.1250855735926
+      positionAbsolute:
+        x: -483.24388123335405
+        y: 627.1250855735926
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        context:
+          enabled: true
+          variable_selector:
+          - '17332885923350'
+          - text
+        desc: ''
+        memory:
+          query_prompt_template: '{{#sys.query#}}'
+          role_prefix:
+            assistant: ''
+            user: ''
+          window:
+            enabled: true
+            size: 20
+        model:
+          completion_params:
+            temperature: 0.7
+          mode: chat
+          name: gpt-4o-mini
+          provider: openai
+        prompt_template:
+        - id: e3b66fc4-8181-480f-9f3d-7f7a27799221
+          role: system
+          text: "你是根据提供的记忆回答用户问题的专家。\n你的名字是{{#env.agent_name#}}，你是用户{{#1721225709284.user_name#}}的AI智能体分身，你有着用户的个人记忆、情感、和情绪。\n\
+            \n指导方针： \n- 根据用户问题{{#context#}}，从用户记忆：“{{#1722431000258.result#}}” 中提取与当前问题相关的有用的信息，给予用户最准确的回复。回复中请加入涉及到的人物姓名和绝对时间描述。\
+            \ \n- 如果记忆中的内容不能匹配用户问题，需要直接告知用户没有找到TA需要的记忆。 \n- 确保答案清晰、简洁并直接解决问题。\n确保响应的语言与\
+            \ {{#sys.query#}} 一致。"
+        selected: false
+        title: LLM-优化用户需要的记忆
+        type: llm
+        variables: []
+        vision:
+          configs:
+            detail: high
+          enabled: false
+      height: 98
+      id: llm
+      position:
+        x: 4234.228939650003
+        y: -330.10014577635786
+      positionAbsolute:
+        x: 4234.228939650003
+        y: -330.10014577635786
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        answer: '<以下回复来自​个人记忆>
+
+          {{#llm.text#}}
+
+          '
+        desc: ''
+        selected: false
+        title: <以下回复来自个人记忆>
+        type: answer
+        variables: []
+      height: 119
+      id: answer
+      position:
+        x: 4622.167389999287
+        y: -424.49258877963985
+      positionAbsolute:
+        x: 4622.167389999287
+        y: -424.49258877963985
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        desc: ''
+        provider_id: mem0ai
+        provider_name: mem0ai
+        provider_type: builtin
+        selected: false
+        title: 查找个人记忆
+        tool_configurations: {}
+        tool_label: 查找记忆
+        tool_name: query_mem0ai_memory
+        tool_parameters:
+          agent_id:
+            type: mixed
+            value: '{{#env.agent_name#}}_ai'
+          filters:
+            type: mixed
+            value: ''
+          limit:
+            type: constant
+            value: 3
+          query:
+            type: mixed
+            value: '{{#17332885923350.text#}}'
+          run_id:
+            type: mixed
+            value: ''
+          user_id:
+            type: mixed
+            value: '{{#env.agent_name#}}'
+        type: tool
+      height: 54
+      id: '1722323614916'
+      position:
+        x: 2851.8459819299815
+        y: 6.027643152235584
+      positionAbsolute:
+        x: 2851.8459819299815
+        y: 6.027643152235584
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        code: "def main(text: str) -> dict:\n    import traceback\n    try:\n    \
+          \    import ast\n        # 使用 ast.literal_eval 来安全地解析输入字符串\n        data\
+          \ = ast.literal_eval(text)\n        # 从每个结果中提取'text'字段，并拼接起来\n        combined_text\
+          \ = \"\\n\".join([item['memory'] for item in data])\n\n        return {\n\
+          \            \"result\": combined_text\n        }\n    except Exception\
+          \ as e:\n        # 打印异常信息并返回错误字典\n        print(traceback.format_exc())\n\
+          \        return {\n            \"result\": \"\"\n        }"
+        code_language: python3
+        desc: ''
+        outputs:
+          result:
+            children: null
+            type: string
+        selected: false
+        title: 拼接个人记忆
+        type: code
+        variables:
+        - value_selector:
+          - '1722323614916'
+          - text
+          variable: text
+      height: 54
+      id: '1722431000258'
+      position:
+        x: 3169.2551570661967
+        y: -29.3379984440364
+      positionAbsolute:
+        x: 3169.2551570661967
+        y: -29.3379984440364
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        context:
+          enabled: true
+          variable_selector:
+          - '17332885923350'
+          - text
+        desc: 判断用户需要写入记忆，还是获取记忆
+        model:
+          completion_params:
+            temperature: 0.7
+          mode: chat
+          name: gpt-4o-mini
+          provider: openai
+        prompt_template:
+        - id: 410ea0fc-5837-40aa-9b84-e686cfb0b2e8
+          role: system
+          text: '请在下面这段文字：“{{#context#}}”中判断用户是否需要存储记忆。
+
+            记忆的定义：包括事实、记忆、偏好
+
+            - 事实定义：客观存在或已经发生的信息、事件或情况。
+
+            - 记忆定义：个人对自身经历、活动和事件的主观回顾、记录。以及涉及用户与好友之间的主观回顾、记录。
+
+            - 偏好定义：个人在特定事物、活动或信息上的个人或全局喜好或倾向偏好。或个人在某些事物、活动或信息上关于特定好友的个人喜好或倾向偏好。
+
+
+            只关注于事实、偏好和记忆本身是否存在，判断这段内容中是否有需要存储为记忆的信息。如果有输出Yes，否则输出No。
+
+
+            输出：用一个词输出，Yes 或 No'
+        selected: false
+        title: LLM-判断是否应该加入记忆
+        type: llm
+        variables: []
+        vision:
+          configs:
+            detail: high
+          enabled: false
+      height: 126
+      id: '1725515910846'
+      position:
+        x: 3527.650459188268
+        y: -76.84028323186055
+      positionAbsolute:
+        x: 3527.650459188268
+        y: -76.84028323186055
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        cases:
+        - case_id: 'true'
+          conditions:
+          - comparison_operator: contains
+            id: 85b22b65-67c5-4925-9845-23952152680f
+            value: 'No'
+            varType: string
+            variable_selector:
+            - '1725515910846'
+            - text
+          id: 'true'
+          logical_operator: and
+        desc: 需要获取记忆，或者需要写入记忆
+        selected: false
+        title: 获取或写入分支
+        type: if-else
+      height: 154
+      id: '1725515968677'
+      position:
+        x: 3861.064791114743
+        y: -160.59100662506125
+      positionAbsolute:
+        x: 3861.064791114743
+        y: -160.59100662506125
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        cases:
+        - case_id: 'true'
+          conditions:
+          - comparison_operator: is
+            id: fa4f78cd-dff6-4130-bdd1-528760f783dc
+            value: '{{#env.agent_name#}}'
+            varType: string
+            variable_selector:
+            - '1721225709284'
+            - user_name
+          id: 'true'
+          logical_operator: and
+        desc: 当前用户是自己还是别人
+        selected: false
+        title: 条件分支-用户判断
+        type: if-else
+      height: 154
+      id: '17302789708320'
+      position:
+        x: -35.128427622337654
+        y: 620.4881989317594
+      positionAbsolute:
+        x: -35.128427622337654
+        y: 620.4881989317594
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        desc: 查找好友的个人记忆
+        provider_id: mem0ai
+        provider_name: mem0ai
+        provider_type: builtin
+        selected: false
+        title: 查找好友记忆
+        tool_configurations: {}
+        tool_label: 查找记忆
+        tool_name: query_mem0ai_memory
+        tool_parameters:
+          agent_id:
+            type: mixed
+            value: '{{#env.agent_name#}}_ai'
+          limit:
+            type: constant
+            value: 3
+          query:
+            type: mixed
+            value: '{{#1732783190572.text#}}'
+          run_id:
+            type: mixed
+            value: ''
+          user_id:
+            type: mixed
+            value: '{{#env.agent_name#}}'
+        type: tool
+      height: 82
+      id: '17302819315810'
+      position:
+        x: 1176.7708172992077
+        y: 994.085721204025
+      positionAbsolute:
+        x: 1176.7708172992077
+        y: 994.085721204025
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        code: "def main(text: str) -> dict:\n    import traceback\n    try:\n    \
+          \    import ast\n        # 使用 ast.literal_eval 来安全地解析输入字符串\n        data\
+          \ = ast.literal_eval(text)\n        # 从每个结果中提取'text'字段，并拼接起来\n        combined_text\
+          \ = \"\\n\".join([item['memory'] for item in data])\n\n        return {\n\
+          \            \"result\": combined_text\n        }\n    except Exception\
+          \ as e:\n        # 打印异常信息并返回错误字典\n        print(traceback.format_exc())\n\
+          \        return {\n            \"result\": \"\"\n        }"
+        code_language: python3
+        desc: ''
+        outputs:
+          result:
+            children: null
+            type: string
+        selected: false
+        title: 拼接好友记忆
+        type: code
+        variables:
+        - value_selector:
+          - '17302819315810'
+          - text
+          variable: text
+      height: 54
+      id: '17302819444330'
+      position:
+        x: 1487.5050148389776
+        y: 1014.8428472857304
+      positionAbsolute:
+        x: 1487.5050148389776
+        y: 1014.8428472857304
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        context:
+          enabled: true
+          variable_selector:
+          - '17302819444330'
+          - result
+        desc: ' 回复和用户相关的记忆'
+        memory:
+          query_prompt_template: '{{#sys.query#}}'
+          role_prefix:
+            assistant: ''
+            user: ''
+          window:
+            enabled: true
+            size: 20
+        model:
+          completion_params:
+            temperature: 0.7
+          mode: chat
+          name: gpt-4o-mini
+          provider: openai
+        prompt_template:
+        - id: e3b66fc4-8181-480f-9f3d-7f7a27799221
+          role: system
+          text: '你的名字是{{#env.agent_name#}}，你是用户{{#1721225709284.user_name#}}的好友。
+
+            你的记忆是：{{#context#}}。
+
+            {{#1721225709284.user_name#}}的问题是：{{#1732783190572.text#}}
+
+            {{#env.agent_name#}}的回复风格是：{{#1734941912596.text#}}
+
+
+            你需要做到：
+
+            （1）告诉用户，你可以做到将你的记忆传在好友需要时传递出去。
+
+            （2）根据用户问题，结合你的记忆，提取与用户当前问题相关的有用的信息，给予用户最准确的回复，只保留你和用户{{#1721225709284.user_name#}}都有关的记忆，请确保内容中包含记忆中所有人的姓名。
+
+            （3）如果记忆中没有内容或内容不能匹配用户问题，需要直接告知用户你没有这段记忆。
+
+            （4）确保回复的风格遵循{{#env.agent_name#}}的回复风格。
+
+
+            下面开始和你的好友{{#1721225709284.user_name#}}进行对话：'
+        selected: false
+        title: LLM-根据记忆+人格进行回复
+        type: llm
+        variables: []
+        vision:
+          configs:
+            detail: high
+          enabled: false
+      height: 126
+      id: '17302819559400'
+      position:
+        x: 1877.3306661921627
+        y: 1144.370299763135
+      positionAbsolute:
+        x: 1877.3306661921627
+        y: 1144.370299763135
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        answer: '<以下回复来自好友记忆>
+
+          {{#17302819559400.text#}}'
+        desc: ''
+        selected: false
+        title: <以下回复来自好友记忆>
+        type: answer
+        variables: []
+      height: 119
+      id: '17302819720370'
+      position:
+        x: 2330.6837837250087
+        y: 1138.370299763135
+      positionAbsolute:
+        x: 2330.6837837250087
+        y: 1138.370299763135
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        context:
+          enabled: false
+          variable_selector: []
+        desc: 选择问题列表中的一个问题作为第一个问题
+        model:
+          completion_params:
+            temperature: 0.7
+          mode: chat
+          name: gpt-4o-mini
+          provider: openai
+        prompt_template:
+        - id: e3b66fc4-8181-480f-9f3d-7f7a27799221
+          role: system
+          text: "<instruction>\n    <task>\n        您的任务是从问题列表“{{#1734942075679.incomplete_questions#}}”中选择一个问题，并将其原文输出。\n\
+            \    </task>\n    <steps>\n        <step>1. 不要对用户的提问进行对应回复</step>\n  \
+            \      <step>2. 从列表中随机选择一个问题。</step>\n        <step>3. 输出选中问题的原文。</step>\n\
+            \    </steps>\n\n</instruction>\n"
+        selected: false
+        title: LLM-未答完问题
+        type: llm
+        variables: []
+        vision:
+          configs:
+            detail: high
+          enabled: false
+      height: 142
+      id: '17304420896530'
+      position:
+        x: 3356.139154640808
+        y: 440.7575877566673
+      positionAbsolute:
+        x: 3356.139154640808
+        y: 440.7575877566673
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        answer: '{{#17345136611940.text#}}
+
+          <分身还未形成人格，逐步回答问题即可完成创建>
+
+          {{#17304420896530.text#}}
+
+          '
+        desc: ''
+        selected: false
+        title: <开始创建分身人格>
+        type: answer
+        variables: []
+      height: 138
+      id: '1730442281533'
+      position:
+        x: 3767.722484700132
+        y: 440.7575877566673
+      positionAbsolute:
+        x: 3767.722484700132
+        y: 440.7575877566673
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        author: lumia.liu
+        desc: ''
+        height: 176
+        selected: false
+        showAuthor: true
+        text: '{"root":{"children":[{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"创建人格步骤，","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0},{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"1、判断是否第一次回答，","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0},{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"1.1、是LLM给出第一次提问","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0},{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"1.2、非第一次回答，LLM判断是否回答完毕，继续追问用户回答，或结束生成人格-写入mem0记忆","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0},{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"2、用户回答，LLM记录问题和回答，给answerd_question赋值","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0},{"children":[],"direction":null,"format":"","indent":0,"type":"paragraph","version":1,"textFormat":0}],"direction":"ltr","format":"","indent":0,"type":"root","version":1}}'
+        theme: blue
+        title: ''
+        type: ''
+        width: 352
+      height: 176
+      id: '1730450044140'
+      position:
+        x: 3320.854982280719
+        y: 1051.410589404942
+      positionAbsolute:
+        x: 3320.854982280719
+        y: 1051.410589404942
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom-note
+      width: 352
+    - data:
+        context:
+          enabled: false
+          variable_selector: []
+        desc: ''
+        model:
+          completion_params:
+            temperature: 0.7
+          mode: chat
+          name: gpt-4o-mini
+          provider: openai
+        prompt_template:
+        - id: e3b66fc4-8181-480f-9f3d-7f7a27799221
+          role: system
+          text: "```xml\n<template>\n    <instruction>\n        你是智能体分身虚拟人格和回复风格生成的专家，你的任务是根据提供的信息，深入分析其中的问题和对应的回答。以下是如何使用本模板来生成一段符合智能体分身回复语言风格的文字的详细步骤：\n\
+            \n        1. 仔细阅读用户针对问题的所有回答：“{{#1734942075679.answered_questions#}}”，找出所有问题和对应回答，理解对话的语境和风格。\n\
+            \        2. 注意分析回答中的语言习惯、用词选择以及句式结构。\n        3. 根据分析结果，形成一个智能体的语言风格，确保符合问题和对应回答的总体调性。\n\
+            \        4. 最后，输出形成的智能体语言风格，只输出包含语言风格的内容。请确保输出的内容全部来自于用户回答，确保不要包含任何XML标签。\n\
+            \n    </instruction>\n    <notes>\n        请确保在分析过程中考虑到语言的文化差异和目标受众的背景知识，以便生成的智能体分身回复更加自然和准确。\n\
+            \    </notes>\n</template>\n```"
+        selected: false
+        title: LLM-形成人格
+        type: llm
+        variables: []
+        vision:
+          configs:
+            detail: high
+          enabled: false
+      height: 98
+      id: '17304559333070'
+      position:
+        x: 2861.953402717247
+        y: 638.0761995543025
+      positionAbsolute:
+        x: 2861.953402717247
+        y: 638.0761995543025
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        answer: '<分身人格已创建，会使用这样的风格对话>
+
+          {{#17304559333070.text#}}
+
+          '
+        desc: ''
+        selected: false
+        title: <分身人格已创建>
+        type: answer
+        variables: []
+      height: 119
+      id: '1730456232582'
+      position:
+        x: 3289.5378266972434
+        y: 645.1781088109778
+      positionAbsolute:
+        x: 3289.5378266972434
+        y: 645.1781088109778
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        context:
+          enabled: true
+          variable_selector:
+          - sys
+          - query
+        desc: 判断用户意图，是需要记忆还是需要设定人格
+        memory:
+          query_prompt_template: '{{#sys.query#}}'
+          role_prefix:
+            assistant: ''
+            user: ''
+          window:
+            enabled: false
+            size: 50
+        model:
+          completion_params:
+            temperature: 0.7
+          mode: chat
+          name: gpt-4o-mini
+          provider: openai
+        prompt_template:
+        - id: 44fe038f-d17d-4811-88df-97fa97756b9d
+          role: system
+          text: "```xml\n<instruction>\n    <instructions>\n        请根据以下步骤完成意图判断任务：\n\
+            \        1. 仔细阅读对话历史。\n        2. 根据判断标准，分析用户输入以确定其意图。\n        3. 判断是否满足以下条件之一：\n\
+            \            a. 用户需要操作记忆：检查用户输入中是否有需要存储为记忆的信息，或用户是否提问和自己记忆有关的问题。\n   \
+            \         b. 用户需要操作分身人格：检查历史记录中是否有关于分身性格或回复风格、人格相关的问题或请求。\n        4.\
+            \ 根据判断结果，必须从以下两个选项中选择一个作为输出：\n            - 用户需要操作记忆\n            - 用户需要操作分身人格\n\
+            \        5. 确保输出结果不包含任何XML标签。\n    </instructions>\n    <examples>\n \
+            \       <example>\n            <input>\n                请记住我下周要去旅行的计划。\n\
+            \                我下周有什么安排吗？\n            </input>\n            <output>\n\
+            \                用户需要操作记忆\n            </output>\n        </example>\n\
+            \        <example>\n            <input>\n                我想让你变得更加幽默，你能帮我吗？\n\
+            \                如何调整你的性格使其更有趣？\n            </input>\n            <output>\n\
+            \                用户需要操作分身人格\n            </output>\n        </example>\n\
+            \        <example>\n            <input>\n                请记住我喜欢的电影是《肖申克的救赎》。\n\
+            \                我之前提到过我喜欢的电影是什么？\n            </input>\n            <output>\n\
+            \                用户需要操作记忆\n            </output>\n        </example>\n\
+            \    </examples>\n</instruction>\n```"
+        selected: false
+        title: LLM-判断用户意图
+        type: llm
+        variables: []
+        vision:
+          configs:
+            detail: high
+          enabled: false
+      height: 142
+      id: '1730707903432'
+      position:
+        x: 1241.259737234688
+        y: 285.7422757137581
+      positionAbsolute:
+        x: 1241.259737234688
+        y: 285.7422757137581
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        cases:
+        - case_id: 'true'
+          conditions:
+          - comparison_operator: contains
+            id: 4cbfb4cc-aa5a-41de-a86b-47fd78730fea
+            value: 用户需要操作记忆
+            varType: string
+            variable_selector:
+            - '1730707903432'
+            - text
+          id: 'true'
+          logical_operator: and
+        - case_id: de853d81-4f03-4e80-b756-aad421f1108a
+          conditions:
+          - comparison_operator: contains
+            id: 263a9c22-ac16-4a18-abc6-b55e21f702b5
+            value: 用户需要操作分身人格
+            varType: string
+            variable_selector:
+            - '1730707903432'
+            - text
+          id: de853d81-4f03-4e80-b756-aad421f1108a
+          logical_operator: and
+        desc: 需要操作记忆，或是需要设定人格
+        selected: false
+        title: 记忆或人格分支
+        type: if-else
+      height: 202
+      id: '1730708146606'
+      position:
+        x: 1583.0912465576966
+        y: 256.9436609500606
+      positionAbsolute:
+        x: 1583.0912465576966
+        y: 256.9436609500606
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        context:
+          enabled: true
+          variable_selector:
+          - '17332885923350'
+          - text
+        desc: 记忆格式化：分类、事实、个人记忆、好友记忆、个人偏好、好友偏好
+        model:
+          completion_params:
+            temperature: 0.7
+          mode: chat
+          name: gpt-4o-2024-08-06
+          provider: openai
+        prompt_template:
+        - id: 00653898-0821-4d5c-929a-738981d70b8b
+          role: system
+          text: '当前用户的姓名是：{{#1721225709284.user_name#}}
+
+            从一段记忆：“{{#context#}}” 中推断记忆的主题、事。实、个人记忆、好友记忆、个人偏好、好友偏好
+
+            只需以项目符号形式返回分类、事实、个人记忆、好友记忆、个人偏好、好友偏好：
+
+
+            推断记忆的类型、事实、个人记忆、好友记忆、个人偏好、好友偏好的约束：
+
+            - 推断出的内容应简洁明了。与记忆内容原文风格保持一致。
+
+            - 类型定义：{{#env.mem_type#}}的定义中选取最符合的分类。
+
+
+            - 事实定义：客观存在或已经发生的信息，是已发生或存在的客观事件或情况的描述。它不包含个人对未来的设想或计划，不包含任何喜好、偏好和倾向。事实是独立于个人感受和意愿的，可以被第三方验证的信息。不包含任何主观评价或个人情感。它是基于客观世界的描述，不涉及个人的内心世界或个人选择。可以包括时间、地点、人物。描述中请加入涉及到的人物姓名和绝对时间。
+
+
+            - 个人记忆定义：是指用户对自己过去经历的事件、活动或情境的回顾，或者是对未来可能发生事件的具体设想。这些记忆通常涉及用户直接参与的具体事件，包括用户在事件中的角色、行动和感受。个人记忆是关于“发生了什么”或“将要发生什么”的描述，不涉及用户对这些事件的主观评价或偏好。事实中已有的内容，请不要加入到个人记忆。描述中请加入涉及到的人物姓名和绝对时间。
+
+            边界：个人记忆不包含用户对事件的个人评价、愿望或偏好。它专注于描述事件本身，而不是用户对事物的主观评价和选择。
+
+            互斥：个人记忆与个人偏好不同，因为个人记忆关注的是事件的事实性描述，而个人偏好关注的是用户对这些事件的主观态度和选择。
+
+
+            - 好友记忆定义：指用户与特定好友共同经历的事件、活动或情境的主观回顾。这些记忆涉及用户与好友之间的互动和共同经历，包括用户和好友在事件中的角色、行动和感受。好友记忆是关于“与好友一起发生了什么”的描述，不涉及用户对这些事件的主观评价或偏好。事实中已有的内容，请不要加入到好友记忆。描述中请加入涉及到的人物姓名和绝对时间。
+
+            边界：好友记忆不包含用户对事件的个人评价、愿望或偏好。它专注于描述与好友共同参与的事件本身，而不是用户对事物的主观评价和选择。
+
+            互斥：好友记忆与好友偏好不同，因为好友记忆关注的是与好友共同经历的事件的事实性描述，而好友偏好关注的是用户对这些事件的主观态度和选择。
+
+
+            - 个人偏好定义：是指用户在特定事物、活动或信息上的个人喜好或倾向。这些偏好反映了用户对某些事物的主观评价和选择，可能影响用户的行为和决策。个人偏好是关于“用户想要什么”或“用户认为应该怎样”的描述，涉及用户的主观愿望和倾向。描述中请加入涉及到的人物姓名和绝对时间。
+
+            边界：个人偏好不包含客观事实的描述，而是用户基于个人价值观、经验和情感对事物的评价和选择。
+
+            互斥：个人偏好与个人记忆不同，因为个人偏好是用户对事物的主观评价和选择，而个人记忆是关于事件的事实性描述。
+
+
+            - 好友偏好定义：是指用户对特定好友在某些事物、活动或信息上的个人喜好或倾向。这些偏好反映了用户对好友的主观评价和选择，可能影响用户与好友的互动和决策。好友偏好是关于“用户希望与好友一起做什么”或“用户认为应该怎样与好友互动”的描述，涉及用户的主观愿望和倾向。描述中请加入涉及到的人物姓名和绝对时间。
+
+            边界：好友偏好不包含客观事实的描述，而是用户基于个人价值观、经验和情感对与好友相关的事物的评价和选择。
+
+            互斥：好友偏好与好友记忆不同，因为好友偏好是用户对与好友相关事物的主观评价和选择，而好友记忆是关于与好友共同经历的事件的事实性描述。
+
+
+            推断的类型、事实、个人记忆、好友记忆、个人偏好、好友偏好请按照以下输出格式进行对内容的格式化并输出：
+
+            类型：；
+
+            事实：；
+
+            个人记忆：；
+
+            好友记忆：；
+
+            个人偏好：；
+
+            好友偏好：。
+
+            '
+        selected: false
+        title: LLM 11
+        type: llm
+        variables: []
+        vision:
+          configs:
+            detail: high
+          enabled: false
+      height: 142
+      id: '1732612417468'
+      position:
+        x: 4234.228939650003
+        y: -126.7174248054846
+      positionAbsolute:
+        x: 4234.228939650003
+        y: -126.7174248054846
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        answer: '<以下内容已写入个人记忆>
+
+          {{#1732612417468.text#}}
+
+          '
+        desc: ''
+        selected: false
+        title: <以下内容已写入记忆>
+        type: answer
+        variables: []
+      height: 119
+      id: '17326910143220'
+      position:
+        x: 4601.05526342692
+        y: -225.53089724943166
+      positionAbsolute:
+        x: 4601.05526342692
+        y: -225.53089724943166
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        desc: ''
+        provider_id: time
+        provider_name: time
+        provider_type: builtin
+        selected: false
+        title: 获取当前时间-他人
+        tool_configurations:
+          format: '%Y-%m-%d %H:%M:%S'
+          timezone: UTC
+        tool_label: 获取当前时间
+        tool_name: current_time
+        tool_parameters: {}
+        type: tool
+      height: 116
+      id: '1732780957043'
+      position:
+        x: 588.3671144088897
+        y: 941.8914328107919
+      positionAbsolute:
+        x: 588.3671144088897
+        y: 941.8914328107919
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        context:
+          enabled: true
+          variable_selector:
+          - sys
+          - query
+        desc: 用户回复内容转换，时间人称格式化
+        model:
+          completion_params:
+            temperature: 0.7
+          mode: chat
+          name: gpt-4o-mini
+          provider: openai
+        prompt_template:
+        - id: f11c1f91-3396-4514-b6c1-fb6a2adf1c2a
+          role: system
+          text: "用户问题：{{#context#}}\n\n当前时间：{{#1732780957043.text#}}\n当前用户：{{#1721225709284.user_name#}}\n\
+            你的名字：{{#env.agent_name#}}\n\n处理步骤：\n处理步骤：\n1. 时间转换：\n   1.1. 获取当前时间戳：{{#1732780957043.text#}}。推测出当天是星期几，以及本周的绝对时间戳。\n\
+            \   1.2. 解析用户问题中的相对时间表达（例如“今天”、“明天”、“下周”、“三天后”、“本周”，“过去”，“未来”，“现在”等）。\n\
+            \   1.3. 将相对时间转换为基于当前时间戳的绝对时间，并确保时间格式清晰且准确。（例如：“本周” 替换成 “yyyy年mm月dd日到yyyy年mm月dd日”；今天替换成当前时间戳的日期；“过去”替换成当前时间戳之前，“未来”替换成当前时间戳之后，“现在”替换成当前时间戳。）\n\
+            \n2. 人称转换：\n   2.1. 确认当前对话的用户是{{#1721225709284.user_name#}}。\n   2.2.\
+            \ 解析用户问题中的人称表达（例如“我”、“你”或其他第三人称）。\n   2.3. 将用户人称表达转换成对应的名字。（例如“我们”那么需要换成“{{#1721225709284.user_name#}}和{{#env.agent_name#}}”，“我”替换成“{{#1721225709284.user_name#}}”）\n\
+            \n输出：\n保持用户问题的风格和语气，将问题原文的相对时间表达替换成绝对时间表达，将人称转换成姓名，输出。\n\n"
+        selected: false
+        title: LLM-时间人称转换-他人
+        type: llm
+        variables: []
+        vision:
+          configs:
+            detail: high
+          enabled: false
+      height: 126
+      id: '1732783190572'
+      position:
+        x: 894.3653661143765
+        y: 964.085721204025
+      positionAbsolute:
+        x: 894.3653661143765
+        y: 964.085721204025
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        desc: ''
+        provider_id: time
+        provider_name: time
+        provider_type: builtin
+        selected: false
+        title: 获取当前时间-自己
+        tool_configurations:
+          format: '%Y-%m-%d %H:%M:%S'
+          timezone: UTC
+        tool_label: 获取当前时间
+        tool_name: current_time
+        tool_parameters: {}
+        type: tool
+      height: 116
+      id: '17332885803860'
+      position:
+        x: 2253.493592455464
+        y: 64.0859912262429
+      positionAbsolute:
+        x: 2253.493592455464
+        y: 64.0859912262429
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        context:
+          enabled: true
+          variable_selector:
+          - sys
+          - query
+        desc: 用户回复内容转换，时间人称格式化
+        model:
+          completion_params:
+            temperature: 0.7
+          mode: chat
+          name: gpt-4o-2024-11-20
+          provider: openai
+        prompt_template:
+        - id: f11c1f91-3396-4514-b6c1-fb6a2adf1c2a
+          role: system
+          text: '你是一个内容转换专家，目标是找到用户描述中的相对时间和人称，将它们转换成绝对时间和人物姓名，最终输出转换后的内容。
+
+
+            用户描述：{{#context#}}
+
+            当前时间：{{#17332885803860.text#}}
+
+            当前用户：{{#1721225709284.user_name#}}
+
+            你是当前用户的AI智能体分身：{{#env.agent_name#}}
+
+
+            处理步骤：
+
+            1. 人称转换：
+
+            确认当前对话的用户是{{#1721225709284.user_name#}}。
+
+            解析问题中的人称表达（例如“我”、“你”或其他第三人称）。
+
+            将用户人称表达转换成对应的名字。（例如“我和XX”那么需要换成“{{#1721225709284.user_name#}}和XX”，“我”替换成“{{#1721225709284.user_name#}}”）
+
+
+            2. 时间转换：
+
+            获取当前时间戳：{{#17332885803860.text#}}。推测出本周、上周、下周等等的开始日期和结束日期。
+
+            解析用户描述中的相对时间表达（例如“明天”、“下周”、“三天后”、“本周”等）。
+
+            将相对时间转换为基于当前时间戳的绝对时间，并确保时间格式清晰且准确。（例如：“本周” 替换成 “yyyy年mm月dd日到yyyy年mm月dd日”，“今天”替换成当前时间。）
+
+
+            3.如果1和2都没有转换的内容，直接输出原文。
+
+
+            输出：
+
+            将人称和相对时间表达经过处理步骤后，将转换后的内容容一致输出，维持原文风格。'
+        selected: false
+        title: LLM 12-时间人称转换-自己
+        type: llm
+        variables: []
+        vision:
+          configs:
+            detail: high
+          enabled: false
+      height: 126
+      id: '17332885923350'
+      position:
+        x: 2553.520503110222
+        y: 64.0859912262429
+      positionAbsolute:
+        x: 2553.520503110222
+        y: 64.0859912262429
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        desc: ''
+        provider_id: mem0ai
+        provider_name: mem0ai
+        provider_type: builtin
+        selected: false
+        title: 写入/更新个人记忆
+        tool_configurations: {}
+        tool_label: 写入记忆
+        tool_name: add_mem0ai_memory
+        tool_parameters:
+          agent_id:
+            type: mixed
+            value: '{{#env.agent_name#}}_ai'
+          data:
+            type: mixed
+            value: '{{#1732612417468.text#}}'
+          run_id:
+            type: mixed
+            value: '{{#sys.conversation_id#}}'
+          user_id:
+            type: mixed
+            value: '{{#env.agent_name#}}'
+        type: tool
+      height: 54
+      id: '17332963447080'
+      position:
+        x: 4590.499200140737
+        y: -48.22490926696392
+      positionAbsolute:
+        x: 4590.499200140737
+        y: -48.22490926696392
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        context:
+          enabled: false
+          variable_selector: []
+        desc: ''
+        model:
+          completion_params:
+            temperature: 0.7
+          mode: chat
+          name: gpt-4o-mini
+          provider: openai
+        prompt_template:
+        - id: e3b66fc4-8181-480f-9f3d-7f7a27799221
+          role: system
+          text: '你是用户 {{#1721225709284.user_name#}}的专属AI智能体分身，你的名字是{{#env.agent_name#}}，你有将被赋予用户的{{#1721225709284.user_name#}}的记忆、情感、喜好。
+
+            你的回复风格是：{{#17349421250440.text#}}
+
+            你可以做到：记录用户需要的所有记忆，在用户需要时将记忆回复给用户，并可以将这些记忆传在你的好友需要时传递出去。
+
+            目前你不可以做到：和用户闲聊，讨论话题。
+
+            结合回复风格，请给你的创建者{{#1721225709284.user_name#}}一个非常简单的包括人格/回复风格说明的自我介绍，你能做什么和做不到什么。'
+        selected: false
+        title: LLM-自我介绍-有人格
+        type: llm
+        variables: []
+        vision:
+          configs:
+            detail: high
+          enabled: false
+      height: 98
+      id: '17339752357050'
+      position:
+        x: 2837.701937653081
+        y: 256.9436609500606
+      positionAbsolute:
+        x: 2837.701937653081
+        y: 256.9436609500606
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        answer: '<分身已有人格，暂时不支持重新设定>
+
+          {{#17339752357050.text#}}
+
+          '
+        desc: ''
+        selected: false
+        title: <已有分身人格>
+        type: answer
+        variables: []
+      height: 119
+      id: '17345135774110'
+      position:
+        x: 3369.7806037394016
+        y: 212.96201391921272
+      positionAbsolute:
+        x: 3369.7806037394016
+        y: 212.96201391921272
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        context:
+          enabled: false
+          variable_selector: []
+        desc: ''
+        model:
+          completion_params:
+            temperature: 0.7
+          mode: chat
+          name: gpt-4o-mini
+          provider: openai
+        prompt_template:
+        - id: e3b66fc4-8181-480f-9f3d-7f7a27799221
+          role: system
+          text: '你是用户 {{#1721225709284.user_name#}}的专属AI智能体分身，你的名字是{{#env.agent_name#}}，你有将被赋予用户的{{#1721225709284.user_name#}}的记忆、情感、喜好。
+
+            现在你还没有人格、性格、回复风格。
+
+            你可以做到：记录用户需要的所有记忆，在用户需要时将记忆回复给用户，并可以将这些记忆传在你的好友需要时传递出去。
+
+            目前你不可以做到：和用户闲聊，讨论话题。
+
+            请检查用户的提问：“{{#sys.query#}}”，判断是否需要介绍你自己，如果需要，请给你的创建者{{#1721225709284.user_name#}}一个非常简单的包括自我介绍，并且引导TA开始设定你的人格。如果不需要，输出空。'
+        selected: false
+        title: LLM-自我介绍-无人格
+        type: llm
+        variables: []
+        vision:
+          configs:
+            detail: high
+          enabled: false
+      height: 98
+      id: '17345136611940'
+      position:
+        x: 2861.953402717247
+        y: 449.8518871557297
+      positionAbsolute:
+        x: 2861.953402717247
+        y: 449.8518871557297
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        desc: ''
+        provider_id: social_agent
+        provider_name: social_agent
+        provider_type: builtin
+        selected: false
+        title: 查看个性工具-他人
+        tool_configurations: {}
+        tool_label: 查看个性工具
+        tool_name: view_persona_tool
+        tool_parameters:
+          app_id:
+            type: mixed
+            value: '{{#sys.app_id#}}'
+        type: tool
+      height: 54
+      id: '1734941912596'
+      position:
+        x: 664.1673899992928
+        y: 1225.0091636187421
+      positionAbsolute:
+        x: 664.1673899992928
+        y: 1225.0091636187421
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        desc: ''
+        provider_id: social_agent
+        provider_name: social_agent
+        provider_type: builtin
+        selected: false
+        title: 查看已回答问题工具
+        tool_configurations: {}
+        tool_label: 查看已回答问题工具
+        tool_name: manage_answered_questions_tool
+        tool_parameters:
+          app_id:
+            type: mixed
+            value: '{{#sys.app_id#}}'
+        type: tool
+      height: 54
+      id: '1734942005208'
+      position:
+        x: 620.1673899992927
+        y: 285.7422757137581
+      positionAbsolute:
+        x: 620.1673899992927
+        y: 285.7422757137581
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        desc: ''
+        provider_id: social_agent
+        provider_name: social_agent
+        provider_type: builtin
+        selected: false
+        title: 更新已回答问题工具
+        tool_configurations: {}
+        tool_label: 更新已回答问题工具
+        tool_name: update_answered_questions_tool
+        tool_parameters:
+          app_id:
+            type: mixed
+            value: '{{#sys.app_id#}}'
+          conversation_id:
+            type: mixed
+            value: '{{#sys.conversation_id#}}'
+        type: tool
+      height: 54
+      id: '1734942055590'
+      position:
+        x: 294.1673899992933
+        y: 285.7422757137581
+      positionAbsolute:
+        x: 294.1673899992933
+        y: 285.7422757137581
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        code: "def main(data: dict) -> dict:\n    if data[0][\"answered_questions\"\
+          ]:\n        answered_questions = [f\"问题：{item['question']}用户回答：{item['answer']}\"\
+          \ for item in data[0][\"answered_questions\"]]\n    else:\n        answered_questions\
+          \ = []\n    return {\n        \"completed_questions\": data[0][\"completed_questions\"\
+          ],\n        \"incomplete_questions\": data[0][\"incomplete_questions\"],\n\
+          \        \"incomplete_questions_string\": \"\\n\".join(data[0][\"incomplete_questions\"\
+          ]),\n        \"answered_questions\": answered_questions,\n        \"all_completed\"\
+          : int(data[0][\"all_completed\"]),\n    }"
+        code_language: python3
+        desc: ''
+        outputs:
+          all_completed:
+            children: null
+            type: number
+          answered_questions:
+            children: null
+            type: array[string]
+          completed_questions:
+            children: null
+            type: array[string]
+          incomplete_questions:
+            children: null
+            type: array[string]
+          incomplete_questions_string:
+            children: null
+            type: string
+        selected: false
+        title: 代码执行 4
+        type: code
+        variables:
+        - value_selector:
+          - '1734942005208'
+          - json
+          variable: data
+      height: 54
+      id: '1734942075679'
+      position:
+        x: 937.3012135023691
+        y: 285.7422757137581
+      positionAbsolute:
+        x: 937.3012135023691
+        y: 285.7422757137581
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        desc: ''
+        provider_id: social_agent
+        provider_name: social_agent
+        provider_type: builtin
+        selected: false
+        title: 查看个性工具-自己
+        tool_configurations: {}
+        tool_label: 查看个性工具
+        tool_name: view_persona_tool
+        tool_parameters:
+          app_id:
+            type: mixed
+            value: '{{#sys.app_id#}}'
+        type: tool
+      height: 54
+      id: '17349421250440'
+      position:
+        x: 642.5840128349222
+        y: 460.4619031213025
+      positionAbsolute:
+        x: 642.5840128349222
+        y: 460.4619031213025
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        cases:
+        - case_id: 'true'
+          conditions:
+          - comparison_operator: not empty
+            id: f7260ece-70da-48aa-bec6-7dc7cc4f0ad8
+            value: ''
+            varType: string
+            variable_selector:
+            - '17349421250440'
+            - text
+          id: 'true'
+          logical_operator: and
+        - case_id: 29d8b184-73e6-47d0-9ff5-adf6022cc8a4
+          conditions:
+          - comparison_operator: '='
+            id: 4f6e06c4-b4b2-4ba1-8f4b-7fba9abe1596
+            value: '0'
+            varType: number
+            variable_selector:
+            - '1734942075679'
+            - all_completed
+          - comparison_operator: empty
+            id: f66374d1-2efe-4d57-ad8b-45c3b1060f7e
+            value: ''
+            varType: string
+            variable_selector:
+            - '17349421250440'
+            - text
+          id: 29d8b184-73e6-47d0-9ff5-adf6022cc8a4
+          logical_operator: and
+        desc: ''
+        selected: false
+        title: 条件分支 5
+        type: if-else
+      height: 200
+      id: '1734942286688'
+      position:
+        x: 2342.199193719861
+        y: 440.7575877566673
+      positionAbsolute:
+        x: 2342.199193719861
+        y: 440.7575877566673
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        desc: ''
+        model:
+          completion_params:
+            temperature: 0.7
+          mode: chat
+          name: gpt-4o-mini
+          provider: openai
+        parameters:
+        - description: 个性特征
+          name: personality
+          required: false
+          type: string
+        query:
+        - '17304559333070'
+        - text
+        reasoning_mode: prompt
+        selected: false
+        title: 参数提取器
+        type: parameter-extractor
+        variables: []
+        vision:
+          enabled: false
+      height: 98
+      id: '1734944137110'
+      position:
+        x: 3289.5378266972434
+        y: 843.2264394421314
+      positionAbsolute:
+        x: 3289.5378266972434
+        y: 843.2264394421314
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        desc: ''
+        provider_id: social_agent
+        provider_name: social_agent
+        provider_type: builtin
+        selected: false
+        title: 覆盖人设工具
+        tool_configurations: {}
+        tool_label: 覆盖人设工具
+        tool_name: override_persona_tool
+        tool_parameters:
+          app_id:
+            type: mixed
+            value: '{{#sys.app_id#}}'
+          personality:
+            type: mixed
+            value: '{{#1734944137110.personality#}}'
+        type: tool
+      height: 54
+      id: '1734944223000'
+      position:
+        x: 3732.720770852367
+        y: 843.2264394421314
+      positionAbsolute:
+        x: 3732.720770852367
+        y: 843.2264394421314
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        author: lumia.liu
+        desc: ''
+        height: 295
+        selected: false
+        showAuthor: true
+        text: '{"root":{"children":[{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"\"您的任务是作为一位对比专家，来检查用户是否已经回答了所有未回答的问题。请根据以下步骤完成指定的任务：\\n\\n\"","type":"text","version":1},{"type":"linebreak","version":1},{"detail":0,"format":0,"mode":"normal","style":"","text":"\"1.
+          从提供的对话历史中提取用户针对问题列表中的问题的回答。\\n\"","type":"text","version":1},{"type":"linebreak","version":1},{"detail":0,"format":0,"mode":"normal","style":"","text":"\"2.
+          检查用户回答的问题是否与问题列表中的问题相匹配。\\n\"","type":"text","version":1},{"type":"linebreak","version":1},{"detail":0,"format":0,"mode":"normal","style":"","text":"\"3.
+          对于每个匹配的问题，整理出问题及其对应的用户回答。\\n\"","type":"text","version":1},{"type":"linebreak","version":1},{"detail":0,"format":0,"mode":"normal","style":"","text":"\"4.
+          确保按照以下格式输出每个已回答的问题和对应的回答，多个已回答问题需要换行，如：\\n\"","type":"text","version":1},{"type":"linebreak","version":1},{"detail":0,"format":0,"mode":"normal","style":"","text":"\"   问题：xxx\\n用户回答：xxx\\n\"","type":"text","version":1},{"type":"linebreak","version":1},{"detail":0,"format":0,"mode":"normal","style":"","text":"\"5.
+          如果用户没有回答任何问题，直接输出“用户没有回答任何问题”。\\n\"","type":"text","version":1},{"type":"linebreak","version":1},{"detail":0,"format":0,"mode":"normal","style":"","text":"\"6.
+          在输出时，确保不要包含任何XML标签。\\n\\n\"","type":"text","version":1},{"type":"linebreak","version":1},{"detail":0,"format":0,"mode":"normal","style":"","text":"f\"对话历史：\\n{histories}\\n\\n\"","type":"text","version":1},{"type":"linebreak","version":1},{"detail":0,"format":0,"mode":"normal","style":"","text":"\"问题列表：\\n\"
+          + \"\\n\".join(unanswered_questions)","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0}],"direction":"ltr","format":"","indent":0,"type":"root","version":1}}'
+        theme: blue
+        title: ''
+        type: ''
+        width: 502
+      height: 295
+      id: '1734945257806'
+      position:
+        x: 294.1673899992933
+        y: -29.3379984440364
+      positionAbsolute:
+        x: 294.1673899992933
+        y: -29.3379984440364
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom-note
+      width: 502
+    - data:
+        author: lumia.liu
+        desc: ''
+        height: 88
+        selected: false
+        showAuthor: true
+        text: '{"root":{"children":[{"children":[{"detail":0,"format":0,"mode":"normal","style":"font-size:
+          14px;","text":"判断所有题目是否完成","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0}],"direction":"ltr","format":"","indent":0,"type":"root","version":1}}'
+        theme: blue
+        title: ''
+        type: ''
+        width: 240
+      height: 88
+      id: '1734945504797'
+      position:
+        x: 937.3012135023691
+        y: 171.46389587972925
+      positionAbsolute:
+        x: 937.3012135023691
+        y: 171.46389587972925
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom-note
+      width: 240
+    - data:
+        desc: ''
+        items:
+        - input_type: constant
+          operation: set
+          value: memory
+          variable_selector:
+          - conversation
+          - user_intent_type
+          write_mode: over-write
+        selected: false
+        title: 变量赋值
+        type: assigner
+        version: '2'
+      height: 88
+      id: '1735054475056'
+      position:
+        x: 1953.4935924554638
+        y: 64.0859912262429
+      positionAbsolute:
+        x: 1953.4935924554638
+        y: 64.0859912262429
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        desc: ''
+        items:
+        - input_type: constant
+          operation: set
+          value: personality
+          variable_selector:
+          - conversation
+          - user_intent_type
+          write_mode: over-write
+        selected: false
+        title: 变量赋值 2
+        type: assigner
+        version: '2'
+      height: 88
+      id: '1735054515541'
+      position:
+        x: 1917.2084492438566
+        y: 299.2844955525087
+      positionAbsolute:
+        x: 1917.2084492438566
+        y: 299.2844955525087
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        cases:
+        - case_id: 'true'
+          conditions:
+          - comparison_operator: is
+            id: e82ba199-3009-4608-9b7f-a60992cb6723
+            value: memory
+            varType: string
+            variable_selector:
+            - conversation
+            - user_intent_type
+          id: 'true'
+          logical_operator: and
+        - case_id: 694853c0-9fc6-4efa-a97c-00493e0adada
+          conditions:
+          - comparison_operator: is
+            id: fe4a2e0d-c1bf-45fe-8a50-30d2204574da
+            value: personality
+            varType: string
+            variable_selector:
+            - conversation
+            - user_intent_type
+          logical_operator: and
+        desc: ''
+        selected: false
+        title: 条件分支 5
+        type: if-else
+      height: 174
+      id: '1735054574123'
+      position:
+        x: 1930.3653697150153
+        y: 531.5398593217756
+      positionAbsolute:
+        x: 1930.3653697150153
+        y: 531.5398593217756
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        author: 857316974@qq.com
+        desc: ''
+        height: 381
+        selected: false
+        showAuthor: true
+        text: '{"root":{"children":[{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"\"我们需要根据以下信息生成一个更新后的个性描述。\\n\"","type":"text","version":1},{"type":"linebreak","version":1},{"detail":0,"format":0,"mode":"normal","style":"","text":"\"请充分参考对话历史和用户的回答列表，从中提炼用户的沟通风格、表达方式、\"","type":"text","version":1},{"type":"linebreak","version":1},{"detail":0,"format":0,"mode":"normal","style":"","text":"\"偏好、价值观，以及其他能够反映其个性的特点。\\n\"","type":"text","version":1},{"type":"linebreak","version":1},{"detail":0,"format":0,"mode":"normal","style":"","text":"\"请确保生成的个性描述全面、自然、具体，同时突出用户的独特之处。\\n\\n\"","type":"text","version":1},{"type":"linebreak","version":1},{"detail":0,"format":0,"mode":"normal","style":"","text":"\"###
+          对话历史：\\n\" +","type":"text","version":1},{"type":"linebreak","version":1},{"detail":0,"format":0,"mode":"normal","style":"","text":"\"\\n\".join(histories)
+          +","type":"text","version":1},{"type":"linebreak","version":1},{"detail":0,"format":0,"mode":"normal","style":"","text":"\"\\n\\n###
+          已回答的问题列表：\\n\" +","type":"text","version":1},{"type":"linebreak","version":1},{"detail":0,"format":0,"mode":"normal","style":"","text":"\"\\n\".join(","type":"text","version":1},{"type":"linebreak","version":1},{"detail":0,"format":0,"mode":"normal","style":"","text":"    [f\"-
+          问题：{q[''question'']} 答案：{q[''answer'']}\" for q in answered_questions]","type":"text","version":1},{"type":"linebreak","version":1},{"detail":0,"format":0,"mode":"normal","style":"","text":")
+          +","type":"text","version":1},{"type":"linebreak","version":1},{"detail":0,"format":0,"mode":"normal","style":"","text":"\"\\n\\n###
+          之前的个性描述：\\n\" + old_personality +","type":"text","version":1},{"type":"linebreak","version":1},{"detail":0,"format":0,"mode":"normal","style":"","text":"\"\\n\\n###
+          任务要求：\\n\"","type":"text","version":1},{"type":"linebreak","version":1},{"detail":0,"format":0,"mode":"normal","style":"","text":"\"1.
+          生成的人格描述需覆盖用户的沟通风格、语言偏好、表达特点、互动倾向等。\\n\"","type":"text","version":1},{"type":"linebreak","version":1},{"detail":0,"format":0,"mode":"normal","style":"","text":"\"2.
+          在更新个性时，保留之前描述中重要的特征，并结合新信息适当扩展或调整。\\n\"","type":"text","version":1},{"type":"linebreak","version":1},{"detail":0,"format":0,"mode":"normal","style":"","text":"\"3.
+          确保语言优美，描述生动，避免过于生硬或机械化。\\n\\n\"","type":"text","version":1},{"type":"linebreak","version":1},{"detail":0,"format":0,"mode":"normal","style":"","text":"\"请直接开始生成更新后的人格描述：\"","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0}],"direction":"ltr","format":"","indent":0,"type":"root","version":1}}'
+        theme: blue
+        title: ''
+        type: ''
+        width: 581
+      height: 381
+      id: '1735055050192'
+      position:
+        x: 3726.936031239541
+        y: 959.9367470876447
+      positionAbsolute:
+        x: 3726.936031239541
+        y: 959.9367470876447
+      selected: true
+      sourcePosition: right
+      targetPosition: left
+      type: custom-note
+      width: 581
+    viewport:
+      x: 182.5603903073054
+      y: 268.1426593855048
+      zoom: 0.4677939165931234
