@@ -15,7 +15,6 @@ from core.variables import SecretVariable, Variable
 from factories import variable_factory
 from libs import helper
 from models.enums import CreatedByRole
-from services.account_service import TenantService
 
 from .account import Account
 from .engine import db
@@ -23,6 +22,10 @@ from .types import StringUUID
 
 if TYPE_CHECKING:
     from models.model import AppMode, Message
+
+__all__ = ["Workflow", "WorkflowType", "WorkflowRunStatus", "WorkflowAppLog", "WorkflowAppLogCreatedFrom",
+           "WorkflowNodeExecution", "WorkflowNodeExecutionStatus", "WorkflowNodeExecutionTriggeredFrom",
+           "WorkflowRun"]
 
 
 class WorkflowType(Enum):
@@ -238,6 +241,7 @@ class Workflow(db.Model):  # type: ignore[name-defined]
 
     @property
     def environment_variables(self) -> Sequence[Variable]:
+        from services.account_service import TenantService
         # TODO: find some way to init `self._environment_variables` when instance created.
         if self._environment_variables is None:
             self._environment_variables = "{}"
@@ -262,6 +266,7 @@ class Workflow(db.Model):  # type: ignore[name-defined]
 
     @environment_variables.setter
     def environment_variables(self, value: Sequence[Variable]):
+        from services.account_service import TenantService
         if not value:
             self._environment_variables = "{}"
             return

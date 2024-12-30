@@ -1,15 +1,13 @@
-from collections.abc import Callable, Sequence
 import json
 import traceback
-from collections.abc import Callable
+from collections.abc import Callable, Sequence
 from concurrent.futures import ThreadPoolExecutor
 from datetime import UTC, datetime
 from typing import Optional, Union
 
+from flask import Flask
 from sqlalchemy import asc, desc, func, or_, select
 from sqlalchemy.orm import Session
-from flask import Flask
-from sqlalchemy import asc, desc, or_
 
 from core.app.entities.app_invoke_entities import InvokeFrom
 from core.llm_generator.llm_generator import LLMGenerator

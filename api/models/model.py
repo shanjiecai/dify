@@ -22,7 +22,6 @@ from models.enums import CreatedByRole
 from models.workflow import WorkflowRunStatus
 
 from .account import Account, Tenant
-from .plan_question import PlanQuestion
 from .engine import db
 from .types import StringUUID
 
@@ -580,6 +579,7 @@ class Conversation(db.Model):  # type: ignore[name-defined]
 
     @property
     def plan_question(self):
+        from .plan_question import PlanQuestion
         plan_question_item = (
             db.session.query(PlanQuestion).filter(PlanQuestion.plan == self.plan_question_invoke_plan).first()
         )

@@ -7,10 +7,9 @@ from typing import cast
 
 from flask_restful import abort, fields, marshal_with, reqparse
 
-from constants.model_template import model_templates
+from constants.model_template import default_app_templates
 from controllers.console.app.error import ProviderNotInitializeError
 
-# from constants.model_template import model_templates
 from controllers.social_agent_api import api
 from controllers.social_agent_api.wraps import AppApiResource
 from core.errors.error import LLMBadRequestError, ProviderTokenNotInitError
@@ -22,7 +21,7 @@ from extensions.ext_database import db
 from fields.app_fields import model_config_fields
 from models import Account
 from models.dataset import DatasetUpdateRealTimeSocialAgent
-from models.model import App, AppModelConfig, Site
+from models.model import App, AppModelConfig, Site, AppMode
 from mylogger import logger
 from services.account_service import AccountService, TenantService
 from services.app_dsl_service import AppDslService, ImportStatus
@@ -287,7 +286,8 @@ class AppCreateApi(AppApiResource):
             if "mode" not in args or args["mode"] is None:
                 abort(400, message="mode is required")
 
-            model_config_template = model_templates[args["mode"] + "_default"]
+            app_mode = AppMode.value_of(args["mode"])
+            model_config_template = default_app_templates[app_mode]
 
             app = App(**model_config_template["app"])
             app_model_config = AppModelConfig(**model_config_template["model_config"])
