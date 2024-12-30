@@ -23,9 +23,17 @@ from .types import StringUUID
 if TYPE_CHECKING:
     from models.model import AppMode, Message
 
-__all__ = ["Workflow", "WorkflowType", "WorkflowRunStatus", "WorkflowAppLog", "WorkflowAppLogCreatedFrom",
-           "WorkflowNodeExecution", "WorkflowNodeExecutionStatus", "WorkflowNodeExecutionTriggeredFrom",
-           "WorkflowRun"]
+__all__ = [
+    "Workflow",
+    "WorkflowAppLog",
+    "WorkflowAppLogCreatedFrom",
+    "WorkflowNodeExecution",
+    "WorkflowNodeExecutionStatus",
+    "WorkflowNodeExecutionTriggeredFrom",
+    "WorkflowRun",
+    "WorkflowRunStatus",
+    "WorkflowType",
+]
 
 
 class WorkflowType(Enum):
