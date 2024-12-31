@@ -15,14 +15,8 @@ class AppModelService:
         app_list = sorted(app_list, key=lambda x: x.created_at, reverse=True)
         name_list = []
         # 获取app_model_configs下的model_id
+        app_list = [app for app in app_list if "test" not in app.name and app.name not in name_list]
         for app in app_list:
-            if "test" in app.name:
-                app_list.remove(app)
-                continue
-            # 去除重名
-            if app.name in name_list:
-                app_list.remove(app)
-                continue
             try:
                 app_model_config = cls.get_app_model_config(app)
                 # print(f"{app.name} {app_model_config.model_id}")

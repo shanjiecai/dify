@@ -30,7 +30,6 @@ from services.errors.message import MessageNotExistsError
 
 
 class CompletionService:
-
     @classmethod
     def completion(
         cls,

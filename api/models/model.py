@@ -222,9 +222,7 @@ class App(db.Model):  # type: ignore[name-defined]
 
     @property
     def memory_metadata_dict(self):
-        return self.memory_metadata or {
-            "answered_questions": []
-        }
+        return self.memory_metadata or {"answered_questions": []}
 
 
 class AppModelConfig(db.Model):  # type: ignore[name-defined]
@@ -538,13 +536,13 @@ class Conversation(db.Model):  # type: ignore[name-defined]
         db.Index("conversation_app_from_user_idx", "app_id", "from_source", "from_end_user_id"),
     )
 
-    id = db.Column(StringUUID, server_default=db.text("uuid_generate_v4()"))
+    id: Mapped[str] = mapped_column(StringUUID, server_default=db.text("uuid_generate_v4()"))
     app_id = db.Column(StringUUID, nullable=False)
     app_model_config_id = db.Column(StringUUID, nullable=True)
     model_provider = db.Column(db.String(255), nullable=True)
     override_model_configs = db.Column(db.Text)
     model_id = db.Column(db.String(255), nullable=True)
-    mode = db.Column(db.String(255), nullable=False)
+    mode: Mapped[str] = mapped_column(db.String(255))
     name = db.Column(db.String(255), nullable=False)
     summary = db.Column(db.Text)
     _inputs: Mapped[dict] = mapped_column("inputs", db.JSON)
@@ -580,6 +578,7 @@ class Conversation(db.Model):  # type: ignore[name-defined]
     @property
     def plan_question(self):
         from .plan_question import PlanQuestion
+
         plan_question_item = (
             db.session.query(PlanQuestion).filter(PlanQuestion.plan == self.plan_question_invoke_plan).first()
         )
@@ -817,7 +816,7 @@ class Message(db.Model):  # type: ignore[name-defined]
         db.Index("message_created_at_idx", "created_at"),
     )
 
-    id = db.Column(StringUUID, server_default=db.text("uuid_generate_v4()"))
+    id: Mapped[str] = mapped_column(StringUUID, server_default=db.text("uuid_generate_v4()"))
     app_id = db.Column(StringUUID, nullable=False)
     model_provider = db.Column(db.String(255), nullable=True)
     model_id = db.Column(db.String(255), nullable=True)
@@ -847,7 +846,7 @@ class Message(db.Model):  # type: ignore[name-defined]
     from_source = db.Column(db.String(255), nullable=False)
     from_end_user_id: Mapped[Optional[str]] = db.Column(StringUUID)
     from_account_id: Mapped[Optional[str]] = db.Column(StringUUID)
-    created_at = db.Column(db.DateTime, nullable=False, server_default=func.current_timestamp())
+    created_at: Mapped[datetime] = mapped_column(db.DateTime, server_default=func.current_timestamp())
     updated_at = db.Column(db.DateTime, nullable=False, server_default=func.current_timestamp())
     agent_based = db.Column(db.Boolean, nullable=False, server_default=db.text("false"))
     workflow_run_id = db.Column(StringUUID)
@@ -1373,7 +1372,7 @@ class EndUser(UserMixin, db.Model):  # type: ignore[name-defined]
     external_user_id = db.Column(db.String(255), nullable=True)
     name = db.Column(db.String(255))
     is_anonymous = db.Column(db.Boolean, nullable=False, server_default=db.text("true"))
-    session_id = db.Column(db.String(255), nullable=False)
+    session_id: Mapped[str] = mapped_column()
     created_at = db.Column(db.DateTime, nullable=False, server_default=func.current_timestamp())
     updated_at = db.Column(db.DateTime, nullable=False, server_default=func.current_timestamp())
 

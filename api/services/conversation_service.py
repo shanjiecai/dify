@@ -30,17 +30,17 @@ from services.openai_base_request_service import compare_similarity, generate_re
 class ConversationService:
     @classmethod
     def pagination_by_last_id(
-            cls,
-            *,
-            session: Session,
-            app_model: App,
-            user: Optional[Union[Account, EndUser]],
-            last_id: Optional[str],
-            limit: int,
-            invoke_from: InvokeFrom,
-            include_ids: Optional[Sequence[str]] = None,
-            exclude_ids: Optional[Sequence[str]] = None,
-            sort_by: str = "-updated_at",
+        cls,
+        *,
+        session: Session,
+        app_model: App,
+        user: Optional[Union[Account, EndUser]],
+        last_id: Optional[str],
+        limit: int,
+        invoke_from: InvokeFrom,
+        include_ids: Optional[Sequence[str]] = None,
+        exclude_ids: Optional[Sequence[str]] = None,
+        sort_by: str = "-updated_at",
     ) -> InfiniteScrollPagination:
         if not user:
             return InfiniteScrollPagination(data=[], limit=limit, has_more=False)
@@ -107,12 +107,12 @@ class ConversationService:
 
     @classmethod
     def rename(
-            cls,
-            app_model: App,
-            conversation_id: str,
-            user: Optional[Union[Account, EndUser]],
-            name: str,
-            auto_generate: bool,
+        cls,
+        app_model: App,
+        conversation_id: str,
+        user: Optional[Union[Account, EndUser]],
+        name: str,
+        auto_generate: bool,
     ):
         conversation = cls.get_conversation(app_model, conversation_id, user)
 
@@ -213,11 +213,11 @@ class ConversationService:
                 if messages.index(message) + 1 < len(messages):
                     next_message = messages[messages.index(message) + 1]
                     if (
-                            (message.answer is None or message.answer == "")
-                            and message.query == next_message.query
-                            and message.role == next_message.role
-                            and next_message.answer is not None
-                            and next_message.answer != ""
+                        (message.answer is None or message.answer == "")
+                        and message.query == next_message.query
+                        and message.role == next_message.role
+                        and next_message.answer is not None
+                        and next_message.answer != ""
                     ):
                         continue
                 if not message.role:

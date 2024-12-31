@@ -43,11 +43,11 @@ def generate_response(
     response = client.chat.completions.create(
         model=model,
         max_tokens=kwargs.get("max_tokens", 3000),
-        temperature=kwargs.get("temperature", None),
+        temperature=kwargs.get("temperature"),
         presence_penalty=kwargs.get("presence_penalty", 0),
         frequency_penalty=kwargs.get("frequency_penalty", 0),
         top_p=kwargs.get("top_p", 1),
-        stop=kwargs.get("stop", None),
+        stop=kwargs.get("stop"),
         messages=messages,
         stream=kwargs.get("stream", False),
         response_format={"type": "json_object"} if json_format else None,
@@ -97,8 +97,8 @@ def generate_optimized_prompt(original_prompt, n_variations=1) -> str:
             {
                 "role": "system",
                 "content": "You are an expert in optimizing prompts for AI models. You should rewrite the prompt to "
-                           "make it more concise and clear.You should return the optimized prompt only and not any "
-                           "other information.",
+                "make it more concise and clear.You should return the optimized prompt only and not any "
+                "other information.",
             },
             {"role": "user", "content": f"{original_prompt}"},
         ],

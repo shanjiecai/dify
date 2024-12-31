@@ -251,6 +251,7 @@ class MessageService:
     @classmethod
     def create_feedback(
         cls,
+        *,
         app_model: App,
         message_id: str,
         user: Optional[Union[Account, EndUser]],

@@ -6,7 +6,6 @@ from models.plan_question import PlanQuestion
 
 # 存储知识点问题
 class PlanQuestionService:
-
     @classmethod
     def get(cls, plan: str) -> Optional[PlanQuestion]:
         plan_question = db.session.query(PlanQuestion).filter(PlanQuestion.plan == plan).first()

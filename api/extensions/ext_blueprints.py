@@ -5,7 +5,7 @@ from dify_app import DifyApp
 def init_app(app: DifyApp):
     # register blueprint routers
 
-    from flask_cors import CORS
+    from flask_cors import CORS  # type: ignore
 
     from controllers.console import bp as console_app_bp
     from controllers.files import bp as files_bp
@@ -48,8 +48,11 @@ def init_app(app: DifyApp):
 
     app.register_blueprint(inner_api_bp)
 
-    CORS(social_agent_api_bp, allow_headers=["Content-Type"], methods=["GET", "PUT", "POST", "DELETE", "OPTIONS",
-                                                                       "PATCH"])
+    CORS(
+        social_agent_api_bp,
+        allow_headers=["Content-Type"],
+        methods=["GET", "PUT", "POST", "DELETE", "OPTIONS", "PATCH"],
+    )
 
     app.register_blueprint(social_agent_api_bp)
     print(app.url_map)
